@@ -1,0 +1,6 @@
+export enum STATUS {
+  EXPIRED = 800,
+  WAIT = 801,
+  TODECONFIRMED = 802,
+  RESLUT = 803,
+}
