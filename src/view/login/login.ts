@@ -7,7 +7,7 @@ interface OPTIONS {
 
 export default function loginApp(optins: OPTIONS) {
   let { el } = optins;
-  let loginInstance: App<Element>;
+  let loginInstance: App<Element> | undefined;
   const Applogin = createApp(Login);
 
   el = el ? el : "#login";
@@ -16,12 +16,14 @@ export default function loginApp(optins: OPTIONS) {
     show() {
       if (!loginInstance) {
         loginInstance = Applogin;
-        const app = loginInstance.mount(el);
-        
+        loginInstance.mount(el);
         return;
       }
 
       loginInstance.mount(el);
+    },
+    hidden() {
+      loginInstance && loginInstance.unmount();
     },
   };
 }

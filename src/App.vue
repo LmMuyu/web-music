@@ -112,7 +112,7 @@ function onLogin() {
   const loginInstance = loginApp({
     el: "#login",
   });
-  
+
   loginInstance.show();
 }
 </script>

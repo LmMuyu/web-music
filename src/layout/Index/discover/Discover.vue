@@ -55,7 +55,7 @@ async function getBannerData() {
         },
       }),
     ]);
-    
+
     bannerLsit.value = banner.data.banners;
     hotList.value = hot.data.tags;
     playList.value = palyList.data.playlists;
@@ -65,20 +65,6 @@ async function getBannerData() {
 }
 
 getBannerData();
-
-onMounted(() => {
-  // ["left", "right"].map((position) => {
-  //   const className = `el-icon-arrow-${position}`;
-  //   const el: Element = document.getElementsByClassName(className)[0];
-  //   const element = el as HTMLElement;
-  //   element.style.fontFamily = "iconfont !important";
-  //   element.style.fontSize = 24 + "px";
-  //   element.style.fontStyle = "normal";
-  //   element.style.fontSmoothing
-  //   el.classList.remove(className);
-  //   el.classList.add(...["iconicon-"]);
-  // });
-});
 </script>
 
 <style scoped>
