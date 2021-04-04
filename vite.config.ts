@@ -63,6 +63,7 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
       alias: [...aliasList],
     },
     server: {
+      port: 3002,
       proxy: {},
     },
   };

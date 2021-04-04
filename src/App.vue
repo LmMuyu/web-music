@@ -31,17 +31,24 @@
     <template v-slot:slot_right>
       <GridBar :sizeSpan="[12, 12]" :styleRow="styleRow.height._object">
         <template v-slot:slot_0>
-          <IndexSearch :placeholder="header?.searchDefault?.showKeyword" />
+          <div class="relative flex items-start flex-col h-full w-full">
+            <Search
+              @change="onSearch"
+              :returnresdata="returnResData"
+              :placeholder="header?.searchDefault?.showKeyword"
+            />
+            <SearchShowTheBar :renderData="showTheBar.renderData"  :keyword="showThebar.keyword"/>
+          </div>
         </template>
 
         <template v-slot:slot_1>
           <div class="rounded-2xl h-full flex justify-center items-center">
             <ElLink
-              href="javscript:;;"
+              href="#"
               :type="linkType"
               class="text_in text-white align-middle"
               style="color: #787878"
-              @click="onLogin"
+              @click="onLogin('#login')"
             >
               登录
             </ElLink>
@@ -58,16 +65,17 @@
   </router-view>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import SearchShowTheBar from "/comps/search/components/SearchShowTheBar.vue";
+import { onSearch } from "./components/search/api/onSearch";
+import { searchDefault } from "./api/app/searchDefault";
 import { computed, reactive, ref, toRefs } from "vue";
 import GridBar from "/comps/gridBar/GridBar.vue";
-import IndexSearch from "/comps/search/Search.vue";
-import { searchDefault } from "./api/app/searchDefault";
+import Search from "/comps/search/Search.vue";
+import onLogin from "./view/login/login";
 import { ElLink } from "element-plus";
 import { list } from "./headerList";
 import router from "./routes";
-
-import loginApp from "./view/login/login";
 
 const header = reactive({
   searchDefault: null,
@@ -75,15 +83,12 @@ const header = reactive({
 
 const showTag = ref(false);
 const linkType = ref("info");
-
-router.beforeEach((to, from, next) => {
-  const meta = to.meta;
-
-  if (meta.hasOwnProperty("showTag")) {
-    showTag.value = showTag;
-  }
-
-  next();
+const showTheBar = reactive<{
+  keyword: string;
+  reanderData: Record<string, any>[];
+}>({
+  keyword: "",
+  reanderData: [],
 });
 
 const styles = reactive({
@@ -92,29 +97,37 @@ const styles = reactive({
   height: "100%",
 });
 
+const styleRow = { ...toRefs(styles) };
+
 const gridWidth = computed(() => {
   for (const value of list) {
     if (value.hasOwnProperty("tags")) {
-      return 100 / value.tags.length + "%";
+      return 100 / value.tags!.length + "%";
     }
   }
 });
-
-const styleRow = { ...toRefs(styles) };
 
 async function search() {
   const { data: defData } = await searchDefault({ url: "/search/default" });
   header.searchDefault = defData.data;
 }
+
 search();
 
-function onLogin() {
-  const loginInstance = loginApp({
-    el: "#login",
-  });
-
-  loginInstance.show();
+function returnResData(keyword: string, data: Record<string, any>[]) {
+  showTheBar.reanderData = data;
+  showTheBar.keyword = keyword;
 }
+
+router.beforeEach((to, from, next) => {
+  const meta = to.meta;
+
+  if (meta.hasOwnProperty("showTag")) {
+    showTag.value = meta.showTag as boolean;
+  }
+
+  next();
+});
 </script>
 
 <style lang="scss">

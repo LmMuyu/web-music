@@ -1,3 +1,5 @@
+import type { RouteRecordRaw } from "vue-router";
+
 interface META {
   showTag?: boolean;
 }
@@ -11,7 +13,7 @@ interface Route {
   component?: () => Promise<typeof import("*.vue")>;
 }
 
-const routes: Route[] = [
+const routes: RouteRecordRaw | Route[] = [
   {
     path: "/",
     redirect: "/index",
@@ -38,6 +40,11 @@ const routes: Route[] = [
     path: "/playlist",
     name: "PlayList",
     component: () => import("../view/playlist/PlayList.vue"),
+  },
+  {
+    path: "/search",
+    name: "Search",
+    component: () => import("../view/search/Search.vue"),
   },
 ];
 

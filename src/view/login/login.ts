@@ -1,29 +1,32 @@
 import { App, createApp, defineAsyncComponent } from "@vue/runtime-dom";
 const Login = defineAsyncComponent(() => import("./Login.vue"));
 
-interface OPTIONS {
-  el: string;
+let loginInstance: App<Element> | null;
+let mount = false;
+
+//初始化组件
+const Applogin = () => createApp(Login, { cancel: cancelLogin });
+
+function cancelLogin() {
+  mount = false;
+  loginMethods.hidden();
 }
 
-export default function loginApp(optins: OPTIONS) {
-  let { el } = optins;
-  let loginInstance: App<Element> | undefined;
-  const Applogin = createApp(Login);
+const loginMethods = {
+  show(rootElement: string) {
+    loginInstance = Applogin();
+    loginInstance.mount(rootElement);
+  },
+  hidden() {
+    loginInstance && loginInstance.unmount();
+  },
+};
 
+export default function loginApp(el: string) {
   el = el ? el : "#login";
 
-  return {
-    show() {
-      if (!loginInstance) {
-        loginInstance = Applogin;
-        loginInstance.mount(el);
-        return;
-      }
+  if (mount) return; //登录对话框在挂在中
 
-      loginInstance.mount(el);
-    },
-    hidden() {
-      loginInstance && loginInstance.unmount();
-    },
-  };
+  mount = true;
+  loginMethods.show(el);
 }

@@ -9,7 +9,10 @@
         <p class="transform translate-x-2 text-white font-bold text-lg">登录</p>
       </div>
       <div style="width: 50%" class="icon flex items-center justify-end">
-        <i class="iconfont transform -translate-x-2"></i>
+        <i
+          class="iconfont icondel transform -translate-x-2"
+          @click="cancel"
+        ></i>
       </div>
     </header>
     <article class="flex justify-center items-center h-3/4">
@@ -24,12 +27,8 @@
       <div class="w-52 flex flex-col" style="height: 245.55px">
         <p class="text-center text-2xl">扫码登录</p>
         <div class="w-52 h-52 relative">
-          <img
-            src="{unref(qrBase64)}"
-            class="h-full w-full"
-            draggable="false"
-          />
-          <Expired qrexpired="{qrexpired.value}" />
+          <img :src="qrBase64" class="h-full w-full" draggable="false" />
+          <Expired :qrexpired="qrexpired" />
         </div>
       </div>
     </article>
@@ -40,22 +39,26 @@
 </template>
 
 <script setup lang="ts">
-import { defineAsyncComponent, ref } from "vue";
+import { defineAsyncComponent, defineProps, ref } from "vue";
 import {
   getQrKey,
   getQrCreate,
   checkStatus,
 } from "../../api/login/qrCodeLogin";
-import "./scss/index.scss";
 import { STATUS } from "./enum";
 import { ElButton } from "element-plus";
-import mosue from "./api/mouse";
+import mouse from "./api/mouse";
 const Expired = defineAsyncComponent(() => import("./components/Expired.vue"));
+
+const props = defineProps({
+  cancel: {
+    type: Function,
+    required: true,
+  },
+});
 
 const qrBase64 = ref("");
 const qrexpired = ref(false);
-
-function root(el: HTMLElement) {}
 
 function QrCreate(key: string) {
   getQrCreate({
@@ -114,3 +117,30 @@ getQrKey({
   QrCreate(unikey);
 });
 </script>
+
+<style scoped lang="scss">
+.icon {
+  @include Iconfont(#f5f6fa, 32);
+
+  & > i {
+    cursor: pointer;
+  }
+}
+
+.shadow {
+  box-shadow: 2px 3px 1px rgb(37, 37, 37), -2px -3px 1px rgb(37, 37, 37);
+}
+
+.qrexpired {
+  background-color: rgba(255, 255, 255, 0.616);
+  z-index: 49;
+}
+
+.select {
+  -webkit-touch-callout: none;
+  -moz-user-select: none; /*火狐*/
+  -webkit-user-select: none; /*webkit浏览器*/
+  -ms-user-select: none; /*IE10*/
+  user-select: none;
+}
+</style>
