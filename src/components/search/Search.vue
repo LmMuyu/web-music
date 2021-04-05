@@ -42,7 +42,7 @@ function onFocus() {
 }
 
 function onBlur() {
-  ctxEmit("blur", true);
+  ctxEmit("blur", false);
 }
 
 const changeModel = (value?: any, delay: number = 300) => {

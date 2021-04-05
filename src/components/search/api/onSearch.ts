@@ -12,12 +12,15 @@ export async function onSearch(value: string, _retrunResDataFn: Function) {
     },
   });
   const order: string[] = result.data.result.order;
+
   const searchData: Record<string, any> = result.data.result;
 
-  const searchDataFilterResList = order.map((key) => ({
-    type: key,
-    ...searchData[key],
-  }));
+  const searchDataFilterResList = order
+    .map((key) => ({
+      type: key,
+      ...searchData[key],
+    }))
+    .slice(0, 3);
 
   _retrunResDataFn(value, searchDataFilterResList);
 }

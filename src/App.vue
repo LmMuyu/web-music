@@ -37,7 +37,12 @@
               :returnresdata="returnResData"
               :placeholder="header?.searchDefault?.showKeyword"
             />
-            <SearchShowTheBar :renderData="showTheBar.renderData"  :keyword="showThebar.keyword"/>
+            <SearchShowTheBar
+              :renderData="showTheBar.renderData"
+              :keyword="showTheBar.keyword"
+              @blur="onBlur"
+              v-if="showTheBar.showBar"
+            />
           </div>
         </template>
 
@@ -84,11 +89,13 @@ const header = reactive({
 const showTag = ref(false);
 const linkType = ref("info");
 const showTheBar = reactive<{
+  showBar: boolean;
   keyword: string;
-  reanderData: Record<string, any>[];
+  renderData: Record<string, any>[];
 }>({
+  showBar: false,
   keyword: "",
-  reanderData: [],
+  renderData: [],
 });
 
 const styles = reactive({
@@ -115,8 +122,16 @@ async function search() {
 search();
 
 function returnResData(keyword: string, data: Record<string, any>[]) {
-  showTheBar.reanderData = data;
   showTheBar.keyword = keyword;
+  showTheBar.renderData = data;
+
+  setTimeout(() => {
+    showTheBar.showBar = !showTheBar.showBar;
+  }); // console.log(data);
+}
+
+function onBlur(blur: boolean) {
+  showTheBar.showBar = blur;
 }
 
 router.beforeEach((to, from, next) => {

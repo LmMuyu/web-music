@@ -1,38 +1,22 @@
 <template>
-  <div class="bg_image">
-    <div class="flex">
-      <div style="width: 16.666%"></div>
-      <div style="width: 66.6656%">
-        <Banner :bannerData="bannerLsit" />
-        <article
-          class="w-full border-solid border-gray-500 border-r border-l border-b h-full"
-        >
-          <div class="div_translate">
-            <DiscoverHot :categoryname="hotList" />
-            <DiscoverPlaylist :playlist="playList" />
-          </div>
-        </article>
-      </div>
-      <div style="width: 16.666%"></div>
-    </div>
-  </div>
+  <!-- <component v-bind="$attrs" :is="componentName"></component> -->
+  <Loading />
 </template>
 
 <script setup>
-import DiscoverPlaylist from "./components/DiscoverPlaylist.vue";
-import DiscoverHot from "./components/DiscoverHot.vue";
-import { getHot } from "../../../api/discover/getHot";
 import { getPlayList } from "../../../api/discover/getPlaylist";
+import { getHot } from "../../../api/discover/getHot";
 import { getBanner } from "../../../api/index/index";
-import { bannerFilter } from "./api/bannerFilter";
-import Banner from "/comps/banner/Banner.vue";
-import { ref } from "@vue/reactivity";
-import { onMounted } from "vue";
+import DiscoverIndex from "./layout/DiscoverIndex.vue";
+import Loading from "../../../components/loading/Loading.vue";
 import axios from "axios";
+import { ref } from "@vue/reactivity";
 
 const bannerLsit = ref([]);
 const hotList = ref([]);
 const playList = ref([]);
+
+let componentName = ref("Loading");
 
 async function getBannerData() {
   try {
@@ -67,14 +51,4 @@ async function getBannerData() {
 getBannerData();
 </script>
 
-<style scoped>
-.bg_image {
-  background-size: 6000px;
-  background-position: center center;
-}
-
-.div_translate {
-  margin-left: 16px;
-  margin-right: 16px;
-}
-</style>
+<style scoped></style>

@@ -1,19 +1,21 @@
 import type { RouteRecordRaw } from "vue-router";
+import type { META, Route } from "./type/type";
+import createRoute from "./path/createRoute";
 
-interface META {
-  showTag?: boolean;
-}
+const pathList = [
+  "song",
+  "playList",
+  "video",
+  "sim_query",
+  "mlog",
+  "talk",
+  "artist",
+  "album",
+  "djRadio",
+  "user",
+];
 
-interface Route {
-  path: string;
-  redirect?: string;
-  name?: string;
-  meta?: META;
-  children?: Route[];
-  component?: () => Promise<typeof import("*.vue")>;
-}
-
-const routes: RouteRecordRaw | Route[] = [
+const routes: RouteRecordRaw[] | Route[] = [
   {
     path: "/",
     redirect: "/index",
