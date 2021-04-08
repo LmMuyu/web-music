@@ -1,10 +1,10 @@
 <template>
   <div
-    class="select bg-white flex flex-col absolute left-2/4 top-2/4 transform -translate-x-2/4 -translate-y-2/4 z-50 rounded-2xl shadow"
+    class="select bg-white flex flex-col fixed left-2/4 top-2/4 transform -translate-x-2/4 -translate-y-2/4 z-50 shadow"
     style="width: 530px; height: 372px"
     :ref="mouse"
   >
-    <header class="bg-gray-900 py-3 flex rounded-t-2xl" style="height: 12.499%">
+    <header class="bg-gray-900 py-3 flex" style="height: 12.499%">
       <div style="width: 50%" class="flex items-center">
         <p class="transform translate-x-2 text-white font-bold text-lg">登录</p>
       </div>
@@ -15,7 +15,7 @@
         ></i>
       </div>
     </header>
-    <article class="flex justify-center items-center h-3/4">
+    <!-- <article class="flex justify-center items-center h-3/4">
       <div class="px-4">
         <img
           src="https://s2.music.126.net/style/web2/img/qr_guide.png?0ddbd359a12507dd562b38c0ebef72fc"
@@ -34,7 +34,8 @@
     </article>
     <footer style="height: 12.499%" class="flex items-center justify-center">
       <ElButton round>选择其它方式登录</ElButton>
-    </footer>
+    </footer> -->
+    <Signup />
   </div>
 </template>
 
@@ -49,6 +50,8 @@ import { STATUS } from "./enum";
 import { ElButton } from "element-plus";
 import mouse from "./api/mouse";
 const Expired = defineAsyncComponent(() => import("./components/Expired.vue"));
+// const Signup = defineAsyncComponent(() => import("./signup/Signup.vue"));
+import Signup from "./signup/Signup.vue";
 
 const props = defineProps({
   cancel: {
@@ -128,7 +131,7 @@ getQrKey({
 }
 
 .shadow {
-  box-shadow: 2px 3px 1px rgb(37, 37, 37), -2px -3px 1px rgb(37, 37, 37);
+  box-shadow: 0px 0px 5px #2d3436;
 }
 
 .qrexpired {

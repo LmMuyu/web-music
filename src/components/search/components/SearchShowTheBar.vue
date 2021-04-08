@@ -1,5 +1,7 @@
 <template>
-  <div class="search_bar w-64 bg-white absolute top-20 left-0 z-50">
+  <div
+    class="search_bar w-64 bg-white absolute top-20 left-0 z-50 overflow-scroll h-96 scroll"
+  >
     <div class="text-black p-3 search_user">
       <router-link
         :to="{
@@ -16,10 +18,10 @@
     <div>
       <div v-for="searchData in renderData" :key="searchData.type">
         <div
-          class="text-black p-2 flex items-center icons buttom_line"
+          class="text-black p-2 flex items-center justify-center"
           v-html="typeName(searchData?.type)"
         ></div>
-        <ul class="list-none text_color py-2 buttom_line">
+        <ul class="list-none py-2 buttom_line text_color">
           <li
             v-for="musicItem in shwoRes(searchData)"
             :key="musicItem.id"
@@ -40,17 +42,12 @@
             </router-link>
           </li>
         </ul>
-        <div
-          class="flex items-center transform translate-x-3 text-black w-full h-full"
-        >
-          {{ searchData?.moreText }}
-        </div>
       </div>
     </div>
   </div>
 </template>
 <script setup lang="ts">
-import { defineProps, computed } from "@vue/runtime-dom";
+import { defineProps, computed, watch } from "@vue/runtime-dom";
 
 interface SingerInfo {
   name: string;
@@ -117,13 +114,19 @@ const typeName = computed(() => {
   return (type: string) => {
     const typeItem = typeList.find((key) => key.type === type);
 
-    return `<i class="iconfont ${typeItem?.icon}"></i><p>${typeItem?.name}</p>`;
+    return `<i class="icons ${typeItem?.icon}"></i><p>${typeItem?.name}</p>`;
   };
 });
 </script>
-<style lang="scss" scoped>
+<style lang="scss">
 .icons {
-  @include Iconfont(#000);
+  font-family: "iconfont" !important;
+  font-size: 16px;
+  font-style: normal;
+  color: #000;
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-stroke-width: 0.2px;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 @mixin buttomLine($backgroundColor) {
@@ -158,5 +161,20 @@ const typeName = computed(() => {
   &::after {
     @include buttomLine(#888);
   }
+}
+
+.scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.scroll::-webkit-scrollbar-thumb {
+  width: 5px;
+  height: 20px;
+  border-radius: 0%;
+  background: #000;
+}
+
+.scroll::-webkit-scrollbar-track {
+  background: #000;
 }
 </style>

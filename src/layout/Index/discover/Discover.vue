@@ -1,6 +1,16 @@
 <template>
-  <!-- <component v-bind="$attrs" :is="componentName"></component> -->
-  <Loading />
+  <!-- <component
+    :bannerLsit="bannerLsit"
+    :hotList="hotList"
+    :playList="playList"
+    :is="componentName"
+  ></component> -->
+  <!-- <Loading /> -->
+  <DiscoverIndex
+    :bannerLsit="bannerLsit"
+    :hotList="hotList"
+    :playList="playList"
+  />
 </template>
 
 <script setup>
@@ -16,7 +26,7 @@ const bannerLsit = ref([]);
 const hotList = ref([]);
 const playList = ref([]);
 
-let componentName = ref("Loading");
+let componentName = ref("DiscoverIndex");
 
 async function getBannerData() {
   try {

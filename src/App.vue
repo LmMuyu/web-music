@@ -34,13 +34,14 @@
           <div class="relative flex items-start flex-col h-full w-full">
             <Search
               @change="onSearch"
+              @focus="onSearch"
+              @blur="onBlur"
               :returnresdata="returnResData"
               :placeholder="header?.searchDefault?.showKeyword"
             />
             <SearchShowTheBar
               :renderData="showTheBar.renderData"
               :keyword="showTheBar.keyword"
-              @blur="onBlur"
               v-if="showTheBar.showBar"
             />
           </div>
@@ -121,17 +122,25 @@ async function search() {
 
 search();
 
+const showBar = (show: boolean, keyword: string = "") => {
+  if (showTheBar.showBar && keyword !== "") return;
+
+  showTheBar.showBar = show;
+};
+
 function returnResData(keyword: string, data: Record<string, any>[]) {
   showTheBar.keyword = keyword;
   showTheBar.renderData = data;
 
   setTimeout(() => {
-    showTheBar.showBar = !showTheBar.showBar;
-  }); // console.log(data);
+    showBar(!showTheBar.showBar, keyword);
+  });
+  // console.log(data);
 }
 
 function onBlur(blur: boolean) {
-  showTheBar.showBar = blur;
+  blur = blur ? blur : false;
+  showBar(blur);
 }
 
 router.beforeEach((to, from, next) => {

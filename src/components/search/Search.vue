@@ -55,6 +55,12 @@ const changeModel = (value?: any, delay: number = 300) => {
         return value;
       },
       set(newVlaue: string) {
+        const kongke = /\s/.test(newVlaue);
+
+        if (newVlaue === "" && !kongke) {
+          ctxEmit("blur", false);
+        }
+
         if (timeout) {
           clearTimeout(timeout);
         }
