@@ -22,28 +22,30 @@
       </div>
     </div>
     <div class="w-2/4">
-      <span
-        class="flex items-center justify-center pt-6 icon"
-        v-for="(other, index) in otherLogin"
-        :key="index"
-      >
-        <div
-          class="flex items-center justify-center border-solid border border-gray-400 w-12 h-12 round"
+      <ul class="flex flex-col items-center list-noneh-full icon">
+        <li
+          v-for="(other, index) in thirdPartyLogin"
+          :key="index"
+          class="flex items-center justify-center min-w-full pt-6 cursor-pointer"
         >
-          <i
-            :class="other.icon"
-            class="iconfont"
-            :style="{ color: other.color, fontSize: other.size }"
-          ></i>
-        </div>
+          <div
+            class="flex items-center justify-center border-solid border border-gray-400 w-12 h-12 round"
+          >
+            <i
+              :class="other.icon"
+              class="iconfont"
+              :style="{ color: other.color, fontSize: other.size }"
+            ></i>
+          </div>
 
-        <p class="transform translate-x-6">{{ other.text + "登录" }}</p>
-      </span>
+          <p class="transform translate-x-6">{{ other.text + "登录" }}</p>
+        </li>
+      </ul>
     </div>
   </article>
 </template>
 <script setup lang="ts">
-import { otherLogin } from "../api/data";
+import { thirdPartyLogin } from "../api/data";
 </script>
 <style lang="scss" scoped>
 .icon {

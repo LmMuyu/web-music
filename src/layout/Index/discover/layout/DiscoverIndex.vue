@@ -8,8 +8,17 @@
           class="w-full border-solid border-gray-500 border-r border-l border-b h-full"
         >
           <div class="div_translate">
-            <DiscoverHot :categoryname="hotList" />
-            <DiscoverPlaylist :playlist="playList" />
+            <ElRow>
+              <ElCol :span="19">
+                <DiscoverHot :categoryname="hotList" />
+                <DiscoverPlaylist :playlist="playList" />
+              </ElCol>
+              <ElCol :span="5">
+                <div>
+                  <UserProfile />
+                </div>
+              </ElCol>
+            </ElRow>
           </div>
         </article>
       </div>
@@ -25,6 +34,7 @@ import Banner from "/comps/banner/Banner.vue";
 import { defineProps, onMounted } from "vue";
 import { ref } from "@vue/reactivity";
 import axios from "axios";
+import { ElRow, ElCol } from "element-plus";
 
 const props = defineProps({
   bannerLsit: {

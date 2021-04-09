@@ -1,4 +1,4 @@
-export const otherLogin = [
+export const thirdPartyLogin = [
   {
     icon: "iconweixin",
     text: "微信",

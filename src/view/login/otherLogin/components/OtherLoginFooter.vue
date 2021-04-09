@@ -22,7 +22,7 @@
 <script setup lang="ts">
 import { ref } from "@vue/reactivity";
 import { computed, defineEmit } from "@vue/runtime-dom";
-import { footerDeal } from "../../otherLogin/api/data";
+import { footerDeal } from "../api/data";
 import { ElMessage } from "element-plus";
 
 const ctxEmit = defineEmit(["onOther"]);
@@ -44,9 +44,9 @@ function otherLogin() {
       },
     });
     return;
-
-    ctxEmit("onOther");
   }
+
+  ctxEmit("onOther");
 }
 </script>
 <style lang="scss" scoped></style>

@@ -1,32 +1,38 @@
 <template>
-  <!-- <component
+  <component
     :bannerLsit="bannerLsit"
     :hotList="hotList"
     :playList="playList"
     :is="componentName"
-  ></component> -->
-  <!-- <Loading /> -->
-  <DiscoverIndex
+  ></component>
+
+  <!-- <DiscoverIndex
     :bannerLsit="bannerLsit"
     :hotList="hotList"
     :playList="playList"
-  />
+  /> -->
 </template>
 
 <script setup>
 import { getPlayList } from "../../../api/discover/getPlaylist";
+import { defineAsyncComponent, nextTick } from "@vue/runtime-dom";
 import { getHot } from "../../../api/discover/getHot";
 import { getBanner } from "../../../api/index/index";
-import DiscoverIndex from "./layout/DiscoverIndex.vue";
-import Loading from "../../../components/loading/Loading.vue";
+import { ref, shallowRef } from "@vue/reactivity";
 import axios from "axios";
-import { ref } from "@vue/reactivity";
+
+const Loading = defineAsyncComponent(() =>
+  import("../../../components/loading/Loading.vue")
+);
+const DiscoverIndex = defineAsyncComponent(() =>
+  import("./layout/DiscoverIndex.vue")
+);
 
 const bannerLsit = ref([]);
 const hotList = ref([]);
 const playList = ref([]);
 
-let componentName = ref("DiscoverIndex");
+let componentName = shallowRef(DiscoverIndex);
 
 async function getBannerData() {
   try {
@@ -53,6 +59,8 @@ async function getBannerData() {
     bannerLsit.value = banner.data.banners;
     hotList.value = hot.data.tags;
     playList.value = palyList.data.playlists;
+
+    nextTick(() => (componentName.value = DiscoverIndex));
   } catch (err) {
     console.log(err);
   }

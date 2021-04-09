@@ -15,43 +15,25 @@
         ></i>
       </div>
     </header>
-    <!-- <article class="flex justify-center items-center h-3/4">
-      <div class="px-4">
-        <img
-          src="https://s2.music.126.net/style/web2/img/qr_guide.png?0ddbd359a12507dd562b38c0ebef72fc"
-          width="140"
-          height="140"
-          draggable="false"
-        />
-      </div>
-      <div class="w-52 flex flex-col" style="height: 245.55px">
-        <p class="text-center text-2xl">扫码登录</p>
-        <div class="w-52 h-52 relative">
-          <img :src="qrBase64" class="h-full w-full" draggable="false" />
-          <Expired :qrexpired="qrexpired" />
-        </div>
-      </div>
-    </article>
-    <footer style="height: 12.499%" class="flex items-center justify-center">
-      <ElButton round>选择其它方式登录</ElButton>
-    </footer> -->
-    <Signup />
+    <keep-alive>
+      <component @onOther="other" :is="componentId"></component>
+    </keep-alive>
   </div>
 </template>
 
 <script setup lang="ts">
-import { defineAsyncComponent, defineProps, ref } from "vue";
 import {
-  getQrKey,
-  getQrCreate,
-  checkStatus,
-} from "../../api/login/qrCodeLogin";
-import { STATUS } from "./enum";
-import { ElButton } from "element-plus";
+  defineAsyncComponent,
+  defineProps,
+  onMounted,
+  ref,
+  shallowRef,
+} from "vue";
 import mouse from "./api/mouse";
-const Expired = defineAsyncComponent(() => import("./components/Expired.vue"));
-// const Signup = defineAsyncComponent(() => import("./signup/Signup.vue"));
-import Signup from "./signup/Signup.vue";
+const QrLogin = defineAsyncComponent(() => import("./qrLogin/QrLogin.vue"));
+const otherLogin = defineAsyncComponent(
+  () => import("./otherLogin/OtherLogin.vue")
+);
 
 const props = defineProps({
   cancel: {
@@ -60,65 +42,13 @@ const props = defineProps({
   },
 });
 
-const qrBase64 = ref("");
-const qrexpired = ref(false);
+const componentId = shallowRef(QrLogin);
+let comID = true;
 
-function QrCreate(key: string) {
-  getQrCreate({
-    url: "/login/qr/create",
-    params: {
-      qrimg: "base64",
-      key,
-    },
-  }).then(({ data: { data: qrimg } }) => {
-    qrBase64.value = qrimg.qrimg;
-
-    // checkLoginStatus(key);
-  });
+function other() {
+  componentId.value = comID === true ? otherLogin : QrLogin;
+  comID = !comID;
 }
-
-async function checkLoginStatus(key: string) {
-  let times;
-
-  times = setInterval(async () => {
-    const checkRes = await checkStatus({
-      url: "/login/qr/check",
-      params: { key },
-    });
-
-    const {
-      data: { code },
-    } = checkRes;
-
-    console.log(checkRes);
-
-    loginReslutDealWith(code);
-  }, 5000);
-}
-
-function loginReslutDealWith(code: number) {
-  switch (code) {
-    case STATUS.EXPIRED:
-      qrexpired.value = true;
-      break;
-    case STATUS.WAIT:
-      break;
-    case STATUS.TODECONFIRMED:
-      break;
-    case STATUS.RESLUT:
-      break;
-    default:
-      return;
-  }
-}
-
-getQrKey({
-  url: "/login/qr/key",
-}).then(({ data }) => {
-  const unikey = data.data.unikey;
-
-  QrCreate(unikey);
-});
 </script>
 
 <style scoped lang="scss">

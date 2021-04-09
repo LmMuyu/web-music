@@ -1,46 +1,45 @@
 <template>
   <article class="transform translate-y-8">
-    <ul>
-      <ElRow tag="li">
-        <ElCol
-          :span="6"
-          v-for="play in playlist"
-          :key="play.id"
-          class="flex justify-center"
-        >
-          <section class="text-center pb-6">
-            <div class="relative">
-              <img
-                :src="
-                  playSrc(
-                    play?.creator?.backgroundUrl || play?.creator?.coverImgUrl
-                  )
-                "
-                :alt="play.alg_sq_featured"
-                class="object-contain block cneter"
-              />
-              <router-link
-                :to="{ path: '/playlist', query: { id: play.id } }"
-                class="absolute top-0 bottom-0 left-0 right-0 z-50"
-              ></router-link>
-              <div
-                class="text-left icon bg_gray w-full absolute left-0 bottom-0 p-1 flex items-center"
-              >
-                <i class="iconfont iconicon_headset"></i>
-                <p style="color: #ecf0f1" class="transform translate-x-1">
-                  {{ playCount(play?.playCount) }}
-                </p>
-              </div>
+    <ElRow tag="ul" class="flex justify-between">
+      <ElCol
+        tag="li"
+        :span="6"
+        v-for="play in playlist"
+        :key="play.id"
+        class="flex"
+      >
+        <section class="text-center pb-6">
+          <div class="relative">
+            <img
+              :src="
+                playSrc(
+                  play?.creator?.backgroundUrl || play?.creator?.coverImgUrl
+                )
+              "
+              :alt="play.alg_sq_featured"
+              class="object-contain block cneter"
+            />
+            <router-link
+              :to="{ path: '/playlist', query: { id: play.id } }"
+              class="absolute top-0 bottom-0 left-0 right-0 z-50"
+            ></router-link>
+            <div
+              class="text-left icon bg_gray w-full absolute left-0 bottom-0 p-1 flex items-center"
+            >
+              <i class="iconfont iconicon_headset"></i>
+              <p style="color: #ecf0f1" class="transform translate-x-1">
+                {{ playCount(play?.playCount) }}
+              </p>
             </div>
-            <p class="whitespace-pre-wrap text-left" style="width: 140px">
-              <a href="javscript:;;">
-                {{ play.name }}
-              </a>
-            </p>
-          </section>
-        </ElCol>
-      </ElRow>
-    </ul>
+          </div>
+          <p class="whitespace-pre-wrap text-left" style="width: 140px">
+            <a href="javscript:;;">
+              {{ play.name }}
+            </a>
+          </p>
+        </section>
+      </ElCol>
+    </ElRow>
   </article>
 </template>
 <script setup lang="ts">
