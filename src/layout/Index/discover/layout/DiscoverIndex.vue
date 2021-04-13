@@ -7,19 +7,19 @@
         <article
           class="w-full border-solid border-gray-500 border-r border-l border-b h-full"
         >
-          <div class="div_translate">
-            <ElRow>
-              <ElCol :span="19">
-                <DiscoverHot :categoryname="hotList" />
-                <DiscoverPlaylist :playlist="playList" />
-              </ElCol>
-              <ElCol :span="5">
-                <div>
-                  <UserProfile />
-                </div>
-              </ElCol>
-            </ElRow>
-          </div>
+          <ElRow class="flex">
+            <ElCol class="div_translate" :span="18">
+              <DiscoverHot :categoryname="hotList" />
+              <DiscoverPlaylist :playlist="playList" />
+              <!-- <DiscoverNewDisc /> -->
+            </ElCol>
+            <ElCol :span="6">
+              <aside class="w-full h-full flex">
+                <div class="aside_right"></div>
+                <Aside />
+              </aside>
+            </ElCol>
+          </ElRow>
         </article>
       </div>
       <div style="width: 16.666%"></div>
@@ -28,13 +28,18 @@
 </template>
 <script setup>
 import DiscoverPlaylist from "../components/DiscoverPlaylist.vue";
+import { defineAsyncComponent, defineProps } from "vue";
 import DiscoverHot from "../components/DiscoverHot.vue";
 import { bannerFilter } from "../api/bannerFilter";
+import Aside from "../../asideright/Aside.vue";
 import Banner from "/comps/banner/Banner.vue";
-import { defineProps, onMounted } from "vue";
+import { ElRow, ElCol } from "element-plus";
 import { ref } from "@vue/reactivity";
 import axios from "axios";
-import { ElRow, ElCol } from "element-plus";
+
+const DiscoverNewDisc = defineAsyncComponent(() =>
+  import("../components/DIscoverNewDisc.vue")
+);
 
 const props = defineProps({
   bannerLsit: {
@@ -58,7 +63,13 @@ const props = defineProps({
 }
 
 .div_translate {
-  margin-left: 16px;
-  margin-right: 16px;
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+.aside_right {
+  width: 2px;
+  height: inherit;
+  background: #b2bec3;
 }
 </style>

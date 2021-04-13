@@ -6,6 +6,7 @@ module.exports = {
     backgroundColor: (theme) => ({
       ...theme("colors"),
       wpbgColor: "#f5f5f5",
+      wybgColor: "#8a060b",
     }),
   },
   variants: {

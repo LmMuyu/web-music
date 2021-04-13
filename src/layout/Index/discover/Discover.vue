@@ -60,7 +60,7 @@ async function getBannerData() {
     hotList.value = hot.data.tags;
     playList.value = palyList.data.playlists;
 
-    nextTick(() => (componentName.value = DiscoverIndex));
+    // nextTick(() => (componentName.value = DiscoverIndex));
   } catch (err) {
     console.log(err);
   }
