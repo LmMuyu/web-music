@@ -7,7 +7,7 @@
         <article
           class="w-full border-solid border-gray-500 border-r border-l border-b h-full"
         >
-          <ElRow class="flex">
+          <ElRow class="flex h-full">
             <ElCol class="div_translate" :span="18">
               <DiscoverHot :categoryname="hotList" />
               <DiscoverPlaylist :playlist="playList" />

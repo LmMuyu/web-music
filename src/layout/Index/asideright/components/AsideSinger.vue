@@ -54,10 +54,7 @@ getCheckInSinger({
     type: -1,
     area: 7,
   },
-}).then((res) => {
-  console.log(res);
-  singerArtists.value = res;
-});
+}).then((res) => (singerArtists.value = res));
 </script>
 <style lang="scss" scoped>
 .bottom_line {
