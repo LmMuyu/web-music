@@ -9,7 +9,7 @@
       >
         <div class="div_yuan w-2 h-2 bg-white"></div>
       </div>
-      <span class="text-2xl translate-x-3">热门推荐</span>
+      <span class="text-2xl ml-4">热门推荐</span>
     </div>
     <div :style="{ width: setWidth(1) }">
       <ul class="list-none flex items-center h-full w-80">

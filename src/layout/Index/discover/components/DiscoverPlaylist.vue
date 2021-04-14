@@ -1,5 +1,5 @@
 <template>
-  <article class="transform translate-y-8">
+  <article class="mt-8">
     <ElRow tag="ul" class="flex justify-between">
       <ElCol
         tag="li"

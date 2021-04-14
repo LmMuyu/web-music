@@ -8,7 +8,11 @@
       <li v-for="anchors in anchorsList" :key="anchors.id" class="pt-2 pb-2">
         <a href=";;" class="flex z-50">
           <div>
-            <img :src="anchors.avatarUrl + '?param=40y40'" alt="" draggable="false" />
+            <img
+              :src="anchors.avatarUrl + '?param=40y40'"
+              alt=""
+              draggable="false"
+            />
           </div>
           <div
             class="flex flex-col ml-3"
@@ -60,8 +64,6 @@ getPopularAnchors({
     limit: 5,
   },
 }).then((res) => {
-  console.log(res);
-
   anchorsList.value = res;
 });
 </script>

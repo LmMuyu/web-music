@@ -11,7 +11,8 @@
             <ElCol class="div_translate" :span="18">
               <DiscoverHot :categoryname="hotList" />
               <DiscoverPlaylist :playlist="playList" />
-              <!-- <DiscoverNewDisc /> -->
+              <div class="mt-16"></div>
+              <DiscoverNewDisc />
             </ElCol>
             <ElCol :span="6">
               <aside class="w-full h-full flex">
@@ -35,7 +36,6 @@ import Aside from "../../asideright/Aside.vue";
 import Banner from "/comps/banner/Banner.vue";
 import { ElRow, ElCol } from "element-plus";
 import { ref } from "@vue/reactivity";
-import axios from "axios";
 
 const DiscoverNewDisc = defineAsyncComponent(() =>
   import("../components/DIscoverNewDisc.vue")

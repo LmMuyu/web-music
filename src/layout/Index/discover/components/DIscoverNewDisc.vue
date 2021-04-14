@@ -1,36 +1,79 @@
 <template>
-  <div class="relative flost" ref="root">
-    <ul
-      v-for="(itemx, index) in list"
-      :key="index"
-      class="flex justify-around absolute top-0"
+  <header>
+    <div class="flex items-center py-3">
+      <div
+        class="div_yuan w-5 h-5 bg-red-500 relative flex items-center justify-center"
+      >
+        <div class="div_yuan w-2 h-2 bg-white"></div>
+      </div>
+      <p class="text-2xl ml-4">新碟上映</p>
+    </div>
+    <div class="w-full h-1 bg-red-500"></div>
+  </header>
+
+  <article
+    class="flex items-center justify-center border-2 border-solid border-gray-200 p-8 mt-6"
+    style="background: #f5f5f5"
+  >
+    <div class="icons cursor-pointer" @click="leftNum">
+      <i class="iconfont iconarrow-right-copy"></i>
+    </div>
+    <div
+      class="relative overflow-x-hidden flost w-full"
+      ref="root"
+      style="height: 100px"
+      @transitionend="onTransitionend"
     >
-      <li v-for="(listItme, i) in itemx" :key="i">
-        <ElImage
-          :lazy="true"
-          :src="listItme?.blurPicUrl + '?param=100y100'"
-          :alt="listItme?.name"
-          style="height: 100px; width: 100px"
-        />
-      </li>
-    </ul>
-    <button @click="addNum" class="transform translate-y-10">点击</button>
-  </div>
+      <ul
+        v-for="(itemx, index) in list"
+        :key="index"
+        class="flex justify-around absolute top-0 h-full"
+        style="width: 500px"
+      >
+        <li v-for="(listItme, i) in itemx" :key="i" class="ml-4">
+          <div>
+            <img
+              :src="listItme?.blurPicUrl + '?param=100y100'"
+              :alt="listItme?.name"
+              style="width: 100px; height: 100px"
+              class="box-content"
+            />
+            <a href=""></a>
+            <a href="javascript:;;">
+              <i></i>
+            </a>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div class="icons cursor-pointer" @click="rightNum">
+      <i class="iconfont iconmore"></i>
+    </div>
+  </article>
 </template>
 <script setup lang="ts">
 import { reactive, ref } from "@vue/reactivity";
 import { onMounted, watch, nextTick } from "@vue/runtime-core";
 import { ElImage } from "element-plus";
 import { getNewDisc } from "../../../../api/discover/getNewDisc";
-// :style="[transition, { left: transitionLeft(index) }]"
+import { POSITION } from "../type";
 
 const root = ref<HTMLElement | null>(null);
 let list = ref<Record<string, any>[]>([]);
-let leftPos = ref(0);
+let currentIndex = ref(0);
 let silderList: HTMLElement[] = [];
 let listLen = 0;
 let isTran = false;
 let times: NodeJS.Timeout | null = null;
+
+function runTransition(fnc: any[]) {
+  const createPromise = (fn: Function) =>
+    new Promise((resolve) => {
+      resolve(fn());
+    });
+
+  Promise.all(fnc.map((fn: Function) => createPromise(fn)));
+}
 
 watch(list.value, () => {
   listLen = list.value.length;
@@ -38,43 +81,67 @@ watch(list.value, () => {
   nextTick(() => {
     silderList = root.value?.querySelectorAll("ul") as any;
 
-    setTransition(leftPos.value, leftPos.value);
-    setTransition(listLen - 1, leftPos.value);
-    setTransition(leftPos.value + 1, leftPos.value);
+    setTransition(currentIndex.value, "curr");
+    setTransition(listLen - 1, "pre");
+    setTransition(currentIndex.value + 1, "next");
   });
 });
 
-watch(leftPos, (curr) => {
+watch(currentIndex, (curr) => {
   // console.log(curr);
 
-  const par = curr === 0 ? listLen - 1 : curr - 1;
+  const pre = curr === 0 ? listLen - 1 : curr - 1;
   const next = curr === listLen - 1 ? 0 : curr + 1;
 
-  setTransition(curr, curr);
-  setTransition(par, curr);
-  setTransition(next, curr);
+  setTransition(curr, "curr");
+  setTransition(pre, "pre");
+  setTransition(next, "next");
 });
 
-function setTransition(index: number, curr: number) {
-  const target = silderList[index];
-  target.style.transition = "left 0.5s ease";
-  console.log(index, curr);
+function setTransition(index: number, position: string) {
+  if (!position) return;
+  position = position.trim();
 
-  if (index === curr) {
-    target.style.left = "0px";
-  } else if (index < curr) {
-    target.style.left = "-500px";
-  } else if (index > curr || index === 0) {
-    target.style.left = "500px";
+  const target = silderList[index];
+  target.style.zIndex = "0";
+  // console.log(index, curr);
+
+  switch (position) {
+    case POSITION.CURR:
+      target.style.transition = "left 0.5s ease";
+      target.style.left = "0px";
+      target.style.zIndex = "99";
+      break;
+    case POSITION.PRE:
+      target.style.transition = "left 0.5s ease";
+      target.style.left = "-500px";
+      break;
+    case POSITION.NEXT:
+      target.style.transition = "left 0.5s ease";
+      target.style.left = "500px";
+      break;
   }
 }
 
-function addNum() {
+function leftNum() {
   if (isTran) return;
 
   isTran = true;
 
-  leftPos.value += leftPos.value === listLen - 1 ? -(listLen - 1) : 1;
+  currentIndex.value += currentIndex.value === 0 ? listLen - 1 : -1;
+
+  times = setTimeout(() => {
+    isTran = false;
+    restoreTranOption();
+  }, 1017);
+}
+
+function rightNum() {
+  if (isTran) return;
+
+  isTran = true;
+
+  currentIndex.value += currentIndex.value === listLen - 1 ? -(listLen - 1) : 1;
 
   times = setTimeout(() => {
     isTran = false;
@@ -98,6 +165,10 @@ getNewDisc({
 }).then((res) => list.value.push(...res));
 </script>
 <style lang="scss" scoped>
+.icons {
+  @include Iconfont(#333, 18);
+}
+
 .flost {
   ::before,
   ::after {

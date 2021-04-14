@@ -7,10 +7,7 @@ export async function getNewDisc(config: AxiosRequestConfig) {
   const list: Record<string, any>[] = [];
 
   for (let i = 0; i < res.length; i += 5) {
-    const listItem = [...res.slice(i, i + 5)];
-
-    list.push(listItem);
+    list.push(res.slice(i, i + 5));
   }
-
   return list;
 }
