@@ -13,6 +13,8 @@
               <DiscoverPlaylist :playlist="playList" />
               <div class="mt-16"></div>
               <DiscoverNewDisc />
+              <div class="mt-16"></div>
+              <DiscoverBillboard />
             </ElCol>
             <ElCol :span="6">
               <aside class="w-full h-full flex">
@@ -28,6 +30,13 @@
   </div>
 </template>
 <script setup>
+const DiscoverNewDisc = defineAsyncComponent(() =>
+  import("../components/DIscoverNewDisc.vue")
+);
+const DiscoverBillboard = defineAsyncComponent(() =>
+  import("../components/DiscoverBillboard.vue")
+);
+
 import DiscoverPlaylist from "../components/DiscoverPlaylist.vue";
 import { defineAsyncComponent, defineProps } from "vue";
 import DiscoverHot from "../components/DiscoverHot.vue";
@@ -36,10 +45,6 @@ import Aside from "../../asideright/Aside.vue";
 import Banner from "/comps/banner/Banner.vue";
 import { ElRow, ElCol } from "element-plus";
 import { ref } from "@vue/reactivity";
-
-const DiscoverNewDisc = defineAsyncComponent(() =>
-  import("../components/DIscoverNewDisc.vue")
-);
 
 const props = defineProps({
   bannerLsit: {
