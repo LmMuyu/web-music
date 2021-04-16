@@ -36,16 +36,31 @@
         v-for="(track, index) in sliceTracks(listItme.data.playlist.tracks)"
         :key="track.al.id"
         class="flex items-center pt-2 pb-2 pr-2"
-        @mouseenter="showIconActive"
-        @mouseleave="hiddenIconActive"
+        @mouseenter="
+          iconActive = index;
+          userid = track.id;
+        "
+        @mouseleave="
+          iconActive = Number.MAX_VALUE;
+          userid = Number.MAX_VALUE;
+        "
       >
         <h3 :class="{ topTree: index + 1 <= 3 }" class="text-lg">
           {{ index + 1 }}
         </h3>
-        <a :href="track.al.id" :title="track.al.name" class="ml-3 truncate">{{
-          track.al.name
-        }}</a>
-        <div class="iconss" :class="iconActive === index ? 'block' : 'hidden'">
+        <a
+          :href="track.al.id"
+          :title="track.al.name"
+          class="ml-3 w-4/6 truncate"
+          >{{ track.al.name }}</a
+        >
+        <div
+          class="iconss flex justify-end w-1/3"
+          ref="icon"
+          :class="
+            track.id === userid && iconActive === index ? 'block' : 'hidden'
+          "
+        >
           <a href="#" title="播放" class="iconbofang"></a>
           <a href="#" title="添加到播放列表" class="iconjia"></a
           ><a href="#" title="收藏" class="iconshoucang"></a>
@@ -55,12 +70,13 @@
   </article>
 </template>
 <script setup lang="ts">
-import { ref } from "@vue/reactivity";
+import { ref, shallowRef } from "@vue/reactivity";
 import { computed } from "@vue/runtime-core";
 import { getTopList } from "../../../../api/discover/mainRequest";
 
 const list = ref<any>([]);
-const iconActive = ref(999);
+const iconActive = ref(Number.MAX_VALUE);
+const userid = shallowRef(Number.MAX_VALUE);
 
 getTopList({
   method: "GET",
@@ -74,14 +90,6 @@ const sliceTracks = computed(() => {
     }
   };
 });
-
-function showIconActive(e: MouseEvent) {
-  (e.target as HTMLElement).style.display = "block";
-}
-
-function hiddenIconActive(e: MouseEvent) {
-  (e.target as HTMLElement).style.display = "hidden";
-}
 </script>
 <style lang="scss" scoped>
 .listImg {
