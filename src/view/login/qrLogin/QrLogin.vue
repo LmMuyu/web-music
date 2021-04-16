@@ -12,7 +12,7 @@
       <p class="text-center text-2xl">扫码登录</p>
       <div class="w-52 h-52 relative">
         <img :src="qrBase64" class="h-full w-full" draggable="false" />
-        <Expired :qrexpired="qrexpired" />
+        <Expired @click="getQrKey" :qrexpired="qrexpired" />
       </div>
     </div>
   </article>
@@ -22,20 +22,33 @@
 </template>
 <script setup lang="ts">
 const Expired = defineAsyncComponent(() => import("../components/Expired.vue"));
-import { defineAsyncComponent, defineEmit, ref } from "@vue/runtime-dom";
-import { ElButton } from "element-plus";
+import {
+  defineAsyncComponent,
+  defineEmit,
+  onBeforeUnmount,
+  ref,
+} from "@vue/runtime-dom";
+import { ElMessage, ElButton } from "element-plus";
 import { STATUS } from "../enum";
 import {
   getQrKey,
   getQrCreate,
   checkStatus,
 } from "../../../api/login/qrCodeLogin";
+import { AxiosResponse } from "axios";
+
+interface LoginData {
+  code: number;
+  cookie: string;
+  message: string;
+}
 
 const ctxEmit = defineEmit(["onOther"]);
 
 const qrBase64 = ref("");
 const qrexpired = ref(false);
 
+//获取二维码key
 getQrKey({
   url: "/login/qr/key",
 }).then(({ data }) => {
@@ -44,6 +57,7 @@ getQrKey({
   QrCreate(unikey);
 });
 
+//获取二维码图片
 function QrCreate(key: string) {
   getQrCreate({
     url: "/login/qr/create",
@@ -52,44 +66,37 @@ function QrCreate(key: string) {
       key,
     },
   }).then(({ data: { data: qrimg } }) => {
+    if (!!qrBase64.value) qrBase64.value = "";
     qrBase64.value = qrimg.qrimg;
 
-    // checkLoginStatus(key);
+    checkLoginStatus(key);
   });
 }
 
+//轮询二维码检测扫码状态
 async function checkLoginStatus(key: string) {
-  // let times;
+  let times: NodeJS.Timeout | null = null;
+  //防止用户扫二维码多次
+  if (times) return;
 
-  // //防止用户扫二维码多次
-  // if (!times) return;
-
-  // times = setInterval(async () => {
-  //   const checkRes = await checkStatus({
-  //     url: "/login/qr/check",
-  //     params: { key },
-  //   });
-
-  //   const {
-  //     data: { code },
-  //   } = checkRes;
-
-  //   console.log(checkRes);
-
-  //   loginReslutDealWith(code);
-  // }, 5000);
-
-  const socket = io("http://127.0.0.1:3000/login/qr/check");
-
-  socket.on("connect", () => {});
-
-  // handle the event sent with socket.send()
-  socket.on("message", (data: any) => {
+  times = setInterval(async () => {
+    const checkRes = await checkStatus({
+      url: "/login/qr/check",
+      params: { key },
+    });
+    const { data }: AxiosResponse<LoginData> = checkRes;
     console.log(data);
-  });
+
+    loginReslutDealWith(data.code, times, data.code === 803 ? data : "");
+  }, 5000);
 }
 
-function loginReslutDealWith(code: number) {
+//根据返回的code来选择对应的逻辑
+function loginReslutDealWith(
+  code: number,
+  times: any,
+  successData?: LoginData | string
+) {
   switch (code) {
     case STATUS.EXPIRED:
       qrexpired.value = true;
@@ -99,14 +106,33 @@ function loginReslutDealWith(code: number) {
     case STATUS.TODECONFIRMED:
       break;
     case STATUS.RESLUT:
+      clearTimeout(times);
+      times = null;
+
+      Promise.resolve().then(() => {
+        if (!!successData && typeof successData !== "string")
+          loginResult(successData.cookie);
+      });
+
+      if (!!successData && typeof successData !== "string") {
+        ElMessage({
+          message: successData.message,
+          type: "success",
+        });
+      }
+
       break;
     default:
       return;
   }
 }
 
+function loginResult(cookie: string) {
+  qrBase64.value = "";
+}
+
 function otherLogin() {
-  ctxEmit("onOther");
+  ctxEmit("onOther", "otherLogin");
 }
 </script>
 <style lang="scss" scoped></style>

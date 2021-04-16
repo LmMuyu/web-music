@@ -1,5 +1,5 @@
 <template>
-  <OtherLoginArticle />
+  <OtherLoginArticle @onOther="other" />
   <OtherLoginFooter @onOther="other" />
 </template>
 <script setup lang="ts">

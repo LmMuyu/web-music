@@ -75,13 +75,17 @@
 import SearchShowTheBar from "/comps/search/components/SearchShowTheBar.vue";
 import { onSearch } from "./components/search/api/onSearch";
 import { searchDefault } from "./api/app/searchDefault";
-import { computed, reactive, ref, toRefs } from "vue";
+import { computed, getCurrentInstance, reactive, ref, toRefs } from "vue";
 import GridBar from "/comps/gridBar/GridBar.vue";
 import Search from "/comps/search/Search.vue";
 import onLogin from "./view/login/login";
 import { ElLink } from "element-plus";
 import { list } from "./headerList";
 import router from "./routes";
+
+const ctx = getCurrentInstance()!;
+ctx.appContext.config.globalProperties.store.dispatch("countriesCode");
+
 
 const header = reactive({
   searchDefault: null,

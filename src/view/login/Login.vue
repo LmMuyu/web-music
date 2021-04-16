@@ -6,7 +6,9 @@
   >
     <header class="bg-gray-900 py-3 flex" style="height: 12.499%">
       <div style="width: 50%" class="flex items-center">
-        <p class="transform translate-x-2 text-white font-bold text-lg">登录</p>
+        <p class="transform translate-x-2 text-white font-bold text-lg">
+          {{ headerTitle }}
+        </p>
       </div>
       <div style="width: 50%" class="icon flex items-center justify-end">
         <i
@@ -30,9 +32,14 @@ import {
   shallowRef,
 } from "vue";
 import mouse from "./api/mouse";
+import { COMP } from "./enum";
+
 const QrLogin = defineAsyncComponent(() => import("./qrLogin/QrLogin.vue"));
 const otherLogin = defineAsyncComponent(
   () => import("./otherLogin/OtherLogin.vue")
+);
+const OtherLoginCellPhone = defineAsyncComponent(
+  () => import("./otherLogin/pages/OtherLoginCellPhone.vue")
 );
 
 const props = defineProps({
@@ -42,12 +49,25 @@ const props = defineProps({
   },
 });
 
-const componentId = shallowRef(QrLogin);
-let comID = true;
+const headerTitle = ref("登录");
 
-function other() {
-  componentId.value = comID === true ? otherLogin : QrLogin;
-  comID = !comID;
+const componentId = shallowRef(QrLogin);
+
+function other(comp: string) {
+  if (!comp || typeof comp !== "string") throw new Error("组件未传入!");
+
+  switch (comp) {
+    case COMP.OTHERLOGIN:
+      componentId.value = otherLogin;
+      break;
+    case COMP.QRLOGIN:
+      componentId.value = QrLogin;
+    case COMP.LOGINWITHPHONE:
+      componentId.value = OtherLoginCellPhone;
+      break;
+    default:
+      throw new Error("未找到组件");
+  }
 }
 </script>
 

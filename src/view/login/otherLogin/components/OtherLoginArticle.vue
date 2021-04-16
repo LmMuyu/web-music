@@ -8,6 +8,7 @@
         <div>
           <button
             class="outline-none border-none text-center py-2 p-20 text-gray-50 mp_Login"
+            @click="withPhone"
           >
             手机号登录
           </button>
@@ -45,7 +46,13 @@
   </article>
 </template>
 <script setup lang="ts">
+import { defineEmit } from "@vue/runtime-core";
 import { thirdPartyLogin } from "../api/data";
+const ctxEmit = defineEmit(["onOther"]);
+
+function withPhone() {
+  ctxEmit("onOther", "loginwithphone");
+}
 </script>
 <style lang="scss" scoped>
 .icon {

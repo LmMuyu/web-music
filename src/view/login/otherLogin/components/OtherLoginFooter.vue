@@ -46,7 +46,7 @@ function otherLogin() {
     return;
   }
 
-  ctxEmit("onOther");
+  ctxEmit("onOther","qrlogin");
 }
 </script>
 <style lang="scss" scoped></style>
