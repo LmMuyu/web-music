@@ -28,6 +28,7 @@ import {
   defineAsyncComponent,
   defineProps,
   onMounted,
+  provide,
   ref,
   shallowRef,
 } from "vue";
@@ -50,11 +51,13 @@ const props = defineProps({
 });
 
 const headerTitle = ref("登录");
-
 const componentId = shallowRef(QrLogin);
+const currCompId = shallowRef("qrlogin");
+provide("currCompId", currCompId);
 
 function other(comp: string) {
   if (!comp || typeof comp !== "string") throw new Error("组件未传入!");
+  currCompId.value = comp;
 
   switch (comp) {
     case COMP.OTHERLOGIN:
@@ -62,6 +65,7 @@ function other(comp: string) {
       break;
     case COMP.QRLOGIN:
       componentId.value = QrLogin;
+      break;
     case COMP.LOGINWITHPHONE:
       componentId.value = OtherLoginCellPhone;
       break;

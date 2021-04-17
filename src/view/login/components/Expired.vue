@@ -1,5 +1,5 @@
 <script lang="tsx">
-import { defineComponent, defineEmit } from "vue";
+import { defineComponent } from "vue";
 
 export default defineComponent({
   props: {
@@ -7,11 +7,10 @@ export default defineComponent({
       default: () => false,
     },
   },
-  setup(props) {
-    const ctxEmit = defineEmit(["click"]);
-
+  emits: ["click"],
+  setup(props, { emit }) {
     function refreshLogin() {
-      ctxEmit("click");
+      emit("click");
     }
 
     return () => (

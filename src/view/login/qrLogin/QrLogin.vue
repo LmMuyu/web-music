@@ -25,11 +25,14 @@ const Expired = defineAsyncComponent(() => import("../components/Expired.vue"));
 import {
   defineAsyncComponent,
   defineEmit,
+  getCurrentInstance,
   onBeforeUnmount,
   ref,
+  inject,
 } from "@vue/runtime-dom";
 import { ElMessage, ElButton } from "element-plus";
 import { STATUS } from "../enum";
+import observer from "../../../utils/observer/Observer";
 import {
   getQrKey,
   getQrCreate,
@@ -43,10 +46,21 @@ interface LoginData {
   message: string;
 }
 
-const ctxEmit = defineEmit(["onOther"]);
+interface CurrComp {
+  value: string;
+}
 
+const ctxEmit = defineEmit(["onOther"]);
+const currentInstanceName = getCurrentInstance()?.type.__file?.match(
+  /(\w+)\.vue$/
+)?.[1]!;
 const qrBase64 = ref("");
 const qrexpired = ref(false);
+const currComp: CurrComp = inject("currCompId")!;
+
+onBeforeUnmount(() => {
+  observer.off(currentInstanceName);
+});
 
 //获取二维码key
 getQrKey({
@@ -80,15 +94,19 @@ async function checkLoginStatus(key: string) {
   if (times) return;
 
   times = setInterval(async () => {
-    const checkRes = await checkStatus({
-      url: "/login/qr/check",
-      params: { key },
-    });
-    const { data }: AxiosResponse<LoginData> = checkRes;
-    console.log(data);
+    if (currComp && currComp.value === "qrlogin") {
+      const checkRes = await checkStatus({
+        url: "/login/qr/check",
+        params: { key },
+      });
+      const { data }: AxiosResponse<LoginData> = checkRes;
+      console.log(data);
 
-    loginReslutDealWith(data.code, times, data.code === 803 ? data : "");
+      loginReslutDealWith(data.code, times, data.code === 803 ? data : "");
+    }
   }, 5000);
+
+  observer.on(currentInstanceName, times);
 }
 
 //根据返回的code来选择对应的逻辑

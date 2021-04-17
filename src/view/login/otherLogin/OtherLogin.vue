@@ -9,8 +9,8 @@ import OtherLoginFooter from "./components/OtherLoginFooter.vue";
 
 const ctxEmit = defineEmit(["onOther"]);
 
-function other() {
-  ctxEmit("onOther");
+function other(comp: string) {
+  ctxEmit("onOther", comp);
 }
 </script>
 <style lang="scss" scoped></style>

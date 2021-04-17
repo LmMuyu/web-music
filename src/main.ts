@@ -5,7 +5,8 @@ import "tailwindcss/tailwind.css";
 import "./view/login/login";
 import hover from "./directives/hover";
 import lazy from "./directives/lazy-loading";
-import store from "./store/index";
+import "element-plus/lib/theme-chalk/el-icon.css";
+import store from "./store";
 
 const app = createApp(App);
 app.directive(hover.name, hover);
