@@ -13,6 +13,7 @@ app.directive(hover.name, hover);
 app.directive("lazy", lazy);
 
 app.config.globalProperties.store = store;
+
 app.use(router);
 app.use(store);
 app.mount("#app");

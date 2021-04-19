@@ -102,7 +102,7 @@ const deaultVccdTime = 10;
     };
 
     currFileName = await getFile(instance);
-    console.log(currFileName);
+    // console.log(currFileName);
   } catch (error) {
     throw new Error(error);
   }

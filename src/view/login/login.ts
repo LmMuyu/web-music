@@ -1,6 +1,7 @@
 import { App, createApp, defineAsyncComponent } from "@vue/runtime-dom";
 const Login = defineAsyncComponent(() => import("./Login.vue"));
 import store from "../../store";
+import mitt from "mitt";
 
 let loginInstance: App<Element> | null;
 let mount = false;
@@ -13,6 +14,7 @@ function cancelLogin() {
   loginMethods.hidden();
 }
 function setPlugin(element: App<Element>) {
+  element.config.globalProperties.mitt = mitt();
   element.use(store);
 }
 

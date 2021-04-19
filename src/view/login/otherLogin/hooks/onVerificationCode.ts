@@ -4,7 +4,7 @@ import { ElMessage } from "element-plus";
 export function onVerificationCode(
   phone: string,
   countDownFn: Function,
-  ctcode?: string
+  ctcode: string
 ) {
   if (!phone) {
     ElMessage.error({
@@ -14,19 +14,19 @@ export function onVerificationCode(
 
     return;
   }
-
   countDownFn();
 
-  // captchaSend(
-  //   {
-  //     url: "/captcha/sent",
-  //     params: {
-  //       phone,
-  //       ctcode,
-  //     },
-  //   },
-  //   ({ hasPassword, nickname }: { hasPassword: boolean; nickname: string }) => {
-  //     console.log(hasPassword + "-----" + nickname);
-  //   }
-  // );
+  const formData = new FormData();
+  formData.append("phone", phone);
+  formData.append("ctcode", ctcode);
+
+  captchaSend(
+    {
+      url: "/captcha/sent",
+      params: formData,
+    },
+    ({ hasPassword, nickname }: { hasPassword: boolean; nickname: string }) => {
+      console.log(hasPassword + "-----" + nickname);
+    }
+  );
 }

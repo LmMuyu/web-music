@@ -27,13 +27,17 @@
 import {
   defineAsyncComponent,
   defineProps,
-  onMounted,
+  getCurrentInstance,
+  onBeforeUnmount,
   provide,
   ref,
   shallowRef,
 } from "vue";
+import { isType } from "../../utils/methods";
 import mouse from "./api/mouse";
 import { COMP } from "./enum";
+import type { otherOptions } from "./type";
+import type { Emitter } from "mitt";
 
 const QrLogin = defineAsyncComponent(() => import("./qrLogin/QrLogin.vue"));
 const otherLogin = defineAsyncComponent(
@@ -50,14 +54,27 @@ const props = defineProps({
   },
 });
 
+const mitt: Emitter = getCurrentInstance()?.appContext.config.globalProperties
+  .mitt;
+mitt.on("otherLogin", onOther);
+
 const headerTitle = ref("登录");
 const componentId = shallowRef(QrLogin);
 const currCompId = shallowRef("qrlogin");
 provide("currCompId", currCompId);
+let istype: boolean = false; //mitt
 
-function onOther(comp: string) {
-  if (!comp || typeof comp !== "string") throw new Error("组件未传入!");
-  currCompId.value = comp;
+function onOther(comp: string | otherOptions | undefined) {
+  const type = isType(comp);
+  if (!comp && type !== "Object") throw new Error("组件未传入!");
+
+  if (type === "Object") {
+    const { comp: compinstance, type }: otherOptions = comp as otherOptions;
+    currCompId.value = comp = compinstance;
+    istype = !!type;
+  } else {
+    currCompId.value = comp as string;
+  }
 
   switch (comp) {
     case COMP.OTHERLOGIN:
@@ -73,6 +90,12 @@ function onOther(comp: string) {
       throw new Error("未找到组件");
   }
 }
+
+onBeforeUnmount(() => {
+  if (istype) {
+    mitt.off("otherLogin", onOther);
+  }
+});
 </script>
 
 <style scoped lang="scss">
