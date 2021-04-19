@@ -43,10 +43,10 @@ function otherLogin() {
         infoB = false;
       },
     });
+
     return;
   }
-
-  ctxEmit("onOther","qrlogin");
+  ctxEmit("onOther", "qrlogin");
 }
 </script>
 <style lang="scss" scoped></style>

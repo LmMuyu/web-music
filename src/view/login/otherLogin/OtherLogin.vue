@@ -1,6 +1,6 @@
 <template>
-  <OtherLoginArticle @onOther="other" />
-  <OtherLoginFooter @onOther="other" />
+  <OtherLoginArticle @onOther="onOther" />
+  <OtherLoginFooter @onOther="onOther" />
 </template>
 <script setup lang="ts">
 import { defineEmit } from "@vue/runtime-dom";
@@ -9,7 +9,7 @@ import OtherLoginFooter from "./components/OtherLoginFooter.vue";
 
 const ctxEmit = defineEmit(["onOther"]);
 
-function other(comp: string) {
+function onOther(comp: string) {
   ctxEmit("onOther", comp);
 }
 </script>

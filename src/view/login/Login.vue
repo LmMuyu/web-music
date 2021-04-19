@@ -18,7 +18,7 @@
       </div>
     </header>
     <keep-alive>
-      <component @onOther="other" :is="componentId"></component>
+      <component @onOther="onOther" :is="componentId"></component>
     </keep-alive>
   </div>
 </template>
@@ -55,7 +55,7 @@ const componentId = shallowRef(QrLogin);
 const currCompId = shallowRef("qrlogin");
 provide("currCompId", currCompId);
 
-function other(comp: string) {
+function onOther(comp: string) {
   if (!comp || typeof comp !== "string") throw new Error("组件未传入!");
   currCompId.value = comp;
 
