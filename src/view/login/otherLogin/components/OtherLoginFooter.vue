@@ -1,7 +1,11 @@
 <template>
   <footer class="px-14 pt-10">
     <div class="inline-flex items-center">
-      <input type="checkbox" v-model="agree" class="outline-none border-none" />
+      <input
+        type="checkbox"
+        v-model="protocol"
+        class="outline-none border-none"
+      />
       <label class="px-1">同意</label>
     </div>
     <a
@@ -20,14 +24,13 @@
   </footer>
 </template>
 <script setup lang="ts">
-import { ref } from "@vue/reactivity";
-import { computed, defineEmit } from "@vue/runtime-dom";
+import { computed, defineEmit, inject } from "@vue/runtime-dom";
 import { footerDeal } from "../api/data";
 import { ElMessage } from "element-plus";
 
 const ctxEmit = defineEmit(["onOther"]);
 
-const agree = ref(false);
+const protocol: { value: boolean } = inject("protocol")!; //是否同意条款
 let infoB = false;
 
 const dealInfo = computed(() => {
@@ -35,7 +38,7 @@ const dealInfo = computed(() => {
 });
 
 function otherLogin() {
-  if (!agree.value && !infoB) {
+  if (!protocol.value && !infoB) {
     infoB = true;
     ElMessage({
       message: "dwadaw",

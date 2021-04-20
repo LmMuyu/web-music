@@ -7,7 +7,7 @@
           v-model.number="formData.phoneNumber"
           :maxlength="11"
           class="input-with-select"
-          @change="lwPhone(formData, logging)"
+          @blur="lwPhone(formData, logging)"
         >
           <template v-slot:prepend>
             <select
@@ -30,17 +30,20 @@
           v-model="formData.verificationCode"
         >
           <template v-slot:append>
-            <el-button
-              type="primary"
-              @click="
-                onVerificationCode(
-                  formData.phoneNumber,
-                  countDownFn,
-                  formData.countries
-                )
-              "
-              >{{ vccd === 0 ? "发送验证码" : vccd }}</el-button
-            >
+            <div class="zidong">
+              <el-button
+                type="primary"
+                :disabled="disabled"
+                @click="
+                  onVerificationCode(
+                    formData.phoneNumber,
+                    countDownFn,
+                    formData.countries
+                  )
+                "
+                >{{ vccd === 0 ? "发送验证码" : vccd }}</el-button
+              >
+            </div>
           </template>
         </el-input>
         <div class="py-3 flex justify-between w-52">
@@ -51,7 +54,7 @@
           <span class="cursor-pointer">忘记密码?</span>
         </div>
         <div class="flex justify-center prent_button">
-          <el-button type="primary">登录</el-button>
+          <el-button type="primary" @click="login">登录</el-button>
         </div>
       </div>
     </el-main>
@@ -74,6 +77,7 @@ import { onVerificationCode } from "../hooks/onVerificationCode";
 import { reactive, ref, toRaw } from "@vue/reactivity";
 import { ElInput, ElButton, ElContainer, ElFooter, ElMain } from "element-plus";
 import { lwPhone } from "../hooks/lwPhone";
+import { login } from "../hooks/login";
 import observer from "../../../../utils/observer/Observer";
 import getFile from "../../../../utils/getCurrentInstanceFile";
 
@@ -91,7 +95,8 @@ const formData = reactive({
 let currFileName: string = "";
 const automaticLogin = ref(false);
 const vccd = ref(0); //过多久验证码才能重新获取
-const deaultVccdTime = 10;
+const deaultVccdTime = 60; //过多久验证码才能重新获取
+const disabled = ref(true); //禁用发送验证码按钮
 
 (async function () {
   try {
@@ -127,6 +132,9 @@ function logging({
   hasPassword: boolean;
   nickname: string;
 }) {
+  if (hasPassword) {
+    disabled.value = false;
+  }
   console.log(hasPassword + "-----" + nickname);
 }
 
@@ -173,7 +181,11 @@ onBeforeUnmount(() => {
     padding: 0;
   }
 }
-
+.zidong {
+  &:deep(.el-button) {
+    width: 150px;
+  }
+}
 .prent_button {
   & > button {
     padding: 0 78px !important;

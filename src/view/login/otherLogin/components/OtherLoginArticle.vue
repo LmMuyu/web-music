@@ -46,11 +46,32 @@
   </article>
 </template>
 <script setup lang="ts">
-import { defineEmit } from "@vue/runtime-core";
-import { thirdPartyLogin } from "../api/data";
+import { defineEmit, inject } from "@vue/runtime-core";
+import { ElMessage } from "element-plus";
+import { thirdPartyLogin, footerDeal } from "../api/data";
 const ctxEmit = defineEmit(["onOther"]);
 
+const protocol: { value: boolean } = inject("protocol")!; //是否同意条款
+
+function createMessage(data: { text: string }[]) {
+  let str = data.reduce(
+    (str, cur) => (str += `《${cur.text}》、`),
+    "请先勾选同意 "
+  );
+
+  return str.slice(0, str.length - 1);
+}
+
 function withPhone() {
+  if (!protocol.value) {
+    ElMessage.warning({
+      type: "warning",
+      message: createMessage(footerDeal),
+    });
+
+    return;
+  }
+
   ctxEmit("onOther", "loginwithphone");
 }
 </script>
