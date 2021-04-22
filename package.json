@@ -8,6 +8,7 @@
     "serve": "vite preview"
   },
   "dependencies": {
+    "@types/md5": "^2.3.0",
     "@types/node": "^14.14.35",
     "autoprefixer": "^10.2.5",
     "axios": "^0.21.1",

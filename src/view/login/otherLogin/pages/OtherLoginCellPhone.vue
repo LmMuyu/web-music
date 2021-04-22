@@ -5,7 +5,6 @@
         <el-input
           placeholder="请输入手机号"
           v-model.number="formData.phoneNumber"
-          :maxlength="11"
           class="input-with-select"
           @blur="lwPhone(formData, logging)"
         >
@@ -23,6 +22,12 @@
               </option>
             </select>
           </template>
+        </el-input>
+        <el-input
+          show-password
+          placeholder="请输入密码"
+          v-model="formData.password"
+        >
         </el-input>
         <div class="py-3 flex"></div>
         <el-input
@@ -54,7 +59,9 @@
           <span class="cursor-pointer">忘记密码?</span>
         </div>
         <div class="flex justify-center prent_button">
-          <el-button type="primary" @click="login">登录</el-button>
+          <el-button type="primary" @click.stop="login(formData)"
+            >登录</el-button
+          >
         </div>
       </div>
     </el-main>
@@ -89,6 +96,7 @@ const formData = reactive({
   phoneRes: false,
   countries: "+86",
   phoneNumber: "",
+  password: "",
   verificationCode: "",
 });
 

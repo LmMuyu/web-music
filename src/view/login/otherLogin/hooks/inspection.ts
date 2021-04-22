@@ -7,6 +7,7 @@ interface OPTION {
 }
 
 interface INSPECTION {
+  messageInfoList: Record<string, string>;
   readonly message: (message: string) => void;
   readonly jiancha: () => Record<string, Function>;
 }
@@ -17,7 +18,16 @@ enum WRITE {
 }
 
 class Inspection implements INSPECTION {
-  messageInfoList = ["请输入11位手机号", "请输入正确手机号"];
+  messageInfoList: Record<string, string>;
+
+  constructor(
+    messInfo = {
+      len: "请输入11位手机号",
+      write: "请输入正确手机号",
+    }
+  ) {
+    this.messageInfoList = messInfo;
+  }
 
   message(message: string) {
     ElMessage.error({
@@ -58,22 +68,18 @@ class Inspection implements INSPECTION {
   }
 
   whileInspection(options: OPTION) {
-    const examination = this.jiancha();
+    const examination: Record<string, Function> = this.jiancha();
 
-    let index = 0;
     for (const key in examination) {
-      if (index > this.messageInfoList.length - 1) break;
       const method = examination[key];
 
-      const mess = this.messageInfoList[index];
+      const mess = this.messageInfoList[key];
       mess && options.message && (options.message = mess);
       const res = method(options);
 
       if (!res) {
         return;
       }
-
-      index += 1;
     }
 
     return true;

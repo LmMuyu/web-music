@@ -32,10 +32,7 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
   const root = process.cwd();
 
   const env = loadEnv(mode, root);
-  const { VITE_PROXY, VITE_PORT } = env;
-  console.log(VITE_PORT);
-
-  // createProxy(JSON.parse(JSON.stringify(VITE_PROXY)));
+  const { VITE_PROXY, VITE_PORT, VITE_HOST } = env;
 
   return {
     plugins: [
@@ -64,6 +61,7 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
       alias: [...aliasList],
     },
     server: {
+      host: VITE_HOST,
       port: Number(VITE_PORT),
       proxy: {},
     },

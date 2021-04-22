@@ -1,9 +1,11 @@
-export default function append(options: Record<string, any>) {
-  const formData = new FormData();
+export default function formDataAppend(options: Record<string, any>) {
+  return new Promise((resolve) => {
+    const formData = new FormData();
 
-  for (const key in options) {
-    formData.append(key, options[key]);
-  }
+    Object.keys(options).forEach((key) => {
+      formData.append(key, options[key]);
+    });
 
-  return formData;
+    resolve(formData);
+  });
 }
