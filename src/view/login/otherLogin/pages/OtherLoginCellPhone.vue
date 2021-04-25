@@ -23,12 +23,14 @@
             </select>
           </template>
         </el-input>
-        <el-input
-          show-password
-          placeholder="请输入密码"
-          v-model="formData.password"
-        >
-        </el-input>
+        <form action="##" class="w-full">
+          <el-input
+            show-password
+            placeholder="请输入密码"
+            v-model="formData.password"
+          >
+          </el-input>
+        </form>
         <div class="py-3 flex"></div>
         <el-input
           placeholder="请输入验证码"
@@ -59,9 +61,7 @@
           <span class="cursor-pointer">忘记密码?</span>
         </div>
         <div class="flex justify-center prent_button">
-          <el-button type="primary" @click.stop="login(formData)"
-            >登录</el-button
-          >
+          <el-button type="primary" @click.stop="phoneLogin">登录</el-button>
         </div>
       </div>
     </el-main>
@@ -80,13 +80,15 @@ import {
   getCurrentInstance,
   onBeforeUnmount,
 } from "@vue/runtime-core";
-import { onVerificationCode } from "../hooks/onVerificationCode";
-import { reactive, ref, toRaw } from "@vue/reactivity";
 import { ElInput, ElButton, ElContainer, ElFooter, ElMain } from "element-plus";
+import { onVerificationCode } from "../hooks/onVerificationCode";
+import getFile from "../../../../utils/getCurrentInstanceFile";
+import observer from "../../../../utils/observer/Observer";
+import { reactive, ref, toRaw } from "@vue/reactivity";
+import type { UserInfo } from "../../../../store/type";
 import { lwPhone } from "../hooks/lwPhone";
 import { login } from "../hooks/login";
-import observer from "../../../../utils/observer/Observer";
-import getFile from "../../../../utils/getCurrentInstanceFile";
+import { getStore } from "../../../../utils/getStore";
 
 interface CuntriesCode {
   data: Array<Record<string, any>>;
@@ -106,6 +108,8 @@ const vccd = ref(0); //过多久验证码才能重新获取
 const deaultVccdTime = 60; //过多久验证码才能重新获取
 const disabled = ref(true); //禁用发送验证码按钮
 
+const store = getStore(getCurrentInstance()!);
+
 (async function () {
   try {
     const instance = (getCurrentInstance() as unknown) as {
@@ -115,7 +119,6 @@ const disabled = ref(true); //禁用发送验证码按钮
     };
 
     currFileName = await getFile(instance);
-    // console.log(currFileName);
   } catch (error) {
     throw new Error(error);
   }
@@ -160,7 +163,7 @@ const countDownFn = (function () {
 
   return function () {
     if (timer) {
-      return;
+      return true;
     }
 
     vccd.value = deaultVccdTime;
@@ -177,6 +180,15 @@ const countDownFn = (function () {
     }
   };
 })();
+
+function phoneLogin() {
+  login(formData, ({ data }: any) => {
+    // const userInfo: UserInfo = {
+
+    // };
+    console.log(data);
+  });
+}
 
 onBeforeUnmount(() => {
   vccd.value !== 0 && observer.off(currFileName);

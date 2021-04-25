@@ -6,7 +6,8 @@ export function onVerificationCode(
   countDownFn: Function,
   ctcode: string
 ) {
-  countDownFn();
+  const isTimer = countDownFn();
+  if (isTimer) return;
 
   captchaSend({
     url: "/captcha/sent",

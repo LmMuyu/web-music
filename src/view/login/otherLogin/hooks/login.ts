@@ -19,7 +19,7 @@ function showMessage(type: TYPE, message: string) {
   });
 }
 
-export async function login(params: PARAMS) {
+export async function login(params: PARAMS, userDataRetFn: Function) {
   let {
     phoneNumber: phone,
     password,
@@ -55,7 +55,7 @@ export async function login(params: PARAMS) {
     });
 
     if (verify.data.data) {
-      const worker = new Worker("/src/worker/password.js");
+      const worker = new Worker("/src/utils/worker/password.js");
       worker.onerror = function (err) {
         console.error(err);
       };
@@ -63,21 +63,20 @@ export async function login(params: PARAMS) {
       worker.postMessage(password);
 
       worker.onmessage = async function ({ data }) {
-        console.log(data);
-
         worker.terminate();
-
         const formData = await formDataAppend({
           phone,
           countrycode: countries,
           md5_password: data,
         });
 
-        return request({
+        const res = await request({
           url: "/login/cellphone",
           method: "POST",
           data: formData,
         });
+
+        userDataRetFn(res);
       };
     }
   } catch (error) {
