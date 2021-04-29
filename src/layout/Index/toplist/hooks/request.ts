@@ -1,8 +1,9 @@
 import { Ref } from "@vue/reactivity";
 import { toplistData, listDetail } from "../../../../api/toplist";
 import type { ListTitle } from "../types/dataType";
-import type { ListItem } from "../types/requestType";
+import type { ListItem, TrackUpdateTimeObj } from "../types/requestType";
 import dayDate from "dayjs";
+import type {} from "dayjs";
 
 type MapObj = Ref<Map<number, ListItem[]>>;
 
@@ -24,7 +25,7 @@ export async function allToplist() {
 
 export async function getlistDetailData(id: number, mapRef: MapObj) {
   const result = await listDetail(id);
-  const playlist: ListItem = result.data.playlist;
+  const playlist: ListItem & { trackUpdateTime: number } = result.data.playlist;
   const map = mapRef.value;
 
   const listItem: ListItem = {
@@ -33,7 +34,7 @@ export async function getlistDetailData(id: number, mapRef: MapObj) {
     tracks: playlist.tracks,
     shareCount: playlist.shareCount,
     commentCount: playlist.commentCount,
-    trackUpdateTime: (dayDate(playlist.trackUpdateTime) as unknown) as string,
+    trackUpdateTime: transformDate(playlist.trackUpdateTime),
   };
 
   return setMapList(listItem, map);
@@ -45,6 +46,11 @@ function setMapList(listItem: ListItem, mapRef: Map<number, ListItem[]>) {
   if (mapRef.has(id)) {
     return mapRef.get(id);
   } else {
-    return mapRef.set(id, [listItem]);
+    return mapRef.set(id, [listItem]).get(id);
   }
+}
+
+function transformDate(time: number) {
+  const trantime = dayDate(time);
+  return (trantime as unknown) as TrackUpdateTimeObj;
 }

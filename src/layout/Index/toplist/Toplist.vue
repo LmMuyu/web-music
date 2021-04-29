@@ -15,7 +15,7 @@
                 <li
                   v-for="childItem in navItem.childrenData"
                   :key="childItem.id"
-                  class="flex p-4"
+                  class="flex p-4 cursor-pointer"
                   :class="{
                     'bg-gray-300': currentID === childItem.id,
                   }"
@@ -37,15 +37,19 @@
             </li>
           </ul>
         </nav>
-        <div></div>
+        <div class="flex w-full mx-8">
+          <ToplistMainHeader :listData="mainShowData" />
+        </div>
       </div>
     </el-col>
     <el-col :span="4"> </el-col>
   </el-row>
 </template>
 <script setup lang="ts">
+import ToplistMainHeader from "./components/ToplistMainHeader.vue";
 import { allToplist, getlistDetailData } from "./hooks/request";
 import { onMouseenter, onMouseleave } from "./hooks/methods";
+import type { ListItem } from "./types/requestType";
 import type { ListTitle } from "./types/dataType";
 import { ElRow, ElCol } from "element-plus";
 import type { DATA } from "./types/index";
@@ -56,6 +60,7 @@ const renderData = ((setupData as unknown) as DATA).setup();
 
 const { listTitle, mainMapData } = renderData;
 const currentID = ref<null | number>(null);
+const mainShowData = ref<ListItem[]>([]);
 
 function childTagItemClick(currID: number) {
   if (currentID.value === currID) return;
@@ -72,8 +77,11 @@ allToplist()
 
     return childItem;
   })
-  .then((item) => {
-    getlistDetailData(item.id, mainMapData);
+  .then(async (item) => {
+    const mainData = await getlistDetailData(item.id, mainMapData);
+    console.log(mainData);
+
+    mainData && (mainShowData.value = mainData);
   });
 </script>
 <style lang="scss" scoped>
