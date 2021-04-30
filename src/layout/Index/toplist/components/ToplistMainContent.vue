@@ -5,11 +5,11 @@
   <div>
     <ul class="list-none">
       <li
-        v-for="(tracksItem, index) in listData"
+        v-for="(tracksItem, index) in renderListData"
         :key="tracksItem.id"
         class="flex items-center p-3 py-6 borderslode"
       >
-        <el-checkbox v-model="isselect"></el-checkbox>
+        <el-checkbox v-model="tracksItem.select"></el-checkbox>
         <h4
           :class="[
             index + 1 <= 3 ? 'text-red-600 text-2xl' : 'text-gray-300 text-xl',
@@ -18,9 +18,24 @@
         >
           {{ index + 1 }}
         </h4>
-        <div>
-          <span class="ml-3">
+        <div class="relative w-full flex items-center">
+          <span class="ml-3 flex">
             {{ tracksItem?.ar[0]?.name }} - {{ tracksItem?.al?.name }}
+            <p v-html="aliasName(tracksItem?.alia)"></p>
+          </span>
+          <span class="icon absolute right-0">
+            <i
+              class="ihover px-1 cursor-pointer iconfont iconbofang1"
+              title="播放"
+            ></i>
+            <i
+              class="ihover px-1 cursor-pointer iconfont iconxiazai"
+              title="下载"
+            ></i>
+            <i
+              class="ihover px-1 cursor-pointer iconfont iconfenxiang"
+              title="分享"
+            ></i>
           </span>
         </div>
         <div></div>
@@ -29,17 +44,16 @@
   </div>
 </template>
 <script setup lang='ts'>
-import { defineProps, ref, watch } from "@vue/runtime-core";
+import { computed, defineProps, ref, watch } from "@vue/runtime-core";
 import { onSelectAll } from "./hooks/methods";
 
 import { ElCheckbox } from "element-plus";
 
-import type { ListItem } from "../types/requestType";
 import type { PropType } from "@vue/runtime-core";
 
 const props = defineProps({
   listData: {
-    type: Array as PropType<ListItem[]>,
+    type: Array as PropType<Record<string, any>[]>,
     default: () => [],
   },
 });
@@ -48,9 +62,39 @@ const isselect = ref(true);
 watch(isselect, (value) => {
   console.log(value);
 });
+
+const renderListData = computed(() => {
+  return props.listData.map((listItem) => ({
+    ...listItem,
+    select: true,
+  }));
+});
+
+const aliasName = computed(() => {
+  return function (item: []) {
+    return item.reduce(
+      (pre, cur) =>
+        (pre += `<h4 class="text-gray-300">&nbsp - $nbsp(${cur})</h4>`),
+      ""
+    );
+  };
+});
+
+// watch(
+//   () => props.listData,
+//   (value) => {
+//     console.log(value);
+//   }
+// );
 </script>
 <style scoped lang='scss'>
 .borderslode {
   border-bottom: 1px solid #ecf0f1;
+}
+.icon {
+  @include Iconfont(#636e72);
+}
+.ihover:hover {
+  color: #409eff;
 }
 </style>

@@ -29,7 +29,6 @@ export async function getlistDetailData(id: number, mapRef: MapObj) {
   const map = mapRef.value;
 
   const listItem: ListItem = {
-    select: true,
     id: playlist.id,
     name: playlist.name,
     tracks: playlist.tracks,
