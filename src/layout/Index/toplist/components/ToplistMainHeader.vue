@@ -19,20 +19,22 @@
       </div>
     </el-col>
     <el-col :span="3" class="pb-5 relative">
-      <span
-        class="iconplay absolute top-0 left-0 transform -translate-x-2/4 -translate-y-2/4"
-      >
-        <i class="iconfont iconbofang1"></i>
-      </span>
-      <el-button type="primary" class="flex">全部播放 </el-button>
+      <el-button type="primary" class="flex">
+        <div class="flex items-center">
+          <span class="iconplay">
+            <i class="iconfont iconbofang1"></i>
+          </span>
+          <h4 class="ml-2">全部播放</h4>
+        </div>
+      </el-button>
     </el-col>
   </el-row>
 </template>
  <script setup lang='ts'>
 import { computed, defineProps } from "@vue/runtime-core";
-import type { PropType } from "@vue/runtime-core";
 import { ElRow, ElCol, ElButton } from "element-plus";
 import type { ListItem } from "../types/requestType";
+import type { PropType } from "@vue/runtime-core";
 
 const props = defineProps({
   listData: {

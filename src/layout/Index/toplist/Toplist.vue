@@ -37,8 +37,9 @@
             </li>
           </ul>
         </nav>
-        <div class="flex w-full mx-8">
+        <div class="flex flex-col w-full mx-8">
           <ToplistMainHeader :listData="mainShowData" />
+          <ToplistMainContent :listData="mainShowData[0]?.tracks" />
         </div>
       </div>
     </el-col>
@@ -47,6 +48,7 @@
 </template>
 <script setup lang="ts">
 import ToplistMainHeader from "./components/ToplistMainHeader.vue";
+import ToplistMainContent from "./components/ToplistMainContent.vue";
 import { allToplist, getlistDetailData } from "./hooks/request";
 import { onMouseenter, onMouseleave } from "./hooks/methods";
 import type { ListItem } from "./types/requestType";
