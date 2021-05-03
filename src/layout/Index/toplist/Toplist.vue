@@ -1,5 +1,5 @@
 <template >
-  <div ref="rowRoot" :style="setTransformY">
+  <div ref="rowRoot" :style="{ transform: setTransformY }">
     <el-row class="mt-24">
       <el-col :span="4"> </el-col>
       <el-col :span="16">
@@ -124,25 +124,30 @@ function setContentData(mainData: ListItem[] | undefined) {
 
 function documentScroll() {
   const documentScrollTop = document.documentElement.scrollTop;
-  const translateY = rowTop.value - documentScrollTop;
+  // const translateY = rowTop.value - documentScrollTop;
 
-  if (translateY <= 0) {
-    elementScrollTop.value = translateY;
-  }
+  // console.log(translateY);
+
+  // if (translateY <= 0) {
+    console.log(documentScrollTop);
+    
+    elementScrollTop.value = documentScrollTop;
+    
+  // }
 }
 
 function setTransition(duration: number) {
-  duration = duration ? duration : props.seelp;
+  duration = (duration ? duration : props.seelp);
 
   if (rowRoot.value) {
-    rowRoot.value.style.transitionDuration = String(duration);
+    rowRoot.value.style.transitionDuration = duration + "s";
     rowRoot.value.style.transitionTimingFunction = "ease-in-out";
     rowRoot.value.style.transitionProperty = "translateY";
   }
 }
 
 function setTranY(Yvalue: number) {
-  return `transform:translate(0,${Yvalue}px) translateZ(0)`;
+  return `translate(0,${Yvalue}px) translateZ(0)`;
 }
 
 const setTransformY = computed(() => setTranY(elementScrollTop.value));
