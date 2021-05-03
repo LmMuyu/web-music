@@ -9,7 +9,6 @@
         :key="tracksItem.id"
         class="flex items-center p-3 py-6 cursor-pointer borderslode"
         ref="features"
-        v-hover="hoverList"
       >
         <el-checkbox v-model="tracksItem.select"></el-checkbox>
         <h4

@@ -1,12 +1,12 @@
 <template>
   <el-row class="w-full pb-5 dashed" style="height: 57px">
-    <el-col :span="10" class="flex items-center pb-5">
+    <el-col :span="13" class="flex items-center pb-5">
       <div class="flex items-end">
         <span class="text-3xl">网易云{{ listData?.[0]?.name }}</span>
         <span class="ml-5 text-xl text-gray-500 h-full">{{ dateFormat }}</span>
       </div>
     </el-col>
-    <el-col :span="11" class="flex items-center pb-5">
+    <el-col :span="8" class="flex items-center pb-5">
       <div class="flex">
         <span class="px-3 flex items-center cursor-pointer icons">
           <i class="iconfont iconfenxiang px-1"></i>

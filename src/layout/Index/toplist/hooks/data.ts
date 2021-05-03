@@ -15,10 +15,14 @@ export default defineComponent({
     });
 
     const mainMapData = ref(new Map());
+    const elementScrollTop = ref(0);
+    const rowTop = ref(0);
 
     return {
+      rowTop,
       listTitle,
       mainMapData,
+      elementScrollTop,
     };
   },
 });
