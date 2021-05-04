@@ -1,6 +1,6 @@
 export interface State {
   countriesCode: Record<string, any>;
-  userInfo: UserInfo;
+  userInfo: null | UserInfo;
 }
 
 export interface TokenJsonStr {
@@ -13,7 +13,9 @@ export interface TokenJsonStr {
 }
 
 export interface UserInfo {
-  id: string;
+  userID: number;
+  id: number;
   token: string;
   tokenJsonStr: TokenJsonStr;
+  userInfoData?: Object;
 }

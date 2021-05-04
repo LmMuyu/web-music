@@ -32,7 +32,7 @@
       <GridBar :sizeSpan="[12, 12]" :styleRow="styleRow.height._object">
         <template v-slot:slot_0>
           <div class="relative flex items-start flex-col h-full w-full">
-            <Search
+            <!-- <Search
               @change="onSearch"
               @focus="onSearch"
               @blur="onBlur"
@@ -43,7 +43,9 @@
               :renderData="showTheBar.renderData"
               :keyword="showTheBar.keyword"
               v-if="showTheBar.showBar"
-            />
+            /> -->
+
+             
           </div>
         </template>
 

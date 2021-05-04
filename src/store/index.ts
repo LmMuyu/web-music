@@ -11,18 +11,7 @@ const store = createStore<State>({
   state() {
     return {
       countriesCode: {},
-      userInfo: reactive<UserInfo>({
-        id: "",
-        token: "",
-        tokenJsonStr: {
-          refresh_token: "",
-          access_token: "",
-          expires_inv: "",
-          nickname: "",
-          unionid: "",
-          openid: "",
-        },
-      }),
+      userInfo: null,
     };
   },
   getters,

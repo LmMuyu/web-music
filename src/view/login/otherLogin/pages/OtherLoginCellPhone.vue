@@ -14,7 +14,7 @@
               v-model="formData.countries"
             >
               <option
-                v-for="item in countryList"
+                v-for="item in country"
                 :key="item.code"
                 :value="'+' + item.code"
               >
@@ -28,6 +28,7 @@
             show-password
             placeholder="请输入密码"
             v-model="formData.password"
+            class="py-1"
           >
           </el-input>
         </form>
@@ -74,21 +75,24 @@
   </el-container>
 </template>
 <script setup lang="ts">
-import OtherLoginCellPhoneFooter from "./components/OtherLoginCellPhoneFooter.vue";
 import {
   computed,
   getCurrentInstance,
   onBeforeUnmount,
 } from "@vue/runtime-core";
+import { reactive, ref, toRaw } from "@vue/reactivity";
+
+import OtherLoginCellPhoneFooter from "./components/OtherLoginCellPhoneFooter.vue";
 import { ElInput, ElButton, ElContainer, ElFooter, ElMain } from "element-plus";
+
 import { onVerificationCode } from "../hooks/onVerificationCode";
 import getFile from "../../../../utils/getCurrentInstanceFile";
 import observer from "../../../../utils/observer/Observer";
-import { reactive, ref, toRaw } from "@vue/reactivity";
-import type { UserInfo } from "../../../../store/type";
+import { getStore } from "../../../../utils/getStore";
 import { lwPhone } from "../hooks/lwPhone";
 import { login } from "../hooks/login";
-import { getStore } from "../../../../utils/getStore";
+
+import type { UserInfo, TokenJsonStr } from "../../../../store/type";
 
 interface CuntriesCode {
   data: Array<Record<string, any>>;
@@ -124,11 +128,8 @@ const store = getStore(getCurrentInstance()!);
   }
 })();
 
-const countryList = computed(() => {
-  const countriesCode: CuntriesCode = toRaw(
-    getCurrentInstance()?.appContext.config.globalProperties.$store.state
-      .countriesCode
-  );
+const country = computed(() => {
+  const countriesCode: CuntriesCode = toRaw(store.state.countriesCode); 
 
   return countriesCode.data.reduce(
     (pre, cur) => pre.concat(...cur.countryList),
@@ -183,11 +184,23 @@ const countDownFn = (function () {
 
 function phoneLogin() {
   login(formData, ({ data }: any) => {
-    // const userInfo: UserInfo = {
+    const { bindings } = data
+    const userData = bindings[1]
 
-    // };
-    console.log(data);
+    const userInfo: UserInfo = {
+      id: userData.id,
+      token: data.token,
+      userID: userData.userId,
+      tokenJsonStr: createTokenJsonStr(userData)
+    };
+
+    store.dispatch("getUserInfo", userInfo)
   });
+}
+
+
+function createTokenJsonStr(userData: UserInfo): TokenJsonStr {
+  return JSON.parse((userData.tokenJsonStr as unknown as string))
 }
 
 onBeforeUnmount(() => {
