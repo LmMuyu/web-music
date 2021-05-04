@@ -1,10 +1,12 @@
 import request from "../../utils/request";
 
 export function getUserInfoData(uid: number) {
+  console.log(uid);
+
   return request({
-    method: "POST",
+    method: "GET",
     url: "/user/detail",
-    data: {
+    params: {
       uid,
     },
   });

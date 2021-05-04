@@ -34,7 +34,6 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
   const env = loadEnv(mode, root);
   const { VITE_PROXY, VITE_PORT, VITE_HOST } = env;
 
-
   return {
     plugins: [
       vue(),
@@ -62,9 +61,7 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
       alias: [...aliasList],
     },
     server: {
-      host: VITE_HOST,
-      port:Number(VITE_PORT),
-      proxy: {},
+      port: Number(VITE_PORT),
     },
   };
 };

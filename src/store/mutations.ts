@@ -6,8 +6,8 @@ export default {
     state.countriesCode = commit;
   },
   setUserInfo(state: State, commitInfo: UserInfo) {
-    const xx =  reactive<UserInfo>(commitInfo)
+    state.userInfo = reactive<UserInfo>(commitInfo);
 
-    // state.userInfo = ;
+    console.log(state);
   },
 };

@@ -18,34 +18,6 @@ function setPlugin(element: App<Element>) {
   element.use(store);
 }
 
-// function setPlugin(
-//   element: App<Element>,
-//   useList: Array<any>,
-//   config: AppConfig
-// ) {
-//   function setConfig(pre: any, obj: object) {
-//     for (const key in obj) {
-//       pre[key] = obj[key];
-//     }
-//   }
-
-//   useList.forEach(async (use) => {
-//     try {
-//       element.use(use);
-//     } catch (err) {
-//       console.log(err);
-//     }
-//   });
-
-//   for (const key in config) {
-//     if (isType(key) === "Object") {
-//       setConfig(element.config[key], config[key]);
-//     } else {
-//       element.config
-//     }
-//   }
-// }
-
 const loginMethods = {
   show(rootElement: string) {
     loginInstance = Applogin();

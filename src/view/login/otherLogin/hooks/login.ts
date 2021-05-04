@@ -82,7 +82,6 @@ export async function login(params: PARAMS, userDataRetFn: Function) {
   } catch (error) {
     Promise.resolve().then(() => {
       const code = String(error).match(errorReg)?.[1];
-      console.log(code);
 
       switch (code) {
         case "503":

@@ -19,8 +19,10 @@ export default {
     if (!userinfoData) {
       return;
     }
-    const infoData = await getUserInfoData(userinfoData.id);
 
-    console.log(infoData);
+    const infoData = await getUserInfoData(userinfoData.userID);
+    userinfoData.userInfoData = infoData.data.profile;
+
+    state.commit("setUserInfo", userinfoData);
   },
 };
