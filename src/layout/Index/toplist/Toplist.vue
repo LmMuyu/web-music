@@ -129,10 +129,10 @@ function documentScroll() {
   // console.log(translateY);
 
   // if (translateY <= 0) {
-    console.log(documentScrollTop);
-    
-    elementScrollTop.value = documentScrollTop;
-    
+  console.log(documentScrollTop);
+
+  elementScrollTop.value = documentScrollTop;
+
   // }
 }
 
@@ -158,11 +158,11 @@ onMounted(() => {
     setTransition(1);
   });
 
-  document.addEventListener("scroll", documentScroll, false);
+  // document.addEventListener("scroll", documentScroll, false);
 });
 
 onBeforeUnmount(() => {
-  document.removeEventListener("scroll", documentScroll, false);
+  // document.removeEventListener("scroll", documentScroll, false);
 });
 </script>
 <style lang="scss" scoped>
