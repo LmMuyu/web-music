@@ -26,6 +26,7 @@ const aliasList = createAlias([
   ["/view/", "src/view"],
   ["/utils/", "src/utils"],
   ["/api/", "src/api"],
+  ["/layout/", "src/layout"],
 ]);
 
 export default ({ command, mode }: ConfigEnv): UserConfig => {

@@ -33,11 +33,10 @@ import {
   ref,
   shallowRef,
 } from "vue";
+
+
 import { isType } from "../../utils/methods";
 import mouse from "./api/mouse";
-import { COMP } from "./enum";
-import type { otherOptions } from "./type";
-import type { Emitter } from "mitt";
 
 const QrLogin = defineAsyncComponent(() => import("./qrLogin/QrLogin.vue"));
 const otherLogin = defineAsyncComponent(
@@ -46,6 +45,10 @@ const otherLogin = defineAsyncComponent(
 const OtherLoginCellPhone = defineAsyncComponent(
   () => import("./otherLogin/pages/OtherLoginCellPhone.vue")
 );
+
+import { COMP } from "./enum";
+import type { otherOptions } from "./type";
+import type { Emitter } from "mitt";
 
 const props = defineProps({
   cancel: {
@@ -57,11 +60,14 @@ const props = defineProps({
 const mitt: Emitter = getCurrentInstance()?.appContext.config.globalProperties
   .mitt;
 mitt.on("otherLogin", onOther);
+provide("cancelComp", props.cancel)
 
 const headerTitle = ref("登录");
 const componentId = shallowRef(QrLogin);
 const currCompId = shallowRef("qrlogin");
+
 provide("currCompId", currCompId);
+
 let istype: boolean = false; //mitt
 
 function onOther(comp: string | otherOptions | undefined) {

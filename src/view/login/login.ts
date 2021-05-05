@@ -13,6 +13,7 @@ function cancelLogin() {
   mount = false;
   loginMethods.hidden();
 }
+
 function setPlugin(element: App<Element>) {
   element.config.globalProperties.mitt = mitt();
   element.use(store);

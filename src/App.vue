@@ -55,9 +55,11 @@
               class="text_in text-white align-middle"
               style="color: #787878"
               @click="onLogin('#login')"
+              v-if="!userInfo"
             >
               登录
             </ElLink>
+            <ShowUserInfo :userInfo="userInfo" v-else />
           </div>
         </template>
       </GridBar>
@@ -74,17 +76,20 @@
 <script setup lang="ts">
 import { computed, getCurrentInstance, reactive, ref, toRefs } from "vue";
 
-
 import { onSearch } from "./components/search/api/onSearch";
-import onLogin from "./view/login/login";
 import { searchDefault } from "./api/app/searchDefault";
-import router from "./routes";
+import onLogin from "./view/login/login";
 import { list } from "./headerList";
+import router from "./routes";
+import store from './store'
 
 import SearchShowTheBar from "/comps/search/components/SearchShowTheBar.vue";
+import ShowUserInfo from "/layout/Index/showUserInfo/ShowUserInfo.vue"
 import GridBar from "/comps/gridBar/GridBar.vue";
 import Search from "/comps/search/Search.vue";
 import { ElLink } from "element-plus";
+
+import type { UserInfo } from "./store/type";
 
 const ctx = getCurrentInstance()!;
 ctx.appContext.config.globalProperties.store.dispatch("countriesCode");
@@ -94,6 +99,7 @@ const header = reactive({
   searchDefault: null,
 });
 
+const userInfo = ref<UserInfo | null>(null)
 const showTag = ref(false);
 const linkType = ref("info");
 const showTheBar = reactive<{
@@ -159,6 +165,11 @@ router.beforeEach((to, from, next) => {
 
   next();
 });
+
+store.watch(() => store.state.userInfo, (value: UserInfo | null) => {
+  userInfo.value = value
+})
+
 </script>
 
 <style lang="scss">

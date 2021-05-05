@@ -79,6 +79,7 @@ import {
   computed,
   getCurrentInstance,
   onBeforeUnmount,
+  inject
 } from "@vue/runtime-core";
 import { reactive, ref, toRaw } from "@vue/reactivity";
 
@@ -94,9 +95,6 @@ import { login } from "../hooks/login";
 
 import type { UserInfo, TokenJsonStr } from "../../../../store/type";
 
-interface CuntriesCode {
-  data: Array<Record<string, any>>;
-}
 
 const formData = reactive({
   phoneRes: false,
@@ -114,6 +112,8 @@ const disabled = ref(true); //禁用发送验证码按钮
 
 const store = getStore(getCurrentInstance()!);
 
+const cancelComp = inject<Function>("cancelComp") || (() => { });
+
 (async function () {
   try {
     const instance = (getCurrentInstance() as unknown) as {
@@ -129,7 +129,7 @@ const store = getStore(getCurrentInstance()!);
 })();
 
 const country = computed(() => {
-  const countriesCode: CuntriesCode = toRaw(store.state.countriesCode); 
+  const countriesCode = toRaw(store.state.countriesCode);
 
   return countriesCode.data.reduce(
     (pre, cur) => pre.concat(...cur.countryList),
@@ -194,7 +194,9 @@ function phoneLogin() {
       tokenJsonStr: createTokenJsonStr(userData)
     };
 
-    store.dispatch("getUserInfo", userInfo)
+
+
+    store.dispatch("getUserInfo", [userInfo, cancelComp as () => void])
   });
 }
 

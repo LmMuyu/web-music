@@ -5,13 +5,16 @@
     </span>
     <input
       :type="type"
+      :disabled="disabled"
       :placeholder="placeholder"
-      v-model="text"
       @focus="onFocus"
       @blur="onBlur"
       @keydown.enter="keyupEnter"
+      v-model="text"
       class="text-black w-48 py-2 px-2 border-none outline-none rounded-r-lg"
     />
+    <div>
+    </div>
   </div>
 </template>
 
@@ -31,6 +34,10 @@ const props = defineProps({
     type: Function,
     required: true,
   },
+  disabled: {
+    type: Boolean,
+    default: true
+  }
 });
 
 const ctxEmit = defineEmit(["change", "focus", "blur"]);

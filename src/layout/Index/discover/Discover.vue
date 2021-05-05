@@ -5,21 +5,11 @@
     :playList="playList"
     :is="componentName"
   ></component>
-
-  <!-- <DiscoverIndex
-    :bannerLsit="bannerLsit"
-    :hotList="hotList"
-    :playList="playList"
-  /> -->
 </template>
 
 <script setup>
-import { getPlayList } from "../../../api/discover/getPlaylist";
-import { defineAsyncComponent, nextTick } from "@vue/runtime-dom";
-import { getHot } from "../../../api/discover/getHot";
-import { getBanner } from "../../../api/index/index";
+import { defineAsyncComponent } from "@vue/runtime-dom";
 import { ref, shallowRef } from "@vue/reactivity";
-import axios from "axios";
 
 const Loading = defineAsyncComponent(() =>
   import("../../../components/loading/Loading.vue")
@@ -27,6 +17,11 @@ const Loading = defineAsyncComponent(() =>
 const DiscoverIndex = defineAsyncComponent(() =>
   import("./layout/DiscoverIndex.vue")
 );
+
+import axios from "axios";
+import { getPlayList } from "../../../api/discover/getPlaylist";
+import { getHot } from "../../../api/discover/getHot";
+import { getBanner } from "../../../api/index/index";
 
 const bannerLsit = ref([]);
 const hotList = ref([]);

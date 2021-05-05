@@ -15,7 +15,12 @@ export default {
       console.log(err);
     }
   },
-  async getUserInfo(state: { commit: Commit }, userinfoData: UserInfo) {
+  async getUserInfo(
+    state: { commit: Commit },
+    playload: [UserInfo, () => void]
+  ) {
+    const [userinfoData, cancelCompFu] = playload;
+
     if (!userinfoData) {
       return;
     }
@@ -24,5 +29,6 @@ export default {
     userinfoData.userInfoData = infoData.data.profile;
 
     state.commit("setUserInfo", userinfoData);
+    cancelCompFu();
   },
 };

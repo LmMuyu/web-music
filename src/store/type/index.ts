@@ -1,5 +1,9 @@
+interface CuntriesCode {
+  data: Array<Record<string, any>>;
+}
+
 export interface State {
-  countriesCode: Record<string, any>;
+  countriesCode: CuntriesCode;
   userInfo: null | UserInfo;
 }
 
@@ -15,7 +19,7 @@ export interface TokenJsonStr {
 export interface UserInfo {
   userID: number;
   id: number;
-  token: string;
+  token: number;
   tokenJsonStr: TokenJsonStr;
   userInfoData?: Object;
 }
