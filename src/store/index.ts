@@ -5,13 +5,14 @@ import getters from "./getters";
 import modules from "./modules";
 import mutations from "./mutations";
 
-import type { State, UserInfo } from "./type";
+import type { State } from "./type";
 
 const store = createStore<State>({
   state() {
     return {
-      countriesCode: {},
+      countriesCode: null,
       userInfo: null,
+      musicInfo: null,
     };
   },
   getters,

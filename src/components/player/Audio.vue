@@ -1,7 +1,11 @@
 <template>
-  <div class="flex items-center w-full">
+  <div class="flex items-center">
     <AudioAndVideoControls @play="audioPlay" />
-    <div class="flex-1 mx-4">
+    <div>
+      <img :src="musciImage" :alt="musicName" class="object-contain" />
+    </div>
+    <div class="flex flex-col flex-1 mx-4">
+      <p class="">{{ musicName }}</p>
       <Slider v-model="currentTime" :max="sliderMax" :background="background" />
     </div>
     <div>
@@ -18,7 +22,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, defineProps, watch } from "vue";
+import { ref, defineProps, watch, reactive } from "vue";
 
 //@ts-ignore
 import Slider from "/comps/slider/Slider.vue";
@@ -29,6 +33,14 @@ const props = defineProps({
   src: {
     type: String,
     required: true,
+  },
+  musciImage: {
+    type: String,
+    default: "",
+  },
+  musicName: {
+    type: String,
+    default: "",
   },
   background: {
     type: String,

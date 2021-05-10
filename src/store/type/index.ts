@@ -1,10 +1,13 @@
+import type { MusicDetailOption } from "../../utils/musicDetail";
+
 interface CuntriesCode {
   data: Array<Record<string, any>>;
 }
 
 export interface State {
-  countriesCode: CuntriesCode;
+  countriesCode: null | CuntriesCode;
   userInfo: null | UserInfo;
+  musicInfo: null | MusicDetailOption;
 }
 
 export interface TokenJsonStr {

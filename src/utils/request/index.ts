@@ -42,8 +42,9 @@ export default function request(config: AxiosRequestConfig) {
     (httpRes) => {
       return httpRes;
     },
-    (err) => {
-      return Promise.reject(err);
+    (config) => {
+
+      return Promise.reject(config);
     }
   );
 

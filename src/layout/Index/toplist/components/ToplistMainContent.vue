@@ -10,9 +10,9 @@
         class="flex items-center p-3 py-6 cursor-pointer borderslode"
         ref="features"
       >
-        <router-link
-          :to="{ path: '/playlist', query: { id: tracksItem.id } }"
+        <div
           class="flex items-center w-full"
+          @click="musicDetails(tracksItem, '/playlist', tracksItem.id)"
         >
           <el-checkbox v-model="tracksItem.select"></el-checkbox>
           <h4
@@ -31,7 +31,7 @@
               <p v-html="aliasName(tracksItem?.alia)" class=""></p>
             </span>
           </div>
-        </router-link>
+        </div>
         <div>
           <ToplistMainFeaturesModule />
         </div>
@@ -47,8 +47,9 @@ import {
   nextTick,
   ref,
   watch,
+  markRaw,
 } from "@vue/runtime-core";
-import { onSelectAll } from "./hooks/methods";
+import { onSelectAll, musicDetails } from "./hooks/methods";
 
 import ToplistMainFeaturesModule from "./ToplistMainFeaturesModule.vue";
 import { ElCheckbox } from "element-plus";
@@ -63,7 +64,6 @@ const props = defineProps({
 });
 
 const features = ref(null);
-
 const hoverList = [];
 
 const isselect = ref(true);
@@ -72,10 +72,12 @@ watch(isselect, (value) => {
 });
 
 const renderListData = computed(() => {
-  return props.listData.map((listItem) => ({
-    ...listItem,
-    select: true,
-  }));
+  return props.listData.map((listItem) =>
+    markRaw({
+      ...listItem,
+      select: true,
+    })
+  );
 });
 
 const aliasName = computed(() => {
@@ -86,13 +88,6 @@ const aliasName = computed(() => {
     );
   };
 });
-
-// watch(
-//   () => props.listData,
-//   (value) => {
-//     console.log(value);
-//   }
-// );
 
 onMounted(() => {
   nextTick(() => {

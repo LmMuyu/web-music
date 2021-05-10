@@ -10,8 +10,9 @@
   </el-container>
 </template>
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
+import store from "../../store";
 
 import { getMusicUrl, whetherMusic } from "../../api/playList/index";
 
@@ -26,6 +27,11 @@ import {
 
 const musicId = useRoute().query.id as string;
 const audiosrc = ref("");
+
+console.log(store);
+
+// const musicInfo = store.state.musicInfo;
+// console.log(musicInfo);
 
 whetherMusic(musicId)
   .then(({ data }) => {
@@ -42,8 +48,8 @@ whetherMusic(musicId)
   })
   .then(async (id: string | undefined) => {
     if (!id) throw new Error("src" + ":" + "null");
-
     const { data } = await getMusicUrl(id);
+
     const src = data.data[0].url;
 
     if (!src) throw new Error("src" + ":" + "null");

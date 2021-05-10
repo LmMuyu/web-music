@@ -1,5 +1,6 @@
 import { reactive } from "@vue/reactivity";
-import { State, UserInfo } from "./type";
+import type { State, UserInfo } from "./type";
+import type { MusicDetailOption } from "../utils/musicDetail";
 
 async function conversionMd5Data(commit: string) {
   const blob = new Blob([commit]);
@@ -28,5 +29,8 @@ export default {
   setUserInfo(state: State, commitInfo: UserInfo) {
     Promise.resolve(() => setLocalStorage(commitInfo.token, commitInfo));
     state.userInfo = reactive<UserInfo>(commitInfo);
+  },
+  setMusicInfo(store: State, musicInfo: MusicDetailOption) {
+    store.musicInfo = musicInfo;
   },
 };
