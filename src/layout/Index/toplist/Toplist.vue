@@ -1,4 +1,4 @@
-<template >
+<template>
   <div ref="rowRoot" :style="{ transform: setTransformY }">
     <el-row class="mt-24">
       <el-col :span="4"> </el-col>
@@ -52,7 +52,9 @@
   </div>
 </template>
 <script setup lang="ts">
+//@ts-ignore
 import ToplistMainHeader from "./components/ToplistMainHeader.vue";
+//@ts-ignore
 import ToplistMainContent from "./components/ToplistMainContent.vue";
 import { ElRow, ElCol } from "element-plus";
 
@@ -137,7 +139,7 @@ function documentScroll() {
 }
 
 function setTransition(duration: number) {
-  duration = (duration ? duration : props.seelp);
+  duration = duration ? duration : props.seelp;
 
   if (rowRoot.value) {
     rowRoot.value.style.transitionDuration = duration + "s";

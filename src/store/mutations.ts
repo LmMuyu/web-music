@@ -1,19 +1,23 @@
 import { reactive } from "@vue/reactivity";
 import { State, UserInfo } from "./type";
-import "src/utils/worker/md5.min.js";
 
 async function conversionMd5Data(commit: string) {
-  const hash = await md5(commit);
-  localStorage.setItem("infoCommit", hash);
+  const blob = new Blob([commit]);
+
+  const reader = new FileReader();
+  reader.onload = function () {
+    console.log(reader.result);
+  };
+
+  reader.readAsText(blob);
 }
 
 function setLocalStorage(token: number, commitInfo: UserInfo) {
   if (!token) {
     return;
   }
-  const strCommitInfo = JSON.stringify(commitInfo);
-
   localStorage.setItem("token", String(token));
+  const strCommitInfo = JSON.stringify(commitInfo);
   conversionMd5Data(strCommitInfo);
 }
 

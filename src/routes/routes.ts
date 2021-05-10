@@ -1,21 +1,21 @@
 import type { RouteRecordRaw } from "vue-router";
-import type { META, Route } from "./type/type";
-import createRoute from "./path/createRoute";
+import type { META } from "./type/type";
+// import createRoute from "./path/createRoute";
 
-const pathList = [
-  "song",
-  "playList",
-  "video",
-  "sim_query",
-  "mlog",
-  "talk",
-  "artist",
-  "album",
-  "djRadio",
-  "user",
-];
+// const pathList = [
+//   "song",
+//   "playList",
+//   "video",
+//   "sim_query",
+//   "mlog",
+//   "talk",
+//   "artist",
+//   "album",
+//   "djRadio",
+//   "user",
+// ];
 
-const routes: RouteRecordRaw[] | Route[] = [
+const routes: (RouteRecordRaw & META)[] = [
   {
     path: "/",
     redirect: "/index",
@@ -40,7 +40,11 @@ const routes: RouteRecordRaw[] | Route[] = [
   },
   {
     path: "/playlist",
-    name: "PlayList",
+    name: "playerlist",
+    meta: {
+      showTag: true,
+      keepAlive: false,
+    },
     component: () => import("../view/playlist/PlayList.vue"),
   },
   {

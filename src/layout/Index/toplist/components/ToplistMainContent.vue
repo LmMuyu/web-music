@@ -10,21 +10,28 @@
         class="flex items-center p-3 py-6 cursor-pointer borderslode"
         ref="features"
       >
-        <el-checkbox v-model="tracksItem.select"></el-checkbox>
-        <h4
-          :class="[
-            index + 1 <= 3 ? 'text-red-600 text-2xl' : 'text-gray-300 text-xl',
-          ]"
-          class="text px-2"
+        <router-link
+          :to="{ path: '/playlist', query: { id: tracksItem.id } }"
+          class="flex items-center w-full"
         >
-          {{ index + 1 }}
-        </h4>
-        <div class="w-full flex items-center">
-          <span class="ml-3 flex">
-            {{ tracksItem?.ar[0]?.name }} - {{ tracksItem?.al?.name }}
-            <p v-html="aliasName(tracksItem?.alia)" class=""></p>
-          </span>
-        </div>
+          <el-checkbox v-model="tracksItem.select"></el-checkbox>
+          <h4
+            :class="[
+              index + 1 <= 3
+                ? 'text-red-600 text-2xl'
+                : 'text-gray-300 text-xl',
+            ]"
+            class="text px-2"
+          >
+            {{ index + 1 }}
+          </h4>
+          <div class="w-full flex items-center">
+            <span class="ml-3 flex">
+              {{ tracksItem?.ar[0]?.name }} - {{ tracksItem?.al?.name }}
+              <p v-html="aliasName(tracksItem?.alia)" class=""></p>
+            </span>
+          </div>
+        </router-link>
         <div>
           <ToplistMainFeaturesModule />
         </div>
@@ -32,7 +39,7 @@
     </ul>
   </div>
 </template>
-<script setup lang='ts'>
+<script setup lang="ts">
 import {
   computed,
   defineProps,
@@ -98,7 +105,7 @@ onMounted(() => {
   });
 });
 </script>
-<style scoped lang='scss'>
+<style scoped lang="scss">
 .borderslode {
   border-bottom: 1px solid #ecf0f1;
 }

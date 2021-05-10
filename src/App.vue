@@ -66,25 +66,28 @@
     </template>
   </GridBar>
 
-  <router-view v-slot="{ Component }">
-    <keep-alive exclude="">
+  <router-view v-slot="{ Component, route }">
+    <keep-alive v-if="route.meta.KeepAlive">
       <component :is="Component" />
     </keep-alive>
+
+    <component :is="Component" v-else />
   </router-view>
 </template>
 
 <script setup lang="ts">
 import { computed, getCurrentInstance, reactive, ref, toRefs } from "vue";
+import { useRoute } from "vue-router";
 
 import { onSearch } from "./components/search/api/onSearch";
 import { searchDefault } from "./api/app/searchDefault";
 import onLogin from "./view/login/login";
 import { list } from "./headerList";
 import router from "./routes";
-import store from './store'
+import store from "./store";
 
 import SearchShowTheBar from "/comps/search/components/SearchShowTheBar.vue";
-import ShowUserInfo from "/layout/Index/showUserInfo/ShowUserInfo.vue"
+import ShowUserInfo from "/layout/Index/showUserInfo/ShowUserInfo.vue";
 import GridBar from "/comps/gridBar/GridBar.vue";
 import Search from "/comps/search/Search.vue";
 import { ElLink } from "element-plus";
@@ -94,12 +97,11 @@ import type { UserInfo } from "./store/type";
 const ctx = getCurrentInstance()!;
 ctx.appContext.config.globalProperties.store.dispatch("countriesCode");
 
-
 const header = reactive({
   searchDefault: null,
 });
 
-const userInfo = ref<UserInfo | null>(null)
+const userInfo = ref<UserInfo | null>(null);
 const showTag = ref(false);
 const linkType = ref("info");
 const showTheBar = reactive<{
@@ -166,10 +168,12 @@ router.beforeEach((to, from, next) => {
   next();
 });
 
-store.watch(() => store.state.userInfo, (value: UserInfo | null) => {
-  userInfo.value = value
-})
-
+store.watch(
+  () => store.state.userInfo,
+  (value: UserInfo | null) => {
+    userInfo.value = value;
+  }
+);
 </script>
 
 <style lang="scss">
