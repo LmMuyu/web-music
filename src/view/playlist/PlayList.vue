@@ -2,9 +2,9 @@
   <el-container style="height: 100vh">
     <el-header class="h-1/5"></el-header>
     <el-main class="h-full"></el-main>
-    <el-footer class="h-1/5">
-      <div class="bg-blue-400">
-        <Audio :src="audiosrc" />
+    <el-footer class="h-1/3 flex items-center">
+      <div class="bg-blue-400 p-4 rounded-md w-full">
+        <Audio :src="audiosrc" background="#ff7675" />
       </div>
     </el-footer>
   </el-container>
@@ -13,28 +13,42 @@
 import { ref } from "vue";
 import { useRoute } from "vue-router";
 
-import { getMusicUrl } from "../../api/playList/index";
+import { getMusicUrl, whetherMusic } from "../../api/playList/index";
 
 import Audio from "/comps/player/Audio.vue";
-import { ElContainer, ElHeader, ElMain, ElFooter } from "element-plus";
+import {
+  ElContainer,
+  ElHeader,
+  ElMain,
+  ElFooter,
+  ElMessage,
+} from "element-plus";
 
 const musicId = useRoute().query.id as string;
 const audiosrc = ref("");
 
-getMusicUrl(musicId)
-  .then(({ data }) => data.data[0].url)
-  .then(
-    (src) =>
-      new Promise((resolve, reject) => {
-        if (!src) {
-          reject("src" + ":" + "null");
-        }
+whetherMusic(musicId)
+  .then(({ data }) => {
+    const { success, message }: { success: boolean; message: string } = data;
 
-        console.log(src);
+    if (!success) {
+      ElMessage.error({
+        type: "error",
+        message,
+      });
+    } else {
+      return musicId;
+    }
+  })
+  .then(async (id: string | undefined) => {
+    if (!id) throw new Error("src" + ":" + "null");
 
-        audiosrc.value = src;
-      })
-  )
+    const { data } = await getMusicUrl(id);
+    const src = data.data[0].url;
+
+    if (!src) throw new Error("src" + ":" + "null");
+    audiosrc.value = src;
+  })
   .catch((err) => {
     console.log(err);
   });

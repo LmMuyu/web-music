@@ -5,24 +5,24 @@ import "../css/controls.scss";
 export default defineComponent({
   emits: ["pre", "play", "next"],
   setup(props, { emit }) {
-    function audioPre() {
+    function Pre() {
       emit("pre");
     }
 
-    function audioPlay() {
+    function Player() {
       emit("play");
     }
 
-    function audioNext() {
+    function Next() {
       emit("next");
     }
 
     return () => (
       <>
         <div class="flex items-center justify-center">
-          <span class="iconfont iconarrow-right-copy"></span>
-          <span onClick={audioPlay} class="iconfont iconbofang1"></span>
-          <span class="iconfont iconmore"></span>
+          <span onClick={Pre} class="iconfont iconarrow-right-copy"></span>
+          <span onClick={Player} class="iconfont iconbofang1"></span>
+          <span onClick={Next} class="iconfont iconmore"></span>
         </div>
       </>
     );

@@ -1,10 +1,20 @@
 <template>
-  <div class="flex items-center mx-6">
+  <div class="flex items-center w-full">
     <AudioAndVideoControls @play="audioPlay" />
     <div class="flex-1 mx-4">
-      <Slider v-model="Post" :max="sliderMax" />
+      <Slider v-model="currentTime" :max="sliderMax" :background="background" />
     </div>
-    <CalculationTime :time="sliderMax" />
+    <div>
+      <div class="flex items-center">
+        <div class="px-1">
+          <CalculationTime :time="currentTime" />
+        </div>
+        <span class="px-1">/</span>
+        <span class="px-1">
+          <CalculationTime :time="sliderMax" />
+        </span>
+      </div>
+    </div>
   </div>
 </template>
 <script setup lang="ts">
@@ -20,9 +30,13 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  background: {
+    type: String,
+    default: "red",
+  },
 });
 
-const Post = ref(0);
+const currentTime = ref(0);
 const sliderMax = ref(0);
 let Audio: null | HTMLAudioElement = null;
 
@@ -31,7 +45,7 @@ function audioPlay() {
 }
 
 function timeupdate(Audio: HTMLAudioElement) {
-  Post.value = Audio.currentTime;
+  currentTime.value = Audio.currentTime;
 }
 
 async function duration(Audio: HTMLAudioElement) {
@@ -48,8 +62,6 @@ async function duration(Audio: HTMLAudioElement) {
 }
 
 async function createAudio(url: string) {
-  console.log(url);
-
   if (!url) return;
 
   Audio = document.createElement("audio");
@@ -59,16 +71,21 @@ async function createAudio(url: string) {
   await duration(Audio);
 
   Audio.addEventListener("timeupdate", timeupdate.bind(that, Audio));
+  Audio.addEventListener("error", (err) => {
+    console.log(err);
+  });
 }
 
 watch(
   () => props.src,
   (value) => {
     if (!value) return;
-    console.log(value);
-
     createAudio(value);
   }
 );
+
+watch(currentTime, (value) => {
+  console.log(value);
+});
 </script>
 <style scoped lang="scss"></style>
