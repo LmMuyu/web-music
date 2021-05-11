@@ -13,5 +13,10 @@ export function musicDetails(
   const music = new musicDetail({ ...musicItem.al, ar: musicItem.ar[0] });
   store.commit("setMusicInfo", music);
   
-  getRouter().push({ path, params: { id } });
+  getRouter().push({
+    path,
+    query: {
+      id,
+    },
+  });
 }

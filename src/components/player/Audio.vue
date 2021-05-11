@@ -1,28 +1,40 @@
 <template>
   <div class="flex items-center">
-    <AudioAndVideoControls @play="audioPlay" />
-    <div>
-      <img :src="musciImage" :alt="musicName" class="object-contain" />
+    <AudioAndVideoControls @play="audioPlay"></AudioAndVideoControls>
+    <div class="px-2">
+      <img
+        class="object-contain"
+        :src="musicImage + '?param=45y45'"
+        :alt="musicName"
+      />
     </div>
     <div class="flex flex-col flex-1 mx-4">
-      <p class="">{{ musicName }}</p>
-      <Slider v-model="currentTime" :max="sliderMax" :background="background" />
-    </div>
-    <div>
-      <div class="flex items-center">
-        <div class="px-1">
-          <CalculationTime :time="currentTime" />
+      <div class="flex justify-between">
+        <p class="py-2">{{ musicName }}</p>
+        <div class="flex items-center">
+          <div class="px-1">
+            <CalculationTime :time="currentTime"></CalculationTime>
+          </div>
+          <span class="px-1">/</span>
+          <span class="px-1">
+            <CalculationTime :time="sliderMax"></CalculationTime>
+          </span>
         </div>
-        <span class="px-1">/</span>
-        <span class="px-1">
-          <CalculationTime :time="sliderMax" />
-        </span>
+      </div>
+      <div class="py-2">
+        <Slider
+          v-model="currentTime"
+          :max="sliderMax"
+          :background="background"
+        ></Slider>
       </div>
     </div>
   </div>
 </template>
 <script setup lang="ts">
-import { ref, defineProps, watch, reactive } from "vue";
+import { ref, defineProps, watch } from "vue";
+import type { Ref } from "vue";
+import { onBeforeRouteUpdate } from "vue-router";
 
 //@ts-ignore
 import Slider from "/comps/slider/Slider.vue";
@@ -34,7 +46,7 @@ const props = defineProps({
     type: String,
     required: true,
   },
-  musciImage: {
+  musicImage: {
     type: String,
     default: "",
   },
@@ -52,8 +64,12 @@ const currentTime = ref(0);
 const sliderMax = ref(0);
 let Audio: null | HTMLAudioElement = null;
 
-function audioPlay() {
-  Audio?.play();
+function audioPlay(status: Ref<boolean>) {
+  if (status.value) {
+    Audio?.pause();
+  } else {
+    Audio?.play();
+  }
 }
 
 function timeupdate(Audio: HTMLAudioElement) {
@@ -81,6 +97,7 @@ async function createAudio(url: string) {
   const that = Audio;
   Audio.src = url;
   await duration(Audio);
+  audioPlay(ref(false));
 
   Audio.addEventListener("timeupdate", timeupdate.bind(that, Audio));
   Audio.addEventListener("error", (err) => {
@@ -96,8 +113,20 @@ watch(
   }
 );
 
-watch(currentTime, (value) => {
-  console.log(value);
+let preTime = 0;
+
+watch(currentTime, (curTime) => {
+  const time = curTime - preTime;
+  if (time > 1) {
+    Audio && (Audio.currentTime = curTime);
+  }
+
+  preTime = curTime;
+});
+
+onBeforeRouteUpdate(() => {
+  Audio?.pause();
+  Audio = null;
 });
 </script>
 <style scoped lang="scss"></style>

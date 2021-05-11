@@ -1,18 +1,23 @@
 <template>
   <el-container style="height: 100vh">
-    <el-header class="h-1/5"></el-header>
+    <el-header></el-header>
     <el-main class="h-full"></el-main>
-    <el-footer class="h-1/3 flex items-center">
-      <div class="bg-blue-400 p-4 rounded-md w-full">
-        <Audio :src="audiosrc" background="#ff7675" />
+    <el-footer class="flex items-center">
+      <div class="bg-blue-400 rounded-md w-full">
+        <Audio
+          :src="audiosrc"
+          :musicName="singer"
+          :musicImage="musicInfo.picUrl"
+          background="#ff7675"
+        />
       </div>
     </el-footer>
   </el-container>
 </template>
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, computed } from "vue";
 import { useRoute } from "vue-router";
-import store from "../../store";
+import { useStore } from "vuex";
 
 import { getMusicUrl, whetherMusic } from "../../api/playList/index";
 
@@ -25,13 +30,16 @@ import {
   ElMessage,
 } from "element-plus";
 
+const store = useStore();
+
 const musicId = useRoute().query.id as string;
 const audiosrc = ref("");
+const musicInfo = store.state.musicInfo;
+console.log(musicInfo.picUrl);
 
-console.log(store);
-
-// const musicInfo = store.state.musicInfo;
-// console.log(musicInfo);
+const singer = computed(
+  () => `${musicInfo.singerInfo.name} - ${musicInfo.name}`
+);
 
 whetherMusic(musicId)
   .then(({ data }) => {

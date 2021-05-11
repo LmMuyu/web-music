@@ -1,16 +1,19 @@
 <script setup lang="tsx">
-import { defineComponent } from "vue";
+import { defineComponent, ref } from "vue";
 import "../css/controls.scss";
 
 export default defineComponent({
   emits: ["pre", "play", "next"],
   setup(props, { emit }) {
+    const statue = ref(true); //true 播放中 false 暂停中
+
     function Pre() {
       emit("pre");
     }
 
     function Player() {
-      emit("play");
+      emit("play", statue);
+      statue.value = !statue.value;
     }
 
     function Next() {
@@ -20,9 +23,16 @@ export default defineComponent({
     return () => (
       <>
         <div class="flex items-center justify-center">
-          <span onClick={Pre} class="iconfont iconarrow-right-copy"></span>
-          <span onClick={Player} class="iconfont iconbofang1"></span>
-          <span onClick={Next} class="iconfont iconmore"></span>
+          <span onClick={Pre} class="px-3 iconfont iconarrow-right-copy"></span>
+          <span
+            onClick={Player}
+            class={
+              statue.value
+                ? "px-3 iconfont iconpause"
+                : "px-3 iconfont iconbofang1"
+            }
+          ></span>
+          <span onClick={Next} class="px-3 iconfont iconmore"></span>
         </div>
       </>
     );
