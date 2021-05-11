@@ -62,9 +62,12 @@ const props = defineProps({
 
 const currentTime = ref(0);
 const sliderMax = ref(0);
+const musicStatus = ref(true);
 let Audio: null | HTMLAudioElement = null;
 
 function audioPlay(status: Ref<boolean>) {
+  musicStatus.value = status.value;
+
   if (status.value) {
     Audio?.pause();
   } else {
@@ -103,6 +106,7 @@ async function createAudio(url: string) {
   Audio.addEventListener("error", (err) => {
     console.log(err);
   });
+  Audio.addEventListener("ended", () => {});
 }
 
 watch(
@@ -116,9 +120,16 @@ watch(
 let preTime = 0;
 
 watch(currentTime, (curTime) => {
-  const time = curTime - preTime;
+  console.log(curTime);
+
+  const time = Math.abs(curTime - preTime);
   if (time > 1) {
+    Audio?.pause();
+
     Audio && (Audio.currentTime = curTime);
+    audioPlay(ref(false));
+
+    Audio?.play();
   }
 
   preTime = curTime;

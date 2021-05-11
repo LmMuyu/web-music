@@ -18,3 +18,12 @@ export function whetherMusic(id: string) {
     },
   });
 }
+
+export function getLyrics(id: string) {
+  return request({
+    url: "/lyric",
+    params: {
+      id,
+    },
+  });
+}

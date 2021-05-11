@@ -1,18 +1,16 @@
 <template>
-  <el-container style="height: 100vh">
-    <el-header></el-header>
-    <el-main class="h-full"></el-main>
-    <el-footer class="flex items-center">
-      <div class="bg-blue-400 rounded-md w-full">
+  <el-container style="height: 100vh"
+    ><el-header></el-header
+    ><el-main class="h-full"><PlayLsitMain></PlayLsitMain></el-main
+    ><el-footer class="flex items-center"
+      ><div class="bg-blue-400 rounded-md w-full">
         <Audio
           :src="audiosrc"
           :musicName="singer"
           :musicImage="musicInfo.picUrl"
           background="#ff7675"
-        />
-      </div>
-    </el-footer>
-  </el-container>
+        ></Audio></div></el-footer
+  ></el-container>
 </template>
 <script setup lang="ts">
 import { ref, computed } from "vue";
@@ -22,6 +20,7 @@ import { useStore } from "vuex";
 import { getMusicUrl, whetherMusic } from "../../api/playList/index";
 
 import Audio from "/comps/player/Audio.vue";
+import PlayLsitMain from "./components/PlayLsitMain.vue";
 import {
   ElContainer,
   ElHeader,
@@ -35,7 +34,6 @@ const store = useStore();
 const musicId = useRoute().query.id as string;
 const audiosrc = ref("");
 const musicInfo = store.state.musicInfo;
-console.log(musicInfo.picUrl);
 
 const singer = computed(
   () => `${musicInfo.singerInfo.name} - ${musicInfo.name}`

@@ -15,17 +15,24 @@
       ref="top_track"
     >
       <span
-        class="border_rad bg-black absolute pointer-events-auto cursor-pointer transform -translate-x-1"
+        class="
+          absolute
+          pointer-events-auto
+          cursor-pointer
+          transform
+          -translate-x-1
+        "
         :class="tooltipStyleClass"
         :style="{ left: currentPosition + 'px' }"
         id="tooltip"
         @mousedown="startdown"
         ref="tooltip"
-      ></span>
+      >
+      </span>
     </div>
   </div>
 </template>
-<script setup>
+<script setup lang="ts">
 import {
   ref,
   onMounted,
@@ -51,7 +58,7 @@ const props = defineProps({
   },
   tooltipStyleClass: {
     type: Array,
-    default: () => ["w-4", "h-4"],
+    default: () => ["w-4", "h-4", "border_rad", "bg-black"],
   },
   background: {
     type: String,
@@ -98,13 +105,13 @@ function resize() {
   });
 }
 
-function startdown(e) {
+function startdown(e: MouseEvent) {
   id = getID(e);
   that.value = true;
   setTransitionTime(0);
 }
 
-function moving(e) {
+function moving(e: MouseEvent) {
   if (that.value) {
     e.preventDefault();
     ctxEmit("mousemove");
@@ -116,7 +123,7 @@ function moveEnd() {
   that.value = false;
 }
 
-function clickCurrent(e) {
+function clickCurrent(e: Event) {
   id = getID(e);
   if (!that.value && id === "slider") {
     seedp = 0.5;
@@ -130,8 +137,8 @@ function clickCurrent(e) {
   }
 }
 
-function getID(e) {
-  return e.target.getAttribute("id");
+function getID(e: any) {
+  return e && e.target.getAttribute("id");
 }
 
 const total = computed(() => {
@@ -147,11 +154,11 @@ const position = computed(() => {
   return (currentValue.value - props.min) * getValueOfEachCell.value;
 });
 
-function getMoveEndPos(e) {
+function getMoveEndPos(e: any) {
   return e.clientX - slider_track_left.value;
 }
 
-function setValueOnPos(val, bool) {
+function setValueOnPos(val: number, bool: boolean) {
   if (val > 0 && val < slider_track_width.value) {
     setTransforme(val);
 
@@ -168,20 +175,20 @@ function setValueOnPos(val, bool) {
   }
 }
 
-function setTransforme(val) {
+function setTransforme(val: number) {
   let value = val - tooltip_scrollWidth.value;
   currentPosition.value = value;
 }
 
-function asyncValue(val) {
+function asyncValue(val: number) {
   ctxEmit("update:modelValue", val);
 }
 
-function isDiff(cur, val) {
+function isDiff(cur: number, val: number) {
   return cur !== val;
 }
 
-function setCurrentValue(val, bool) {
+function setCurrentValue(val: number, bool: boolean) {
   // console.log(val);
   if (val < props.min || val > props.max) return false;
 
@@ -192,7 +199,7 @@ function setCurrentValue(val, bool) {
   bool || setPosition();
 }
 
-function setPosition(delay) {
+function setPosition(delay?: number | undefined) {
   delay ? (interdelay = delay) : (interdelay = seedp);
 
   if (!that.value) {
@@ -203,11 +210,22 @@ function setPosition(delay) {
   setTransforme(position.value);
 }
 
-function setTransitionTime(time) {
-  top_track.value.style.transitionDuration = `${time}s`;
-  top_track.value.style.WebkitTransitionDuration = `${time}s`;
-  tooltip.value.style.transitionDuration = `${time}s`;
-  tooltip.value.style.WebkitTransitionDuration = `${time}s`;
+function setTransitionTime(time: number) {
+  (
+    top_track.value as unknown as HTMLElement
+  ).style.transitionDuration = `${time}s`;
+
+  (
+    top_track.value as unknown as HTMLElement
+  ).style.webkitTransitionDuration = `${time}s`;
+
+  (
+    tooltip.value as unknown as HTMLElement
+  ).style.transitionDuration = `${time}s`;
+
+  (
+    tooltip.value as unknown as HTMLElement
+  ).style.webkitTransitionDuration = `${time}s`;
 }
 
 function bindEvents() {
@@ -218,9 +236,16 @@ function bindEvents() {
 }
 
 function getSlideRect() {
-  slider_track_width.value = first_track.value.offsetWidth;
-  slider_track_left.value = first_track.value.getBoundingClientRect().left;
-  tooltip_scrollWidth.value = tooltip.value.scrollWidth / 3 - 2;
+  slider_track_width.value = (
+    first_track.value as unknown as HTMLElement
+  ).offsetWidth;
+
+  slider_track_left.value = (
+    first_track.value as unknown as HTMLElement
+  ).getBoundingClientRect().left;
+
+  tooltip_scrollWidth.value =
+    (tooltip.value as unknown as HTMLElement).scrollWidth / 3 - 2;
 }
 
 onMounted(() => {
