@@ -33,13 +33,16 @@
 </template>
 <script setup lang="ts">
 import { ref, defineProps, watch } from "vue";
-import type { Ref } from "vue";
 import { onBeforeRouteUpdate } from "vue-router";
 
 //@ts-ignore
 import Slider from "/comps/slider/Slider.vue";
 import CalculationTime from "./components/CalculationTime.vue";
 import AudioAndVideoControls from "./components/AudioAndVideoControls.vue";
+
+import { promptbox } from "../../components/promptBox";
+
+import type { Ref } from "vue";
 
 const props = defineProps({
   src: {
@@ -104,7 +107,10 @@ async function createAudio(url: string) {
 
   Audio.addEventListener("timeupdate", timeupdate.bind(that, Audio));
   Audio.addEventListener("error", (err) => {
-    console.log(err);
+    promptbox({
+      mountNode: "#promptbox",
+      title: "播放失败",
+    });
   });
   Audio.addEventListener("ended", () => {});
 }
