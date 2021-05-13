@@ -2,11 +2,7 @@
   <div class="flex items-center">
     <AudioAndVideoControls @play="audioPlay"></AudioAndVideoControls>
     <div class="px-2">
-      <img
-        class="object-contain"
-        :src="musicImage + '?param=45y45'"
-        :alt="musicName"
-      />
+      <img class="object-contain" :src="musicImage + '?param=45y45'" :alt="musicName" />
     </div>
     <div class="flex flex-col flex-1 mx-4">
       <div class="flex justify-between">
@@ -22,17 +18,13 @@
         </div>
       </div>
       <div class="py-2">
-        <Slider
-          v-model="currentTime"
-          :max="sliderMax"
-          :background="background"
-        ></Slider>
+        <Slider v-model="currentTime" :max="sliderMax" :background="background"></Slider>
       </div>
     </div>
   </div>
 </template>
 <script setup lang="ts">
-import { ref, defineProps, watch } from "vue";
+import { ref, defineProps, watch, defineEmit } from "vue";
 import { onBeforeRouteUpdate } from "vue-router";
 
 //@ts-ignore
@@ -62,6 +54,9 @@ const props = defineProps({
     default: "red",
   },
 });
+
+
+const emitCtx = defineEmit(["currPlayTime"])
 
 const currentTime = ref(0);
 const sliderMax = ref(0);
@@ -106,13 +101,13 @@ async function createAudio(url: string) {
   audioPlay(ref(false));
 
   Audio.addEventListener("timeupdate", timeupdate.bind(that, Audio));
-  Audio.addEventListener("error", (err) => {
+  Audio.addEventListener("error", () => {
     promptbox({
       mountNode: "#promptbox",
       title: "播放失败",
     });
   });
-  Audio.addEventListener("ended", () => {});
+  Audio.addEventListener("ended", () => { });
 }
 
 watch(
@@ -126,7 +121,7 @@ watch(
 let preTime = 0;
 
 watch(currentTime, (curTime) => {
-  console.log(curTime);
+  emitCtx("currPlayTime", curTime + "")
 
   const time = Math.abs(curTime - preTime);
   if (time > 1) {
