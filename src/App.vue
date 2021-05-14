@@ -150,6 +150,8 @@ function returnResData(keyword: string, data: Record<string, any>[]) {
   setTimeout(() => {
     showBar(!showTheBar.showBar, keyword);
   });
+  
+  
   // console.log(data);
 }
 

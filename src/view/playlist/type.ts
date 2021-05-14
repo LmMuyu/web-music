@@ -1,5 +1,5 @@
 export interface MatchItem {
   lyc: string;
-  node?: Element;
+  node?: Element | null;
   playTime: number | string;
 }

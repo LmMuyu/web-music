@@ -38,7 +38,7 @@ import {
   getQrCreate,
   checkStatus,
 } from "../../../api/login/qrCodeLogin";
-import { AxiosResponse } from "axios";
+import type { AxiosResponse } from "axios";
 
 interface LoginData {
   code: number;

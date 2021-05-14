@@ -1,10 +1,9 @@
 <template>
   <el-container style="height: 100vh">
-    <el-header></el-header>
     <el-main class="h-full">
       <PlayLsitMain></PlayLsitMain>
     </el-main>
-    <el-footer class="flex items-center">
+    <el-footer class="flex items-center relative">
       <div class="bg-blue-400 rounded-md w-full">
         <Audio
           :src="audiosrc"
@@ -35,19 +34,33 @@ import {
   ElMessage,
 } from "element-plus";
 
+import type { MatchItem } from './type'
+
 const store = useStore();
 
 const musicId = useRoute().query.id as string;
 const musicInfo = store.state.musicInfo;
 const audiosrc = ref("");
 
-
 const singer = computed(
   () => `${musicInfo.singerInfo.name} - ${musicInfo.name}`
 );
 
+let infoobj: MatchItem | null = null
+
 function currPlayTime(time: string) {
-  console.log(time);
+  const playTime = parseInt(time)
+
+  // const musicItem = musicItemList.value.get(playTime)!
+
+  // if (!infoobj) infoobj = musicItem
+
+  // if (infoobj !== musicItem) {
+  //   infoobj.node?.classList.remove("bg-blue-400")
+  //   infoobj = null
+  // }
+
+  // musicItem?.node?.classList.add("bg-blue-400")
 }
 
 whetherMusic(musicId)
@@ -66,7 +79,6 @@ whetherMusic(musicId)
   .then(async (id: string | undefined) => {
     if (!id) throw new Error("src" + ":" + "null");
     const { data } = await getMusicUrl(id);
-
     const src = data.data[0].url;
 
     if (!src) throw new Error("src" + ":" + "null");

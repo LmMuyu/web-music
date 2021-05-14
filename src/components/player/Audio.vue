@@ -25,7 +25,7 @@
 </template>
 <script setup lang="ts">
 import { ref, defineProps, watch, defineEmit } from "vue";
-import { onBeforeRouteUpdate } from "vue-router";
+import { onBeforeRouteLeave } from "vue-router";
 
 //@ts-ignore
 import Slider from "/comps/slider/Slider.vue";
@@ -136,7 +136,7 @@ watch(currentTime, (curTime) => {
   preTime = curTime;
 });
 
-onBeforeRouteUpdate(() => {
+onBeforeRouteLeave(() => {
   Audio?.pause();
   Audio = null;
 });

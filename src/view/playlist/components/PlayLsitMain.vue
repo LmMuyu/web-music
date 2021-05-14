@@ -1,32 +1,45 @@
 <template>
-  <div class="flex">
-    <div class="w-1/2"></div>
-    <div class="w-1/2 flex justify-center relative">
-      <div class="w-3 h-10 bg-black absolute top-0 right-0 rounded-lg"></div>
-      <div @scroll="lyricScroll" class="overflow-y-scroll h-96 sliderTrack" ref="lyricNode">
-        <p
-          class="p-2"
-          v-for="musicItem in musicItemList.values()"
-          :key="musicItem.playTime"
-          :_id="musicItem.playTime"
-        >{{ musicItem.lyc }}</p>
+  <ElRow>
+    <ElCol :span="2"></ElCol>
+    <ElCol :span="10"></ElCol>
+    <ElCol :span="10">
+      <div></div>
+      <div class="relative">
+        <div class="w-3 h-10 bg-black absolute top-0 right-0 rounded-lg"></div>
+        <div
+          @scroll="lyricScroll"
+          style="height:30rem"
+          class="overflow-y-scroll flex justify-center relative sliderTrack"
+          ref="lyricNode"
+        >
+          <div class="absolute left-0" :style="{ top: -currTop + 'px' }">
+            <p
+              class="p-3 text-lg text-left"
+              v-for="musicItem in musicItemList.values()"
+              :key="musicItem.playTime"
+              :_id="musicItem.playTime"
+            >{{ musicItem.lyc }}</p>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
+    </ElCol>
+    <ElCol :span="2"></ElCol>
+  </ElRow>
 </template>
 <script setup lang="ts">
 import { useRoute } from "vue-router";
-import { defineProps, nextTick, onMounted, ref } from "@vue/runtime-core";
+import { ref } from "@vue/runtime-core";
 
+import { conversionItem, lyricScroll } from "../hooks/methods";
 import { getLyrics } from "../../../api/playList";
-import { conversionPlayTime, lyricScroll } from "../hooks/methods";
-import { musicItemList } from '../hooks/data'
+import { musicItemList, currTop } from '../hooks/data'
+
+import { ElRow, ElCol } from 'element-plus'
 
 import type { MatchItem } from '../type'
 
 const music = useRoute().query.id as string;
 const lyricNode = ref<null | HTMLElement>(null)
-
 
 getLyrics(music).then(({ data }) => {
   const lyrics = data.lrc.lyric as string;
@@ -42,32 +55,25 @@ getLyrics(music).then(({ data }) => {
       break;
     }
 
-    const playTime = (matchItem.groups.playTime as number)
+    matchItem.groups.lyc = matchItem.groups.lyc.replace(/(\[.+\])?/, "")
 
-    musicItemList.value.set(playTime, conversionPlayTime(matchItem.groups));
+    const conMusicItem = conversionItem(matchItem.groups)
+    musicItemList.value.set(conMusicItem.playTime, conMusicItem);
   }
 });
 
-onMounted(() => {
-  nextTick().then(() => {
-    const childrenList = lyricNode.value?.children
-    const len = childrenList ? childrenList.length : 0
+// onMounted(() => {
+//   const childrenList = lyricNode.value?.children
+//   const len = childrenList ? childrenList.length : 0
 
-    for (let i = 0; i < len; i++) {
-      const el = childrenList?.[i];
+//   for (let i = 0; i < len; i++) {
+//     const el = childrenList?.[i];
 
-      const id = +el?.getAttribute("_id")!
-      const musicItem = musicItemList.value.get(id)
-
-      musicItem && (musicItem.node = el)
-    }
-
-    console.log(
-      musicItemList.value
-    );
-
-  })
-})
+//     const id = +el?.getAttribute("_id")!
+//     const musicItem = musicItemList.value.get(id)!
+//     musicItem.node = el
+//   }
+// })
 </script>
 <style scoped lang="scss">
 .sliderTrack::-webkit-scrollbar {

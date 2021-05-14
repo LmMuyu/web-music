@@ -1,4 +1,3 @@
-`
 <template>
   <div
     class="slider_track rounded-md h-3 relative flex items-center"
@@ -15,20 +14,13 @@
       ref="top_track"
     >
       <span
-        class="
-          absolute
-          pointer-events-auto
-          cursor-pointer
-          transform
-          -translate-x-1
-        "
+        class="absolute pointer-events-auto cursor-pointer transform -translate-x-1"
         :class="tooltipStyleClass"
         :style="{ left: currentPosition + 'px' }"
         id="tooltip"
         @mousedown="startdown"
         ref="tooltip"
-      >
-      </span>
+      ></span>
     </div>
   </div>
 </template>
