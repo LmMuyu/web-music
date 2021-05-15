@@ -8,7 +8,7 @@
         <Audio
           :src="audiosrc"
           :musicName="singer"
-          :musicImage="musicInfo.picUrl"
+          :musicImage="musicInfo?.picUrl"
           background="#ff7675"
           @currPlayTime="currPlayTime"
         ></Audio>
@@ -19,10 +19,10 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { useRoute } from "vue-router";
-import { useStore } from "vuex";
 
-import { getMusicUrl, whetherMusic } from "../../api/playList/index";
-import { musicItemList } from './hooks/data'
+import { getMusicDetail, getMusicUrl, whetherMusic } from "../../api/playList/index";
+// import { musicItemList } from './hooks/data'
+import { musicDetail } from '../../utils/musicDetail'
 
 import Audio from "/comps/player/Audio.vue";
 import PlayLsitMain from "./components/PlayLsitMain.vue";
@@ -35,18 +35,27 @@ import {
 } from "element-plus";
 
 import type { MatchItem } from './type'
+import type { Singer as vocalist } from '../../utils/musicDetail'
 
-const store = useStore();
+
+interface MusicInfo {
+  id: number;
+  name: string;
+  picUrl: string;
+  singerInfo: vocalist;
+}
 
 const musicId = useRoute().query.id as string;
-const musicInfo = store.state.musicInfo;
+const musicInfo = ref<MusicInfo | null>(null);
 const audiosrc = ref("");
 
 const singer = computed(
-  () => `${musicInfo.singerInfo.name} - ${musicInfo.name}`
+  () => musicInfo.value && `${musicInfo.value.singerInfo.name} - ${musicInfo.value?.name} `
 );
 
-let infoobj: MatchItem | null = null
+
+
+// let infoobj: MatchItem | null = null
 
 function currPlayTime(time: string) {
   const playTime = parseInt(time)
@@ -63,29 +72,30 @@ function currPlayTime(time: string) {
   // musicItem?.node?.classList.add("bg-blue-400")
 }
 
-whetherMusic(musicId)
-  .then(({ data }) => {
-    const { success, message }: { success: boolean; message: string } = data;
 
-    if (!success) {
-      ElMessage.error({
-        type: "error",
-        message,
-      });
-    } else {
-      return musicId;
-    }
-  })
-  .then(async (id: string | undefined) => {
-    if (!id) throw new Error("src" + ":" + "null");
-    const { data } = await getMusicUrl(id);
-    const src = data.data[0].url;
+getMusicDetail(musicId).then(({ data }) => {
+  const songs = data.songs
+  Promise.resolve(songs).then((res) => new musicDetail(res))
 
-    if (!src) throw new Error("src" + ":" + "null");
-    audiosrc.value = src;
-  })
-  .catch((err) => {
-    console.log(err);
-  });
+  return songs.id
+}).then(async (musicIds: string) => {
+  const { data } = await whetherMusic(musicIds)
+
+  const { success, message }: {
+    success: boolean; message: string
+  } = data;
+
+  return !success ? (ElMessage.error({ type: "error", message }) && musicIds) : musicIds
+}).then(async (id: string | undefined) => {
+  if (!id) throw new Error("src" + ":" + "null");
+
+  const { data } = await getMusicUrl(id);
+  const src = data.data[0].url;
+
+  if (!src) throw new Error("src" + ":" + "null");
+  audiosrc.value = src;
+}).catch(() => {
+
+})
 </script>
 <style scoped lang="scss"></style>

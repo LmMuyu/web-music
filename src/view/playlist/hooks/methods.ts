@@ -1,4 +1,3 @@
-import { throttle } from "../../../utils/throttle";
 import { currTop } from "./data";
 import type { MatchItem } from "../type";
 
@@ -23,7 +22,6 @@ const point = {
 
 function _mover(newY: number) {
   currTop.value = newY;
-
   position.y = newY;
 }
 
@@ -32,6 +30,11 @@ export function lyricScroll(event: Event) {
   const currY = el.scrollTop;
 
   const delety = currY - point.y;
+
+  if (delety > 0 && currY < point.y) {
+    return;
+  }
+
   point.y = currY;
 
   const newY = point.y + delety;

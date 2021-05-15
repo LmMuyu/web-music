@@ -1,6 +1,9 @@
-import type { AxiosRequestConfig, Canceler, CancelTokenStatic } from "axios";
 import axios from "axios";
+
 import setCatch from "../../utils/catch/setCatch";
+import { promptbox } from "../../components/promptBox";
+
+import type { AxiosRequestConfig, Canceler, CancelTokenStatic } from "axios";
 
 const catchMethods = setCatch();
 
@@ -43,8 +46,22 @@ export default function request(config: AxiosRequestConfig) {
       return httpRes;
     },
     (config) => {
+      if (config.response) {
+        const response = config.response;
 
-      return Promise.reject(config);
+        if (response.status) {
+          switch (response.status) {
+            case 404:
+              return Promise.reject().catch(() =>
+                promptbox({
+                  title: response.data.message,
+                })
+              );
+            default:
+              return Promise.reject(config);
+          }
+        }
+      }
     }
   );
 

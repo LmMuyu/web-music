@@ -2,33 +2,42 @@ export interface MusicDetailOption {
   id: number;
   name: string;
   picUrl: string;
-  ar: singer;
+  ar: Singer;
 }
 
-interface singer {
+export interface Singer {
   id: number;
   name: string;
 }
 
 class singer {
-  constructor({ id, name }: singer) {
+  id: number;
+  name: string;
+
+  constructor({ id, name }: Singer) {
     this.id = id;
     this.name = name;
   }
 }
 
-class musicDetail {
+export class musicDetail {
   id: number;
   name: string;
   picUrl: string;
   singerInfo: singer;
 
-  constructor({ id, name, picUrl, ar }: MusicDetailOption) {
+  constructor(options: MusicDetailOption) {
+    const { id, name, picUrl, ar } = this.runMusicDetail(options);
+
     this.id = id;
     this.name = name;
     this.picUrl = picUrl;
     this.singerInfo = new singer(ar);
   }
-}
 
-export default musicDetail;
+  runMusicDetail(options: Record<string, any>): MusicDetailOption {
+    const detail = options[0];
+
+    return { ...detail.al, ar: detail.ar[0] };
+  }
+}

@@ -7,13 +7,10 @@
       <li
         v-for="(tracksItem, index) in renderListData"
         :key="tracksItem.id"
-        class="flex items-center p-3 py-6 cursor-pointer borderslode"
+        class="flex items-center p-3 cursor-pointer borderslode"
         ref="features"
       >
-        <div
-          class="flex items-center w-full"
-          @click="musicDetails(tracksItem, '/playlist', tracksItem.id)"
-        >
+        <div class="flex items-center w-full">
           <el-checkbox v-model="tracksItem.select"></el-checkbox>
           <h4
             :class="[
@@ -22,15 +19,15 @@
                 : 'text-gray-300 text-xl',
             ]"
             class="text px-2"
-          >
-            {{ index + 1 }}
-          </h4>
-          <div class="w-full flex items-center">
-            <span class="ml-3 flex">
-              {{ tracksItem?.ar[0]?.name }} - {{ tracksItem?.al?.name }}
-              <p v-html="aliasName(tracksItem?.alia)" class=""></p>
-            </span>
-          </div>
+          >{{ index + 1 }}</h4>
+          <router-link :to="{ path: '/playlist', params: tracksItem.id }">
+            <div class="w-full flex py-4 items-center">
+              <span class="ml-3 flex">
+                {{ tracksItem?.ar[0]?.name }} - {{ tracksItem?.al?.name }}
+                <p v-html="aliasName(tracksItem?.alia)" class></p>
+              </span>
+            </div>
+          </router-link>
         </div>
         <div>
           <ToplistMainFeaturesModule />
@@ -49,7 +46,6 @@ import {
   watch,
   markRaw,
 } from "@vue/runtime-core";
-import { onSelectAll, musicDetails } from "./hooks/methods";
 
 import ToplistMainFeaturesModule from "./ToplistMainFeaturesModule.vue";
 import { ElCheckbox } from "element-plus";
@@ -64,14 +60,14 @@ const props = defineProps({
 });
 
 const features = ref(null);
-const hoverList = [];
+const hoverList: any[] = [];
 
 const isselect = ref(true);
 watch(isselect, (value) => {
   console.log(value);
 });
 
-const renderListData = computed(() => {
+const renderListData = computed<Record<string, any>>(() => {
   return props.listData.map((listItem) =>
     markRaw({
       ...listItem,
@@ -81,7 +77,7 @@ const renderListData = computed(() => {
 });
 
 const aliasName = computed(() => {
-  return function (item: []) {
+  return function(item: []) {
     return item.reduce(
       (pre, cur) => (pre += `<h4 class="text-gray-300">&nbsp -(${cur})</h4>`),
       ""

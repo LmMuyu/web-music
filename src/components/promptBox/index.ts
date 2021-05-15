@@ -2,11 +2,15 @@ import { App, createApp } from "@vue/runtime-dom";
 import PromptBox from "./PromptBox.vue";
 
 interface options {
-  mountNode: string;
+  mountNode?: string;
+  delay?: number;
   title: string;
 }
 
 export function promptbox(option: options) {
+  option.mountNode = option.mountNode || "#promptbox";
+  option.delay = option.delay || 3000;
+
   function createapp() {
     const promptbox = createApp(PromptBox, {
       title: option.title,
@@ -27,5 +31,5 @@ export function promptbox(option: options) {
 
     clearTimeout(timer!);
     timer = null;
-  }, 3000);
+  }, option.delay);
 }

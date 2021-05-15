@@ -1,15 +1,11 @@
 <template>
   <div ref="rowRoot" :style="{ transform: setTransformY }">
     <el-row class="mt-24">
-      <el-col :span="4"> </el-col>
+      <el-col :span="4"></el-col>
       <el-col :span="16">
         <div class="flex">
           <nav class="shadow w-1/5 pb-7">
-            <ul
-              class="list-none"
-              v-for="(navItem, mainTag) in listTitle"
-              :key="mainTag"
-            >
+            <ul class="list-none" v-for="(navItem, mainTag) in listTitle" :key="mainTag">
               <li>
                 <div class="ml-6 py-6 text-xl">{{ navItem.title }}</div>
                 <ul class="list-none">
@@ -25,16 +21,15 @@
                     @click="childTagItemClick(childItem.id)"
                   >
                     <div>
-                      <img
-                        :src="childItem.coverImgUrl + '?param=40y40'"
-                        alt=""
-                      />
+                      <img :src="childItem.coverImgUrl + '?param=40y40'" />
                     </div>
                     <div class="flex flex-col justify-between ml-4">
                       <span>{{ childItem.name }}</span>
-                      <span class="text-xs text-gray-400">{{
-                        childItem.updateFrequency
-                      }}</span>
+                      <span class="text-xs text-gray-400">
+                        {{
+                          childItem.updateFrequency
+                        }}
+                      </span>
                     </div>
                   </li>
                 </ul>
@@ -47,7 +42,7 @@
           </div>
         </div>
       </el-col>
-      <el-col :span="4"> </el-col>
+      <el-col :span="4"></el-col>
     </el-row>
   </div>
 </template>
@@ -131,7 +126,7 @@ function documentScroll() {
   // console.log(translateY);
 
   // if (translateY <= 0) {
-  console.log(documentScrollTop);
+  // console.log(documentScrollTop);
 
   elementScrollTop.value = documentScrollTop;
 
@@ -155,16 +150,10 @@ function setTranY(Yvalue: number) {
 const setTransformY = computed(() => setTranY(elementScrollTop.value));
 
 onMounted(() => {
-  nextTick(() => {
+  nextTick().then(() => {
     rowTop.value = rowRoot.value?.offsetTop;
-    setTransition(1);
+    setTransition(1)
   });
-
-  // document.addEventListener("scroll", documentScroll, false);
-});
-
-onBeforeUnmount(() => {
-  // document.removeEventListener("scroll", documentScroll, false);
 });
 </script>
 <style lang="scss" scoped>
