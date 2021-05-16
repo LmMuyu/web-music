@@ -1,16 +1,17 @@
 <template>
   <el-container style="height: 100vh">
-    <el-main class="h-full">
-      <PlayLsitMain></PlayLsitMain>
+    <el-main class="h-full padd">
+      <PlayLsitMain :musicInfo="musicDetailInfo"></PlayLsitMain>
     </el-main>
-    <el-footer class="flex items-center relative">
-      <div class="bg-blue-400 rounded-md w-full">
+    <el-footer class="flex items-center relative padd">
+      <div class="bg-blue-400 h-full w-full">
         <Audio
           :src="audiosrc"
           :musicName="singer"
           :musicImage="musicInfo?.picUrl"
           background="#ff7675"
           @currPlayTime="currPlayTime"
+          :playStatus="checkOption"
         ></Audio>
       </div>
     </el-footer>
@@ -20,9 +21,13 @@
 import { ref, computed } from "vue";
 import { useRoute } from "vue-router";
 
-import { getMusicDetail, getMusicUrl, whetherMusic } from "../../api/playList/index";
+import {
+  getMusicDetail,
+  getMusicUrl,
+  whetherMusic,
+} from "../../api/playList/index";
 // import { musicItemList } from './hooks/data'
-import { musicDetail } from '../../utils/musicDetail'
+import { musicDetail } from "../../utils/musicDetail";
 
 import Audio from "/comps/player/Audio.vue";
 import PlayLsitMain from "./components/PlayLsitMain.vue";
@@ -34,9 +39,8 @@ import {
   ElMessage,
 } from "element-plus";
 
-import type { MatchItem } from './type'
-import type { Singer as vocalist } from '../../utils/musicDetail'
-
+import type { MatchItem } from "./type";
+import type { Singer as vocalist } from "../../utils/musicDetail";
 
 interface MusicInfo {
   id: number;
@@ -47,18 +51,20 @@ interface MusicInfo {
 
 const musicId = useRoute().query.id as string;
 const musicInfo = ref<MusicInfo | null>(null);
+const musicDetailInfo = ref({});
 const audiosrc = ref("");
+const checkOption = ref({});
 
 const singer = computed(
-  () => musicInfo.value && `${musicInfo.value.singerInfo.name} - ${musicInfo.value?.name} `
+  () =>
+    musicInfo.value &&
+    `${musicInfo.value.singerInfo.name} - ${musicInfo.value?.name} `
 );
-
-
 
 // let infoobj: MatchItem | null = null
 
 function currPlayTime(time: string) {
-  const playTime = parseInt(time)
+  const playTime = parseInt(time);
 
   // const musicItem = musicItemList.value.get(playTime)!
 
@@ -72,30 +78,39 @@ function currPlayTime(time: string) {
   // musicItem?.node?.classList.add("bg-blue-400")
 }
 
+function newError(mess: string) {
+  throw new Error(mess);
+}
 
-getMusicDetail(musicId).then(({ data }) => {
-  const songs = data.songs
-  Promise.resolve(songs).then((res) => new musicDetail(res))
+getMusicDetail(musicId)
+  .then(({ data }) => {
+    const songs = data.songs;
+    Promise.resolve(songs).then(
+      (music) =>
+        (musicInfo.value = new musicDetail(music)) &&
+        (musicDetailInfo.value = music[0])
+    );
 
-  return songs.id
-}).then(async (musicIds: string) => {
-  const { data } = await whetherMusic(musicIds)
+    return songs.id;
+  })
+  .then(async (musicIds: string) => {
+    const res = await whetherMusic(musicIds);
+    checkOption.value = res.data;
 
-  const { success, message }: {
-    success: boolean; message: string
-  } = data;
+    return musicIds;
+  })
+  .then(async (id: string | undefined) => {
+    if (!id) return newError("src" + ":" + "null");
 
-  return !success ? (ElMessage.error({ type: "error", message }) && musicIds) : musicIds
-}).then(async (id: string | undefined) => {
-  if (!id) throw new Error("src" + ":" + "null");
+    const { data } = await getMusicUrl(id);
+    const src = data.data[0].url;
 
-  const { data } = await getMusicUrl(id);
-  const src = data.data[0].url;
-
-  if (!src) throw new Error("src" + ":" + "null");
-  audiosrc.value = src;
-}).catch(() => {
-
-})
+    if (!src) return newError("src" + ":" + "null");
+    audiosrc.value = src;
+  });
 </script>
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.padd {
+  padding: 0 !important;
+}
+</style>

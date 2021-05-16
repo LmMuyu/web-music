@@ -20,7 +20,7 @@
             ]"
             class="text px-2"
           >{{ index + 1 }}</h4>
-          <router-link :to="{ path: '/playlist', params: tracksItem.id }">
+          <router-link :to="{ path: '/playlist', query: { id: tracksItem.id } }">
             <div class="w-full flex py-4 items-center">
               <span class="ml-3 flex">
                 {{ tracksItem?.ar[0]?.name }} - {{ tracksItem?.al?.name }}

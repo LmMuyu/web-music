@@ -5,6 +5,7 @@ interface options {
   mountNode?: string;
   delay?: number;
   title: string;
+  success?: Function;
 }
 
 export function promptbox(option: options) {
@@ -28,8 +29,11 @@ export function promptbox(option: options) {
   timer = setTimeout(() => {
     instance && instance.unmount();
     instance = null;
+    option.success?.();
 
     clearTimeout(timer!);
     timer = null;
   }, option.delay);
+
+  return true
 }

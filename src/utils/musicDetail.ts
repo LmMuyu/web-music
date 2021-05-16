@@ -10,13 +10,23 @@ export interface Singer {
   name: string;
 }
 
+type singerArr = Array<Singer>;
+
 class singer {
   id: number;
   name: string;
 
-  constructor({ id, name }: Singer) {
+  constructor(list: singerArr) {
+    const { id, name } = this.singerInfo(list);
+
     this.id = id;
     this.name = name;
+  }
+  singerInfo(list: singerArr) {
+    return {
+      id:1,
+      name: list.map((singer) => singer.name).join("/"),
+    };
   }
 }
 
@@ -38,6 +48,6 @@ export class musicDetail {
   runMusicDetail(options: Record<string, any>): MusicDetailOption {
     const detail = options[0];
 
-    return { ...detail.al, ar: detail.ar[0] };
+    return { ...detail.al, ar: detail.ar };
   }
 }

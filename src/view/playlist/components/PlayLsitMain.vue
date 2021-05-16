@@ -31,7 +31,7 @@
 </template>
 <script setup lang="ts">
 import { useRoute } from "vue-router";
-import { computed, onMounted, reactive, ref } from "@vue/runtime-core";
+import { computed, defineProps, onMounted, reactive, ref } from "@vue/runtime-core";
 
 import { conversionItem, lyricScroll } from "../hooks/methods";
 import { getLyrics } from "../../../api/playList";
@@ -40,6 +40,13 @@ import { musicItemList, currTop } from '../hooks/data'
 import { ElRow, ElCol } from 'element-plus'
 
 import type { MatchItem } from '../type'
+
+const props = defineProps({
+  musicInfo: {
+    type: Object,
+    required: true
+  }
+})
 
 const music = useRoute().query.id as string;
 const lyricNode = ref<null | HTMLElement>(null)

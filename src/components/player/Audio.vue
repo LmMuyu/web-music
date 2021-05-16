@@ -1,6 +1,6 @@
 <template>
   <div class="flex items-center">
-    <AudioAndVideoControls @play="audioPlay"></AudioAndVideoControls>
+    <AudioAndVideoControls :playStatus="playStatus" @play="audioPlay"></AudioAndVideoControls>
     <div class="px-2">
       <img class="object-contain" :src="musicImage + '?param=45y45'" :alt="musicName" />
     </div>
@@ -53,6 +53,10 @@ const props = defineProps({
     type: String,
     default: "red",
   },
+  playStatus: {
+    type: Object,
+    default: () => { }
+  }
 });
 
 
