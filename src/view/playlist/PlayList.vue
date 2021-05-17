@@ -1,14 +1,18 @@
 <template>
   <el-container style="height: 100vh">
-    <el-main class="h-full padd">
-      <PlayLsitMain :musicInfo="musicDetailInfo"></PlayLsitMain>
+    <el-main class="h-full bg_image padd">
+      <PlayLsitMain
+        :singerName="singer"
+        :musicInfo="musicDetailInfo"
+        :musicName="unref(musicInfo)?.name"
+      ></PlayLsitMain>
     </el-main>
     <el-footer class="flex items-center relative padd">
       <div class="bg-blue-400 h-full w-full">
         <Audio
           :src="audiosrc"
-          :musicName="singer"
-          :musicImage="musicInfo?.picUrl"
+          :musicName="unref(musicInfo)?.name"
+          :musicImage="unref(musicInfo)?.picUrl"
           background="#ff7675"
           @currPlayTime="currPlayTime"
           :playStatus="checkOption"
@@ -18,7 +22,7 @@
   </el-container>
 </template>
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, unref, reactive } from "vue";
 import { useRoute } from "vue-router";
 
 import {
@@ -47,18 +51,22 @@ interface MusicInfo {
   name: string;
   picUrl: string;
   singerInfo: vocalist;
+  singer: Record<string, any>[];
 }
 
 const musicId = useRoute().query.id as string;
 const musicInfo = ref<MusicInfo | null>(null);
 const musicDetailInfo = ref({});
-const audiosrc = ref("");
 const checkOption = ref({});
+const audiosrc = ref("");
+
+const bgimageUrl = ref("");
 
 const singer = computed(
   () =>
-    musicInfo.value &&
-    `${musicInfo.value.singerInfo.name} - ${musicInfo.value?.name} `
+    (musicInfo.value &&
+      musicInfo.value.singer.map((info) => info.name).join("/")) ||
+    ""
 );
 
 // let infoobj: MatchItem | null = null
@@ -85,19 +93,20 @@ function newError(mess: string) {
 getMusicDetail(musicId)
   .then(({ data }) => {
     const songs = data.songs;
-    Promise.resolve(songs).then(
-      (music) =>
-        (musicInfo.value = new musicDetail(music)) &&
-        (musicDetailInfo.value = music[0])
-    );
 
-    return songs.id;
+    Promise.resolve(songs).then((music) => {
+      musicInfo.value = new musicDetail(music);
+      musicDetailInfo.value = music[0];
+      bgimageUrl.value = `url(${musicInfo.value?.picUrl})`;
+    });
+
+    return musicId;
   })
-  .then(async (musicIds: string) => {
-    const res = await whetherMusic(musicIds);
+  .then(async () => {
+    const res = await whetherMusic(musicId);
     checkOption.value = res.data;
 
-    return musicIds;
+    return musicId;
   })
   .then(async (id: string | undefined) => {
     if (!id) return newError("src" + ":" + "null");
@@ -112,5 +121,13 @@ getMusicDetail(musicId)
 <style scoped lang="scss">
 .padd {
   padding: 0 !important;
+}
+
+.bg_image {
+  background-image: v-bind(bgimageUrl);
+  background-repeat: no-repeat;
+  background-size: cover;
+  filter: blur(90px);
+  opacity: 0.6;
 }
 </style>

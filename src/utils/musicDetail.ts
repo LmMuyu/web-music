@@ -24,7 +24,7 @@ class singer {
   }
   singerInfo(list: singerArr) {
     return {
-      id:1,
+      id: 1,
       name: list.map((singer) => singer.name).join("/"),
     };
   }
@@ -34,6 +34,7 @@ export class musicDetail {
   id: number;
   name: string;
   picUrl: string;
+  singer: Record<string, any>[];
   singerInfo: singer;
 
   constructor(options: MusicDetailOption) {
@@ -42,10 +43,11 @@ export class musicDetail {
     this.id = id;
     this.name = name;
     this.picUrl = picUrl;
+    this.singer = ar;
     this.singerInfo = new singer(ar);
   }
 
-  runMusicDetail(options: Record<string, any>): MusicDetailOption {
+  runMusicDetail(options: Record<string, any>) {
     const detail = options[0];
 
     return { ...detail.al, ar: detail.ar };

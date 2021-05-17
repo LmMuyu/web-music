@@ -1,12 +1,19 @@
 <template>
-  <div class="flex items-center">
-    <AudioAndVideoControls :playStatus="playStatus" @play="audioPlay"></AudioAndVideoControls>
+  <div class="flex items-center h-full">
+    <AudioAndVideoControls
+      :playStatus="playStatus"
+      @play="audioPlay"
+    ></AudioAndVideoControls>
     <div class="px-2">
-      <img class="object-contain" :src="musicImage + '?param=45y45'" :alt="musicName" />
+      <img
+        class="object-contain"
+        :src="musicImage + '?param=45y45'"
+        :alt="musicName"
+      />
     </div>
     <div class="flex flex-col flex-1 mx-4">
       <div class="flex justify-between">
-        <p class="py-2">{{ musicName }}</p>
+        <p class="py-2 text-gray-700">{{ musicName }}</p>
         <div class="flex items-center">
           <div class="px-1">
             <CalculationTime :time="currentTime"></CalculationTime>
@@ -18,7 +25,11 @@
         </div>
       </div>
       <div class="py-2">
-        <Slider v-model="currentTime" :max="sliderMax" :background="background"></Slider>
+        <Slider
+          v-model="currentTime"
+          :max="sliderMax"
+          :background="background"
+        ></Slider>
       </div>
     </div>
   </div>
@@ -55,12 +66,11 @@ const props = defineProps({
   },
   playStatus: {
     type: Object,
-    default: () => { }
-  }
+    default: () => {},
+  },
 });
 
-
-const emitCtx = defineEmit(["currPlayTime"])
+const emitCtx = defineEmit(["currPlayTime"]);
 
 const currentTime = ref(0);
 const sliderMax = ref(0);
@@ -111,7 +121,7 @@ async function createAudio(url: string) {
       title: "播放失败",
     });
   });
-  Audio.addEventListener("ended", () => { });
+  Audio.addEventListener("ended", () => {});
 }
 
 watch(
@@ -125,7 +135,7 @@ watch(
 let preTime = 0;
 
 watch(currentTime, (curTime) => {
-  emitCtx("currPlayTime", curTime + "")
+  emitCtx("currPlayTime", curTime + "");
 
   const time = Math.abs(curTime - preTime);
   if (time > 1) {

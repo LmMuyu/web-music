@@ -51,16 +51,14 @@ export default function request(config: AxiosRequestConfig) {
         if (response.status) {
           switch (response.status) {
             case 404:
-              return Promise.reject().catch(
+              Promise.reject().catch(
                 () =>
                   promptbox({
                     title: response.data.message,
                   }) && response
               );
-            case 404:
-              return Promise.reject().catch(
-                () => promptbox({ title: response.data.message }) && response
-              );
+
+              return response;
             default:
               return Promise.reject(config);
           }
