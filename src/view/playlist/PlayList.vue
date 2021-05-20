@@ -1,6 +1,8 @@
 <template>
   <el-container style="height: 100vh">
-    <el-main class="h-full bg_image padd">
+    <el-main class="h-full w-full relative padd">
+      <div class="bgcolor"></div>
+      <div ref="main" class="h-full w-full bg_image"></div>
       <PlayLsitMain
         :singerName="singer"
         :musicInfo="musicDetailInfo"
@@ -22,7 +24,7 @@
   </el-container>
 </template>
 <script setup lang="ts">
-import { ref, computed, unref, reactive } from "vue";
+import { ref, computed, unref, reactive, watch, nextTick } from "vue";
 import { useRoute } from "vue-router";
 
 import {
@@ -45,6 +47,8 @@ import {
 
 import type { MatchItem } from "./type";
 import type { Singer as vocalist } from "../../utils/musicDetail";
+// import { createAudioContext } from "./hooks/methods";
+// import axios from "axios";
 
 interface MusicInfo {
   id: number;
@@ -59,8 +63,15 @@ const musicInfo = ref<MusicInfo | null>(null);
 const musicDetailInfo = ref({});
 const checkOption = ref({});
 const audiosrc = ref("");
+const main = ref<HTMLElement | null>(null);
 
 const bgimageUrl = ref("");
+
+watch(bgimageUrl, (src) =>
+  nextTick(
+    () => main.value && (main.value.style.backgroundImage = `url(${src})`)
+  )
+);
 
 const singer = computed(
   () =>
@@ -97,7 +108,7 @@ getMusicDetail(musicId)
     Promise.resolve(songs).then((music) => {
       musicInfo.value = new musicDetail(music);
       musicDetailInfo.value = music[0];
-      bgimageUrl.value = `url(${musicInfo.value?.picUrl})`;
+      bgimageUrl.value = musicInfo.value?.picUrl;
     });
 
     return musicId;
@@ -114,20 +125,43 @@ getMusicDetail(musicId)
     const { data } = await getMusicUrl(id);
     const src = data.data[0].url;
 
+    // const res = await axios({
+    //   url: src,
+    //   responseType: "arraybuffer",
+    // });
+
+    // const audioSource = await createAudioContext(res.data);
+    // typeof audioSource !== "boolean" && audioSource.start();
+
     if (!src) return newError("src" + ":" + "null");
     audiosrc.value = src;
   });
 </script>
 <style scoped lang="scss">
+@mixin position {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+}
+
 .padd {
   padding: 0 !important;
 }
 
 .bg_image {
-  background-image: v-bind(bgimageUrl);
+  @include position();
   background-repeat: no-repeat;
   background-size: cover;
   filter: blur(90px);
   opacity: 0.6;
+  z-index: -1;
+}
+.bgcolor {
+  @include position();
+  background-color: #2d3436;
+  opacity: 0.8;
+  z-index: -1;
 }
 </style>

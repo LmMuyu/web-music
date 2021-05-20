@@ -1,7 +1,14 @@
-import { ref } from "@vue/reactivity";
+import { reactive, ref } from "@vue/reactivity";
 
 import type { MatchItem } from "../type";
 
 export const musicItemList = ref<Map<number, MatchItem>>(new Map());
 
 export const currTop = ref(0);
+
+export const gainValue = ref(20);
+
+export const lyricNodeRect = reactive({
+  offsetHeight: 0,
+  scrollHeight: 0,
+});

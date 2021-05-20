@@ -44,6 +44,7 @@ import CalculationTime from "./components/CalculationTime.vue";
 import AudioAndVideoControls from "./components/AudioAndVideoControls.vue";
 
 import { promptbox } from "../../components/promptBox";
+import { status } from "./hook/data";
 
 import type { Ref } from "vue";
 
@@ -80,11 +81,7 @@ let Audio: null | HTMLAudioElement = null;
 function audioPlay(status: Ref<boolean>) {
   musicStatus.value = status.value;
 
-  if (status.value) {
-    Audio?.pause();
-  } else {
-    Audio?.play();
-  }
+  status.value ? Audio?.pause() : Audio?.play();
 }
 
 function timeupdate(Audio: HTMLAudioElement) {
@@ -111,8 +108,9 @@ async function createAudio(url: string) {
 
   const that = Audio;
   Audio.src = url;
-  await duration(Audio);
-  audioPlay(ref(false));
+  await duration(Audio); //获取时长
+
+  audioPlay(ref(false)); //第一次播放
 
   Audio.addEventListener("timeupdate", timeupdate.bind(that, Audio));
   Audio.addEventListener("error", () => {
@@ -121,13 +119,15 @@ async function createAudio(url: string) {
       title: "播放失败",
     });
   });
-  Audio.addEventListener("ended", () => {});
+  Audio.addEventListener("ended", () => {
+    status.value = false;
+  });
 }
 
 watch(
   () => props.src,
   (value) => {
-    if (!value) return;
+    if (!value || !!Audio) return;
     createAudio(value);
   }
 );
