@@ -19,8 +19,14 @@
                 : 'text-gray-300 text-xl',
             ]"
             class="text px-2"
-          >{{ index + 1 }}</h4>
-          <router-link :to="{ path: '/playlist', query: { id: tracksItem.id } }">
+          >
+            {{ index + 1 }}
+          </h4>
+          <router-link
+            :to="{ path: '/playlist', query: { id: tracksItem.id } }"
+            tag="a"
+            target="_blank"
+          >
             <div class="w-full flex py-4 items-center">
               <span class="ml-3 flex">
                 {{ tracksItem?.ar[0]?.name }} - {{ tracksItem?.al?.name }}
@@ -77,7 +83,7 @@ const renderListData = computed<Record<string, any>>(() => {
 });
 
 const aliasName = computed(() => {
-  return function(item: []) {
+  return function (item: []) {
     return item.reduce(
       (pre, cur) => (pre += `<h4 class="text-gray-300">&nbsp -(${cur})</h4>`),
       ""

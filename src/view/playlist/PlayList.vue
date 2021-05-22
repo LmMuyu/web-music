@@ -3,11 +3,11 @@
     <el-main class="h-full w-full relative padd">
       <div class="bgcolor"></div>
       <div ref="main" class="h-full w-full bg_image"></div>
-      <PlayLsitMain
+      <PlayListMain
         :singerName="singer"
         :musicInfo="musicDetailInfo"
         :musicName="unref(musicInfo)?.name"
-      ></PlayLsitMain>
+      ></PlayListMain>
     </el-main>
     <el-footer class="flex items-center relative padd">
       <div class="bg-blue-400 h-full w-full">
@@ -24,7 +24,7 @@
   </el-container>
 </template>
 <script setup lang="ts">
-import { ref, computed, unref, reactive, watch, nextTick } from "vue";
+import { ref, computed, unref, watch, nextTick } from "vue";
 import { useRoute } from "vue-router";
 
 import {
@@ -32,11 +32,11 @@ import {
   getMusicUrl,
   whetherMusic,
 } from "../../api/playList/index";
-// import { musicItemList } from './hooks/data'
+import { musicItemList } from "./hooks/data";
 import { musicDetail } from "../../utils/musicDetail";
 
 import Audio from "/comps/player/Audio.vue";
-import PlayLsitMain from "./components/PlayLsitMain.vue";
+import PlayListMain from "./components/PlayListMain.vue";
 import {
   ElContainer,
   ElHeader,
@@ -47,8 +47,6 @@ import {
 
 import type { MatchItem } from "./type";
 import type { Singer as vocalist } from "../../utils/musicDetail";
-// import { createAudioContext } from "./hooks/methods";
-// import axios from "axios";
 
 interface MusicInfo {
   id: number;
@@ -80,21 +78,41 @@ const singer = computed(
     ""
 );
 
-// let infoobj: MatchItem | null = null
+let infoobj: MatchItem | null = null;
 
 function currPlayTime(time: string) {
   const playTime = parseInt(time);
 
-  // const musicItem = musicItemList.value.get(playTime)!
+  const musicItem = musicItemList.value.get(playTime)!;
 
-  // if (!infoobj) infoobj = musicItem
+  if (musicItem === void 0) return;
 
-  // if (infoobj !== musicItem) {
-  //   infoobj.node?.classList.remove("bg-blue-400")
-  //   infoobj = null
-  // }
+  if (musicItem.node !== null && musicItem.node !== undefined) {
+    if (!infoobj) infoobj = musicItem;
 
-  // musicItem?.node?.classList.add("bg-blue-400")
+    if (infoobj !== musicItem) {
+      if (infoobj.node !== null && infoobj.node !== undefined) {
+        addClass(unref(musicItem.node), [1, 2]);
+        infoobj = null;
+      }
+    }
+
+    addClass(unref(musicItem.node), [3, 0]);
+  }
+}
+
+function addClass(node: Element, runList: number[]) {
+  const nodeDom = [
+    () => node.classList.add("text-blue-400"),
+    () => node.classList.remove("text-blue-400"),
+    () => node.classList.add("text_color"),
+    () => node.classList.remove("text_color"),
+  ];
+
+  for (let i = 0; i < runList.length; i++) {
+    const runNum = runList.shift()!;
+    nodeDom[runNum]();
+  }
 }
 
 function newError(mess: string) {
@@ -125,14 +143,6 @@ getMusicDetail(musicId)
     const { data } = await getMusicUrl(id);
     const src = data.data[0].url;
 
-    // const res = await axios({
-    //   url: src,
-    //   responseType: "arraybuffer",
-    // });
-
-    // const audioSource = await createAudioContext(res.data);
-    // typeof audioSource !== "boolean" && audioSource.start();
-
     if (!src) return newError("src" + ":" + "null");
     audiosrc.value = src;
   });
@@ -155,13 +165,13 @@ getMusicDetail(musicId)
   background-repeat: no-repeat;
   background-size: cover;
   filter: blur(90px);
-  opacity: 0.6;
+  opacity: 0.8;
   z-index: -1;
 }
 .bgcolor {
   @include position();
   background-color: #2d3436;
-  opacity: 0.8;
+  opacity: 0.5;
   z-index: -1;
 }
 </style>

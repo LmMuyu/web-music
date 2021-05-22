@@ -18,6 +18,7 @@
         <div
           :style="{ top: scrollBarTop + 'px' }"
           class="w-3 h-10 bg-black absolute right-0 rounded-lg"
+          ref="slider"
         ></div>
         <div
           style="height: 30rem"
@@ -28,12 +29,11 @@
           <div
             class="pointer-events-auto"
             :style="{
-              transform: `translate(0,${-currTop}px) translateZ(0)`,
+              transform: `translate(0,${-distance}px) translateZ(0)`,
             }"
           >
             <p
-              style="color: #1f2937"
-              class="py-3 text-lg text-left"
+              class="py-3 text-lg text-left cursor-default text_color"
               v-for="musicItem in musicItemList.values()"
               :key="musicItem.playTime"
               :_id="musicItem.playTime"
@@ -53,14 +53,14 @@ import {
   computed,
   defineProps,
   nextTick,
-  onMounted,
   ref,
   watch,
+  shallowRef,
 } from "@vue/runtime-core";
 
 import { conversionItem, lyricScroll } from "../hooks/methods";
 import { getLyrics } from "../../../api/playList";
-import { musicItemList, currTop, lyricNodeRect } from "../hooks/data";
+import { musicItemList, distance, lyricNodeRect } from "../hooks/data";
 
 import { ElRow, ElCol } from "element-plus";
 
@@ -83,16 +83,21 @@ const props = defineProps({
 
 const music = useRoute().query.id as string;
 const lyricNode = ref<null | HTMLElement>(null);
+const slider = ref<null | HTMLElement>(null);
 
 const point = computed(() => {
   return lyricNodeRect.offsetHeight / lyricNodeRect.scrollHeight;
 });
 
+const offsetDist = computed(
+  () => slider.value?.offsetHeight || 0 / lyricNodeRect.scrollHeight
+);
+
 const scrollBarTop = computed(() => {
-  return point.value * currTop.value;
+  return point.value * distance.value - offsetDist.value;
 });
 
-function lycSplice(iterator:IterableIterator<RegExpMatchArray>){
+function lycSplice(iterator: IterableIterator<RegExpMatchArray>) {
   let value = true;
 
   while (value) {
@@ -114,28 +119,34 @@ getLyrics(music).then(({ data }) => {
   const lrcReg = /\[(?<playTime>.+)\]\s?(?<lyc>.+)/g;
 
   const iterator = lyrics.matchAll(lrcReg);
-   
-  lycSplice(iterator)
+
+  lycSplice(iterator);
 });
 
-watch(musicItemList.value, () => {
+function childrenMapNode(stopWatch: Function) {
+  stopWatch();
+
+  const childrenList = lyricNode.value?.children[0].children;
+  const len = childrenList ? childrenList.length : 0;
+
+  for (let i = 0; i < len; i++) {
+    const el = childrenList![i];
+    const id = +el?.getAttribute("_id")!;
+    const musicItem = musicItemList.value.get(id)!;
+
+    musicItem.node = shallowRef(el);
+  }
+}
+
+const stopWatch = watch(musicItemList.value, () => {
   nextTick().then(() => {
     const node = lyricNode.value!;
 
     lyricNodeRect.offsetHeight = node.offsetHeight;
     lyricNodeRect.scrollHeight = node.scrollHeight - node.offsetHeight;
-  });
-});
 
-onMounted(() => {
-  // const childrenList = lyricNode.value?.children
-  // const len = childrenList ? childrenList.length : 0
-  // for (let i = 0; i < len; i++) {
-  //   const el = childrenList?.[i];
-  //   const id = +el?.getAttribute("_id")!
-  //   const musicItem = musicItemList.value.get(id)!
-  //   musicItem.node = el
-  // }
+    childrenMapNode(stopWatch);
+  });
 });
 </script>
 <style scoped lang="scss">
@@ -157,5 +168,9 @@ onMounted(() => {
     border-bottom: 1px solid #fff;
     opacity: 0;
   }
+}
+
+.text_color{
+  color: #1f2937
 }
 </style>

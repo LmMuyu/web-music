@@ -1,7 +1,7 @@
-import { currTop, gainValue, lyricNodeRect } from "./data";
+import { distance, gainValue, lyricNodeRect } from "./data";
 import type { MatchItem } from "../type";
 import { promptbox } from "../../../components/promptBox";
-import { ref, Ref } from "@vue/reactivity";
+import { Ref } from "@vue/reactivity";
 
 export function conversionItem(matchItem: MatchItem) {
   const timeArr = (matchItem.playTime as string).split(":");
@@ -27,28 +27,28 @@ function _setScrollHeight(scrollH: number) {
 }
 
 function _mover(newY: number) {
-  currTop.value = newY;
+  distance.value = newY;
   position.y = newY;
 }
 
+
 export function lyricScroll(event: Event) {
   const el = event.target as HTMLElement;
-  const currY = el.scrollTop;
+  const disty = el.scrollTop;
 
-  const delety = currY - point.y;
+  const delety = disty - point.y;
 
-  if (delety > 0 && currY < point.y) {
+  if (delety > 0 && disty < point.y) {
     return;
   }
 
-  point.y = currY;
+  point.y = disty;
 
   const newY = point.y + delety;
 
   _mover(newY);
 
-  const scrollH = el.scrollHeight;
-
+  const scrollH = el.scrollHeight - el.offsetHeight;
   _setScrollHeight(scrollH);
 }
 
