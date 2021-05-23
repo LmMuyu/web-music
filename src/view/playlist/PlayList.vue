@@ -45,7 +45,6 @@ import {
   ElMessage,
 } from "element-plus";
 
-import type { MatchItem } from "./type";
 import type { Singer as vocalist } from "../../utils/musicDetail";
 
 interface MusicInfo {
@@ -78,40 +77,40 @@ const singer = computed(
     ""
 );
 
-let infoobj: MatchItem | null = null;
+let preNode: Element | null = null;
 
 function currPlayTime(time: string) {
   const playTime = parseInt(time);
-
   const musicItem = musicItemList.value.get(playTime)!;
 
-  if (musicItem === void 0) return;
+  const currNode = musicItem && unref(musicItem.node)!;
 
-  if (musicItem.node !== null && musicItem.node !== undefined) {
-    if (!infoobj) infoobj = musicItem;
+  if (currNode === void 0 || currNode === preNode) return;
 
-    if (infoobj !== musicItem) {
-      if (infoobj.node !== null && infoobj.node !== undefined) {
-        addClass(unref(musicItem.node), [1, 2]);
-        infoobj = null;
-      }
-    }
+  const node = preNode;
+  if (!preNode) preNode = currNode;
 
-    addClass(unref(musicItem.node), [3, 0]);
+  if (currNode !== preNode && node !== null) {
+    addClass(node, "remove");
+    preNode = null;
   }
+
+  addClass(currNode, "add");
 }
 
-function addClass(node: Element, runList: number[]) {
-  const nodeDom = [
-    () => node.classList.add("text-blue-400"),
-    () => node.classList.remove("text-blue-400"),
-    () => node.classList.add("text_color"),
-    () => node.classList.remove("text_color"),
-  ];
+function addClass(node: Element, mode: "remove" | "add") {
+  switch (mode) {
+    case "add":
+      node.classList.remove("text_color");
+      node.classList.add("text-blue-400");
+      break;
+    case "remove":
+      node.classList.remove("text-blue-400");
+      node.classList.add("text_color");
+      break;
 
-  for (let i = 0; i < runList.length; i++) {
-    const runNum = runList.shift()!;
-    nodeDom[runNum]();
+    default:
+      break;
   }
 }
 
