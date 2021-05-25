@@ -27,7 +27,7 @@
           @scroll="lyricScroll"
         >
           <div
-            class="pointer-events-auto"
+            class="pointer-events-auto relative"
             :style="{
               transform: `translate(0,${-distance}px) translateZ(0)`,
             }"
@@ -58,13 +58,19 @@ import {
   shallowRef,
 } from "@vue/runtime-core";
 
-import { conversionItem, lyricScroll } from "../hooks/methods";
 import { getLyrics } from "../../../api/playList";
-import { musicItemList, distance, lyricNodeRect } from "../hooks/data";
+import { conversionItem, lyricScroll } from "../hooks/methods";
+import {
+  musicItemList,
+  distance,
+  lyricNodeRect,
+  clientHeight,
+} from "../hooks/data";
 
 import { ElRow, ElCol } from "element-plus";
 
 import type { MatchItem } from "../type";
+import fastdom from "fastdom";
 
 const props = defineProps({
   musicInfo: {
@@ -90,7 +96,7 @@ const point = computed(() => {
 });
 
 const offsetDist = computed(
-  () => slider.value?.offsetHeight || 0 / lyricNodeRect.scrollHeight
+  () => (slider.value?.offsetHeight || 0) / lyricNodeRect.scrollHeight
 );
 
 const scrollBarTop = computed(() => {
@@ -128,11 +134,19 @@ function childrenMapNode(stopWatch: Function) {
 
   const childrenList = lyricNode.value?.children[0].children;
   const len = childrenList ? childrenList.length : 0;
+  clientHeight.value = (lyricNode.value && lyricNode.value.clientHeight) || 0;
+
+  let height = 0;
 
   for (let i = 0; i < len; i++) {
     const el = childrenList![i];
     const id = +el?.getAttribute("_id")!;
     const musicItem = musicItemList.value.get(id)!;
+
+    fastdom.measure(() => {
+      height += el.clientHeight;
+      musicItem.top = height;
+    });
 
     musicItem.node = shallowRef(el);
   }
@@ -170,7 +184,7 @@ const stopWatch = watch(musicItemList.value, () => {
   }
 }
 
-.text_color{
-  color: #1f2937
+.text_color {
+  color: #1f2937;
 }
 </style>

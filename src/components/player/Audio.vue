@@ -46,7 +46,7 @@ import AudioAndVideoControls from "./components/AudioAndVideoControls.vue";
 import { promptbox } from "../../components/promptBox";
 import { status } from "./hook/data";
 
-import type { Ref } from "vue";
+import type { Ref, PropType } from "vue";
 
 const props = defineProps({
   src: {
@@ -66,7 +66,7 @@ const props = defineProps({
     default: "red",
   },
   playStatus: {
-    type: Object,
+    type: Object as PropType<{ message: string; success: boolean }>,
     default: () => {},
   },
 });

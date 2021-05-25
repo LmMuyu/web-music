@@ -1,28 +1,29 @@
-import { distance, gainValue, lyricNodeRect } from "./data";
-import type { MatchItem } from "../type";
+import { distance, gainValue, lyricNodeRect, clientHeight } from "./data";
 import { promptbox } from "../../../components/promptBox";
-import { Ref } from "@vue/reactivity";
+import { reactive, Ref } from "@vue/reactivity";
 
-export function conversionItem(matchItem: MatchItem) {
-  const timeArr = (matchItem.playTime as string).split(":");
+import type { MatchItem } from "../type";
+
+export function conversionItem(matchItem: MatchItem): MatchItem {
+  const timeArr = String(matchItem.playTime).split(":");
   const playTime = Number(timeArr[0]) * 60 + parseInt(timeArr[1]);
 
   return {
-    lyc: matchItem.lyc,
+    top: 0,
     playTime,
     node: null,
+    lyc: matchItem.lyc,
   };
 }
 
-const position = {
-  y: 0,
-};
+const position = { y: 0 };
+const point = { y: 0 };
+const height = reactive({
+  scrollHeight: 0,
+  offsetHeight: 0,
+});
 
-const point = {
-  y: 0,
-};
-
-function _setScrollHeight(scrollH: number) {
+export function _setScrollHeight(scrollH: number) {
   lyricNodeRect.scrollHeight = scrollH;
 }
 
@@ -30,7 +31,6 @@ function _mover(newY: number) {
   distance.value = newY;
   position.y = newY;
 }
-
 
 export function lyricScroll(event: Event) {
   const el = event.target as HTMLElement;
@@ -48,7 +48,13 @@ export function lyricScroll(event: Event) {
 
   _mover(newY);
 
-  const scrollH = el.scrollHeight - el.offsetHeight;
+  if (!el.title) {
+    height.offsetHeight = el.scrollHeight;
+    height.scrollHeight = el.scrollHeight;
+  }
+
+  const scrollH = height.scrollHeight - height.offsetHeight;
+  el.title || (el.title = "true");
   _setScrollHeight(scrollH);
 }
 
@@ -81,4 +87,10 @@ export async function createAudioContext(buffer: ArrayBuffer) {
   } catch (e) {
     return promptbox({ title: "解码失败，请退去重试!" });
   }
+}
+
+export function lycHighlightPos(top: number) {
+  const mid = clientHeight.value >>> 1;
+
+  if (top >= mid) distance.value = top;
 }

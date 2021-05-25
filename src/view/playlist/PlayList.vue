@@ -34,6 +34,7 @@ import {
 } from "../../api/playList/index";
 import { musicItemList } from "./hooks/data";
 import { musicDetail } from "../../utils/musicDetail";
+import { lycHighlightPos } from "./hooks/methods";
 
 import Audio from "/comps/player/Audio.vue";
 import PlayListMain from "./components/PlayListMain.vue";
@@ -55,12 +56,14 @@ interface MusicInfo {
   singer: Record<string, any>[];
 }
 
+type checkOptions = { message?: string; success?: boolean };
+
 const musicId = useRoute().query.id as string;
 const musicInfo = ref<MusicInfo | null>(null);
 const musicDetailInfo = ref({});
-const checkOption = ref({});
-const audiosrc = ref("");
 const main = ref<HTMLElement | null>(null);
+const audiosrc = ref("");
+const checkOption = ref<checkOptions>({});
 
 const bgimageUrl = ref("");
 
@@ -79,19 +82,30 @@ const singer = computed(
 
 let preNode: Element | null = null;
 
+function isPlayer() {
+  checkOption.value.success ||
+    (checkOption.value = {
+      message: "ok",
+      success: true,
+    });
+}
+
 function currPlayTime(time: string) {
+  isPlayer();
+
   const playTime = parseInt(time);
   const musicItem = musicItemList.value.get(playTime)!;
-
   const currNode = musicItem && unref(musicItem.node)!;
 
   if (currNode === void 0 || currNode === preNode) return;
-
-  const node = preNode;
   if (!preNode) preNode = currNode;
 
-  if (currNode !== preNode && node !== null) {
-    addClass(node, "remove");
+  if (currNode !== preNode) {
+    lycHighlightPos(musicItem.top); //获取歌词高亮后
+  }
+
+  if (currNode !== preNode) {
+    addClass(preNode, "remove");
     preNode = null;
   }
 
