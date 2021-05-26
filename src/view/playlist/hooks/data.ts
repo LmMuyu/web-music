@@ -1,4 +1,5 @@
 import { reactive, ref } from "@vue/reactivity";
+import { watch } from "@vue/runtime-core";
 
 import type { MatchItem } from "../type";
 
@@ -14,3 +15,5 @@ export const lyricNodeRect = reactive({
 });
 
 export const clientHeight = ref(0);
+
+export const index = ref(0);

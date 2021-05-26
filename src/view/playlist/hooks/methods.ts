@@ -1,8 +1,14 @@
-import { distance, gainValue, lyricNodeRect, clientHeight } from "./data";
+import {
+  distance,
+  gainValue,
+  lyricNodeRect,
+  clientHeight,
+  index,
+} from "./data";
 import { promptbox } from "../../../components/promptBox";
 import { reactive, Ref } from "@vue/reactivity";
 
-import type { MatchItem } from "../type";
+import type { MatchItem, MatchItemList } from "../type";
 
 export function conversionItem(matchItem: MatchItem): MatchItem {
   const timeArr = String(matchItem.playTime).split(":");
@@ -12,6 +18,7 @@ export function conversionItem(matchItem: MatchItem): MatchItem {
     top: 0,
     playTime,
     node: null,
+    indexId: 0,
     lyc: matchItem.lyc,
   };
 }
@@ -48,13 +55,15 @@ export function lyricScroll(event: Event) {
 
   _mover(newY);
 
-  if (!el.title) {
-    height.offsetHeight = el.scrollHeight;
+  //@ts-ignore
+  if (!el.mark) {
+    height.offsetHeight = el.offsetHeight;
     height.scrollHeight = el.scrollHeight;
   }
 
   const scrollH = height.scrollHeight - height.offsetHeight;
-  el.title || (el.title = "true");
+  //@ts-ignore
+  el.mark || (el.mark = Symbol());
   _setScrollHeight(scrollH);
 }
 
@@ -89,8 +98,27 @@ export async function createAudioContext(buffer: ArrayBuffer) {
   }
 }
 
-export function lycHighlightPos(top: number) {
-  const mid = clientHeight.value >>> 1;
+let list: MatchItem[] = [];
 
-  if (top >= mid) distance.value = top;
+export function lycHighlightPos(
+  top: number,
+  itemlist: MatchItemList,
+  curNodePos: number
+) {
+  const mid = clientHeight.value >>> 1;
+  const lists = !!list.length ? list : (list = [...itemlist.value.values()]);
+
+  if (top >= mid && curNodePos > index.value) {
+    if (!index.value) index.value = curNodePos;
+    const curIndex = curNodePos - index.value;
+
+    const item = lists[curIndex];
+
+    distance.value = item.top;
+  }
 }
+
+export const Ability = () => {
+  index.value = 0;
+  distance.value = 0;
+};

@@ -34,9 +34,10 @@
           >
             <p
               class="py-3 text-lg text-left cursor-default text_color"
-              v-for="musicItem in musicItemList.values()"
+              v-for="(musicItem, index) in musicItemList.values()"
               :key="musicItem.playTime"
               :_id="musicItem.playTime"
+              :id="index"
             >
               {{ musicItem.lyc }}
             </p>
@@ -95,12 +96,22 @@ const point = computed(() => {
   return lyricNodeRect.offsetHeight / lyricNodeRect.scrollHeight;
 });
 
-const offsetDist = computed(
+const offsetDiff = computed(
   () => (slider.value?.offsetHeight || 0) / lyricNodeRect.scrollHeight
 );
 
+const pointDistance = computed(() => {
+  const distanceVal = distance.value * 2;
+
+  return distanceVal > lyricNodeRect.scrollHeight
+    ? lyricNodeRect.scrollHeight
+    : distanceVal;
+});
+
 const scrollBarTop = computed(() => {
-  return point.value * distance.value - offsetDist.value;
+  return (
+    point.value * pointDistance.value - offsetDiff.value * pointDistance.value
+  );
 });
 
 function lycSplice(iterator: IterableIterator<RegExpMatchArray>) {
@@ -140,7 +151,8 @@ function childrenMapNode(stopWatch: Function) {
 
   for (let i = 0; i < len; i++) {
     const el = childrenList![i];
-    const id = +el?.getAttribute("_id")!;
+    const id = +el.getAttribute("_id")!;
+    const indexId = +el.getAttribute("id")!;
     const musicItem = musicItemList.value.get(id)!;
 
     fastdom.measure(() => {
@@ -149,6 +161,7 @@ function childrenMapNode(stopWatch: Function) {
     });
 
     musicItem.node = shallowRef(el);
+    musicItem.indexId = indexId;
   }
 }
 
@@ -156,10 +169,12 @@ const stopWatch = watch(musicItemList.value, () => {
   nextTick().then(() => {
     const node = lyricNode.value!;
 
-    lyricNodeRect.offsetHeight = node.offsetHeight;
-    lyricNodeRect.scrollHeight = node.scrollHeight - node.offsetHeight;
+    setTimeout(() => {
+      lyricNodeRect.offsetHeight = node.offsetHeight;
+      lyricNodeRect.scrollHeight = node.scrollHeight - node.offsetHeight;
 
-    childrenMapNode(stopWatch);
+      childrenMapNode(stopWatch);
+    });
   });
 });
 </script>

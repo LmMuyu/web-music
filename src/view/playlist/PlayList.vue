@@ -10,16 +10,34 @@
       ></PlayListMain>
     </el-main>
     <el-footer class="flex items-center relative padd">
-      <div class="bg-blue-400 h-full w-full">
-        <Audio
-          :src="audiosrc"
-          :musicName="unref(musicInfo)?.name"
-          :musicImage="unref(musicInfo)?.picUrl"
-          background="#ff7675"
-          @currPlayTime="currPlayTime"
-          :playStatus="checkOption"
-        ></Audio>
+      <div class="absolute right-5 -top-4">
+        <svg
+          width="18"
+          height="12"
+          class="cursor-pointer"
+          style="fill: none; stroke: black; stroke-width: 2"
+        >
+          <polyline points="0 12,9 0,18 12"></polyline>
+        </svg>
       </div>
+
+      <el-row class="bg-blue-400 w-full h-full">
+        <el-col :span="20">
+          <Audio
+            :src="audiosrc"
+            :musicName="unref(musicInfo)?.name"
+            :musicImage="unref(musicInfo)?.picUrl"
+            background="#ff7675"
+            @currPlayTime="currPlayTime"
+            :playStatus="checkOption"
+          ></Audio
+        ></el-col>
+        <el-col :span="4">
+          <div class="flex items-center w-full h-full">
+            <i class="iconfont iconindent cursor-pointer"></i>
+          </div>
+        </el-col>
+      </el-row>
     </el-footer>
   </el-container>
 </template>
@@ -34,7 +52,7 @@ import {
 } from "../../api/playList/index";
 import { musicItemList } from "./hooks/data";
 import { musicDetail } from "../../utils/musicDetail";
-import { lycHighlightPos } from "./hooks/methods";
+import { Ability, lycHighlightPos } from "./hooks/methods";
 
 import Audio from "/comps/player/Audio.vue";
 import PlayListMain from "./components/PlayListMain.vue";
@@ -44,6 +62,8 @@ import {
   ElMain,
   ElFooter,
   ElMessage,
+  ElRow,
+  ElCol,
 } from "element-plus";
 
 import type { Singer as vocalist } from "../../utils/musicDetail";
@@ -91,6 +111,8 @@ function isPlayer() {
 }
 
 function currPlayTime(time: string) {
+  if (Number(time) < 1) Ability();
+
   isPlayer();
 
   const playTime = parseInt(time);
@@ -101,7 +123,7 @@ function currPlayTime(time: string) {
   if (!preNode) preNode = currNode;
 
   if (currNode !== preNode) {
-    lycHighlightPos(musicItem.top); //获取歌词高亮后
+    lycHighlightPos(musicItem.top, musicItemList, musicItem.indexId); //获取歌词高亮后
   }
 
   if (currNode !== preNode) {
@@ -161,6 +183,8 @@ getMusicDetail(musicId)
   });
 </script>
 <style scoped lang="scss">
+@include Iconfont(#2c3e50, 24);
+
 @mixin position {
   position: absolute;
   top: 0;
