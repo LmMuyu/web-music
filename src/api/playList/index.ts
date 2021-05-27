@@ -36,3 +36,13 @@ export function getLyrics(id: string) {
     },
   });
 }
+
+export function getRecord(uid: number, type: 1 | 0 = 1) {
+  return request({
+    url: "/user/record",
+    params: {
+      uid,
+      type,
+    },
+  });
+}

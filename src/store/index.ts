@@ -1,9 +1,12 @@
 import { reactive } from "@vue/reactivity";
 import { createStore } from "vuex";
+
 import actions from "./actions";
 import getters from "./getters";
 import modules from "./modules";
 import mutations from "./mutations";
+
+import { findLoginInfo } from "./methods";
 
 import type { State } from "./type";
 
@@ -11,7 +14,7 @@ const store = createStore<State>({
   state() {
     return {
       countriesCode: null,
-      userInfo: null,
+      userInfo: findLoginInfo(),
       musicInfo: null,
     };
   },

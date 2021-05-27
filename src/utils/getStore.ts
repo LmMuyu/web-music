@@ -1,7 +1,5 @@
-import { ComponentInternalInstance } from "@vue/runtime-core";
+import { useStore } from "vuex";
 import type { Store } from "vuex";
 import type { State } from "../store/type";
 
-export function getStore(instance: ComponentInternalInstance): Store<State> {
-  return instance?.appContext.config.globalProperties.$store;
-}
+export const getStore = (): Store<State> => useStore();

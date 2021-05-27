@@ -34,7 +34,10 @@
         ></el-col>
         <el-col :span="4">
           <div class="flex items-center w-full h-full">
-            <i class="iconfont iconindent cursor-pointer"></i>
+            <i
+              class="iconfont iconindent cursor-pointer"
+              @click="openDrawer"
+            ></i>
           </div>
         </el-col>
       </el-row>
@@ -53,18 +56,11 @@ import {
 import { musicItemList } from "./hooks/data";
 import { musicDetail } from "../../utils/musicDetail";
 import { Ability, lycHighlightPos } from "./hooks/methods";
+import { openDrawer } from "./components/PlayListHistory";
 
 import Audio from "/comps/player/Audio.vue";
 import PlayListMain from "./components/PlayListMain.vue";
-import {
-  ElContainer,
-  ElHeader,
-  ElMain,
-  ElFooter,
-  ElMessage,
-  ElRow,
-  ElCol,
-} from "element-plus";
+import { ElContainer, ElMain, ElFooter, ElRow, ElCol } from "element-plus";
 
 import type { Singer as vocalist } from "../../utils/musicDetail";
 
