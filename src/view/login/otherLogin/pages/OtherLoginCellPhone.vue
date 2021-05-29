@@ -68,7 +68,13 @@
     </el-main>
     <el-footer
       height="48px"
-      class="absolute left-0 right-0 bottom-0 border-t-2 border-solid border-gray-300"
+      class="
+        absolute
+        left-0
+        right-0
+        bottom-0
+        border-t-2 border-solid border-gray-300
+      "
     >
       <OtherLoginCellPhoneFooter />
     </el-footer>
@@ -79,7 +85,7 @@ import {
   computed,
   getCurrentInstance,
   onBeforeUnmount,
-  inject
+  inject,
 } from "@vue/runtime-core";
 import { reactive, ref, toRaw } from "@vue/reactivity";
 
@@ -95,7 +101,6 @@ import { login } from "../hooks/login";
 
 import type { UserInfo, TokenJsonStr } from "../../../../store/type";
 
-
 const formData = reactive({
   phoneRes: false,
   countries: "+86",
@@ -110,13 +115,13 @@ const vccd = ref(0); //过多久验证码才能重新获取
 const deaultVccdTime = 60; //过多久验证码才能重新获取
 const disabled = ref(true); //禁用发送验证码按钮
 
-const store = getStore(getCurrentInstance()!);
+const store = getStore();
 
-const cancelComp = inject<Function>("cancelComp") || (() => { });
+const cancelComp = inject<Function>("cancelComp") || (() => {});
 
 (async function () {
   try {
-    const instance = (getCurrentInstance() as unknown) as {
+    const instance = getCurrentInstance() as unknown as {
       type: {
         __file: string;
       };
@@ -147,7 +152,6 @@ function logging({
   if (hasPassword) {
     disabled.value = false;
   }
-  console.log(hasPassword + "-----" + nickname);
 }
 
 //验证码倒计时
@@ -184,25 +188,22 @@ const countDownFn = (function () {
 
 function phoneLogin() {
   login(formData, ({ data }: any) => {
-    const { bindings } = data
-    const userData = bindings[1]
+    const { bindings } = data;
+    const userData = bindings[1];
 
     const userInfo: UserInfo = {
       id: userData.id,
       token: data.token,
       userID: userData.userId,
-      tokenJsonStr: createTokenJsonStr(userData)
+      tokenJsonStr: createTokenJsonStr(userData),
     };
 
-
-
-    store.dispatch("getUserInfo", [userInfo, cancelComp as () => void])
+    store.dispatch("getUserInfo", [userInfo, cancelComp as () => void]);
   });
 }
 
-
 function createTokenJsonStr(userData: UserInfo): TokenJsonStr {
-  return JSON.parse((userData.tokenJsonStr as unknown as string))
+  return JSON.parse(userData.tokenJsonStr as unknown as string);
 }
 
 onBeforeUnmount(() => {

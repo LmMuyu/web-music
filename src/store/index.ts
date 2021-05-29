@@ -1,4 +1,3 @@
-import { reactive } from "@vue/reactivity";
 import { createStore } from "vuex";
 
 import actions from "./actions";

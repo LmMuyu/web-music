@@ -20,12 +20,14 @@
     </div>
   </div>
 </template>
-<script setup lang='ts'>
-import { defineProps, defineAsyncComponent, ref } from "vue"
+<script setup lang="ts">
+import { defineProps, defineAsyncComponent, ref } from "vue";
 import type { PropType } from "vue";
 
 import { ElImage } from "element-plus";
-const ShowUserInfomodule = defineAsyncComponent(() => import("./components/ShowUserInfomodule.vue"))
+const ShowUserInfomodule = defineAsyncComponent(
+  () => import("./components/ShowUserInfomodule.vue")
+);
 
 import { mouseEnter, mouseLeave } from "./hooks/methods";
 
@@ -34,13 +36,10 @@ import type { UserInfo } from "../../../store/type";
 const props = defineProps({
   userInfo: {
     type: Object as PropType<UserInfo>,
-    default: () => { }
-  }
-})
+    default: () => {},
+  },
+});
 
-const isEnter = ref(false)
-
-console.log(props.userInfo);
+const isEnter = ref(false);
 </script>
-<style scoped lang='scss'>
-</style> 
+<style scoped lang="scss"></style>

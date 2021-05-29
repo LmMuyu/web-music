@@ -76,15 +76,15 @@
 </template>
 
 <script setup lang="ts">
-import { computed, getCurrentInstance, reactive, ref, toRefs } from "vue";
+import { computed, reactive, ref, toRefs } from "vue";
 import { useRoute } from "vue-router";
 
 import { onSearch } from "./components/search/api/onSearch";
 import { searchDefault } from "./api/app/searchDefault";
 import onLogin from "./view/login/login";
 import { list } from "./headerList";
+import { useStore } from "vuex";
 import router from "./routes";
-import store from "./store";
 
 import SearchShowTheBar from "/comps/search/components/SearchShowTheBar.vue";
 import ShowUserInfo from "/layout/Index/showUserInfo/ShowUserInfo.vue";
@@ -94,8 +94,8 @@ import { ElLink } from "element-plus";
 
 import type { UserInfo } from "./store/type";
 
-const ctx = getCurrentInstance()!;
-ctx.appContext.config.globalProperties.store.dispatch("countriesCode");
+const store = useStore();
+store.dispatch("countriesCode");
 
 const header = reactive({
   searchDefault: null,
@@ -150,9 +150,6 @@ function returnResData(keyword: string, data: Record<string, any>[]) {
   setTimeout(() => {
     showBar(!showTheBar.showBar, keyword);
   });
-  
-  
-  // console.log(data);
 }
 
 function onBlur(blur: boolean) {

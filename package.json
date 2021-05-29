@@ -2,6 +2,7 @@
   "name": "web-music",
   "version": "0.0.0",
   "scripts": {
+    "start": "concurrently \"yarn dev\" \"yarn http\"",
     "dev": "vite",
     "http": "nodemon  F:/projectTi/NeteaseCloudMusicApi/app.js",
     "build": "vue-tsc --noEmit && vite build",
@@ -12,6 +13,7 @@
     "@types/node": "^14.14.35",
     "autoprefixer": "^10.2.5",
     "axios": "^0.21.1",
+    "concurrently": "^6.2.0",
     "dayjs": "^1.10.4",
     "element-plus": "^1.0.2-beta.35",
     "fastdom": "^1.0.10",

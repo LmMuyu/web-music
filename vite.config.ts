@@ -63,6 +63,7 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
     },
     server: {
       port: Number(VITE_PORT),
+      open: true,
     },
   };
 };

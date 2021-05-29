@@ -2,24 +2,19 @@ import { reactive } from "@vue/reactivity";
 import type { State, UserInfo } from "./type";
 import type { MusicDetailOption } from "../utils/musicDetail";
 
-async function conversionMd5Data(commit: string) {
-  const blob = new Blob([commit]);
-
-  const reader = new FileReader();
-  reader.onload = function () {
-    console.log(reader.result);
-  };
-
-  reader.readAsText(blob);
+async function conversionData(commit: string) {
+  localStorage.setItem("userInfo", commit);
 }
 
 function setLocalStorage(token: number, commitInfo: UserInfo) {
+  console.log(token);
+
   if (!token) {
     return;
   }
   localStorage.setItem("token", String(token));
   const strCommitInfo = JSON.stringify(commitInfo);
-  conversionMd5Data(strCommitInfo);
+  conversionData(strCommitInfo);
 }
 
 export default {
@@ -27,6 +22,8 @@ export default {
     state.countriesCode = commit;
   },
   setUserInfo(state: State, commitInfo: UserInfo) {
+    console.log(state);
+
     Promise.resolve(() => setLocalStorage(commitInfo.token, commitInfo));
     state.userInfo = reactive<UserInfo>(commitInfo);
   },

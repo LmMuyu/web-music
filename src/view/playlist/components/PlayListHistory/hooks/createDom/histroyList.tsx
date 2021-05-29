@@ -1,11 +1,9 @@
-import { useStore } from "vuex";
-import { getRecord } from "../../../../../../api/playList";
-import { getStore } from "../../../../../../utils/getStore";
+// import { useStore } from "vuex";
+// import { getRecord } from "../../../../../../api/playList";
+// import { getStore } from "../../../../../../utils/getStore";
 
 async function createTemplate() {
   // const { state } = getStore();
-  console.log(useStore());
-
   // if (state.userInfo) {
   //   // const record = await getRecord();
   //   // console.log(record);
@@ -15,7 +13,5 @@ async function createTemplate() {
 }
 
 export function historyList() {
-  createTemplate();
-
-  return new Array(10).fill(1).map((v, i) => <div key={i}>{i}</div>);
+  return new Array(10).fill(1).map((v, i) => <span key={i}>{i}</span>);
 }

@@ -1,5 +1,6 @@
 import { countries } from "../api/app/requestMain";
 import { getUserInfoData } from "../api/app/userInfo";
+import { useLocalStorage } from "../utils/useLocalStorage";
 
 import type { UserInfo } from "./type";
 
@@ -9,6 +10,7 @@ export default {
   async countriesCode(context: { commit: (arg0: string, arg1: any) => void }) {
     try {
       const { data } = await countries();
+      // const code = useLocalStorage("countries", JSON.stringify(data));
 
       context.commit("countriesCode", data);
     } catch (err) {
@@ -17,9 +19,9 @@ export default {
   },
   async getUserInfo(
     state: { commit: Commit },
-    playload: [UserInfo, () => void]
+    payload: [UserInfo, () => void]
   ) {
-    const [userinfoData, cancelCompFu] = playload;
+    const [userinfoData, cancelCompFu] = payload;
 
     if (!userinfoData) {
       return;
