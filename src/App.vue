@@ -2,7 +2,7 @@
   <GridBar
     :listData="list"
     :turnonSlot="true"
-    :styleRow="[styleRow.backgroundColor._object]"
+    :styleRow="[unref(styleRow.backgroundColor)]"
     :class="['py-3']"
     :sizeSpan="[6, 12, 6]"
     v-if="!showTag"
@@ -20,7 +20,7 @@
       <ul class="grid_ul h-full w-full list-none text-xl flex items-center">
         <li v-for="(tag, index) in handerCenter.tags" :key="index">
           <router-link :to="tag.path">
-            <p :style="styleRow.color._object">
+            <p :style="unref(styleRow.color)">
               {{ tag.text }}
             </p>
           </router-link>
@@ -29,7 +29,7 @@
     </template>
 
     <template v-slot:slot_right>
-      <GridBar :sizeSpan="[12, 12]" :styleRow="styleRow.height._object">
+      <GridBar :sizeSpan="[12, 12]" :styleRow="unref(styleRow.height)">
         <template v-slot:slot_0>
           <div class="relative flex items-start flex-col h-full w-full">
             <!-- <Search
@@ -76,7 +76,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, ref, toRefs } from "vue";
+import { computed, reactive, ref, toRefs, unref } from "vue";
+
 import { useRoute } from "vue-router";
 
 import { onSearch } from "./components/search/api/onSearch";
@@ -94,6 +95,15 @@ import { ElLink } from "element-plus";
 
 import type { UserInfo } from "./store/type";
 
+type linkType =
+  | "info"
+  | "primary"
+  | "success"
+  | "warning"
+  | "danger"
+  | "default"
+  | undefined;
+
 const store = useStore();
 store.dispatch("countriesCode");
 
@@ -103,7 +113,7 @@ const header = reactive({
 
 const userInfo = ref<UserInfo | null>(null);
 const showTag = ref(false);
-const linkType = ref("info");
+const linkType = ref<linkType>("info");
 const showTheBar = reactive<{
   showBar: boolean;
   keyword: string;

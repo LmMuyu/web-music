@@ -134,12 +134,8 @@ const cancelComp = inject<Function>("cancelComp") || (() => {});
 })();
 
 const country = computed(() => {
-  const countriesCode = toRaw(store.state.countriesCode);
-
-  return countriesCode.data.reduce(
-    (pre, cur) => pre.concat(...cur.countryList),
-    []
-  );
+  const countriesCode = toRaw(store.state.countriesCode)!;
+  return countriesCode.reduce((pre, cur) => pre.concat(...cur.countryList), []);
 });
 
 function logging({

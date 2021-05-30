@@ -1,11 +1,7 @@
 import type { MusicDetailOption } from "../../utils/musicDetail";
 
-interface CuntriesCode {
-  data: Array<Record<string, any>>;
-}
-
 export interface State {
-  countriesCode: null | CuntriesCode;
+  countriesCode: null | Array<Record<string, any>>;
   userInfo: null | UserInfo;
   musicInfo: null | MusicDetailOption;
 }

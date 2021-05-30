@@ -1,8 +1,8 @@
 import request from "../../utils/request";
 
-export  function countries(url = "/countries/code/list") {
+export function countries() {
   return request({
     method: "GET",
-    url,
+    url: "/countries/code/list",
   });
 }

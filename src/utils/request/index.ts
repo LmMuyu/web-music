@@ -4,6 +4,7 @@ import setCatch from "../../utils/catch/setCatch";
 import { promptbox } from "../../components/promptBox";
 
 import type { AxiosRequestConfig, Canceler, CancelTokenStatic } from "axios";
+import { setCookie } from "./methods";
 
 const catchMethods = setCatch();
 
@@ -43,11 +44,15 @@ export default function request(config: AxiosRequestConfig) {
 
   instance.interceptors.response.use(
     (httpRes) => {
+      // (httpRes.data.cookie as string).length > 0 &&
+      //   setCookie(httpRes.data.cookie);
+
       return httpRes;
     },
     (config) => {
       if (config.response) {
         const response = config.response;
+
         if (response.status) {
           switch (response.status) {
             case 404:
