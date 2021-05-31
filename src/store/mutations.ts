@@ -22,8 +22,6 @@ export default {
     state.countriesCode = commit;
   },
   setUserInfo(state: State, commitInfo: UserInfo) {
-    console.log(state);
-
     Promise.resolve(() => setLocalStorage(commitInfo.token, commitInfo));
     state.userInfo = reactive<UserInfo>(commitInfo);
   },

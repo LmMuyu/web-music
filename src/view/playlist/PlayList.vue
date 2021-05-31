@@ -63,6 +63,7 @@ import PlayListMain from "./components/PlayListMain.vue";
 import { ElContainer, ElMain, ElFooter, ElRow, ElCol } from "element-plus";
 
 import type { Singer as vocalist } from "../../utils/musicDetail";
+import { useWindowTitle } from "../../utils/useWindowTitle";
 
 interface MusicInfo {
   id: number;
@@ -96,6 +97,10 @@ const singer = computed(
     ""
 );
 
+console.log(musicInfo.value?.name + "-" + singer.value);
+
+const title = useWindowTitle();
+
 let preNode: Element | null = null;
 
 function isPlayer() {
@@ -116,6 +121,8 @@ function currPlayTime(time: string) {
   const currNode = musicItem && unref(musicItem.node)!;
 
   if (currNode === void 0 || currNode === preNode) return;
+  title.value = musicItem.lyc;
+
   if (!preNode) preNode = currNode;
 
   if (currNode !== preNode) {

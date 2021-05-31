@@ -44,8 +44,8 @@ export default function request(config: AxiosRequestConfig) {
 
   instance.interceptors.response.use(
     (httpRes) => {
-      // (httpRes.data.cookie as string).length > 0 &&
-      //   setCookie(httpRes.data.cookie);
+      (httpRes?.data?.cookie as string)?.length > 0 &&
+        Promise.resolve().then(() => setCookie(httpRes.data.cookie));
 
       return httpRes;
     },
