@@ -13,15 +13,16 @@
   </ElRow>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed, defineProps } from "vue";
+import type { PropType } from "vue";
 import { ElRow, ElCol } from "element-plus";
 
 const props = defineProps({
   sizeSpan: {
-    type: Array,
+    type: Array as PropType<number[]>,
     default: () => [8, 8, 8],
-    validator(value) {
+    validator(value: number[]) {
       return value.reduce((pre, next) => (pre += next), 0) === 24;
     },
   },
@@ -43,7 +44,7 @@ const props = defineProps({
   styleCol: Array | Object,
 });
 
-const createRende = (index, sizeSpan, data = {}) => ({
+const createRende = (index: number, sizeSpan: number, data = {}) => ({
   ...data,
   sizeSpan,
   _id: "_" + index,

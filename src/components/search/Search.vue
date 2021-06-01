@@ -1,6 +1,6 @@
 <template>
-  <div class="flex justify-center items-center h-full">
-    <span class="icon_text bg-white py-1 px-1 rounded-l-lg">
+  <div class="flex justify-center items-center h-full" :class="calss">
+    <span class="icon_text bg-white py-1 px-1 rounded-l-lg" v-if="isIcon">
       <i class="iconfont iconsousuo"></i>
     </span>
     <input
@@ -13,13 +13,13 @@
       v-model="text"
       class="text-black w-48 py-2 px-2 border-none outline-none rounded-r-lg"
     />
-    <div>
-    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { defineEmit, defineProps, customRef } from "vue";
+
+import { keyupEnter } from "./api/onSearch";
 
 const props = defineProps({
   type: {
@@ -36,8 +36,13 @@ const props = defineProps({
   },
   disabled: {
     type: Boolean,
-    default: true
-  }
+    default: true,
+  },
+  isIcon: {
+    type: Boolean,
+    default: true,
+  },
+  calss: [String, Array],
 });
 
 const ctxEmit = defineEmit(["change", "focus", "blur"]);

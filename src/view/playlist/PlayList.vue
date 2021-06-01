@@ -10,14 +10,14 @@
       ></PlayListMain>
     </el-main>
     <el-footer class="flex items-center relative padd">
-      <div class="absolute right-5 -top-4">
+      <div class="absolute right-5 -top-3">
         <svg
-          width="18"
-          height="12"
+          width="16"
+          height="10"
           class="cursor-pointer"
           style="fill: none; stroke: black; stroke-width: 2"
         >
-          <polyline points="0 12,9 0,18 12"></polyline>
+          <polyline points="0 10,8 0,16 10"></polyline>
         </svg>
       </div>
 

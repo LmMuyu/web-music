@@ -2,7 +2,7 @@
   <GridBar
     :listData="list"
     :turnonSlot="true"
-    :styleRow="[unref(styleRow.backgroundColor)]"
+    :styleRow="{ backgroundColor: styles.backgroundColor }"
     :class="['py-3']"
     :sizeSpan="[6, 12, 6]"
     v-if="!showTag"
@@ -20,7 +20,7 @@
       <ul class="grid_ul h-full w-full list-none text-xl flex items-center">
         <li v-for="(tag, index) in handerCenter.tags" :key="index">
           <router-link :to="tag.path">
-            <p :style="unref(styleRow.color)">
+            <p :style="styles.color">
               {{ tag.text }}
             </p>
           </router-link>
@@ -29,21 +29,10 @@
     </template>
 
     <template v-slot:slot_right>
-      <GridBar :sizeSpan="[12, 12]" :styleRow="unref(styleRow.height)">
+      <GridBar :sizeSpan="[12, 12]" :styleRow="{ height: styles.height }">
         <template v-slot:slot_0>
           <div class="relative flex items-start flex-col h-full w-full">
-            <!-- <Search
-              @change="onSearch"
-              @focus="onSearch"
-              @blur="onBlur"
-              :returnresdata="returnResData"
-              :placeholder="header?.searchDefault?.showKeyword"
-            />
-            <SearchShowTheBar
-              :renderData="showTheBar.renderData"
-              :keyword="showTheBar.keyword"
-              v-if="showTheBar.showBar"
-            /> -->
+            <button @click="mountApp">点击</button>
           </div>
         </template>
 
@@ -76,21 +65,17 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, ref, toRefs, unref } from "vue";
+import { computed, reactive, ref } from "vue";
 
-import { useRoute } from "vue-router";
-
-import { onSearch } from "./components/search/api/onSearch";
 import { searchDefault } from "./api/app/searchDefault";
 import onLogin from "./view/login/login";
 import { list } from "./headerList";
 import { useStore } from "vuex";
+import { mountApp } from "./layout/Index/search/app";
 import router from "./routes";
 
-import SearchShowTheBar from "/comps/search/components/SearchShowTheBar.vue";
 import ShowUserInfo from "/layout/Index/showUserInfo/ShowUserInfo.vue";
 import GridBar from "/comps/gridBar/GridBar.vue";
-import Search from "/comps/search/Search.vue";
 import { ElLink } from "element-plus";
 
 import type { UserInfo } from "./store/type";
@@ -114,23 +99,12 @@ const header = reactive({
 const userInfo = ref<UserInfo | null>(null);
 const showTag = ref(false);
 const linkType = ref<linkType>("info");
-const showTheBar = reactive<{
-  showBar: boolean;
-  keyword: string;
-  renderData: Record<string, any>[];
-}>({
-  showBar: false,
-  keyword: "",
-  renderData: [],
-});
 
 const styles = reactive({
   backgroundColor: "rgb(51, 51, 51, 1)",
   color: "rgb(204,204,204,1)",
   height: "100%",
 });
-
-const styleRow = { ...toRefs(styles) };
 
 const gridWidth = computed(() => {
   for (const value of list) {
@@ -146,26 +120,6 @@ async function search() {
 }
 
 search();
-
-const showBar = (show: boolean, keyword: string = "") => {
-  if (showTheBar.showBar && keyword !== "") return;
-
-  showTheBar.showBar = show;
-};
-
-function returnResData(keyword: string, data: Record<string, any>[]) {
-  showTheBar.keyword = keyword;
-  showTheBar.renderData = data;
-
-  setTimeout(() => {
-    showBar(!showTheBar.showBar, keyword);
-  });
-}
-
-function onBlur(blur: boolean) {
-  blur = blur ? blur : false;
-  showBar(blur);
-}
 
 router.beforeEach((to, from, next) => {
   const meta = to.meta;

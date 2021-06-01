@@ -24,3 +24,5 @@ export async function onSearch(value: string, _retrunResDataFn: Function) {
 
   _retrunResDataFn(value, searchDataFilterResList);
 }
+
+export function keyupEnter() {}
