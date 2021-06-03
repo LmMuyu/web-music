@@ -38,8 +38,8 @@ export default defineComponent({
     }
 
     function winScroll(e: Event) {
-      e.preventDefault();
       e.stopPropagation();
+      e.preventDefault();
     }
 
     onMounted(() => {
@@ -70,9 +70,7 @@ export default defineComponent({
               inputClass="w-full h-1/2 py-0 px-0 "
             />
           </div>
-          <div class="h-full" ref={mainContent}>
-            <IndexSearchReslut {...searchRes} />
-          </div>
+          <div class="h-full" ref={mainContent}></div>
         </div>
       </div>
     );

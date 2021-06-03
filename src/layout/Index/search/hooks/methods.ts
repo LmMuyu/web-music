@@ -1,10 +1,7 @@
-import { Ref } from "@vue/reactivity";
+import { ComputedRef, ref, Ref } from "@vue/reactivity";
+import { onUnmounted, watch } from "@vue/runtime-core";
 import { isType } from "../../../../utils/methods";
-import {
-  MusicDetailOption,
-  typeSinger,
-  singer,
-} from "../../../../utils/musicDetail";
+import { MusicDetailOption, typeSinger } from "../../../../utils/musicDetail";
 import { showTheBar } from "./data";
 
 export function returnResData(keyword: string, data: Record<string, any>[]) {
@@ -85,13 +82,24 @@ export class resultOptions implements MusicDetailOption {
 
 export function mainContentHeight(
   node: Ref<HTMLElement | null>,
-  column: number
+  column: ComputedRef<number>,
+  eachColH: Ref<number>
 ) {
-  if (!node.value) return 0;
+  const stop = watch(
+    column,
+    (value) => {
+      if (!node.value || !value) return 0;
 
-  const mainNode = node.value;
-  const height = mainNode.clientHeight;
-  const eachColH = Math.round(height / column);
+      const mainNode = node.value;
+      const height = mainNode.clientHeight;
+      const colH = Math.round(height / value);
 
-  return eachColH;
+      eachColH.value = colH;
+    },
+    {
+      immediate: true,
+    }
+  );
+
+  onUnmounted(() => stop());
 }
