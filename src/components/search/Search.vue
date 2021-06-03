@@ -11,15 +11,18 @@
       @blur="onBlur"
       @keydown.enter="keyupEnter"
       v-model="text"
-      class="text-black w-48 py-2 px-2 border-none outline-none rounded-r-lg"
+      class="text-black w-48 py-2 px-2 border-none outline-none"
+      :class="[{ 'rounded-r-lg': isIcon }, setClass]"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import { defineEmit, defineProps, customRef } from "vue";
+import { defineEmit, defineProps, customRef, computed } from "vue";
 
 import { keyupEnter } from "./api/onSearch";
+
+import type { PropType } from "vue";
 
 const props = defineProps({
   type: {
@@ -43,6 +46,9 @@ const props = defineProps({
     default: true,
   },
   calss: [String, Array],
+  inputClass: {
+    type: [String, Array] as PropType<string | string[]>,
+  },
 });
 
 const ctxEmit = defineEmit(["change", "focus", "blur"]);
@@ -90,6 +96,12 @@ const changeModel = (value?: any, delay: number = 300) => {
 };
 
 const text = changeModel();
+
+const setClass = computed(() => {
+  return typeof props.inputClass === "string"
+    ? props.inputClass
+    : props.inputClass?.join("");
+});
 </script>
 
 <style scoped lang="scss">

@@ -1,31 +1,47 @@
+import { isType } from "./methods";
+import { allType } from "./type";
+
 export interface MusicDetailOption {
   id: number;
   name: string;
   picUrl: string;
-  ar: Singer;
+  ar: allType<typeSinger>;
 }
 
-export interface Singer {
-  id: number;
-  name: string;
+export interface typeSinger {
+  id?: number;
+  userId?: number;
+  name?: string;
+  nickname?: string;
+  userName?: string;
 }
 
-type singerArr = Array<Singer>;
+type singerArr = Array<typeSinger>;
 
-class singer {
+const listID = ["id", "userId"];
+const listName = ["name", "nickname", "userName"];
+
+export class singer {
   id: number;
   name: string;
 
-  constructor(list: singerArr) {
-    const { id, name } = this.singerInfo(list);
+  constructor(detailInfo: typeSinger) {
+    const { id, name } = this.singerInfo(detailInfo);
 
     this.id = id;
     this.name = name;
   }
-  singerInfo(list: singerArr) {
+
+  singerInfo(detailInfo: any) {
+    // console.log(detailInfo);
+    const keys = Object.keys(detailInfo);
+
+    const id = listID.find((v) => keys.includes(v))!;
+    const name = listName.find((v) => keys.includes(v))!;
+
     return {
-      id: 1,
-      name: list.map((singer) => singer.name).join("/"),
+      id: detailInfo[id],
+      name: detailInfo[name],
     };
   }
 }
@@ -35,7 +51,7 @@ export class musicDetail {
   name: string;
   picUrl: string;
   singer: Record<string, any>[];
-  singerInfo: singer;
+  singerInfo: allType<typeSinger>;
 
   constructor(options: MusicDetailOption) {
     const { id, name, picUrl, ar } = this.runMusicDetail(options);
@@ -44,12 +60,18 @@ export class musicDetail {
     this.name = name;
     this.picUrl = picUrl;
     this.singer = ar;
-    this.singerInfo = new singer(ar);
+    this.singerInfo = this.setSingerInfo(ar);
   }
 
   runMusicDetail(options: Record<string, any>) {
-    const detail = options[0];
+    const detail = options?.[0] || options;
 
-    return { ...detail.al, ar: detail.ar };
+    return { ...(detail?.al || detail), ar: detail.ar };
+  }
+
+  setSingerInfo(dataInfo: any) {
+    return isType(dataInfo) === "Array"
+      ? (dataInfo as singerArr).map((info) => new singer(info))
+      : new singer(dataInfo);
   }
 }

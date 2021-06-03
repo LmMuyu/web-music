@@ -52,6 +52,11 @@ const routes: (RouteRecordRaw & META)[] = [
     name: "Search",
     component: () => import("../view/search/Search.vue"),
   },
+  {
+    path: "/searchresult",
+    name: "searchResult",
+    component: () => import("../view/searchresult/SearchResult.vue"),
+  },
 ];
 
 export default routes;

@@ -1,7 +1,17 @@
 <script lang="tsx">
-import { defineComponent, Teleport } from "@vue/runtime-core";
+import {
+  defineComponent,
+  onBeforeUnmount,
+  onMounted,
+  reactive,
+} from "@vue/runtime-core";
+
+import { returnResData } from "./hooks/methods";
+import { onSearch } from "../../../components/search/api/onSearch";
+
+import { mainContent } from "./hooks/data";
 import Search from "../../../components/search/Search.vue";
-import { returnResData, onBlur } from "./hooks/methods";
+import IndexSearchReslut from "./components/IndexSearchReslut.vue";
 
 import type { PropType } from "vue";
 
@@ -15,32 +25,54 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const deleteIcon = () => {
-      return (
-        <div
-          class="absolute right-0 top-2 cursor-pointer"
-          onClick={props.unmountApp}
-        >
-          <svg width="16" height="16" style="stroke:#fff;stroke-width:2;">
-            <line x1="0" y1="0" x2="16" y2="16"></line>
-            <line x1="16" y1="0" x2="0" y2="16"></line>
-          </svg>
-        </div>
-      );
-    };
+    const searchRes = reactive({
+      keyword: "",
+      musicList: [],
+    });
+
+    function onChange(keyword: string) {
+      onSearch(keyword, (keyword: string, result: any) => {
+        searchRes.keyword = keyword;
+        searchRes.musicList = result;
+      });
+    }
+
+    function winScroll(e: Event) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    onMounted(() => {
+      window.addEventListener("scroll", winScroll, false);
+    });
+
+    onBeforeUnmount(() => {
+      window.removeEventListener("scroll", winScroll, false);
+    });
 
     return () => (
       <div>
-        <div class="absolutexy flex flex-col w-1/2  h-1/2 bg-gray-800">
-          {deleteIcon()}
-          <div class="h-1/4">
+        <div
+          onClick={props.unmountApp}
+          class="bg_color absolute top-0 bottom-0 left-0 right-0 pointer-events-auto"
+        ></div>
+        <div
+          class="absolutexy flex flex-col w-1/2 h-1/2 rounded-md overflow-y-hidden"
+          style="background-color:#576574"
+        >
+          <div class="h-1/6 flex justify-center w-full">
             <Search
-              {...{ on: { blur: onBlur } }}
+              {...{ onChange: onChange }}
               returnresdata={returnResData}
               isIcon={false}
+              disabled={false}
+              class="w-3/4"
+              inputClass="w-full h-1/2 py-0 px-0 "
             />
           </div>
-          <div class="h-3/4"></div>
+          <div class="h-full" ref={mainContent}>
+            <IndexSearchReslut {...searchRes} />
+          </div>
         </div>
       </div>
     );
