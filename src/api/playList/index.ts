@@ -46,3 +46,15 @@ export function getRecord(uid: number, type: 1 | 0 = 1) {
     },
   });
 }
+
+export function userRecord(uid: number, type?: "0" | "1") {
+  type = type || "0";
+
+  return request({
+    url: "/user/record",
+    params: {
+      uid,
+      type,
+    },
+  });
+}

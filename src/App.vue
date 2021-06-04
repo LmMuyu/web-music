@@ -20,7 +20,7 @@
       <ul class="grid_ul h-full w-full list-none text-xl flex items-center">
         <li v-for="(tag, index) in handerCenter.tags" :key="index">
           <router-link :to="tag.path">
-            <p :style="styles.color">
+            <p :style="{ color: styles.color }">
               {{ tag.text }}
             </p>
           </router-link>
@@ -31,8 +31,33 @@
     <template v-slot:slot_right>
       <GridBar :sizeSpan="[12, 12]" :styleRow="{ height: styles.height }">
         <template v-slot:slot_0>
-          <div class="relative flex items-start flex-col h-full w-full">
-            <button @click="mountApp">点击</button>
+          <div
+            class="
+              relative
+              flex
+              items-start
+              justify-center
+              flex-col
+              h-full
+              w-full
+            "
+          >
+            <button
+              class="
+                appicon
+                text-lg
+                outline-none
+                border-none
+                flex
+                justify-center
+                items-cneter
+              "
+              :style="{ color: styles.color }"
+              @click="mountApp"
+            >
+              <i class="iconfont iconsousuo1"></i>
+              <span class="px-1"> 点击搜索 </span>
+            </button>
           </div>
         </template>
 
@@ -67,16 +92,16 @@
 <script setup lang="ts">
 import { computed, reactive, ref } from "vue";
 
-import { searchDefault } from "./api/app/searchDefault";
-import onLogin from "./view/login/login";
-import { list } from "./headerList";
-import { useStore } from "vuex";
-import { mountApp } from "./layout/Index/search/app";
 import router from "./routes";
+import { useStore } from "vuex";
+import { list } from "./headerList";
+import onLogin from "./view/login/login";
+import { searchDefault } from "./api/app/searchDefault";
+import { mountApp } from "./layout/Index/search/app";
 
-import ShowUserInfo from "/layout/Index/showUserInfo/ShowUserInfo.vue";
-import GridBar from "/comps/gridBar/GridBar.vue";
 import { ElLink } from "element-plus";
+import GridBar from "/comps/gridBar/GridBar.vue";
+import ShowUserInfo from "/layout/Index/showUserInfo/ShowUserInfo.vue";
 
 import type { UserInfo } from "./store/type";
 
@@ -143,6 +168,10 @@ store.watch(
 @import "./css/normalize.css";
 
 @include Iconfont(red, 32);
+
+.appicon {
+  @include Iconfont(#dfe6e9, 14);
+}
 
 .text_in {
   line-height: inherit;

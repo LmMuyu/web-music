@@ -36,7 +36,7 @@
           <div class="flex items-center w-full h-full">
             <i
               class="iconfont iconindent cursor-pointer"
-              @click="openDrawer"
+              @click="openDrawer(record)"
             ></i>
           </div>
         </el-col>
@@ -45,7 +45,7 @@
   </el-container>
 </template>
 <script setup lang="ts">
-import { ref, computed, unref, watch, nextTick } from "vue";
+import { ref, computed, unref, watch, nextTick, onUnmounted } from "vue";
 import { useRoute } from "vue-router";
 
 import {
@@ -55,21 +55,24 @@ import {
 } from "../../api/playList/index";
 import { musicItemList } from "./hooks/data";
 import { musicDetail } from "../../utils/musicDetail";
-import { Ability, lycHighlightPos } from "./hooks/methods";
 import { openDrawer } from "./components/PlayListHistory";
+import { useWindowTitle } from "../../utils/useWindowTitle";
+import {
+  Ability,
+  lycHighlightPos,
+  recordData,
+  recordStorage,
+} from "./hooks/methods";
 
 import Audio from "/comps/player/Audio.vue";
 import PlayListMain from "./components/PlayListMain.vue";
 import { ElContainer, ElMain, ElFooter, ElRow, ElCol } from "element-plus";
 
-import type { Singer as vocalist } from "../../utils/musicDetail";
-import { useWindowTitle } from "../../utils/useWindowTitle";
-
 interface MusicInfo {
   id: number;
   name: string;
   picUrl: string;
-  singerInfo: vocalist;
+  singerInfo: any;
   singer: Record<string, any>[];
 }
 
@@ -81,6 +84,8 @@ const musicDetailInfo = ref({});
 const main = ref<HTMLElement | null>(null);
 const audiosrc = ref("");
 const checkOption = ref<checkOptions>({});
+
+const record = ref({});
 
 const bgimageUrl = ref("");
 
@@ -164,7 +169,7 @@ getMusicDetail(musicId)
     Promise.resolve(songs).then((music) => {
       musicInfo.value = new musicDetail(music);
       musicDetailInfo.value = music[0];
-      bgimageUrl.value = musicInfo.value?.picUrl;
+      bgimageUrl.value = (musicInfo.value && musicInfo.value.picUrl) || "";
     });
 
     return musicId;
@@ -184,7 +189,24 @@ getMusicDetail(musicId)
     if (!src) return newError("src" + ":" + "null");
     audiosrc.value = src;
   });
+
+recordStorage(record); //获取记录
+
+function Storage(e: StorageEvent) {
+  const { key, newValue } = e;
+
+  if (key === "userInfo" && newValue) {
+    recordData(newValue, record);
+  }
+}
+
+window.addEventListener("storage", Storage, false);
+
+onUnmounted(() => {
+  window.removeEventListener("storage", Storage, false);
+});
 </script>
+
 <style scoped lang="scss">
 @include Iconfont(#2c3e50, 24);
 

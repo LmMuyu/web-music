@@ -7,8 +7,11 @@ import {
 } from "./data";
 import { promptbox } from "../../../components/promptBox";
 import { reactive, Ref } from "@vue/reactivity";
+import { userRecord } from "../../../api/playList";
 
+import type { UserInfo } from "../../../store/type";
 import type { MatchItem, MatchItemList } from "../type";
+import { useStorage } from "../../../utils/useStorage";
 
 export function conversionItem(matchItem: MatchItem): MatchItem {
   const timeArr = String(matchItem.playTime).split(":");
@@ -122,3 +125,21 @@ export const Ability = () => {
   index.value = 0;
   distance.value = 0;
 };
+
+export async function recordData(record: string, recordData: Ref<Object>) {
+  const recording: UserInfo = JSON.parse(record);
+
+  const result = await userRecord(recording.userID, "0");
+
+  recordData.value = result;
+}
+
+export async function recordStorage(recordInfoData: Ref<Object>) {
+  const localData = await useStorage("userInfo", "", "local", {
+    isGet: "1",
+  });
+
+  if (!localData) return;
+
+  await recordData(localData.value, recordInfoData);
+}

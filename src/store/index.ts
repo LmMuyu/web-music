@@ -4,6 +4,7 @@ import actions from "./actions";
 import getters from "./getters";
 import modules from "./modules";
 import mutations from "./mutations";
+import initWatch from "./watch";
 
 import { findLoginInfo } from "./methods";
 
@@ -24,5 +25,7 @@ const store = createStore<State>({
   strict: true,
   devtools: true,
 });
+
+initWatch(store);
 
 export default store;

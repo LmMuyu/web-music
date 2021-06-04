@@ -1,11 +1,18 @@
 <script setup lang="tsx">
-import { defineComponent } from "@vue/runtime-core";
+import { defineComponent, getCurrentInstance } from "@vue/runtime-core";
 
 import { historyList } from "./hooks/createDom/histroyList";
 
 import { ElDrawer } from "element-plus";
 
+import type { PropType } from "vue";
+
 export default defineComponent({
+  props: {
+    record: {
+      type: Object as PropType<Readonly<Record<string, any>>>,
+    },
+  },
   setup() {
     const props = {
       showClose: false,
