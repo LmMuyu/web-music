@@ -1,8 +1,11 @@
-import { createApp } from "@vue/runtime-dom";
-import type { App } from "@vue/runtime-dom";
+import { createApp, nextTick } from "@vue/runtime-dom";
+
 import PlayListHistory from "./PlayListHistory.vue";
 
+import type { App } from "@vue/runtime-dom";
+
 let app: App<Element> | null = null;
+
 export function openDrawer(recordData: Record<string, any>) {
   const record = recordData.data;
 
@@ -14,4 +17,10 @@ export function openDrawer(recordData: Record<string, any>) {
   document.querySelector("#app")?.appendChild(div);
 
   app.mount(div);
+}
+
+export function unmountApp() {
+  nextTick(() => {
+    if (app) app.unmount();
+  });
 }
