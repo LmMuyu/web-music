@@ -26,7 +26,6 @@ export default defineComponent({
       showClose: false,
       withHeader: false,
       modelValue: true,
-      renderData: new Array(100).fill(1).map((v, i) => i),
     };
 
     // const playHistory = historyList();
@@ -35,6 +34,11 @@ export default defineComponent({
     const headerNode = ref<HTMLElement | null>(null);
 
     const drawerMainHeight = ref(0);
+
+    const renderData = new Array(100).fill(1).map((v, i) => ({
+      id: i,
+      value: i,
+    }));
 
     onMounted(() => {
       // debugger;
@@ -59,7 +63,11 @@ export default defineComponent({
             <p class="text-lg">历史记录</p>
           </header>
           <main>
-            <VirtualList scrollHeight={unref(drawerMainHeight)}></VirtualList>
+            <VirtualList
+              renderData={renderData}
+              height={24}
+              scrollHeight={unref(drawerMainHeight)}
+            ></VirtualList>
           </main>
         </ElDrawer>
       </>
