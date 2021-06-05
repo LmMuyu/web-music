@@ -1,17 +1,27 @@
 <template>
-  <div class="relative overflow-auto" @scroll="onScroll" ref="totalList">
-    <div class="absolute top-0 right-0 h-8 w-2 bg-black"></div>
+  <div
+    class="relative overflow-auto slider_track"
+    @scroll="onScroll"
+    ref="totalList"
+  >
     <div
-      class="slider_track flex flex-col"
+      class="absolute top-0 right-0 h-8 w-2"
+      :style="{ height: listHeight + 'px' }"
+      ref="bar_track"
+    ></div>
+    <div
+      class="flex flex-col"
       :style="{
         height: scrollHeight === 0 ? '100%' : scrollHeight + 'px',
-        transform,
+        transform: offsetTranslate,
       }"
+      ref="listItem"
     >
       <div
         v-for="item in sliceList"
         :key="item.id"
         class="h-8 flex items-center"
+        :_id="item.id"
       >
         {{ item.value }}
       </div>
@@ -22,9 +32,7 @@
 import {
   computed,
   defineProps,
-  getCurrentInstance,
   nextTick,
-  onMounted,
   onUnmounted,
   onUpdated,
   reactive,
@@ -32,7 +40,11 @@ import {
   watch,
 } from "@vue/runtime-core";
 
+import { getEachEstimateInfo } from "./hooks/methods";
+
 import type { PropType } from "vue";
+import type { EstimateType } from "./type";
+import { list } from "../../headerList";
 
 const props = defineProps({
   renderData: {
@@ -47,7 +59,7 @@ const props = defineProps({
     type: Number,
     default: 4,
   },
-  affterBuffer: {
+  aftterBuffer: {
     type: Number,
     default: 4,
   },
@@ -63,11 +75,14 @@ const slicePos = reactive({
 });
 
 const totalList = ref<HTMLElement | null>(null);
-const startOffset = ref(0);
+const listItem = ref<HTMLElement | null>(null);
+const bar_track = ref<HTMLElement | null>(null);
+const estimateList = ref<EstimateType[]>([]);
 const rootClientHeight = ref(0);
+const startOffset = ref(0);
 
-const transform = computed(() => {
-  return `transform:translate(0,${startOffset}px,0)`;
+const offsetTranslate = computed(() => {
+  return `translate(0,${startOffset.value}px) translateZ(0)`;
 });
 
 const visbleCount = computed(() => {
@@ -75,44 +90,125 @@ const visbleCount = computed(() => {
 });
 
 const listHeight = computed(() => {
-  return props.renderData.length * props.height;
+  return estimateList.value[estimateList.value.length - 1].bottom;
 });
 
 const sliceList = computed(() => {
-  return props.renderData.slice(
-    slicePos.start,
-    Math.min(slicePos.end, props.renderData.length)
-  );
+  const start = slicePos.start - beforCount.value;
+  const end =
+    Math.min(slicePos.end, props.renderData.length) + aftterCount.value;
+
+  return props.renderData.slice(start, end);
+});
+
+const beforCount = computed(() => {
+  return Math.min(slicePos.start, props.beforBuffer);
+});
+
+const aftterCount = computed(() => {
+  return Math.min(props.renderData.length - slicePos.end, props.aftterBuffer);
 });
 
 function onScroll() {
-  console.log(44);
-
   const scrollTop = totalList.value?.scrollTop;
 
   if (scrollTop) {
-    slicePos.start = Math.floor(scrollTop / props.height);
+    slicePos.start = searchStartIndex();
     slicePos.end = slicePos.start + visbleCount.value;
-    startOffset.value = scrollTop - (scrollTop % props.height);
+
+    setStartOffset();
   }
 }
 
-const stopDomInfo = watch(
-  () => totalList.value,
-  (value) => {
-    if (value) {
-      nextTick(() => {
-        rootClientHeight.value = value.clientHeight;
-        slicePos.start = 0;
-        slicePos.end = slicePos.start + visbleCount.value;
-      });
+function setStartOffset() {
+  startOffset.value =
+    slicePos.start >= 1
+      ? (startOffset.value = estimateList.value[slicePos.start - 1].bottom)
+      : 0;
+}
+
+const watchDomInfo = (value: HTMLElement | null) => {
+  if (!value) return;
+
+  nextTick().then(() => {
+    rootClientHeight.value = value.clientHeight;
+    slicePos.start = 0 - beforCount.value;
+    slicePos.end = slicePos.start + visbleCount.value + aftterCount.value;
+  });
+};
+
+const stopDomInfo = watch(() => totalList.value, watchDomInfo);
+
+estimateList.value = getEachEstimateInfo(props.height, props.renderData);
+
+function searchStartIndex(scrollTop: number = 0) {
+  return binarySearch(scrollTop, estimateList.value);
+}
+
+function binarySearch(value: number, position: EstimateType[]) {
+  let start = 0;
+  let end = position.length - 1;
+  let tempIndex = 0;
+
+  while (start <= end) {
+    const mid = (start + end) >>> 1;
+    const curValue = position[mid].bottom;
+
+    if (curValue === value) {
+      return mid;
+    } else if (value < curValue) {
+      start = mid + 1;
+    } else if (value > curValue) {
+      if (tempIndex === null || tempIndex > mid) {
+        tempIndex = mid;
+      }
+
+      end = mid - 1;
     }
   }
-);
 
-onMounted(() => {});
+  return tempIndex;
+}
 
-onUpdated(() => {});
+let fromList: Element[] | null = null;
+
+function updateItemsSize() {
+  if (listItem.value && listItem.value.children.length) {
+    const listDom =
+      fromList || (fromList = Array.from(listItem.value.children));
+
+    listDom.forEach((node) => {
+      const estimate = estimateList.value;
+      const height = node.getBoundingClientRect().height;
+      const index = +node.getAttribute("_id")!;
+      const oldHeight = estimate[index].height;
+      const dValue = oldHeight - height;
+
+      if (dValue) {
+        estimate[index].bottom = estimate[index].bottom - dValue;
+        estimate[index].height = height;
+
+        for (let k = index + 1; k < listDom.length; k++) {
+          estimate[k].top = estimate[k - 1].top;
+          estimate[k].bottom = estimate[k].bottom - dValue;
+        }
+      }
+    });
+  }
+}
+
+onUpdated(() => {
+  nextTick(() => {
+    updateItemsSize();
+
+    if (bar_track.value) {
+      const height = estimateList.value[estimateList.value.length - 1].bottom;
+      bar_track.value.style.height = height + "";
+
+      setStartOffset();
+    }
+  });
+});
 
 onUnmounted(() => {
   stopDomInfo();
