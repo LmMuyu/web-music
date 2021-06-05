@@ -24,11 +24,9 @@
 
 <script setup lang="ts">
 import GridBar from "/comps/gridBar/GridBar.vue";
-import { tags } from "../api/tags";
-import { computed, reactive, ref, toRefs } from "vue";
-import { mouseenter, mouseout, linkClass } from "../api/tagMouse";
-import router from "../../../routes";
-import { isNavigationFailure } from "vue-router";
+import { tags } from "../hooks/tags";
+import { computed, reactive, ref } from "vue";
+import { mouseenter, mouseout, linkClass } from "../hooks/tagMouse";
 
 const active = ref(0);
 

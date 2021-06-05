@@ -1,27 +1,29 @@
 <template>
-  <ElDrawer
-    @closed="unmountApp"
-    :showClose="false"
-    :withHeader="false"
-    :modelValue="true"
-    ref="drawerNode"
-  >
-    <header class="p-4" ref="headerNode">
-      <p class="text-lg">历史记录</p>
-    </header>
-    <main>
-      <VirtualList
-        :renderData="renderData"
-        :height="32"
-        keyindex="key"
-        :scrollHeight="unref(drawerMainHeight)"
-      >
-        <template v-slot:content="{ scopeData }">
-          <ChildrenItem :scopedData="musicResultDetail(scopeData.song)" />
-        </template>
-      </VirtualList>
-    </main>
-  </ElDrawer>
+  <keep-alive>
+    <ElDrawer
+      @closed="unmountApp"
+      :showClose="false"
+      :withHeader="false"
+      :modelValue="true"
+      ref="drawerNode"
+    >
+      <header class="p-4" ref="headerNode">
+        <p class="text-lg">历史记录</p>
+      </header>
+      <main>
+        <VirtualList
+          :renderData="renderData"
+          :height="32"
+          keyindex="key"
+          :scrollHeight="unref(drawerMainHeight)"
+        >
+          <template v-slot:content="{ scopeData }">
+            <ChildrenItem :scopedData="musicResultDetail(scopeData.song)" />
+          </template>
+        </VirtualList>
+      </main>
+    </ElDrawer>
+  </keep-alive>
 </template>
 <script setup lang="ts">
 import {

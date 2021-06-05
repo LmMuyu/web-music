@@ -23,19 +23,19 @@ const routes: (RouteRecordRaw & META)[] = [
   {
     path: "/index",
     name: "Index",
-    redirect: "/index/discover",
-    children: [
-      {
-        path: "discover",
-        name: "Discover",
-        component: () => import("../layout/Index/discover/Discover.vue"),
-      },
-      {
-        path: "toplist",
-        name: "Toplist",
-        component: () => import("../layout/Index/toplist/Toplist.vue"),
-      },
-    ],
+    // redirect: "/index/discover",
+    // children: [
+    //   {
+    //     path: "discover",
+    //     name: "Discover",
+    //     component: () => import("../layout/Index/discover/Discover.vue"),
+    //   },
+    //   {
+    //     path: "toplist",
+    //     name: "Toplist",
+    //     component: () => import("../layout/Index/toplist/Toplist.vue"),
+    //   },
+    // ],
     component: () => import("../view/index/Index.vue"),
   },
   {

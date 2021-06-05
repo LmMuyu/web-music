@@ -1,5 +1,5 @@
 <template>
-  <GridBar
+  <!-- <GridBar
     :listData="list"
     :turnonSlot="true"
     :styleRow="{ backgroundColor: styles.backgroundColor }"
@@ -78,8 +78,7 @@
         </template>
       </GridBar>
     </template>
-  </GridBar>
-
+  </GridBar> -->
   <router-view v-slot="{ Component, route }">
     <keep-alive v-if="route.meta.KeepAlive">
       <component :is="Component" />
