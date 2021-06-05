@@ -18,12 +18,12 @@
       ref="listItem"
     >
       <div
-        v-for="item in sliceList"
-        :key="item.id"
+        v-for="(renderItem, index) in sliceList"
+        :key="renderItem[keyindex]"
         class="h-8 flex items-center"
-        :_id="item.id"
+        :_id="index"
       >
-        {{ item.value }}
+        <slot name="content" :scopeData="renderItem"></slot>
       </div>
     </div>
   </div>
@@ -44,7 +44,6 @@ import { getEachEstimateInfo } from "./hooks/methods";
 
 import type { PropType } from "vue";
 import type { EstimateType } from "./type";
-import { list } from "../../headerList";
 
 const props = defineProps({
   renderData: {
@@ -66,6 +65,10 @@ const props = defineProps({
   scrollHeight: {
     type: Number,
     default: 0,
+  },
+  keyindex: {
+    type: String,
+    required: true,
   },
 });
 
@@ -113,7 +116,7 @@ function onScroll() {
   const scrollTop = totalList.value?.scrollTop;
 
   if (scrollTop) {
-    slicePos.start = searchStartIndex();
+    slicePos.start = searchStartIndex(scrollTop);
     slicePos.end = slicePos.start + visbleCount.value;
 
     setStartOffset();
@@ -152,14 +155,14 @@ function binarySearch(value: number, position: EstimateType[]) {
 
   while (start <= end) {
     const mid = (start + end) >>> 1;
-    const curValue = position[mid].bottom;
+    const midvalue = position[mid].bottom;
 
-    if (curValue === value) {
+    if (midvalue === value) {
       return mid;
-    } else if (value < curValue) {
+    } else if (midvalue < value) {
       start = mid + 1;
-    } else if (value > curValue) {
-      if (tempIndex === null || tempIndex > mid) {
+    } else if (midvalue > value) {
+      if (tempIndex === 0 || tempIndex > mid) {
         tempIndex = mid;
       }
 

@@ -27,6 +27,7 @@ const aliasList = createAlias([
   ["/utils/", "src/utils"],
   ["/api/", "src/api"],
   ["/layout/", "src/layout"],
+  ["vue", "vue/dist/vue.esm-bundler.js"],
 ]);
 
 export default ({ command, mode }: ConfigEnv): UserConfig => {
@@ -65,5 +66,6 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
       port: Number(VITE_PORT),
       open: true,
     },
+    esbuild: {},
   };
 };

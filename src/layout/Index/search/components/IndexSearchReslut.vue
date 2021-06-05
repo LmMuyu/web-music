@@ -33,9 +33,10 @@
 <script setup lang="ts">
 import { computed, defineProps, onMounted, ref } from "@vue/runtime-core";
 
-import { mainContent, titleMap } from "../hooks/data";
+import { resultOptions } from "../../../../utils/musicDetail";
 import { musicDetail } from "../../../../utils/musicDetail";
-import { mainContentHeight, resultOptions } from "../hooks/methods";
+import { mainContent, titleMap } from "../hooks/data";
+import { mainContentHeight } from "../hooks/methods";
 
 const props = defineProps({
   musicList: {
