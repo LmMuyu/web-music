@@ -2,31 +2,31 @@ export const contentTags = [
   {
     _id: "1000",
     tagname: "推荐",
-    path: "/index/discover",
+    comname: "Discover",
   },
   {
     _id: "1001",
     tagname: "排行榜",
-    path: "/index/toplist",
+    comname: "Toplist",
   },
   {
     _id: "1002",
     tagname: "歌单",
-    path: "/index/playlist",
+    comname: "/playlist",
   },
   {
     _id: "1003",
     tagname: "主播电台",
-    path: "/index/djradio",
+    comname: "/djradio",
   },
   {
     _id: "1004",
     tagname: "歌手",
-    path: "/index/artist",
+    comname: "/artist",
   },
   {
     _id: "1005",
     tagname: "新碟上映",
-    path: "/index/album",
+    comname: "/album",
   },
 ];

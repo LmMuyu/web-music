@@ -1,92 +1,13 @@
 <template>
-  <!-- <GridBar
-    :listData="list"
-    :turnonSlot="true"
-    :styleRow="{ backgroundColor: styles.backgroundColor }"
-    :class="['py-3']"
-    :sizeSpan="[6, 12, 6]"
-    v-if="!showTag"
-  >
-    <template v-slot:slot_left="{ item: handerLeft }">
-      <div class="flex items-center justify-center">
-        <i class="iconfont rounded" :class="handerLeft.icon"></i>
-        <p class="text-2xl text-white mx-3">
-          {{ handerLeft.text }}
-        </p>
-      </div>
-    </template>
+  <Main>
+    <router-view v-slot="{ Component, route }">
+      <keep-alive v-if="route.meta.KeepAlive">
+        <component :is="Component" />
+      </keep-alive>
 
-    <template v-slot:slot_center="{ item: handerCenter }">
-      <ul class="grid_ul h-full w-full list-none text-xl flex items-center">
-        <li v-for="(tag, index) in handerCenter.tags" :key="index">
-          <router-link :to="tag.path">
-            <p :style="{ color: styles.color }">
-              {{ tag.text }}
-            </p>
-          </router-link>
-        </li>
-      </ul>
-    </template>
-
-    <template v-slot:slot_right>
-      <GridBar :sizeSpan="[12, 12]" :styleRow="{ height: styles.height }">
-        <template v-slot:slot_0>
-          <div
-            class="
-              relative
-              flex
-              items-start
-              justify-center
-              flex-col
-              h-full
-              w-full
-            "
-          >
-            <button
-              class="
-                appicon
-                text-lg
-                outline-none
-                border-none
-                flex
-                justify-center
-                items-cneter
-              "
-              :style="{ color: styles.color }"
-              @click="mountApp"
-            >
-              <i class="iconfont iconsousuo1"></i>
-              <span class="px-1"> 点击搜索 </span>
-            </button>
-          </div>
-        </template>
-
-        <template v-slot:slot_1>
-          <div class="rounded-2xl h-full flex justify-center items-center">
-            <ElLink
-              href="#"
-              :type="linkType"
-              class="text_in text-white align-middle"
-              style="color: #787878"
-              @click="onLogin('#login')"
-              v-if="!userInfo"
-            >
-              登录
-            </ElLink>
-            <ShowUserInfo :userInfo="userInfo" v-else />
-          </div>
-        </template>
-      </GridBar>
-    </template>
-  </GridBar> -->
-  
-  <router-view v-slot="{ Component, route }">
-    <keep-alive v-if="route.meta.KeepAlive">
-      <component :is="Component" />
-    </keep-alive>
-
-    <component :is="Component" v-else />
-  </router-view>
+      <component :is="Component" v-else />
+    </router-view>
+  </Main>
 </template>
 
 <script setup lang="ts">
@@ -95,13 +16,9 @@ import { computed, reactive, ref } from "vue";
 import router from "./routes";
 import { useStore } from "vuex";
 import { list } from "./headerList";
-import onLogin from "./view/login/login";
 import { searchDefault } from "./api/app/searchDefault";
-import { mountApp } from "./layout/Index/search/app";
 
-import { ElLink } from "element-plus";
-import GridBar from "/comps/gridBar/GridBar.vue";
-import ShowUserInfo from "/layout/Index/showUserInfo/ShowUserInfo.vue";
+import Main from "./layout/main/Main.vue";
 
 import type { UserInfo } from "./store/type";
 

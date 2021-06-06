@@ -1,49 +1,45 @@
 <template>
   <div ref="rowRoot" :style="{ transform: setTransformY }">
-    <el-row class="mt-24">
-      <el-col :span="4"></el-col>
-      <el-col :span="16">
-        <div class="flex">
-          <nav class="shadow w-1/5 pb-7">
-            <ul class="list-none" v-for="(navItem, mainTag) in listTitle" :key="mainTag">
-              <li>
-                <div class="ml-6 py-6 text-xl">{{ navItem.title }}</div>
-                <ul class="list-none">
-                  <li
-                    v-for="childItem in navItem.childrenData"
-                    :key="childItem.id"
-                    class="flex p-4 cursor-pointer"
-                    :class="{
-                      'bg-gray-300': currentID === childItem.id,
-                    }"
-                    @mouseenter="onMouseenter"
-                    @mouseleave="onMouseleave"
-                    @click="childTagItemClick(childItem.id)"
-                  >
-                    <div>
-                      <img :src="childItem.coverImgUrl + '?param=40y40'" />
-                    </div>
-                    <div class="flex flex-col justify-between ml-4">
-                      <span>{{ childItem.name }}</span>
-                      <span class="text-xs text-gray-400">
-                        {{
-                          childItem.updateFrequency
-                        }}
-                      </span>
-                    </div>
-                  </li>
-                </ul>
+    <div class="flex">
+      <nav class="shadow w-1/5 pb-7">
+        <ul
+          class="list-none"
+          v-for="(navItem, mainTag) in listTitle"
+          :key="mainTag"
+        >
+          <li>
+            <div class="ml-6 py-6 text-xl">{{ navItem.title }}</div>
+            <ul class="list-none">
+              <li
+                v-for="childItem in navItem.childrenData"
+                :key="childItem.id"
+                class="flex p-4 cursor-pointer"
+                :class="{
+                  'bg-gray-300': currentID === childItem.id,
+                }"
+                @mouseenter="onMouseenter"
+                @mouseleave="onMouseleave"
+                @click="childTagItemClick(childItem.id)"
+              >
+                <div>
+                  <img :src="childItem.coverImgUrl + '?param=40y40'" />
+                </div>
+                <div class="flex flex-col justify-between ml-4">
+                  <span>{{ childItem.name }}</span>
+                  <span class="text-xs text-gray-400">
+                    {{ childItem.updateFrequency }}
+                  </span>
+                </div>
               </li>
             </ul>
-          </nav>
-          <div class="flex flex-col w-full mx-8">
-            <ToplistMainHeader :listData="mainShowData" />
-            <ToplistMainContent :listData="mainShowData[0]?.tracks" />
-          </div>
-        </div>
-      </el-col>
-      <el-col :span="4"></el-col>
-    </el-row>
+          </li>
+        </ul>
+      </nav>
+      <div class="flex flex-col w-full mx-8">
+        <ToplistMainHeader :listData="mainShowData" />
+        <ToplistMainContent :listData="mainShowData[0]?.tracks" />
+      </div>
+    </div>
   </div>
 </template>
 <script setup lang="ts">
@@ -54,12 +50,7 @@ import ToplistMainContent from "./components/ToplistMainContent.vue";
 import { ElRow, ElCol } from "element-plus";
 
 import { ref } from "@vue/reactivity";
-import {
-  computed,
-  defineProps,
-  nextTick,
-  onMounted,
-} from "@vue/runtime-core";
+import { computed, defineProps, nextTick, onMounted } from "@vue/runtime-core";
 
 import setupData from "./hooks/data";
 import { onMouseenter, onMouseleave } from "./hooks/methods";
@@ -76,7 +67,7 @@ const props = defineProps({
   },
 });
 
-const renderData = ((setupData as unknown) as DATA).setup();
+const renderData = (setupData as unknown as DATA).setup();
 
 const { listTitle, elementScrollTop, mainMapData, rowTop } = renderData;
 const currentID = ref<null | number>(null);
@@ -151,7 +142,7 @@ const setTransformY = computed(() => setTranY(elementScrollTop.value));
 onMounted(() => {
   nextTick().then(() => {
     rowTop.value = rowRoot.value?.offsetTop;
-    setTransition(1)
+    setTransition(1);
   });
 });
 </script>

@@ -25,16 +25,7 @@ const routes: (RouteRecordRaw & META)[] = [
     name: "Index",
     // redirect: "/index/discover",
     // children: [
-    //   {
-    //     path: "discover",
-    //     name: "Discover",
-    //     component: () => import("../layout/Index/discover/Discover.vue"),
-    //   },
-    //   {
-    //     path: "toplist",
-    //     name: "Toplist",
-    //     component: () => import("../layout/Index/toplist/Toplist.vue"),
-    //   },
+
     // ],
     component: () => import("../view/index/Index.vue"),
   },
@@ -56,6 +47,16 @@ const routes: (RouteRecordRaw & META)[] = [
     path: "/searchresult",
     name: "searchResult",
     component: () => import("../view/searchresult/SearchResult.vue"),
+  },
+  {
+    path: "/toplist",
+    name: "Toplist",
+    component: () => import("../layout/Index/toplist/Toplist.vue"),
+  },
+  {
+    path: "/discover",
+    name: "Discover",
+    component: () => import("../layout/Index/discover/Discover.vue"),
   },
 ];
 
