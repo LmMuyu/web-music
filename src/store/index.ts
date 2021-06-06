@@ -22,6 +22,7 @@ const store = createStore<State>({
       mainHidden: false,
       controlAudioCompIf: true,
       scrollMap: new Map(),
+      dialogEditor: mitt(),
     };
   },
   getters,

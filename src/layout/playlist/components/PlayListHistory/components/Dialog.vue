@@ -58,6 +58,7 @@ import {
   ElRow,
   ElCol,
 } from "element-plus";
+import { closeInputEditorMitt } from "../../../hooks/methods";
 
 export interface Reply {
   nickanme: string;
@@ -90,8 +91,11 @@ function handleClose(done: () => void) {
 
 function editorContent(content: string) {
   if (content) {
-    ctxEmit("editorContent", content);
+    ctxEmit("editorContent", { content, reply });
   }
+
+  closeInputEditorMitt.map(dialogVisible);
+  closeInputEditorMitt.on();
 }
 
 const follows = computed(() => {
@@ -126,8 +130,6 @@ watchEffect(async () => {
 
 defineExpose({
   visibleDialog(ops?: Reply) {
-    console.log(ops);
-
     if (ops) {
       reply.value = true;
       replyPeople.value = ops;
@@ -136,6 +138,7 @@ defineExpose({
       replyPeople.value = null;
     }
 
+    closeInputEditorMitt.emit(true);
     dialogVisible.value = true;
   },
 

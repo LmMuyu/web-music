@@ -2,6 +2,7 @@ import { distance, gainValue, lyricNodeRect, clientHeight, index } from "./data"
 import { promptbox } from "../../../components/promptBox";
 import { Ref } from "@vue/reactivity";
 import { userRecord } from "../../../api/playList";
+import store from "../../../store";
 
 import { useStorage } from "../../../utils/useStorage";
 import { throttle } from "../../../utils/throttle";
@@ -111,3 +112,38 @@ export async function recordStorage(recordInfoData: Ref<Object>) {
 
   await recordData(localData.value, recordInfoData);
 }
+
+class sendAfterCloseDialogMitt {
+  private handle: (sourcess: boolean) => void;
+  private MITT_KEY: string;
+  private visilbity: Ref<boolean> | undefined;
+  constructor() {
+    //sourcess为true是取消 false为打开
+    this.handle = (sourcess: boolean) => {
+      console.log(sourcess);
+      if (!sourcess) return;
+      this.visilbity && (this.visilbity.value = false);
+    };
+
+    this.MITT_KEY = "SHOWDIALOG";
+  }
+
+  remove() {
+    store.commit("removeMittKey", { key: this.MITT_KEY, removeHandle: this.handle });
+  }
+
+  on() {
+    store.commit("addMittHandle", { key: this.MITT_KEY, fn: this.handle });
+  }
+
+  emit(value: boolean) {
+    store.commit("runMittHandle", { key: this.MITT_KEY, value });
+    this.remove();
+  }
+
+  map(v: Ref<boolean>) {
+    this.visilbity = v;
+  }
+}
+
+export const closeInputEditorMitt = new sendAfterCloseDialogMitt();

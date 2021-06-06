@@ -17,16 +17,15 @@
 </template>
 <script setup lang="ts">
 import { ref, watch } from "vue";
+import { useStore } from "vuex";
 
 import { sendContentComment } from "../../../../../api/app";
 import { VideoComments } from "../../../../../components/player";
 
 import CommtentContainer from "./CommtentContainer.vue";
 
-interface SendContent {
-  content: string;
-  reply: boolean;
-}
+import type { SendContent } from "../type";
+import { closeInputEditorMitt } from "../../../hooks/methods";
 
 const props = defineProps({
   mid: {
@@ -36,8 +35,10 @@ const props = defineProps({
 });
 
 const total = ref(1);
-const commentsData = ref([]);
 const shut = ref(true);
+const commentsData = ref([]);
+const store = useStore();
+const MITT_KEY = "SHOWDIALOG";
 
 const VideoCommentModule = new VideoComments("music");
 
@@ -49,16 +50,20 @@ watch(VideoCommentModule.comments, (newvaluelists) => {
 VideoCommentModule.currentMusicPlayIndex(1, props.mid);
 
 async function sendContent(content: SendContent) {
-  try {
-    const editor = await sendContentComment(1, "歌曲", { id: props.mid }, content.content);
-    if (editor.data.code === 200) {
-      shut.value = false;
-    }
-  } catch (error) {
-    console.log(error);
-  } finally {
-    shut.value = true;
-  }
+  console.log(content);
+  const reply = content.reply;
+  closeInputEditorMitt.emit(true);
+
+  // try {
+  //   const editor = await sendContentComment(1, "歌曲", { id: props.mid }, content.content);
+  //   if (editor.data.code === 200) {
+  //     shut.value = false;
+  //   }
+  // } catch (error) {
+  //   console.log(error);
+  // } finally {
+  //   shut.value = true;
+  // }
 }
 </script>
 <style scoped lang="scss"></style>

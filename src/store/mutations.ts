@@ -1,7 +1,6 @@
-import type { PlayAudioInfo, State } from "./type";
+import type { State } from "./type";
 import type { MusicDetailOption } from "../utils/musicDetail";
 import type { RouteLocationNormalized } from "vue-router";
-import { isRef } from "vue";
 
 export default {
   countriesCode(state: State, commit: any) {
@@ -76,5 +75,22 @@ export default {
 
   setPathScrollMap(state: State, playload: [string, Record<"x" | "y", number>]) {
     state.scrollMap.set(playload[0], playload[1]);
+  },
+
+  addMittHandle(state: State, handle: any) {
+    const handleKey = handle.key;
+    const handleFn = handle.fn;
+    state.dialogEditor.on(handleKey, handleFn);
+  },
+
+  runMittHandle(state: State, handle: any) {
+    const handleKey = handle.key;
+    const handleVal = handle.value;
+    state.dialogEditor.emit(handleKey, handleVal);
+  },
+
+  removeMittKey(state: State, p: any) {
+    state.dialogEditor.off(p.key, p.removeHandle);
+    console.log(state);
   },
 };

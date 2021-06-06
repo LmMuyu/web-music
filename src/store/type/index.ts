@@ -14,6 +14,7 @@ export interface State {
   mainHidden: boolean;
   controlAudioCompIf: boolean;
   scrollMap: Map<string, Record<"x" | "y", number>>;
+  dialogEditor: Emitter;
 }
 
 export interface ALLTOKEN {

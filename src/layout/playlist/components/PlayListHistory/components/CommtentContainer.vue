@@ -1,5 +1,8 @@
 <template>
-  <Dialog ref="dialog" @editorContent="props.on['send-content']" />
+  <Dialog
+    ref="dialog"
+    @editorContent="(reply) => props.on['send-content'](Object.assign({}, reply, { replyInfo }))"
+  />
   <ElContainer class="relative w-full h-full">
     <ElHeader height="56" class="flex justify-between">
       <div>
@@ -74,6 +77,8 @@ import Dialog, { Reply } from "../components/Dialog.vue";
 import HistoryItem from "./HistoryItem.vue";
 import CommentItem from "./CommentItem.vue";
 
+import type { SendContent } from "../type";
+
 enum COMP {
   "History" = "History",
   "Comment" = "Comment",
@@ -114,7 +119,7 @@ const props = defineProps({
       "prev-click": (index: number) => {},
       "next-click": (index: number) => {},
       "current-change": (index: number) => {},
-      "send-content": (content: string) => {},
+      "send-content": (content: SendContent) => {},
     }),
   },
   shutDialog: {
@@ -128,16 +133,17 @@ const props = defineProps({
   paginationbackground: Boolean,
 });
 
-const dialog = ref(null);
+let replyInfo = null;
 const curPage = ref(1);
-const selectComp = shallowRef<typeof CommentItem | typeof HistoryItem>(CommentItem);
-const showfooter = ref(false);
-const paging = ref<typeof ElPagination | null>(null);
-let muObserve: MutationObserver | null;
-const comploading = ref(props.loading);
+const dialog = ref(null);
 const totalpage = ref(1);
 const store = useStore();
 const router = useRouter();
+const showfooter = ref(false);
+const comploading = ref(props.loading);
+let muObserve: MutationObserver | null;
+const paging = ref<typeof ElPagination | null>(null);
+const selectComp = shallowRef<typeof CommentItem | typeof HistoryItem>(CommentItem);
 
 function switchComp(compid: string) {
   if (compid === COMP.Comment) {
@@ -237,8 +243,8 @@ function noLoginMessage() {
 
 function pubComment() {
   const args = [].slice.call(arguments, 0);
-
   const islogin = store.getters["login/getIslogin"];
+
   islogin
     ? args.length > 0
       ? dialog.value.visibleDialog.call(dialog.value, ...args)
@@ -247,6 +253,8 @@ function pubComment() {
 }
 
 function clickComment(commentitem: any) {
+  replyInfo = commentitem;
+
   const ops: Reply = {
     uid: commentitem.userId,
     commentcontent: commentitem.content,
