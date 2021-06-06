@@ -38,3 +38,4 @@ export const currentIndex = ref(0);
 export const moveIndex = ref(0);
 
 export const mark = ref<"click" | "move" | "default">("click");
+

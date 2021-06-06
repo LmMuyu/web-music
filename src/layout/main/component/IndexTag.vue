@@ -1,26 +1,22 @@
 <template>
-  <header style="height: 10%"></header>
-  <main class="h-3/4">
-    <ul class="list-none">
-      <li
-        v-for="(tag, index) in AsideTags"
-        :key="tag.index"
-        class="flex items-center cursor-pointer py-4 icons"
-        @click="clickClass(index)"
-        @mouseenter="moveClass(index)"
-        @mouseleave="leaveClass(index)"
+  <ul class="list-none">
+    <li
+      v-for="(tag, index) in AsideTags"
+      :key="tag.index"
+      class="flex items-center cursor-pointer py-4 icons"
+      @click="clickClass(index)"
+      @mouseenter="moveClass(index)"
+      @mouseleave="leaveClass(index)"
+    >
+      <i class="iconfont" :class="[tag.icon]" :style="activeClass(index)"></i>
+      <span
+        class="text-2xl px-5"
+        style="color: #636e72"
+        :style="activeClass(index)"
+        >{{ tag.title }}</span
       >
-        <i class="iconfont" :class="[tag.icon]" :style="activeClass(index)"></i>
-        <span
-          class="text-2xl px-5"
-          style="color: #636e72"
-          :style="activeClass(index)"
-          >{{ tag.title }}</span
-        >
-      </li>
-    </ul>
-  </main>
-  <footer style="height: 15%"></footer>
+    </li>
+  </ul>
 </template>
 <script setup lang="ts">
 import { computed } from "vue";
