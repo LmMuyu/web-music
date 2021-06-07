@@ -4,9 +4,9 @@
       v-for="(tag, index) in AsideTags"
       :key="tag.index"
       class="flex items-center cursor-pointer py-4 icons"
-      @click="clickClass(index)"
-      @mouseenter="moveClass(index)"
-      @mouseleave="leaveClass(index)"
+      @click="clickActive(index)"
+      @mouseenter="moveActive(index)"
+      @mouseleave="leaveActive(index)"
     >
       <i class="iconfont" :class="[tag.icon]" :style="activeClass(index)"></i>
       <span
@@ -21,28 +21,13 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-import { currentIndex, moveIndex, AsideTags, mark } from "../hooks/data";
-import { moveClass, clickClass, leaveClass } from "../hooks/methods";
+import { currentIndex, moveIndex, AsideTags } from "../hooks/data";
+import { activeIndex } from "../../../utils/activeIndex";
 
-import type { Ref } from "vue";
-
-function setColor(curIndex: Ref<number>, index: number, color: string) {
-  return {
-    color: curIndex.value === index ? color : "#636e72",
-  };
-}
-
-const activeClass = computed(() => (index: number) => {
-  if (mark.value === "click" || currentIndex.value === index) {
-    return setColor(currentIndex, index, "#74b9ff");
-  }
-
-  return mark.value === "move"
-    ? setColor(moveIndex, index, "rgb(116, 185, 255,0.7)")
-    : {
-        color: "#636e72",
-      };
-});
+const { activeClass, clickActive, moveActive, leaveActive } = activeIndex(
+  currentIndex,
+  moveIndex
+);
 </script>
 <style scoped lang="scss">
 .icons {

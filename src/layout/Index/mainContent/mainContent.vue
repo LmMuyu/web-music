@@ -1,8 +1,8 @@
 <template>
-  <div>
+  <div class="flex">
     <el-container class="w-2/3">
       <el-header class="h-1/6 flex items-center">
-        <nav class="w-full">
+        <nav class="w-full h-full">
           <mainNavTag />
         </nav>
       </el-header>
@@ -10,13 +10,20 @@
         <component :is="componentId"></component>
       </el-main>
     </el-container>
-    <div class="w-1/3"></div>
+    
+    <el-container class="w-1/3">
+      <el-header class="h-1/6"></el-header>
+      <el-main class="h-5/6">
+        <TopListAsideTag />
+      </el-main>
+    </el-container>
   </div>
 </template>
 <script setup lang="ts">
 import { componentId } from "./hooks/component";
 
-import mainNavTag from "./components/mainNavTag.vue";
+import TopListAsideTag from "/layout/Index/toplist/components/TopListAsideTag.vue";
 import { ElContainer, ElHeader, ElMain } from "element-plus";
+import mainNavTag from "./components/mainNavTag.vue";
 </script>
 <style scoped lang="scss"></style>

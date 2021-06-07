@@ -21,6 +21,8 @@ const store = useStore();
 const userInfo = ref({});
 const asideCard = ref(true);
 
-store.state.userInfo && (userInfo.value = store.state.userInfo);
+store.state.userInfo
+  ? (userInfo.value = store.state.userInfo)
+  : (asideCard.value = false);
 </script>
 <style scoped lang="scss"></style>
