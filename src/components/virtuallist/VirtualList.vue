@@ -9,7 +9,7 @@
       :style="{ height: listHeight + 'px' }"
       ref="bar_track"
     ></div>
-    <div
+    <ul
       class="flex flex-col"
       :style="{
         height: scrollHeight === 0 ? '100%' : scrollHeight + 'px',
@@ -17,15 +17,18 @@
       }"
       ref="listItem"
     >
-      <div
+      <li
         v-for="(renderItem, index) in sliceList"
         :key="renderItem[keyindex]"
         class="h-8 flex items-center"
         :_id="index"
       >
-        <slot name="content" :scopeData="renderItem"></slot>
-      </div>
-    </div>
+        <slot
+          name="content"
+          :scopeData="{ renderItem, index, keyindex }"
+        ></slot>
+      </li>
+    </ul>
   </div>
 </template>
 <script setup lang="ts">
@@ -84,6 +87,8 @@ const estimateList = ref<EstimateType[]>([]);
 const rootClientHeight = ref(0);
 const startOffset = ref(0);
 
+estimateList.value = getEachEstimateInfo(props.height, props.renderData);
+
 const offsetTranslate = computed(() => {
   return `translate(0,${startOffset.value}px) translateZ(0)`;
 });
@@ -93,7 +98,7 @@ const visbleCount = computed(() => {
 });
 
 const listHeight = computed(() => {
-  return estimateList.value[estimateList.value.length - 1].bottom;
+  return estimateList.value[estimateList.value.length - 1]?.bottom || 0;
 });
 
 const sliceList = computed(() => {
@@ -141,8 +146,6 @@ const watchDomInfo = (value: HTMLElement | null) => {
 };
 
 const stopDomInfo = watch(() => totalList.value, watchDomInfo);
-
-estimateList.value = getEachEstimateInfo(props.height, props.renderData);
 
 function searchStartIndex(scrollTop: number = 0) {
   return binarySearch(scrollTop, estimateList.value);

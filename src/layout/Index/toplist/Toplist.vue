@@ -1,11 +1,7 @@
 <template>
-  <div ref="rowRoot" :style="{ transform: setTransformY }">
-    <div class="flex">
-      <div class="flex flex-col w-full mx-8">
-        <ToplistMainHeader :listData="mainShowData" />
-        <ToplistMainContent :listData="mainShowData[0]?.tracks" />
-      </div>
-    </div>
+  <div class="flex flex-col w-full h-full mx-8">
+    <ToplistMainHeader :listData="mainShowData" />
+    <ToplistMainContent :listData="mainShowData[0]?.tracks" />
   </div>
 </template>
 <script setup lang="ts">
@@ -62,12 +58,12 @@ function setTranY(Yvalue: number) {
 
 const setTransformY = computed(() => setTranY(elementScrollTop.value));
 
-onMounted(() => {
-  nextTick().then(() => {
-    rowTop.value = rowRoot.value?.offsetTop || 0;
-    setTransition(rowRoot.value!, 1, props.seelp);
-  });
-});
+// onMounted(() => {
+//   nextTick().then(() => {
+//     rowTop.value = rowRoot.value?.offsetTop || 0;
+//     setTransition(rowRoot.value!, 1, props.seelp);
+//   });
+// });
 </script>
 <style lang="scss" scoped>
 .border {

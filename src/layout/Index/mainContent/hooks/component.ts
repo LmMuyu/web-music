@@ -1,8 +1,6 @@
 import { shallowRef } from "@vue/reactivity";
-import { defineAsyncComponent } from "@vue/runtime-core";
+import { createAsComponent } from "../../../../utils/createAsComponent";
 
-const Toplist = defineAsyncComponent(
-  () => import("/layout/Index/toplist/Toplist.vue")
-);
+const Toplist = createAsComponent("/layout/Index/toplist/Toplist.vue");
 
 export const componentId = shallowRef(Toplist);

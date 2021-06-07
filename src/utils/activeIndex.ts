@@ -44,10 +44,9 @@ export class activeIndex {
         if (optionsData.style !== "color" && this.mark.value !== "default") {
           this.mark.value = "move";
         }
+
         return this.setColor(this.currentIndex, index, clickColor, styleKey);
       }
-
-      // console.log(this.mark.value);
 
       return this.mark.value === "move"
         ? this.setColor(this.moveIndex, index, moveColor, styleKey)

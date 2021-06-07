@@ -7,10 +7,7 @@
       :style="activeClass(index)"
       @mouseenter="moveActive(index)"
       @mouseleave="leaveActive(index)"
-      @click="
-        childTagItemClick(childItem.id);
-        clickActive(index);
-      "
+      @click="[childTagItemClick(childItem.id), clickActive(index)]"
     >
       <div>
         <img :src="childItem.coverImgUrl + '?param=40y40'" />
@@ -25,13 +22,15 @@
   </ul>
 </template>
 <script setup lang="ts">
-import { defineProps, ref } from "@vue/runtime-core";
+import { defineProps, ref, defineEmit } from "@vue/runtime-core";
 
 import { setContentData } from "../hooks/methods";
 import { getlistDetailData } from "../hooks/request";
 import { mainMapData } from "../hooks/data";
 import { currentID } from "./hooks/data";
 import { activeIndex } from "../../../../utils/activeIndex";
+
+const ctxEmit = defineEmit(["click"]);
 
 const props = defineProps({
   navItem: {
