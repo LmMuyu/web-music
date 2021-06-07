@@ -30,7 +30,7 @@ const ctxEmit = defineEmit(["click"]);
 const curIndex = ref(0);
 const moveIndex = ref(0);
 
-const { activeClass, clickActive, moveActive, leaveActive } = activeIndex(
+const { activeClass, clickActive, moveActive, leaveActive } = new activeIndex(
   curIndex,
   moveIndex
 );

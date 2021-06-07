@@ -1,22 +1,23 @@
 <template>
   <ul class="list-none w-full">
     <li
-      v-for="childItem in navItem.childrenData"
+      v-for="(childItem, index) in navItem.childrenData"
       :key="childItem.id"
       class="flex p-4 cursor-pointer"
-      :class="{
-        'bg-gray-300': currentID === childItem.id,
-      }"
-      @mouseenter="onMouseenter"
-      @mouseleave="onMouseleave"
-      @click="childTagItemClick(childItem.id)"
+      :style="activeClass(index)"
+      @mouseenter="moveActive(index)"
+      @mouseleave="leaveActive(index)"
+      @click="
+        childTagItemClick(childItem.id);
+        clickActive(index);
+      "
     >
       <div>
         <img :src="childItem.coverImgUrl + '?param=40y40'" />
       </div>
       <div class="flex flex-col justify-between ml-4">
         <span>{{ childItem.name }}</span>
-        <span class="text-xs text-gray-400">
+        <span class="text-xs text-gray-200">
           {{ childItem.updateFrequency }}
         </span>
       </div>
@@ -24,12 +25,13 @@
   </ul>
 </template>
 <script setup lang="ts">
-import { defineProps } from "@vue/runtime-core";
+import { defineProps, ref } from "@vue/runtime-core";
 
-import { onMouseenter, onMouseleave, setContentData } from "../hooks/methods";
+import { setContentData } from "../hooks/methods";
 import { getlistDetailData } from "../hooks/request";
 import { mainMapData } from "../hooks/data";
 import { currentID } from "./hooks/data";
+import { activeIndex } from "../../../../utils/activeIndex";
 
 const props = defineProps({
   navItem: {
@@ -45,5 +47,17 @@ async function childTagItemClick(currID: number) {
   const mainData = await getlistDetailData(currID, mainMapData);
   setContentData(mainData);
 }
+
+const curIndex = ref(0);
+const moveIndex = ref(0);
+
+const { activeClass, clickActive, moveActive, leaveActive } = new activeIndex(
+  curIndex,
+  moveIndex,
+  {
+    style: "background",
+    moveColor: "#7cbcfc66",
+  }
+);
 </script>
 <style scoped lang="scss"></style>

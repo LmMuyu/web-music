@@ -24,7 +24,7 @@ import { computed } from "vue";
 import { currentIndex, moveIndex, AsideTags } from "../hooks/data";
 import { activeIndex } from "../../../utils/activeIndex";
 
-const { activeClass, clickActive, moveActive, leaveActive } = activeIndex(
+const { activeClass, clickActive, moveActive, leaveActive } = new  activeIndex(
   currentIndex,
   moveIndex
 );
