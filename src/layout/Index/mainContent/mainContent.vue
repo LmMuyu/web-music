@@ -3,7 +3,7 @@
     <el-container class="w-2/3">
       <el-header class="h-1/6 flex items-center">
         <nav class="w-full h-full">
-          <mainNavTag />
+          <mainNavTag @loadComps="runload" />
         </nav>
       </el-header>
       <el-main class="h-5/6">
@@ -16,17 +16,21 @@
     <el-container class="w-1/3">
       <el-header class="h-1/6"></el-header>
       <el-main class="h-5/6 track_bar">
-        <TopListAsideTag />
+        <component :is="compsId"></component>
       </el-main>
     </el-container>
   </div>
 </template>
 <script setup lang="ts">
-import { componentId } from "./hooks/component";
+import { componentId, putView, compsId, switchView } from "./hooks/component";
 
-import TopListAsideTag from "/layout/Index/toplist/components/TopListAsideTag.vue";
 import { ElContainer, ElHeader, ElMain } from "element-plus";
 import mainNavTag from "./components/mainNavTag.vue";
+
+function runload(compsStrList) {
+  putView(compsStrList);
+  switchView(compsStrList);
+}
 </script>
 <style scoped lang="scss">
 .track_bar::-webkit-scrollbar {

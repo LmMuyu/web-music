@@ -5,7 +5,11 @@
       <div style="width: 66.6656%">
         <Banner :bannerData="bannerLsit" />
         <article
-          class="w-full border-solid border-gray-500 border-r border-l border-b h-full"
+          class="
+            w-full
+            border-solid border-gray-500 border-r border-l border-b
+            h-full
+          "
         >
           <ElRow class="flex h-full">
             <ElCol class="div_translate" :span="18">
@@ -29,22 +33,20 @@
     </div>
   </div>
 </template>
-<script setup>
-const DiscoverNewDisc = defineAsyncComponent(() =>
-  import("../components/DIscoverNewDisc.vue")
+<script setup lang="ts">
+const DiscoverNewDisc = defineAsyncComponent(
+  () => import("../components/DIscoverNewDisc.vue")
 );
-const DiscoverBillboard = defineAsyncComponent(() =>
-  import("../components/DiscoverBillboard.vue")
+const DiscoverBillboard = defineAsyncComponent(
+  () => import("../components/DiscoverBillboard.vue")
 );
 
 import DiscoverPlaylist from "../components/DiscoverPlaylist.vue";
 import { defineAsyncComponent, defineProps } from "vue";
 import DiscoverHot from "../components/DiscoverHot.vue";
-import { bannerFilter } from "../api/bannerFilter";
 import Aside from "../../asideright/Aside.vue";
 import Banner from "/comps/banner/Banner.vue";
 import { ElRow, ElCol } from "element-plus";
-import { ref } from "@vue/reactivity";
 
 const props = defineProps({
   bannerLsit: {

@@ -7,15 +7,12 @@
   ></component>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { defineAsyncComponent } from "@vue/runtime-dom";
 import { ref, shallowRef } from "@vue/reactivity";
 
-const Loading = defineAsyncComponent(() =>
-  import("../../../components/loading/Loading.vue")
-);
-const DiscoverIndex = defineAsyncComponent(() =>
-  import("./layout/DiscoverIndex.vue")
+const DiscoverIndex = defineAsyncComponent(
+  () => import("./layout/DiscoverIndex.vue")
 );
 
 import axios from "axios";
@@ -54,8 +51,6 @@ async function getBannerData() {
     bannerLsit.value = banner.data.banners;
     hotList.value = hot.data.tags;
     playList.value = palyList.data.playlists;
-
-    // nextTick(() => (componentName.value = DiscoverIndex));
   } catch (err) {
     console.log(err);
   }

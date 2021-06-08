@@ -9,7 +9,9 @@
       @mouseleave="leaveActive(index)"
     >
       <span
-        @click="() => ctxEmit('click', tagItem.comname)"
+        @click="
+          () => ctxEmit('loadComps', [tagItem.comname, tagItem.comchildren])
+        "
         class="cursor-pointer"
         :style="activeClass(index)"
       >
@@ -25,7 +27,7 @@ import { defineEmit, ref } from "@vue/runtime-core";
 import { contentTags } from "../hooks/data";
 import { activeIndex } from "../../../../utils/activeIndex";
 
-const ctxEmit = defineEmit(["click"]);
+const ctxEmit = defineEmit(["loadComps"]);
 
 const curIndex = ref(0);
 const moveIndex = ref(0);

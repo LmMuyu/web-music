@@ -99,11 +99,12 @@ const visbleCount = computed(() => {
 });
 
 const listHeight = computed(() => {
-  return estimateList.value[estimateList.value.length - 1]?.bottom || 0;
+  return estimateList.value[estimateList.value.length - 1]?.bottom;
 });
 
 const sliceList = computed(() => {
   const start = slicePos.start - beforCount.value;
+
   const end =
     Math.min(slicePos.end, props.renderData.length) + aftterCount.value;
 
@@ -124,7 +125,6 @@ function onScroll() {
   if (scrollTop) {
     slicePos.start = searchStartIndex(scrollTop);
     slicePos.end = slicePos.start + visbleCount.value;
-    console.log(slicePos.start);
 
     setStartOffset();
   }
@@ -135,6 +135,10 @@ function setStartOffset() {
     slicePos.start >= 1
       ? (startOffset.value = estimateList.value[slicePos.start - 1].bottom)
       : 0;
+
+  if (slicePos.start - props.beforBuffer === 1) {
+    slicePos.start = 0;
+  }
 }
 
 const watchDomInfo = (value: HTMLElement | null) => {
@@ -210,7 +214,7 @@ onUpdated(() => {
 
     if (bar_track.value) {
       const height = estimateList.value[estimateList.value.length - 1].bottom;
-      bar_track.value.style.height = height + "";
+      bar_track.value.style.height = height + "px";
 
       setStartOffset();
     }

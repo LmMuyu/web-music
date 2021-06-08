@@ -33,7 +33,7 @@ const routes: (RouteRecordRaw & META)[] = [
     path: "/playlist",
     name: "playerlist",
     meta: {
-      showTag: true,
+      showTags: false,
       keepAlive: false,
     },
     component: () => import("../view/playlist/PlayList.vue"),
