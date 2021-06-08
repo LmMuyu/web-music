@@ -24,10 +24,10 @@ export function setContentData(mainData: ListItem[] | undefined) {
   if (!mainData) return;
 
   mainData && (mainShowData.value = mainData);
-  nextTick(() => {
-    setTransition(rowRoot.value!, 1);
-    elementScrollTop.value = 0;
-  });
+  // nextTick(() => {
+  //   setTransition(rowRoot.value!, 1);
+  //   elementScrollTop.value = 0;
+  // });
 }
 
 export function setTransition(

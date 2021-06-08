@@ -1,16 +1,6 @@
 <template>
-  <div
-    class="
-      icons
-      absolute
-      top-1/2
-      left-1/2
-      transform
-      -translate-x-1/2 -translate-y-1/2
-      animates
-    "
-  >
-    <i class="iconfont iconicon_com-loading"></i>
+  <div class="icons w-full h-full flex justify-center items-center">
+    <i class="iconfont iconicon_com-loading w-auto h-auto animates"></i>
   </div>
 </template>
 <script setup lang="ts"></script>
@@ -31,5 +21,19 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.clearfix:before,
+.clearfix:after {
+  display: table;
+  content: ""; /*不用有内容也可以*/
+}
+
+.clearfix:after {
+  clear: both;
+}
+
+.clearfix {
+  *zoom: 1;
 }
 </style>

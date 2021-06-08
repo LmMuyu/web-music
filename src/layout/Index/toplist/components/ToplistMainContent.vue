@@ -2,8 +2,14 @@
   <div class="py-6">
     <el-checkbox v-model="isselect">全选</el-checkbox>
   </div>
-  <div class="overflow-y-auto h-full">
-    <VirtualList :renderData="renderListData" keyindex="id" :height="61">
+  <div class="overflow-y-auto h-full" id="rootcontent">
+    <VirtualList
+      v-if="loading"
+      :renderData="renderListData"
+      keyindex="indexOnly"
+      :height="61"
+      @load=""
+    >
       <template v-slot="{ scopeData: { renderItem, index, keyindex } }">
         <div
           class="flex items-center p-3 w-full cursor-pointer borderslode"
@@ -52,6 +58,8 @@ import {
   watch,
   markRaw,
 } from "@vue/runtime-core";
+import { loading } from "./hooks/data";
+import { unmountApp } from "../../../../components/loading/app";
 
 import ToplistMainFeaturesModule from "./ToplistMainFeaturesModule.vue";
 import VirtualList from "/comps/virtuallist/VirtualList.vue";
@@ -75,13 +83,22 @@ watch(isselect, (value) => {
 });
 
 const renderListData = computed<Record<string, any>>(() => {
-  return props.listData.map((listItem) =>
+  return props.listData.map((listItem, index) =>
     markRaw({
+      indexOnly: index,
       ...listItem,
       select: true,
     })
   );
 });
+
+watch(
+  () => renderListData.value,
+  () =>
+    unmountApp(() => {
+      loading.value = !loading.value;
+    })
+);
 
 const aliasName = computed(() => {
   return function (item: []) {

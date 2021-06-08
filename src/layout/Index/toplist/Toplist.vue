@@ -5,19 +5,12 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, defineProps, nextTick, onMounted } from "@vue/runtime-core";
+import { defineProps } from "@vue/runtime-core";
 
-import {
-  rowRoot,
-  mainShowData,
-  listTitle,
-  mainMapData,
-  elementScrollTop,
-  rowTop,
-} from "./hooks/data";
+import { mainShowData, listTitle, mainMapData } from "./hooks/data";
 import { allToplist, getlistDetailData } from "./hooks/request";
 import { currentID } from "./components/hooks/data";
-import { setContentData, setTransition } from "./hooks/methods";
+import { setContentData } from "./hooks/methods";
 
 import ToplistMainHeader from "./components/ToplistMainHeader.vue";
 import ToplistMainContent from "./components/ToplistMainContent.vue";

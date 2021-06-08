@@ -18,12 +18,14 @@
       ref="listItem"
     >
       <li
-        v-for="(renderItem, index) in sliceList"
+        v-for="renderItem in sliceList"
         :key="renderItem[keyindex]"
         class="flex items-center h-auto w-auto"
-        :_id="index"
+        :_id="renderItem[keyindex]"
       >
-        <slot :scopeData="{ renderItem, index, keyindex }"></slot>
+        <slot
+          :scopeData="{ renderItem, index: renderItem[keyindex], keyindex }"
+        ></slot>
       </li>
     </ul>
   </div>
@@ -31,8 +33,10 @@
 <script setup lang="ts">
 import {
   computed,
+  defineEmit,
   defineProps,
   nextTick,
+  onMounted,
   onUnmounted,
   onUpdated,
   reactive,
@@ -120,6 +124,7 @@ function onScroll() {
   if (scrollTop) {
     slicePos.start = searchStartIndex(scrollTop);
     slicePos.end = slicePos.start + visbleCount.value;
+    console.log(slicePos.start);
 
     setStartOffset();
   }
@@ -134,7 +139,6 @@ function setStartOffset() {
 
 const watchDomInfo = (value: HTMLElement | null) => {
   if (!value) return;
-
   nextTick().then(() => {
     rootClientHeight.value = value.clientHeight;
     slicePos.start = 0 - beforCount.value;
@@ -142,7 +146,7 @@ const watchDomInfo = (value: HTMLElement | null) => {
   });
 };
 
-const stopDomInfo = watch(() => totalList.value, watchDomInfo);
+const stopDomInfo = watch(totalList, watchDomInfo);
 
 function searchStartIndex(scrollTop: number = 0) {
   return binarySearch(scrollTop, estimateList.value);

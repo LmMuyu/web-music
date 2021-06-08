@@ -95,6 +95,10 @@ export class activeIndex {
   clickClass(currentIndex: Ref<keyof any>) {
     const that = this;
     return function (curIndex: keyof any) {
+      if (currentIndex.value === curIndex) {
+        return;
+      }
+
       that.mark.value = "click";
       currentIndex.value = curIndex;
     };

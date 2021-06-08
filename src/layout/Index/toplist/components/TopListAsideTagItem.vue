@@ -9,7 +9,7 @@
       @mouseleave="leaveActive(index)"
       @click="[childTagItemClick(childItem.id), clickActive(index)]"
     >
-      <div>
+      <div class="w-10 h-10">
         <img :src="childItem.coverImgUrl + '?param=40y40'" />
       </div>
       <div class="flex flex-col justify-between ml-4">
@@ -22,15 +22,14 @@
   </ul>
 </template>
 <script setup lang="ts">
-import { defineProps, ref, defineEmit } from "@vue/runtime-core";
+import { defineProps, ref } from "@vue/runtime-core";
 
-import { setContentData } from "../hooks/methods";
+import { activeIndex } from "../../../../utils/activeIndex";
 import { getlistDetailData } from "../hooks/request";
+import { setContentData } from "../hooks/methods";
+import { preloading } from "./hooks/methods";
 import { mainMapData } from "../hooks/data";
 import { currentID } from "./hooks/data";
-import { activeIndex } from "../../../../utils/activeIndex";
-
-const ctxEmit = defineEmit(["click"]);
 
 const props = defineProps({
   navItem: {
@@ -38,6 +37,8 @@ const props = defineProps({
     default: () => ({}),
   },
 });
+
+const childrenData = preloading(props.navItem.childrenData);
 
 async function childTagItemClick(currID: number) {
   if (currentID.value === currID) return;
