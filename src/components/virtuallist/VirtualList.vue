@@ -1,6 +1,6 @@
 <template>
   <div
-    class="relative overflow-auto slider_track"
+    class="relative overflow-auto h-full slider_track"
     @scroll="onScroll"
     ref="totalList"
   >
@@ -20,13 +20,10 @@
       <li
         v-for="(renderItem, index) in sliceList"
         :key="renderItem[keyindex]"
-        class="h-8 flex items-center"
+        class="flex items-center h-auto w-auto"
         :_id="index"
       >
-        <slot
-          name="content"
-          :scopeData="{ renderItem, index, keyindex }"
-        ></slot>
+        <slot :scopeData="{ renderItem, index, keyindex }"></slot>
       </li>
     </ul>
   </div>

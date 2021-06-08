@@ -16,7 +16,7 @@
 <script setup lang="ts"></script>
 <style lang="scss" scoped>
 .icons {
-  @include Iconfont(#2d3436, 48);
+  @include Iconfont(#0984e3, 32);
 }
 
 .animates {

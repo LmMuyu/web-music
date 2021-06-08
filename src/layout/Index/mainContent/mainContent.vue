@@ -15,7 +15,7 @@
 
     <el-container class="w-1/3">
       <el-header class="h-1/6"></el-header>
-      <el-main class="h-5/6">
+      <el-main class="h-5/6 track_bar">
         <TopListAsideTag />
       </el-main>
     </el-container>
@@ -28,4 +28,22 @@ import TopListAsideTag from "/layout/Index/toplist/components/TopListAsideTag.vu
 import { ElContainer, ElHeader, ElMain } from "element-plus";
 import mainNavTag from "./components/mainNavTag.vue";
 </script>
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.track_bar::-webkit-scrollbar {
+  display: none;
+}
+
+.clearfix:before,
+.clearfix:after {
+  display: table;
+  content: ""; /*不用有内容也可以*/
+}
+
+.clearfix:after {
+  clear: both;
+}
+
+.clearfix {
+  *zoom: 1;
+}
+</style>

@@ -1,5 +1,5 @@
 <template>
-  <ul class="flex items-center justify-around h-full">
+  <ul class="flex items-center justify-between h-full">
     <li
       class="flex items-center h-full relative"
       v-for="(tagItem, index) in contentTags"

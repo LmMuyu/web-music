@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col w-full h-full mx-8">
+  <div class="flex flex-col w-full h-full">
     <ToplistMainHeader :listData="mainShowData" />
     <ToplistMainContent :listData="mainShowData[0]?.tracks" />
   </div>
@@ -46,17 +46,17 @@ allToplist()
     setContentData(mainData);
   });
 
-function documentScroll() {
-  const documentScrollTop = document.documentElement.scrollTop;
+// function documentScroll() {
+//   const documentScrollTop = document.documentElement.scrollTop;
 
-  elementScrollTop.value = documentScrollTop;
-}
+//   elementScrollTop.value = documentScrollTop;
+// }
 
-function setTranY(Yvalue: number) {
-  return `translate(0,${Yvalue}px) translateZ(0)`;
-}
+// function setTranY(Yvalue: number) {
+//   return `translate(0,${Yvalue}px) translateZ(0)`;
+// }
 
-const setTransformY = computed(() => setTranY(elementScrollTop.value));
+// const setTransformY = computed(() => setTranY(elementScrollTop.value));
 
 // onMounted(() => {
 //   nextTick().then(() => {

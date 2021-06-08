@@ -17,7 +17,7 @@
           keyindex="key"
           :scrollHeight="unref(drawerMainHeight)"
         >
-          <template v-slot:content="{ scopeData }">
+          <template v-slot="{ scopeData }">
             <ChildrenItem :scopedData="musicResultDetail(scopeData.song)" />
           </template>
         </VirtualList>

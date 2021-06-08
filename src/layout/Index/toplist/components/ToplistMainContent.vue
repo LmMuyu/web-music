@@ -2,11 +2,11 @@
   <div class="py-6">
     <el-checkbox v-model="isselect">全选</el-checkbox>
   </div>
-  <div class="overflow-y-auto ">
-    <!-- <VirtualList :renderData="renderListData" keyindex="id" :height="61">
-      <template v-slot:content="{ scopeData: { renderItem, index, keyindex } }">
+  <div class="overflow-y-auto h-full">
+    <VirtualList :renderData="renderListData" keyindex="id" :height="61">
+      <template v-slot="{ scopeData: { renderItem, index, keyindex } }">
         <div
-          class="flex items-center p-3 cursor-pointer borderslode"
+          class="flex items-center p-3 w-full cursor-pointer borderslode"
           ref="features"
         >
           <div class="flex items-center w-full">
@@ -39,7 +39,7 @@
           </div>
         </div>
       </template>
-    </VirtualList> -->
+    </VirtualList>
   </div>
 </template>
 <script setup lang="ts">
