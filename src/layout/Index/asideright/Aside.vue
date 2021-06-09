@@ -1,7 +1,5 @@
 <template>
   <div>
-    <AsideUserProfile />
-    <div class="mt-4"></div>
     <AsideSinger />
     <div class="mt-4"></div>
     <AsidePopularAnchors />

@@ -8,23 +8,30 @@
         :key="play.id"
         class="flex"
       >
-        <section class="text-center pb-6">
-          <div class="relative">
+        <section class="text-center px-4 pb-6">
+          <div class="relative w-auto h-auto">
             <img
-              :src="
-                playSrc(
-                  play?.creator?.backgroundUrl || play?.creator?.coverImgUrl
-                )
-              "
+              :src="play?.creator?.backgroundUrl || play?.creator?.coverImgUrl"
               :alt="play.alg_sq_featured"
-              class="object-contain block cneter"
+              class="object-contain block w-auto h-auto cneter"
             />
             <router-link
               :to="{ path: '/playlist', query: { id: play.id } }"
               class="absolute top-0 bottom-0 left-0 right-0 z-50"
             ></router-link>
             <div
-              class="text-left icon bg_gray w-full absolute left-0 bottom-0 p-1 flex items-center"
+              class="
+                text-left
+                icon
+                bg_gray
+                w-full
+                absolute
+                left-0
+                bottom-0
+                p-1
+                flex
+                items-center
+              "
             >
               <i class="iconfont iconicon_headset"></i>
               <p style="color: #ecf0f1" class="transform translate-x-1">
@@ -44,18 +51,21 @@
 </template>
 <script setup lang="ts">
 import { defineProps, computed } from "vue";
+
 import { ElRow, ElCol } from "element-plus";
+
+import type { PropType } from "vue";
 
 const props = defineProps({
   playlist: {
-    type: Array,
+    type: Array as PropType<Array<Object>>,
     default: () => [],
   },
 });
 
 const playSrc = computed(() => {
   return function (src: string) {
-    return src + "?param=140y140";
+    return src;
   };
 });
 

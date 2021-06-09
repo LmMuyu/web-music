@@ -5,10 +5,17 @@ const Discover = createAsComponent("/layout/Index/discover/Discover.vue");
 const Toplist = createAsComponent("/layout/Index/toplist/Toplist.vue");
 
 const TopListAsideTag = createAsComponent(
-  "/layout/Index/toplist/components/TopListAsideTag.vue"
+  "/layout/Index/toplist/components/TopListAsideTag.vue",
+  {
+    loadComp: false,
+  }
 );
 const DiscoverBar = createAsComponent(
-  "/layout/Index/discover/components/DiscoverBar.vue"
+  "/layout/Index/discover/components/DiscoverBar.vue",
+  {
+    loadComp: false,
+    
+  }
 );
 
 class controlComps {
@@ -37,17 +44,12 @@ class controlComps {
   }
 
   putView(compName: string[]) {
-    console.log(this.type);
-
     if (this.type == "root") {
       const name = compName[0];
-      console.log(this);
-
-      // this.switchComps.call(this, name);
+      this.switchComps.call(this, name);
     } else {
-      console.log(this);
       const name = compName[1];
-      // this.switchComps.call(this, name);
+      this.switchComps.call(this, name);
     }
   }
 
@@ -59,7 +61,7 @@ class controlComps {
   }
 }
 
-export const { componentId, putView } = new controlComps(
+const controlView = new controlComps(
   [
     ["Discover", Discover],
     ["Toplist", Toplist],
@@ -68,7 +70,7 @@ export const { componentId, putView } = new controlComps(
   "root"
 );
 
-export const { componentId: compsId, putView: switchView } = new controlComps(
+const controlViewChildren = new controlComps(
   [
     ["TopListAsideTag", TopListAsideTag],
     ["DiscoverBar", DiscoverBar],
@@ -76,3 +78,13 @@ export const { componentId: compsId, putView: switchView } = new controlComps(
   "DiscoverBar",
   "children"
 );
+
+export const { componentId, putView } = controlView;
+
+export const { componentId: compsId, putView: switchView } =
+  controlViewChildren;
+
+export function runLoadView(compsStrList: string[]) {
+  putView.call(controlView, compsStrList);
+  switchView.call(controlViewChildren, compsStrList);
+}
