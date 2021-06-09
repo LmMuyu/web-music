@@ -4,7 +4,7 @@
   </div>
   <div class="overflow-y-auto h-full" id="rootcontent">
     <VirtualList
-      v-if="loading"
+      v-if="!closeLoading ? loading : true"
       :renderData="renderListData"
       keyindex="indexOnly"
       :height="61"
@@ -14,10 +14,16 @@
         <div
           class="flex items-center p-3 w-full cursor-pointer borderslode"
           ref="features"
+          @mouseenter=""
+          @mouseleave=""
         >
-          <div class="flex items-center w-full">
-            <el-checkbox v-model="renderItem.select"></el-checkbox>
+          <div  class="flex items-center w-full">
+            <el-checkbox
+              v-if="typeof renderItem.select === 'undefined' && false"
+              v-model="renderItem.select"
+            ></el-checkbox>
             <h4
+              v-if="isRank"
               :class="[
                 index + 1 <= 3
                   ? 'text-red-600 text-2xl'
@@ -35,13 +41,13 @@
               <div class="w-full flex py-4 items-center">
                 <span class="ml-3 flex">
                   {{ renderItem?.ar[0]?.name }} - {{ renderItem?.al?.name }}
-                  <p v-html="aliasName(renderItem?.alia)" class></p>
+                  <p v-html="aliasName(renderItem?.alia || [])" class></p>
                 </span>
               </div>
             </router-link>
           </div>
           <div>
-            <ToplistMainFeaturesModule />
+            <ToplistMainFeaturesModule v-if="featuresModule" />
           </div>
         </div>
       </template>
@@ -72,10 +78,23 @@ const props = defineProps({
     type: Array as PropType<Record<string, any>[]>,
     default: () => [],
   },
+  selectAll: {
+    type: Boolean,
+    default: true,
+  },
+  closeLoading: {
+    type: Boolean,
+    default: false,
+  },
+  isRank: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 const features = ref(null);
 const hoverList: any[] = [];
+const featuresModule = ref(false);
 
 const isselect = ref(true);
 watch(isselect, (value) => {
@@ -108,6 +127,10 @@ const aliasName = computed(() => {
     );
   };
 });
+
+function mouseenter(){
+   
+}
 
 onMounted(() => {
   nextTick(() => {

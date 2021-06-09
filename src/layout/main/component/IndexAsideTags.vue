@@ -1,5 +1,7 @@
 <template>
-  <header style="height: 10%"></header>
+  <header style="height: 10%">
+      44444
+  </header>
   <main class="h-3/4">
     <nav>
       <IndexTag />

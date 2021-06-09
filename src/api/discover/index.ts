@@ -1,14 +1,14 @@
 import request from "../../utils/request";
 
-export function getCatlist(catlist: string[]) {
+export function getCatlist(catlist: Array<{ tagName: string; area: string }>) {
   return Promise.all(
     catlist.map((v) =>
       request({
-        url: "/top/playlist",
+        method: "get",
+        url: "/album/new",
         params: {
-          order: "new",
-          cat: v,
-          limit: 10,
+          limit: 5,
+          area: v.area,
         },
       })
     )

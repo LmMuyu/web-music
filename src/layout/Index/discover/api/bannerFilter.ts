@@ -13,4 +13,3 @@ export const bannerFilter = ref([
   "kWSpIUfKDM8eocFFNSDimQ",
 ]);
 
-export const discoverMusic = ["华语", "欧美", "韩语", "日语"];

@@ -6,29 +6,54 @@
         v-for="(tagItem, index) in discoverMusic"
         :key="index"
         :style="activeStyle(index)"
-        @click="clickActive(index)"
+        @click="
+          [
+            clickActive(index),
+            () => {
+              curSlicePos = index;
+            },
+          ]
+        "
         @mouseleave="leaveActive(index)"
         @mouseenter="moveActive(index)"
         class="px-6 cursor-pointer"
       >
-        {{ tagItem }}
+        {{ tagItem.tagName }}
       </li>
     </ul>
   </div>
-  <!-- <ToplistMainContent /> -->
+  <ToplistMainContent
+    :listData="sliceList"
+    :close-loading="true"
+    :select-all="false"
+    :is-rank="false"
+  />
 </template>
 <script setup lang="ts">
-import { discoverMusic } from "../api/bannerFilter";
+import { ref } from "@vue/reactivity";
+
+import { discoverMusic } from "../api/data";
 import { activeIndex } from "../../../../utils/activeIndex";
 import { getPlaylist } from "../api/methods";
 
 import ToplistMainContent from "../../toplist/components/ToplistMainContent.vue";
+import { computed } from "@vue/runtime-core";
 
 const { activeStyle, clickActive, leaveActive, moveActive } = new activeIndex();
 
-getPlaylist().then((res) => {
-  console.log(res);
+const list = ref<any[]>([]);
+getPlaylist().then(
+  (res) => (list.value = res.map((v) => v.data.albums.map(forMap)))
+);
+
+const forMap = (artistsValue: any) => ({
+  id: artistsValue.id,
+  ar: [{ name: artistsValue.artists[0].name }],
+  al: { name: artistsValue.name },
 });
+
+const curSlicePos = ref(0);
+const sliceList = computed(() => list.value[curSlicePos.value]);
 </script>
 <style scoped lang="scss">
 .border_bar {
