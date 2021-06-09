@@ -8,11 +8,11 @@
       @mouseenter="moveActive(index)"
       @mouseleave="leaveActive(index)"
     >
-      <i class="iconfont" :class="[tag.icon]" :style="activeClass(index)"></i>
+      <i class="iconfont" :class="[tag.icon]" :style="activeStyle(index)"></i>
       <span
         class="text-2xl px-5"
         style="color: #636e72"
-        :style="activeClass(index)"
+        :style="activeStyle(index)"
         >{{ tag.title }}</span
       >
     </li>
@@ -24,7 +24,7 @@ import { computed } from "vue";
 import { currentIndex, moveIndex, AsideTags } from "../hooks/data";
 import { activeIndex } from "../../../utils/activeIndex";
 
-const { activeClass, clickActive, moveActive, leaveActive } = new  activeIndex(
+const { activeStyle, clickActive, moveActive, leaveActive } = new activeIndex(
   currentIndex,
   moveIndex
 );

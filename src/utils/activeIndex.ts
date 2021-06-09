@@ -9,37 +9,37 @@ interface Options {
 }
 
 export class activeIndex {
-  mark: Ref<"click" | "move" | "default">;
-  currentIndex: Ref<keyof any>;
-  moveIndex: Ref<keyof any>;
+  private mark: Ref<"click" | "move" | "default">;
+  private currentIndex: Ref<keyof any>;
+  private moveIndex: Ref<keyof any>;
   clickActive: (curIndex: keyof any) => void;
   leaveActive: (curIndex: keyof any) => void;
   moveActive: (curIndex: keyof any) => void;
-  activeClass: ComputedRef<(index: keyof any) => { [x: string]: string }>;
+  activeStyle: ComputedRef<(index: keyof any) => { [x: string]: string }>;
 
   constructor(
-    currentIndex: Ref<keyof any>,
-    moveIndex: Ref<keyof any>,
+    currentIndex?: Ref<keyof any>,
+    moveIndex?: Ref<keyof any>,
     options?: Partial<Options>
   ) {
     this.mark = ref<"click" | "move" | "default">("click");
-    this.currentIndex = currentIndex;
-    this.moveIndex = moveIndex;
+    this.currentIndex = currentIndex || ref(0);
+    this.moveIndex = moveIndex || ref(0);
 
     this.clickActive = this.clickClass(this.currentIndex);
     this.moveActive = this.moveClass(this.currentIndex, this.moveIndex);
     this.leaveActive = this.leaveClass(this.currentIndex);
 
-    this.activeClass = this.activeIndex(options);
+    this.activeStyle = this.activeIndex(options);
   }
 
-  activeIndex(options?: Partial<Options>) {
+  private activeIndex(options?: Partial<Options>) {
     const optionsData = this.isOptions(options);
 
     const { clickColor, moveColor } = optionsData;
     const styleKey = optionsData.style;
 
-    const activeClass = computed(() => (index: keyof any) => {
+    const activeStyle = computed(() => (index: keyof any) => {
       if (this.mark.value === "click" || this.currentIndex.value === index) {
         if (optionsData.style !== "color" && this.mark.value !== "default") {
           this.mark.value = "move";
@@ -55,10 +55,10 @@ export class activeIndex {
           };
     });
 
-    return activeClass;
+    return activeStyle;
   }
 
-  setColor(
+  private setColor(
     curIndex: Ref<keyof any>,
     index: keyof any,
     color: string,
@@ -74,7 +74,7 @@ export class activeIndex {
     };
   }
 
-  leaveClass(currentIndex: Ref<keyof any>) {
+  private leaveClass(currentIndex: Ref<keyof any>) {
     const that = this;
     return function (curIndex: keyof any) {
       if (currentIndex.value === curIndex) return;
@@ -82,7 +82,7 @@ export class activeIndex {
     };
   }
 
-  moveClass(currentIndex: Ref<keyof any>, moveIndex: Ref<keyof any>) {
+  private moveClass(currentIndex: Ref<keyof any>, moveIndex: Ref<keyof any>) {
     const that = this;
     return function (curIndex: keyof any) {
       if (currentIndex.value === curIndex) return;
@@ -92,7 +92,7 @@ export class activeIndex {
     };
   }
 
-  clickClass(currentIndex: Ref<keyof any>) {
+  private clickClass(currentIndex: Ref<keyof any>) {
     const that = this;
     return function (curIndex: keyof any) {
       if (currentIndex.value === curIndex) {
@@ -104,7 +104,7 @@ export class activeIndex {
     };
   }
 
-  isOptions(data: Partial<Options> | undefined): Options {
+  private isOptions(data: Partial<Options> | undefined): Options {
     const newData: Options = {
       clickColor: "#74b9ff",
       moveColor: "#74b9ffb3",

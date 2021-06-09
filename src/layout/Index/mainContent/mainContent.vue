@@ -6,7 +6,7 @@
           <mainNavTag @loadComps="runLoadView" />
         </nav>
       </el-header>
-      <el-main class="h-5/6">
+      <el-main class="h-5/6 track_bar">
         <keep-alive>
           <component :is="componentId"></component>
         </keep-alive>

@@ -2,7 +2,16 @@
   <header>
     <div class="flex items-center py-3">
       <div
-        class="div_yuan w-5 h-5 bg-red-500 relative flex items-center justify-center"
+        class="
+          div_yuan
+          w-5
+          h-5
+          bg-red-500
+          relative
+          flex
+          items-center
+          justify-center
+        "
       >
         <div class="div_yuan w-2 h-2 bg-white"></div>
       </div>
@@ -12,7 +21,14 @@
   </header>
 
   <article
-    class="flex items-center justify-center border-2 border-solid border-gray-200 p-8 mt-6"
+    class="
+      flex
+      items-center
+      justify-center
+      border-2 border-solid border-gray-200
+      p-8
+      mt-6
+    "
     style="background: #f5f5f5"
   >
     <div class="icons cursor-pointer" @click="leftNum">
@@ -22,7 +38,6 @@
       class="relative overflow-x-hidden flost w-full"
       ref="root"
       style="height: 100px"
-      @transitionend="onTransitionend"
     >
       <ul
         v-for="(itemx, index) in list"
@@ -52,18 +67,19 @@
   </article>
 </template>
 <script setup lang="ts">
-import { reactive, ref } from "@vue/reactivity";
-import { onMounted, watch, nextTick } from "@vue/runtime-core";
-import { ElImage } from "element-plus";
+import { ref } from "@vue/reactivity";
+import { watch, nextTick } from "@vue/runtime-core";
 import { getNewDisc } from "../../../../api/discover/getNewDisc";
 import { POSITION } from "../type";
 
 const root = ref<HTMLElement | null>(null);
-let list = ref<Record<string, any>[]>([]);
-let currentIndex = ref(0);
+const list = ref<Record<string, any>[]>([]);
 let silderList: HTMLElement[] = [];
+
+const currentIndex = ref(0);
 let listLen = 0;
 let isTran = false;
+
 let times: NodeJS.Timeout | null = null;
 
 function runTransition(fnc: any[]) {
@@ -88,8 +104,6 @@ watch(list.value, () => {
 });
 
 watch(currentIndex, (curr) => {
-  // console.log(curr);
-
   const pre = curr === 0 ? listLen - 1 : curr - 1;
   const next = curr === listLen - 1 ? 0 : curr + 1;
 
@@ -104,8 +118,6 @@ function setTransition(index: number, position: string) {
 
   const target = silderList[index];
   target.style.zIndex = "0";
-  // console.log(index, curr);
-
   switch (position) {
     case POSITION.CURR:
       target.style.transition = "left 0.5s ease";

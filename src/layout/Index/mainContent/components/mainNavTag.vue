@@ -13,7 +13,7 @@
           () => ctxEmit('loadComps', [tagItem.comname, tagItem.comchildren])
         "
         class="cursor-pointer"
-        :style="activeClass(index)"
+        :style="activeStyle(index)"
       >
         {{ tagItem.tagname }}
       </span>
@@ -32,7 +32,7 @@ const ctxEmit = defineEmit(["loadComps"]);
 const curIndex = ref(0);
 const moveIndex = ref(0);
 
-const { activeClass, clickActive, moveActive, leaveActive } = new activeIndex(
+const { activeStyle, clickActive, moveActive, leaveActive } = new activeIndex(
   curIndex,
   moveIndex
 );

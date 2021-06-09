@@ -4,7 +4,7 @@
       v-for="(childItem, index) in navItem.childrenData"
       :key="childItem.id"
       class="flex p-4 cursor-pointer"
-      :style="activeClass(index)"
+      :style="activeStyle(index)"
       @mouseenter="moveActive(index)"
       @mouseleave="leaveActive(index)"
       @click="[childTagItemClick(childItem.id), clickActive(index)]"
@@ -51,7 +51,7 @@ async function childTagItemClick(currID: number) {
 const curIndex = ref(0);
 const moveIndex = ref(0);
 
-const { activeClass, clickActive, moveActive, leaveActive } = new activeIndex(
+const { activeStyle, clickActive, moveActive, leaveActive } = new activeIndex(
   curIndex,
   moveIndex,
   {
