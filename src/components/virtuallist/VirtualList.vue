@@ -192,6 +192,7 @@ function updateItemsSize() {
       const estimate = estimateList.value;
       const height = node.getBoundingClientRect().height;
       const index = +node.getAttribute("_id")!;
+      
       const oldHeight = estimate[index].height;
       const dValue = oldHeight - height;
 

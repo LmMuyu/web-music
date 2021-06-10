@@ -6,6 +6,7 @@ interface Options {
   style: "background" | "color";
   clickColor: string;
   moveColor: string;
+  isMove: boolean;
 }
 
 export class activeIndex {
@@ -38,14 +39,19 @@ export class activeIndex {
 
     const { clickColor, moveColor } = optionsData;
     const styleKey = optionsData.style;
+    const isMove = optionsData.isMove;
 
     const activeStyle = computed(() => (index: keyof any) => {
-      if (this.mark.value === "click" || this.currentIndex.value === index) {
-        if (optionsData.style !== "color" && this.mark.value !== "default") {
-          this.mark.value = "move";
-        }
+      if (!isMove) {
+        if (this.mark.value === "click" || this.currentIndex.value === index) {
+          if (optionsData.style !== "color" && this.mark.value !== "default") {
+            this.mark.value = "move";
+          }
 
-        return this.setColor(this.currentIndex, index, clickColor, styleKey);
+          return this.setColor(this.currentIndex, index, clickColor, styleKey);
+        }
+      } else {
+        this.mark.value = "move";
       }
 
       return this.mark.value === "move"
@@ -109,6 +115,7 @@ export class activeIndex {
       clickColor: "#74b9ff",
       moveColor: "#74b9ffb3",
       style: "color",
+      isMove: false,
     };
 
     const result: Options = data ? (data as Options) : newData;

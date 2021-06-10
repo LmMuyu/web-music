@@ -4,54 +4,28 @@
   </div>
   <div class="overflow-y-auto h-full" id="rootcontent">
     <VirtualList
-      v-if="!closeLoading ? loading : true"
+      v-if="openVirtuallist && !closeLoading ? loading : true"
       :renderData="renderListData"
       keyindex="indexOnly"
       :height="61"
       @load=""
     >
       <template v-slot="{ scopeData: { renderItem, index, keyindex } }">
-        <div
-          class="flex items-center p-3 w-full cursor-pointer borderslode"
-          ref="features"
-          @mouseenter=""
-          @mouseleave=""
-        >
-          <div  class="flex items-center w-full">
-            <el-checkbox
-              v-if="typeof renderItem.select === 'undefined' && false"
-              v-model="renderItem.select"
-            ></el-checkbox>
-            <h4
-              v-if="isRank"
-              :class="[
-                index + 1 <= 3
-                  ? 'text-red-600 text-2xl'
-                  : 'text-gray-300 text-xl',
-              ]"
-              class="text px-2"
-            >
-              {{ index + 1 }}
-            </h4>
-            <router-link
-              :to="{ path: '/playlist', query: { id: renderItem.id } }"
-              tag="a"
-              target="_blank"
-            >
-              <div class="w-full flex py-4 items-center">
-                <span class="ml-3 flex">
-                  {{ renderItem?.ar[0]?.name }} - {{ renderItem?.al?.name }}
-                  <p v-html="aliasName(renderItem?.alia || [])" class></p>
-                </span>
-              </div>
-            </router-link>
-          </div>
-          <div>
-            <ToplistMainFeaturesModule v-if="featuresModule" />
-          </div>
-        </div>
+        <ToplistMainItem
+          :index="index"
+          :isRank="isRank"
+          :keyindex="keyindex"
+          :renderItem="renderItem"
+        />
       </template>
     </VirtualList>
+    <div v-else v-for="renderItem in renderListData" :key="renderItem.index">
+      <ToplistMainItem
+        :renderItem="renderItem"
+        :index="renderItem.index"
+        :isRank="isRank"
+      />
+    </div>
   </div>
 </template>
 <script setup lang="ts">
@@ -67,11 +41,12 @@ import {
 import { loading } from "./hooks/data";
 import { unmountApp } from "../../../../components/loading/app";
 
-import ToplistMainFeaturesModule from "./ToplistMainFeaturesModule.vue";
 import VirtualList from "/comps/virtuallist/VirtualList.vue";
+import ToplistMainItem from "./ToplistMainItem.vue";
 import { ElCheckbox } from "element-plus";
 
 import type { PropType } from "@vue/runtime-core";
+import { activeIndex } from "../../../../utils/activeIndex";
 
 const props = defineProps({
   listData: {
@@ -90,11 +65,14 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  openVirtuallist: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 const features = ref(null);
 const hoverList: any[] = [];
-const featuresModule = ref(false);
 
 const isselect = ref(true);
 watch(isselect, (value) => {
@@ -104,9 +82,10 @@ watch(isselect, (value) => {
 const renderListData = computed<Record<string, any>>(() => {
   return props.listData.map((listItem, index) =>
     markRaw({
-      indexOnly: index,
+      index,
       ...listItem,
       select: true,
+      indexOnly: index,
     })
   );
 });
@@ -119,18 +98,13 @@ watch(
     })
 );
 
-const aliasName = computed(() => {
-  return function (item: []) {
-    return item.reduce(
-      (pre, cur) => (pre += `<h4 class="text-gray-300">&nbsp -(${cur})</h4>`),
-      ""
-    );
-  };
-});
-
-function mouseenter(){
-   
-}
+const { leaveActive, moveActive, activeStyle } = new activeIndex(
+  ref(0),
+  ref(0),
+  {
+    isMove: true,
+  }
+);
 
 onMounted(() => {
   nextTick(() => {

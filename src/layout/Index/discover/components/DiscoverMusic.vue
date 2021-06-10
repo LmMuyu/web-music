@@ -9,9 +9,9 @@
         @click="
           [
             clickActive(index),
-            () => {
+            (function () {
               curSlicePos = index;
-            },
+            })(),
           ]
         "
         @mouseleave="leaveActive(index)"
@@ -23,6 +23,7 @@
     </ul>
   </div>
   <ToplistMainContent
+    :open-virtuallist="false"
     :listData="sliceList"
     :close-loading="true"
     :select-all="false"
