@@ -1,19 +1,23 @@
 <template>
   <article class="mt-8">
-    <ElRow tag="ul" class="flex justify-between">
+    <ElRow tag="ul" class="flex flex-wrap">
       <ElCol
         tag="li"
         :span="6"
-        v-for="play in playlist"
+        v-for="(play, index) in playlist"
         :key="play.id"
-        class="flex"
+        class="flex overflow-hidden"
       >
         <section class="text-center px-4 pb-6">
-          <div class="relative w-auto h-auto">
+          <div
+            class="relative w-32 h-32"
+            @mouseenter="mouseenter(index)"
+            @mouseleave="mouseleave"
+          >
             <img
               :src="play?.creator?.backgroundUrl || play?.creator?.coverImgUrl"
               :alt="play.alg_sq_featured"
-              class="object-contain block w-auto h-auto cneter"
+              class="object-contain block w-32 h-32 cneter"
             />
             <router-link
               :to="{ path: '/playlist', query: { id: play.id } }"
@@ -21,21 +25,29 @@
             ></router-link>
             <div
               class="
-                text-left
-                icon
-                bg_gray
-                w-full
-                absolute
-                left-0
-                bottom-0
-                p-1
                 flex
+                icon
+                left-0
+                w-full
+                transl
+                bg_gray
+                absolute
+                bottom-0
+                text-left
+                transform
+                translateAm
                 items-center
               "
+              @mouseleave="mouseleave"
+              :class="[
+                curIndex === index && countRef
+                  ? 'translate-y-full'
+                  : 'translate-x-0',
+              ]"
             >
               <i class="iconfont iconicon_headset"></i>
               <p style="color: #ecf0f1" class="transform translate-x-1">
-                {{ playCount(play?.playCount) }}
+                {{ playCount(play.playCount) }}
               </p>
             </div>
           </div>
@@ -50,18 +62,31 @@
   </article>
 </template>
 <script setup lang="ts">
-import { defineProps, computed } from "vue";
+import { defineProps, computed, ref } from "vue";
 
 import { ElRow, ElCol } from "element-plus";
 
 import type { PropType } from "vue";
+import type { PlayListOptions } from "../type";
+import { useRrfNegate } from "../../../../utils/useRefNegate";
 
 const props = defineProps({
   playlist: {
-    type: Array as PropType<Array<Object>>,
+    type: Array as PropType<Array<PlayListOptions>>,
     default: () => [],
   },
 });
+
+const curIndex = ref(0);
+const { countRef, negate } = useRrfNegate(false);
+
+function mouseenter(index: number) {
+  curIndex.value = index;
+  negate();
+}
+function mouseleave(index: number) {
+  negate();
+}
 
 const playSrc = computed(() => {
   return function (src: string) {
@@ -107,5 +132,9 @@ const playCount = computed(() => {
 
 .bg_gray {
   background: rgba(0, 0, 0, 0.405);
+}
+
+.translateAm {
+  transition: all 0.3s ease-in-out;
 }
 </style>

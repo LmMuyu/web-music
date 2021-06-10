@@ -24,6 +24,7 @@
         :renderItem="renderItem"
         :index="renderItem.index"
         :isRank="isRank"
+        :isCheckbox="false"
       />
     </div>
   </div>
@@ -79,7 +80,7 @@ watch(isselect, (value) => {
   console.log(value);
 });
 
-const renderListData = computed<Record<string, any>>(() => {
+const renderListData = computed(() => {
   return props.listData.map((listItem, index) =>
     markRaw({
       index,

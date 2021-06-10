@@ -7,7 +7,7 @@
       <div class="mt-15"></div>
       <DiscoverMusic />
       <div class="mt-16"></div>
-      <DiscoverBillboard />
+      <DiscoverMv />
     </article>
   </div>
 </template>
@@ -17,6 +17,10 @@
 // );
 const DiscoverBillboard = defineAsyncComponent(
   () => import("../components/DiscoverBillboard.vue")
+);
+
+const DiscoverMv = defineAsyncComponent(
+  () => import("../components/DiscoverMv.vue")
 );
 
 const DiscoverMusic = defineAsyncComponent(
@@ -29,6 +33,7 @@ import DiscoverHot from "../components/DiscoverHot.vue";
 import Banner from "/comps/banner/Banner.vue";
 
 import type { PropType } from "vue";
+import type { PlayListOptions } from "../type";
 
 const props = defineProps({
   bannerLsit: {
@@ -40,7 +45,7 @@ const props = defineProps({
     default: () => [],
   },
   playList: {
-    type: Array as PropType<Array<Object>>,
+    type: Array as PropType<Array<PlayListOptions>>,
     default: () => [],
   },
 });

@@ -6,10 +6,7 @@
     @mouseleave="negate"
   >
     <div class="flex items-center w-full">
-      <el-checkbox
-        v-if="typeof renderItem.select === 'undefined' && false"
-        v-model="renderItem.select"
-      ></el-checkbox>
+      <el-checkbox v-if="isCheckbox" v-model="renderItem.select"></el-checkbox>
       <h4
         v-if="isRank"
         :class="[
@@ -41,9 +38,9 @@
 import { defineProps, ref, computed } from "@vue/runtime-core";
 
 import { useRrfNegate } from "../../../../utils/useRefNegate";
-import ToplistMainFeaturesModule from "./ToplistMainFeaturesModule.vue";
 
-import type { PropType } from "vue";
+import ToplistMainFeaturesModule from "./ToplistMainFeaturesModule.vue";
+import { ElCheckbox } from "element-plus";
 
 const props = defineProps({
   renderItem: {
@@ -58,14 +55,14 @@ const props = defineProps({
     type: String,
     default: "",
   },
+  isCheckbox: {
+    type: Boolean,
+    default: true,
+  },
   isRank: {
     type: Boolean,
     default: true,
   },
-  // leaveActive:{
-  //   type:Function as unknown as  PropType<(keyof any)=>void>,
-  //   default:()=>(()=>{})
-  // }, moveActive, activeStyle
 });
 
 const curIndex = ref(0);
