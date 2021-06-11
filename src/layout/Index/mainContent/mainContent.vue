@@ -12,7 +12,6 @@
         </keep-alive>
       </el-main>
     </el-container>
-
     <el-container class="w-1/3">
       <el-header class="h-1/6"></el-header>
       <el-main class="h-5/6 track_bar">

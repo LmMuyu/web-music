@@ -17,3 +17,21 @@ export function getCatlist(
     )
   );
 }
+
+export function recommendMV() {
+  return request({
+    url: "/mv/first",
+    params: {
+      limit: 15,
+    },
+  });
+}
+
+export function getArtists() {
+  return request({
+    url: "/top/artists",
+    params: {
+      limit: 20,
+    },
+  });
+}
