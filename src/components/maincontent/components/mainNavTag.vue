@@ -25,7 +25,7 @@
 import { defineEmit, ref } from "@vue/runtime-core";
 
 import { contentTags } from "../hooks/data";
-import { activeIndex } from "../../../../utils/activeIndex";
+import { activeIndex } from "../../../utils/activeIndex";
 
 const ctxEmit = defineEmit(["loadComps"]);
 

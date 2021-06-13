@@ -1,8 +1,9 @@
 import { shallowRef } from "@vue/reactivity";
-import { createAsComponent } from "../../../../utils/createAsComponent";
+import { createAsComponent } from "../../../utils/createAsComponent";
 
 const Discover = createAsComponent("/layout/Index/discover/Discover.vue");
 const Toplist = createAsComponent("/layout/Index/toplist/Toplist.vue");
+const ExploreContent = createAsComponent("/layout/explore/ExploreContent.vue");
 
 const TopListAsideTag = createAsComponent(
   "/layout/Index/toplist/components/TopListAsideTag.vue",
@@ -14,9 +15,11 @@ const DiscoverBar = createAsComponent(
   "/layout/Index/discover/components/DiscoverBar.vue",
   {
     loadComp: false,
-    
   }
 );
+const ExploreRight = createAsComponent("/layout/explore/ExploreRight.vue", {
+  loadComp: false,
+});
 
 class controlComps {
   private compsMap: Map<string, any>;
@@ -65,6 +68,7 @@ const controlView = new controlComps(
   [
     ["Discover", Discover],
     ["Toplist", Toplist],
+    ["ExploreContent", ExploreContent],
   ],
   "Discover",
   "root"
@@ -74,6 +78,7 @@ const controlViewChildren = new controlComps(
   [
     ["TopListAsideTag", TopListAsideTag],
     ["DiscoverBar", DiscoverBar],
+    ["ExploreRight", ExploreRight],
   ],
   "DiscoverBar",
   "children"

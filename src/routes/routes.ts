@@ -58,6 +58,11 @@ const routes: (RouteRecordRaw & META)[] = [
     name: "Discover",
     component: () => import("../layout/Index/discover/Discover.vue"),
   },
+  {
+    path: "/explore",
+    name: "Explore",
+    component: () => import("../view/explore/explore.vue"),
+  },
 ];
 
 export default routes;

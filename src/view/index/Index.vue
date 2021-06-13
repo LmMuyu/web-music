@@ -2,6 +2,9 @@
   <mainContent></mainContent>
 </template>
 <script setup lang="ts">
-import mainContent from "/layout/Index/mainContent/mainContent.vue";
+import { runLoadView } from "../../components/maincontent/hooks/component";
+import mainContent from "/comps/maincontent/mainContent.vue";
+
+runLoadView(["ExploreContent", "ExploreRight"]);
 </script>
 <style scoped lang="scss"></style>

@@ -9,18 +9,17 @@
       @mouseleave="leaveActive(index)"
     >
       <i class="iconfont" :class="[tag.icon]" :style="activeStyle(index)"></i>
-      <span
+      <router-link
+        :to="tag.path"
         class="text-2xl px-5"
         style="color: #636e72"
         :style="activeStyle(index)"
-        >{{ tag.title }}</span
+        >{{ tag.title }}</router-link
       >
     </li>
   </ul>
 </template>
 <script setup lang="ts">
-import { computed } from "vue";
-
 import { currentIndex, moveIndex, AsideTags } from "../hooks/data";
 import { activeIndex } from "../../../utils/activeIndex";
 
