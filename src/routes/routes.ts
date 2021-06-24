@@ -23,10 +23,9 @@ const routes: (RouteRecordRaw & META)[] = [
   {
     path: "/index",
     name: "Index",
-    // redirect: "/index/discover",
-    // children: [
-
-    // ],
+    meta: {
+      defaultView: ["Discover", "DiscoverBar"],
+    },
     component: () => import("../view/index/Index.vue"),
   },
   {
@@ -61,6 +60,9 @@ const routes: (RouteRecordRaw & META)[] = [
   {
     path: "/explore",
     name: "Explore",
+    meta: {
+      defaultView: ["ExploreContent", "ExploreRight"],
+    },
     component: () => import("../view/explore/explore.vue"),
   },
 ];

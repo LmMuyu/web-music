@@ -4,24 +4,31 @@
   </div>
   <div class="mt-8">
     <ul class="list-none flex items-center justify-between flex-wrap">
-      <li v-for="MvItem in renderData" :key="MvItem.id">
-        <div class="w-auto h-auto relative">
+      <li v-for="(MvItem, index) in renderData" :key="MvItem.id">
+        <div
+          class="relative"
+          @mouseenter="onMouseenter(index)"
+          @mouseleave="onMouseleave"
+        >
           <img :src="MvItem.cover + '?param=224y140'" />
-          <div class="bg_color" :class="setClassList">
+          <div
+            class="bg_color flex justify-center items-center"
+            v-if="currentShow === index"
+          >
             <svg width="32" height="32">
               <circle
                 cx="16"
                 cy="16"
                 r="15"
-                stroke="#b2bec3"
+                stroke="#dfe6e9"
                 stroke-width="2"
                 fill="none"
                 class="flex justify-center items-center"
               ></circle>
 
               <polygon
-                points="32,16 0,0 0,32"
-                style="fill: none; stroke: purple; stroke-width: 1"
+                points="28,16 10,6 10,26"
+                style="fill: none; stroke: #fff; stroke-width: 2"
               />
             </svg>
           </div>
@@ -43,6 +50,7 @@ import { computed, nextTick, onMounted, ref } from "@vue/runtime-core";
 import { recommendMV } from "../../../../api/discover";
 
 const renderData = ref<any>([]);
+const currentShow = ref(Number.MAX_SAFE_INTEGER);
 
 const computeDartists = computed(() => {
   return function (artists: Array<{ id: number; name: string }>) {
@@ -52,21 +60,13 @@ const computeDartists = computed(() => {
   };
 });
 
-const setClassList = computed(() => {
-  return [
-    "absolute",
-    "left-1/2",
-    "right-0",
-    "bottom-0",
-    "top-1/2",
-    "transform",
-    "-translate-x-1/2",
-    "-translate-y-1/2",
-    "flex",
-    "items-center",
-    "justify-center",
-  ];
-});
+const onMouseenter = (index: keyof any) => {
+  if (typeof index === "number") {
+    currentShow.value = index;
+  }
+};
+
+const onMouseleave = () => (currentShow.value = Number.MAX_SAFE_INTEGER);
 
 onMounted(() => {
   nextTick(async () => {
@@ -89,7 +89,12 @@ onMounted(() => {
 }
 
 .bg_color {
-  background: rgb(99, 110, 114, 0.7);
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  background: rgb(99, 110, 114, 0.5);
   z-index: 9;
 }
 </style>

@@ -57,7 +57,7 @@ class controlComps {
   }
 
   switchComps(name: string) {
-    if (!this.compsMap.has(name)) return;
+    if (!name || !this.compsMap.has(name)) return;
 
     const comp = this.compsMap.get(name);
     this.componentId.value = comp;

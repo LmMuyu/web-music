@@ -22,6 +22,15 @@
 <script setup lang="ts">
 import { currentIndex, moveIndex, AsideTags } from "../hooks/data";
 import { activeIndex } from "../../../utils/activeIndex";
+import { useRoute } from "vue-router";
+import { watch } from "@vue/runtime-core";
+
+watch(
+  useRoute(),
+  (route) =>
+    (currentIndex.value =
+      AsideTags.value.findIndex((value) => value.path === route.path) ?? 0)
+);
 
 const { activeStyle, clickActive, moveActive, leaveActive } = new activeIndex(
   currentIndex,

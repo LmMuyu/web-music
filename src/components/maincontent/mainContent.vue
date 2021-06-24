@@ -2,9 +2,7 @@
   <div class="flex h-full">
     <el-container class="w-2/3">
       <el-header class="h-1/6 flex items-center">
-        <nav class="w-full h-full">
-          <mainNavTag @loadComps="runLoadView" />
-        </nav>
+        <slot></slot>
       </el-header>
       <el-main class="h-5/6 track_bar">
         <keep-alive>
@@ -27,7 +25,11 @@
 import { componentId, compsId, runLoadView } from "./hooks/component";
 
 import { ElContainer, ElHeader, ElMain } from "element-plus";
-import mainNavTag from "./components/mainNavTag.vue";
+import { useRoute } from "vue-router";
+
+const defaultView = useRoute().meta.defaultView as string[];
+
+runLoadView(defaultView);
 </script>
 <style scoped lang="scss">
 .track_bar::-webkit-scrollbar {
