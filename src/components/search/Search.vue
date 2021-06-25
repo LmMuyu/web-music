@@ -45,7 +45,7 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
-  calss: [String, Array],
+  class: [String, Array],
   inputClass: {
     type: [String, Array] as PropType<string | string[]>,
   },
@@ -112,9 +112,9 @@ function putClass(classList: string[], inputClass: string) {
         (calssv) => calssv.substring(0, 2) === str
       );
 
-      if (index) {
-        classList.splice(index, 1, v);
-      }
+      index >= 0 ? classList.splice(index, 1, v) : classList.push(v);
+    } else {
+      classList.push(v);
     }
   });
 
@@ -124,11 +124,11 @@ function putClass(classList: string[], inputClass: string) {
 const rootClass = computed(() => {
   const classList = ["flex", "justify-center", "items-center", "h-full"];
 
-  if (typeof props.calss === "string") {
-    return putClass(classList, props.calss);
-  } else {
-    return putClass(classList, props.calss!.join(" "));
-  }
+  return typeof props.class === "string"
+    ? putClass(classList, props.class)
+    : Array.isArray(props.class)
+    ? putClass(classList, props.class!.join(" "))
+    : "";
 });
 </script>
 

@@ -24,6 +24,7 @@
   </div>
   <ToplistMainContent
     :open-virtuallist="false"
+    :is-checkbox="false"
     :listData="sliceList"
     :close-loading="true"
     :select-all="false"

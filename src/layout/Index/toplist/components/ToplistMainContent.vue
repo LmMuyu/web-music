@@ -1,15 +1,16 @@
 <template>
-  <div class="py-6">
+  <div class="py-6" v-if="isCheckbox">
     <el-checkbox v-model="isselect">全选</el-checkbox>
   </div>
   <div class="overflow-y-auto h-full" id="rootcontent">
     <VirtualList
-      v-if="openVirtuallist && !closeLoading ? loading : true"
+      v-if="openVirtuallist"
       :renderData="renderListData"
       keyindex="indexOnly"
       :height="61"
       @load=""
     >
+      <!-- && !closeLoading ? loading : true -->
       <template v-slot="{ scopeData: { renderItem, index, keyindex } }">
         <ToplistMainItem
           :index="index"
@@ -19,12 +20,19 @@
         />
       </template>
     </VirtualList>
-    <div v-else v-for="renderItem in renderListData" :key="renderItem.index">
+    <div
+      v-else
+      v-for="(renderItem, index) in renderListData"
+      :key="renderItem.index"
+    >
       <ToplistMainItem
         :renderItem="renderItem"
         :index="renderItem.index"
         :isRank="isRank"
         :isCheckbox="false"
+        @mouseleave="leaveActive(index)"
+        @mouseenter="moveActive(index)"
+        :style="activeStyle(index)"
       />
     </div>
   </div>
@@ -70,6 +78,10 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  isCheckbox: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 const features = ref(null);
@@ -99,13 +111,11 @@ watch(
     })
 );
 
-const { leaveActive, moveActive, activeStyle } = new activeIndex(
-  ref(0),
-  ref(0),
-  {
-    isMove: true,
-  }
-);
+const { leaveActive, moveActive, activeStyle } = new activeIndex(null, null, {
+  isMove: true,
+  style: "background",
+  moveColor: "#74b9ff",
+});
 
 onMounted(() => {
   nextTick(() => {

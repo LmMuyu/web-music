@@ -14,9 +14,9 @@
       class="w-1/3 border-l border-solid"
       style="border-color: '#636e7266'"
     >
-      <el-header class="h-1/6">
+      <el-header class="h-1/6 flex justify-center items-center">
         <Search
-          class="w-full h-3/4"
+          class="w-3/4 h-3/4 border border-gray-500 border-solid rounded-3xl"
           input-class="w-full"
           :returnresdata="returnresdata"
         />
@@ -39,7 +39,7 @@ const defaultView = useRoute().meta.defaultView as string[];
 
 runLoadView(defaultView);
 
-const returnresdata = (any) => {
+const returnresdata = (any: any) => {
   console.log(any);
 };
 </script>

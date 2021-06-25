@@ -4,6 +4,7 @@
     ref="features"
     @mouseenter="[currentIndex(index), negate()]"
     @mouseleave="negate"
+    :style="style"
   >
     <div class="flex items-center w-full">
       <el-checkbox v-if="isCheckbox" v-model="renderItem.select"></el-checkbox>
@@ -42,6 +43,8 @@ import { useRrfNegate } from "../../../../utils/useRefNegate";
 import ToplistMainFeaturesModule from "./ToplistMainFeaturesModule.vue";
 import { ElCheckbox } from "element-plus";
 
+import type { PropType } from "vue";
+
 const props = defineProps({
   renderItem: {
     type: Object,
@@ -62,6 +65,11 @@ const props = defineProps({
   isRank: {
     type: Boolean,
     default: true,
+  },
+  style: {
+    type: Object as PropType<{
+      [k: string]: string;
+    }>,
   },
 });
 

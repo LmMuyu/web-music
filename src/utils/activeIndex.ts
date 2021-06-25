@@ -7,6 +7,11 @@ interface Options {
   clickColor: string;
   moveColor: string;
   isMove: boolean;
+  initSetStyle: boolean;
+}
+
+function isType(data: any) {
+  return Object.prototype.toString.call(data).match(/\[\w+\s(.+)\]/)?.[1];
 }
 
 export class activeIndex {
@@ -19,13 +24,14 @@ export class activeIndex {
   activeStyle: ComputedRef<(index: keyof any) => { [x: string]: string }>;
 
   constructor(
-    currentIndex?: Ref<keyof any>,
-    moveIndex?: Ref<keyof any>,
+    currentIndex?: Ref<keyof any> | null,
+    moveIndex?: Ref<keyof any> | null,
     options?: Partial<Options>
   ) {
     this.mark = ref<"click" | "move" | "default">("click");
-    this.currentIndex = currentIndex || ref(0);
-    this.moveIndex = moveIndex || ref(0);
+    this.currentIndex =
+      isType(currentIndex) === "Null" ? ref(0) : currentIndex!;
+    this.moveIndex = isType(currentIndex) === "Null" ? ref(0) : moveIndex!;
 
     this.clickActive = this.clickClass(this.currentIndex);
     this.moveActive = this.moveClass(this.currentIndex, this.moveIndex);
@@ -116,10 +122,10 @@ export class activeIndex {
       moveColor: "#74b9ffb3",
       style: "color",
       isMove: false,
+      initSetStyle: true,
     };
 
     const result: Options = data ? (data as Options) : newData;
-
     return Object.assign(newData, result);
   }
 }
