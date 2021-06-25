@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-center items-center h-full" :class="calss">
+  <div :class="rootClass">
     <span class="icon_text bg-white py-1 px-1 rounded-l-lg" v-if="isIcon">
       <i class="iconfont iconsousuo"></i>
     </span>
@@ -39,7 +39,7 @@ const props = defineProps({
   },
   disabled: {
     type: Boolean,
-    default: true,
+    default: false,
   },
   isIcon: {
     type: Boolean,
@@ -101,6 +101,34 @@ const setClass = computed(() => {
   return typeof props.inputClass === "string"
     ? props.inputClass
     : props.inputClass?.join("");
+});
+
+function putClass(classList: string[], inputClass: string) {
+  inputClass.split(" ").forEach((v) => {
+    const str = v.substring(0, 2);
+
+    if (str === "w-" || str === "h-") {
+      const index = classList.findIndex(
+        (calssv) => calssv.substring(0, 2) === str
+      );
+
+      if (index) {
+        classList.splice(index, 1, v);
+      }
+    }
+  });
+
+  return classList;
+}
+
+const rootClass = computed(() => {
+  const classList = ["flex", "justify-center", "items-center", "h-full"];
+
+  if (typeof props.calss === "string") {
+    return putClass(classList, props.calss);
+  } else {
+    return putClass(classList, props.calss!.join(" "));
+  }
 });
 </script>
 

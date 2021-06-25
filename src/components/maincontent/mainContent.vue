@@ -14,7 +14,13 @@
       class="w-1/3 border-l border-solid"
       style="border-color: '#636e7266'"
     >
-      <el-header class="h-1/6"></el-header>
+      <el-header class="h-1/6">
+        <Search
+          class="w-full h-3/4"
+          input-class="w-full"
+          :returnresdata="returnresdata"
+        />
+      </el-header>
       <el-main class="h-5/6 track_bar">
         <component :is="compsId"></component>
       </el-main>
@@ -22,14 +28,20 @@
   </div>
 </template>
 <script setup lang="ts">
+import { useRoute } from "vue-router";
+
 import { componentId, compsId, runLoadView } from "./hooks/component";
 
 import { ElContainer, ElHeader, ElMain } from "element-plus";
-import { useRoute } from "vue-router";
+import Search from "../search/Search.vue";
 
 const defaultView = useRoute().meta.defaultView as string[];
 
 runLoadView(defaultView);
+
+const returnresdata = (any) => {
+  console.log(any);
+};
 </script>
 <style scoped lang="scss">
 .track_bar::-webkit-scrollbar {

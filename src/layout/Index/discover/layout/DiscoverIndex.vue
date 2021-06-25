@@ -12,9 +12,6 @@
   </div>
 </template>
 <script setup lang="ts">
-// const DiscoverNewDisc = defineAsyncComponent(
-//   () => import("../components/DIscoverNewDisc.vue")
-// );
 const DiscoverBillboard = defineAsyncComponent(
   () => import("../components/DiscoverBillboard.vue")
 );

@@ -1,3 +1,5 @@
+import { ref } from "vue";
+
 export const discoverMusic = [
   {
     tagName: "华语",
@@ -17,3 +19,5 @@ export const discoverMusic = [
     area: "JP",
   },
 ];
+
+export const activeCurrent = ref(Number.MAX_SAFE_INTEGER);
