@@ -16,15 +16,15 @@
 
 <script setup lang="ts">
 import { ref } from "@vue/reactivity";
-import router from "../../routes";
+import { useRouter } from "vue-router";
+
 import IndexAsideTags from "./component/IndexAsideTags.vue";
 
 const showTags = ref(true);
 
-router.beforeResolve((to, from, next) => {
+useRouter().beforeEach((to) => {
   const isShow = to.meta.showTags as boolean | undefined;
   showTags.value = typeof isShow === "undefined" ? true : isShow;
-  next();
 });
 </script>
 
