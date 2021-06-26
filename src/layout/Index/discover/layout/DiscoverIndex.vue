@@ -6,7 +6,6 @@
       <DiscoverPlaylist :playlist="playList" />
       <div class="mt-15"></div>
       <DiscoverMusic />
-      <div class="mt-16"></div>
       <DiscoverMv />
     </article>
   </div>

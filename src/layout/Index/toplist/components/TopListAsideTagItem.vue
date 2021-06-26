@@ -56,7 +56,7 @@ const { activeStyle, clickActive, moveActive, leaveActive } = new activeIndex(
   moveIndex,
   {
     style: "background",
-    moveColor: "#7cbcfc66",
+    enterColor: "#7cbcfc66",
   }
 );
 </script>

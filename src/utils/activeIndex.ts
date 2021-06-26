@@ -4,8 +4,8 @@ import type { Ref } from "vue";
 
 interface Options {
   style: "background" | "color";
-  clickColor: string;
-  moveColor: string;
+  initColor: string;
+  enterColor: string;
   isMove: boolean;
   initSetStyle: boolean;
 }
@@ -14,10 +14,17 @@ function isType(data: any) {
   return Object.prototype.toString.call(data).match(/\[\w+\s(.+)\]/)?.[1];
 }
 
+function initIndex(index: Ref<keyof any> | null | undefined) {
+  return isType(index) === "Null" || typeof index === "undefined"
+    ? ref(0)
+    : index!;
+}
+
 export class activeIndex {
-  private mark: Ref<"click" | "move" | "default">;
+  private mark: Ref<"current" | "enter" | "default">;
   private currentIndex: Ref<keyof any>;
   private moveIndex: Ref<keyof any>;
+  private initSetStyle!: boolean;
   clickActive: (curIndex: keyof any) => void;
   leaveActive: (curIndex: keyof any) => void;
   moveActive: (curIndex: keyof any) => void;
@@ -28,14 +35,13 @@ export class activeIndex {
     moveIndex?: Ref<keyof any> | null,
     options?: Partial<Options>
   ) {
-    this.mark = ref<"click" | "move" | "default">("click");
-    this.currentIndex =
-      isType(currentIndex) === "Null" ? ref(0) : currentIndex!;
-    this.moveIndex = isType(currentIndex) === "Null" ? ref(0) : moveIndex!;
+    this.mark = ref<"current" | "enter" | "default">("current");
+    this.currentIndex = initIndex(currentIndex);
+    this.moveIndex = initIndex(moveIndex);
 
-    this.clickActive = this.clickClass(this.currentIndex);
-    this.moveActive = this.moveClass(this.currentIndex, this.moveIndex);
-    this.leaveActive = this.leaveClass(this.currentIndex);
+    this.clickActive = this.currentStyle(this.currentIndex);
+    this.moveActive = this.centerStyle(this.currentIndex, this.moveIndex);
+    this.leaveActive = this.leaveStyle(this.currentIndex);
 
     this.activeStyle = this.activeIndex(options);
   }
@@ -43,27 +49,32 @@ export class activeIndex {
   private activeIndex(options?: Partial<Options>) {
     const optionsData = this.isOptions(options);
 
-    const { clickColor, moveColor } = optionsData;
+    const { initColor, enterColor, initSetStyle } = optionsData;
+    this.initSetStyle = initSetStyle;
+
     const styleKey = optionsData.style;
     const isMove = optionsData.isMove;
 
     const activeStyle = computed(() => (index: keyof any) => {
-      if (!isMove) {
-        if (this.mark.value === "click" || this.currentIndex.value === index) {
+      if (!isMove && this.initSetStyle) {
+        if (
+          this.mark.value === "current" ||
+          this.currentIndex.value === index
+        ) {
           if (optionsData.style !== "color" && this.mark.value !== "default") {
-            this.mark.value = "move";
+            this.mark.value = "enter";
           }
 
-          return this.setColor(this.currentIndex, index, clickColor, styleKey);
+          return this.setColor(this.currentIndex, index, initColor, styleKey);
         }
       } else {
-        this.mark.value = "move";
+        this.initSetStyle && (this.mark.value = "enter");
       }
 
-      return this.mark.value === "move"
-        ? this.setColor(this.moveIndex, index, moveColor, styleKey)
+      return this.mark.value === "enter"
+        ? this.setColor(this.moveIndex, index, enterColor, styleKey)
         : {
-            [styleKey]: styleKey === "color" ? "#636e72" : "#fff",
+            [styleKey]: styleKey === "color" ? "#636e72" : initColor,
           };
     });
 
@@ -86,40 +97,40 @@ export class activeIndex {
     };
   }
 
-  private leaveClass(currentIndex: Ref<keyof any>) {
+  private leaveStyle(currentIndex: Ref<keyof any>) {
     const that = this;
     return function (curIndex: keyof any) {
-      if (currentIndex.value === curIndex) return;
+      if (that.initSetStyle && currentIndex.value === curIndex) return;
       that.mark.value = "default";
     };
   }
 
-  private moveClass(currentIndex: Ref<keyof any>, moveIndex: Ref<keyof any>) {
+  private centerStyle(currentIndex: Ref<keyof any>, moveIndex: Ref<keyof any>) {
     const that = this;
     return function (curIndex: keyof any) {
-      if (currentIndex.value === curIndex) return;
+      if (that.initSetStyle && currentIndex.value === curIndex) return;
 
-      that.mark.value = "move";
+      that.mark.value = "enter";
       moveIndex.value = curIndex;
     };
   }
 
-  private clickClass(currentIndex: Ref<keyof any>) {
+  private currentStyle(currentIndex: Ref<keyof any>) {
     const that = this;
     return function (curIndex: keyof any) {
       if (currentIndex.value === curIndex) {
         return;
       }
 
-      that.mark.value = "click";
+      that.mark.value = "current";
       currentIndex.value = curIndex;
     };
   }
 
   private isOptions(data: Partial<Options> | undefined): Options {
     const newData: Options = {
-      clickColor: "#74b9ff",
-      moveColor: "#74b9ffb3",
+      initColor: "#74b9ff",
+      enterColor: "#74b9ffb3",
       style: "color",
       isMove: false,
       initSetStyle: true,

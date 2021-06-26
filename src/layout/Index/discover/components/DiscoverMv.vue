@@ -1,6 +1,6 @@
 <template>
   <div class="flex items-center relative py-3 border_bar" data-v-b3371f40="">
-    <div class="text-3xl">推荐MV</div>
+    <div style="font-size: 21px">推荐MV</div>
   </div>
   <div class="mt-8">
     <ul class="list-none flex items-center justify-between flex-wrap">

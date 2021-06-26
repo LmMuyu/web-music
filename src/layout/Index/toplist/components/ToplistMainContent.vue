@@ -32,7 +32,7 @@
         :isCheckbox="false"
         @mouseleave="leaveActive(index)"
         @mouseenter="moveActive(index)"
-        :style="activeStyle(index)"
+        :style="{ ...activeStyle(index), padding: '0px' }"
       />
     </div>
   </div>
@@ -112,9 +112,10 @@ watch(
 );
 
 const { leaveActive, moveActive, activeStyle } = new activeIndex(null, null, {
-  isMove: true,
+  initColor: "#fff",
   style: "background",
-  moveColor: "#74b9ff",
+  enterColor: "#c0dbf7",
+  initSetStyle: false,
 });
 
 onMounted(() => {

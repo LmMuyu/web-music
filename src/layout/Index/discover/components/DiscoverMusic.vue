@@ -1,6 +1,6 @@
 <template>
   <div class="flex items-center relative py-3 border_bar">
-    <div class="text-3xl">推荐歌曲</div>
+    <div style="font-size:21px">推荐歌曲</div>
     <ul class="flex items-center">
       <li
         v-for="(tagItem, index) in discoverMusic"
@@ -44,7 +44,7 @@ import { computed } from "@vue/runtime-core";
 const { activeStyle, clickActive, leaveActive, moveActive } = new activeIndex();
 
 const list = ref<any[]>([]);
-getPlaylist().then(
+getPlaylist(10).then(
   (res) => (list.value = res.map((v) => v.data.albums.map(forMap)))
 );
 

@@ -16,7 +16,7 @@
     >
       <el-header class="h-1/6 flex justify-center items-center">
         <Search
-          class="w-3/4 h-3/4 border border-gray-500 border-solid rounded-3xl"
+          class="w-4/5 h-2/3 border border-gray-500 border-solid rounded-2xl"
           input-class="w-full"
           :returnresdata="returnresdata"
         />
