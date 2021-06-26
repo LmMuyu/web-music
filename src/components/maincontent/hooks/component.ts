@@ -3,7 +3,9 @@ import { createAsComponent } from "../../../utils/createAsComponent";
 
 const Discover = createAsComponent("/layout/Index/discover/Discover.vue");
 const Toplist = createAsComponent("/layout/Index/toplist/Toplist.vue");
-const ExploreContent = createAsComponent("/layout/explore/ExploreContent.vue");
+const ExploreContent = createAsComponent(
+  "/layout/explore/explorecontent/ExploreContent.vue"
+);
 
 const TopListAsideTag = createAsComponent(
   "/layout/Index/toplist/components/TopListAsideTag.vue",
@@ -17,9 +19,12 @@ const DiscoverBar = createAsComponent(
     loadComp: false,
   }
 );
-const ExploreRight = createAsComponent("/layout/explore/ExploreRight.vue", {
-  loadComp: false,
-});
+const ExploreRight = createAsComponent(
+  "/layout/explore/exploreright/ExploreRight.vue",
+  {
+    loadComp: false,
+  }
+);
 
 class controlComps {
   private compsMap: Map<string, any>;

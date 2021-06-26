@@ -4,17 +4,16 @@
       class="flex items-center h-full relative"
       v-for="(tagItem, index) in contentTags"
       :key="tagItem._id"
-      @click="clickActive(index)"
+      @click="
+        [
+          clickActive(index),
+          ctxEmit('loadComps', [tagItem.comname, tagItem.comchildren]),
+        ]
+      "
       @mousemove="moveActive(index)"
       @mouseleave="leaveActive(index)"
     >
-      <span
-        @click="
-          () => ctxEmit('loadComps', [tagItem.comname, tagItem.comchildren])
-        "
-        class="cursor-pointer"
-        :style="activeStyle(index)"
-      >
+      <span class="cursor-pointer" :style="activeStyle(index)">
         {{ tagItem.tagname }}
       </span>
       <span :class="{ border_bottom: curIndex === index }"></span>
