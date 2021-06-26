@@ -17,6 +17,10 @@
           :isRank="isRank"
           :keyindex="keyindex"
           :renderItem="renderItem"
+          @mouseleave="leaveActive(index)"
+          @mouseenter="moveActive(index)"
+          :style="activeStyle(index)"
+          @change="putSelect"
         />
       </template>
     </VirtualList>
@@ -45,7 +49,6 @@ import {
   nextTick,
   ref,
   watch,
-  markRaw,
 } from "@vue/runtime-core";
 import { loading } from "./hooks/data";
 import { unmountApp } from "../../../../components/loading/app";
@@ -87,27 +90,52 @@ const props = defineProps({
 const features = ref(null);
 const hoverList: any[] = [];
 
+let select: "children" | "" = "";
 const isselect = ref(true);
+
 watch(isselect, (value) => {
-  console.log(value);
+  if (select === "children") {
+    console.log(select);
+
+    select = "";
+    return;
+  }
+
+  renderListData.value.map((s) => (s.select.value = value));
 });
+
+const putSelect = (value: boolean) => {
+  console.log(value);
+  
+  select = "children";
+  if (value === false) {
+    isselect.value = value;
+
+    return;
+  }
+
+  const res = renderListData.value.every((v) => v.select.value);
+
+  if (res) {
+    isselect.value = true;
+  }
+};
 
 const renderListData = computed(() => {
-  return props.listData.map((listItem, index) =>
-    markRaw({
-      index,
-      ...listItem,
-      select: true,
-      indexOnly: index,
-    })
-  );
+  return props.listData.map((listItem, index) => ({
+    index,
+    ...listItem,
+    select: ref(true),
+    indexOnly: index,
+  }));
 });
 
-watch(
+const stop = watch(
   () => renderListData.value,
   () =>
     unmountApp(() => {
       loading.value = !loading.value;
+      stop();
     })
 );
 

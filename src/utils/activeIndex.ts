@@ -1,9 +1,10 @@
 import { computed, ComputedRef, ref } from "@vue/runtime-core";
 
-import type { Ref } from "vue";
+import { Ref, unref } from "vue";
 
 interface Options {
   style: "background" | "color";
+  defaultActiveColor: string;
   initColor: string;
   enterColor: string;
   isMove: boolean;
@@ -15,7 +16,7 @@ function isType(data: any) {
 }
 
 function initIndex(index: Ref<keyof any> | null | undefined) {
-  return isType(index) === "Null" || typeof index === "undefined"
+  return isType(unref(index)) === "Null" || typeof unref(index) === "undefined"
     ? ref(0)
     : index!;
 }
@@ -49,7 +50,8 @@ export class activeIndex {
   private activeIndex(options?: Partial<Options>) {
     const optionsData = this.isOptions(options);
 
-    const { initColor, enterColor, initSetStyle } = optionsData;
+    const { initColor, enterColor, initSetStyle, defaultActiveColor } =
+      optionsData;
     this.initSetStyle = initSetStyle;
 
     const styleKey = optionsData.style;
@@ -65,7 +67,12 @@ export class activeIndex {
             this.mark.value = "enter";
           }
 
-          return this.setColor(this.currentIndex, index, initColor, styleKey);
+          return this.setColor(
+            this.currentIndex,
+            index,
+            defaultActiveColor,
+            styleKey
+          );
         }
       } else {
         this.initSetStyle && (this.mark.value = "enter");
@@ -129,6 +136,7 @@ export class activeIndex {
 
   private isOptions(data: Partial<Options> | undefined): Options {
     const newData: Options = {
+      defaultActiveColor: "#74b9ff",
       initColor: "#74b9ff",
       enterColor: "#74b9ffb3",
       style: "color",

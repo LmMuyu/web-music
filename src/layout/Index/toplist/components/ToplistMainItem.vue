@@ -7,7 +7,7 @@
     :style="style"
   >
     <div class="flex items-center w-full">
-      <el-checkbox v-if="isCheckbox" v-model="renderItem.select"></el-checkbox>
+      <el-checkbox v-if="isCheckbox" v-model="select"></el-checkbox>
       <h4
         v-if="isRank"
         :class="[
@@ -36,14 +36,22 @@
   </div>
 </template>
 <script setup lang="ts">
-import { defineProps, ref, computed } from "@vue/runtime-core";
+import {
+  defineProps,
+  ref,
+  computed,
+  watch,
+  defineEmit,
+} from "@vue/runtime-core";
 
 import { useRrfNegate } from "../../../../utils/useRefNegate";
 
 import ToplistMainFeaturesModule from "./ToplistMainFeaturesModule.vue";
 import { ElCheckbox } from "element-plus";
 
-import type { PropType } from "vue";
+import type { PropType, Ref } from "vue";
+
+const ctxEmit = defineEmit(["change"]);
 
 const props = defineProps({
   renderItem: {
@@ -73,6 +81,7 @@ const props = defineProps({
   },
 });
 
+const select: Ref<boolean> = props.renderItem.select;
 const curIndex = ref(0);
 
 const { negate, countRef: featuresModule } = useRrfNegate(false);
@@ -80,6 +89,8 @@ const { negate, countRef: featuresModule } = useRrfNegate(false);
 function currentIndex(index: number) {
   curIndex.value = index;
 }
+
+watch(select, (value) => ctxEmit("change", value));
 
 const aliasName = computed(() => {
   return function (item: []) {
