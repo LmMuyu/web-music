@@ -8,7 +8,6 @@
       :renderData="renderListData"
       keyindex="indexOnly"
       :height="61"
-      @load=""
     >
       <!-- && !closeLoading ? loading : true -->
       <template v-slot="{ scopeData: { renderItem, index, keyindex } }">

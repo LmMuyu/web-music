@@ -1,13 +1,14 @@
 <template>
-  <keep-alive>
-    <ElDrawer
-      @closed="unmountApp"
-      :showClose="false"
-      :withHeader="false"
-      :modelValue="true"
-      ref="drawerNode"
-    >
-      <header class="p-4" ref="headerNode">
+  <ElDrawer
+    @closed="unmountApp"
+    @opened="drawerOpenClose"
+    :showClose="false"
+    :withHeader="false"
+    :modelValue="true"
+    ref="drawerNode"
+  >
+    <div class="h-full relative" ref="drawerMainContent">
+      <!-- <header class="p-4" ref="headerNode">
         <p class="text-lg">历史记录</p>
       </header>
       <main>
@@ -21,9 +22,9 @@
             <ChildrenItem :scopedData="musicResultDetail(scopeData.song)" />
           </template>
         </VirtualList>
-      </main>
-    </ElDrawer>
-  </keep-alive>
+      </main> -->
+    </div>
+  </ElDrawer>
 </template>
 <script setup lang="ts">
 import {
@@ -43,6 +44,9 @@ import ChildrenItem from "./components/ChildrenItem.vue";
 import { ElDrawer } from "element-plus";
 
 import type { PropType } from "vue";
+import { mountApp } from "../../../../components/loading/app";
+
+type unmounAppFn = (backcall?: Function | undefined) => void;
 
 const props = defineProps({
   record: {
@@ -53,21 +57,23 @@ const props = defineProps({
   },
 });
 
-// const playHistory = historyList();
-
 const drawerNode = ref<Record<string, any> | null>(null);
 const headerNode = ref<HTMLElement | null>(null);
-
+const drawerMainContent = ref<HTMLElement | null>(null);
 const drawerMainHeight = ref(0);
 
 const renderData = ref<any[]>([]);
-
 renderData.value = setRenderDataID(props.record.allData);
 
-onMounted(() => {
-  // debugger;
+let unmounApp: unmounAppFn | null = null;
+const drawerOpenClose = () => {};
 
+onMounted(() => {
   nextTick(() => {
+    if (drawerMainContent.value) {
+      unmounApp = mountApp(drawerMainContent.value);
+    }
+
     if (drawerNode.value && headerNode.value) {
       drawerMainHeight.value =
         drawerNode.value.$refs.drawerRef.clientHeight -

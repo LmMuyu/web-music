@@ -9,20 +9,22 @@ div.classList.add(...["w-full", "h-full"]);
 let install: App<Element> | null = null;
 let root: HTMLElement | null = null;
 
-export function mountApp(node: string, backCall: Function) {
-  backCall();
+export function mountApp(node: string | HTMLElement, backCall?: Function) {
+  backCall?.();
   install = createApp(Loading);
 
-  root = document.querySelector(node);
+  root = node instanceof HTMLElement ? node : document.querySelector(node);
   install.mount(div);
 
   root?.appendChild(div);
+
+  return unmountApp;
 }
 
-export function unmountApp(backcall: Function) {
+export function unmountApp(backcall?: Function) {
   if (install) {
     install.unmount();
     root?.removeChild(div);
-    backcall();
+    backcall?.();
   }
 }

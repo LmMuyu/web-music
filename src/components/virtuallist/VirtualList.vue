@@ -1,6 +1,6 @@
 <template>
   <div
-    class="relative overflow-auto h-full slider_track"
+    class="relative overflow-auto slider_track"
     @scroll="onScroll"
     ref="totalList"
   >
@@ -93,17 +93,24 @@ const rendWatch = watch(
   () => props.renderData,
   (value) => {
     estimateList.value = getEachEstimateInfo(props.height, value);
-
     setBarTrack();
     rendWatch();
   }
 );
+
+const rootStep = watch(totalList, (value) => {
+  if (!value) return;
+  rootClientHeight.value = value.clientHeight;
+  rootStep();
+});
 
 const offsetTranslate = computed(() => {
   return `translate(0,${startOffset.value}px) translateZ(0)`;
 });
 
 const visbleCount = computed(() => {
+  console.log(rootClientHeight.value);
+
   return Math.ceil(rootClientHeight.value / props.height);
 });
 
@@ -147,9 +154,9 @@ function setStartOffset() {
     startOffset.value = 0;
   }
 
-  // if (slicePos.start - props.beforBuffer === 1) {
-  //   slicePos.start = 0;
-  // }
+  if (slicePos.start - props.beforBuffer === 1) {
+    slicePos.start = 0;
+  }
 }
 
 function setBarTrack() {
@@ -200,7 +207,6 @@ function updateItemsSize() {
   if (listItem.value && listItem.value.children.length) {
     const listDom = listItem.value.children as unknown as HTMLElement[];
 
-    
     listDom.forEach((node) => {
       const estimate = estimateList.value;
       console.log(node);

@@ -19,7 +19,7 @@
 $count: 10;
 $time: 2; //in seconds
 $size: 32;
-$color: #ffffff;
+$color: #74b9ff;
 
 .holder {
   position: absolute;
@@ -60,8 +60,8 @@ $color: #ffffff;
   position: absolute;
   left: 50%;
   top: 0%;
-  width: 10%;
-  height: 10%;
+  width: 20%;
+  height: 20%;
   background-color: $color;
   transform: translateX(-50%);
   border-radius: 50%;

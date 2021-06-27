@@ -25,6 +25,9 @@ const props = defineProps({
   },
 });
 
+console.log(props.scopedData);
+
+
 const singerInfo = computed(() => {
   return (props.scopedData.singerInfo as any[]).map((v) => v.name).join("/");
 });
