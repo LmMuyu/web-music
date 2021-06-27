@@ -1,4 +1,4 @@
-import { createApp, nextTick, watch } from "@vue/runtime-dom";
+import { createApp, nextTick } from "@vue/runtime-dom";
 
 import PlayListHistory from "./PlayListHistory.vue";
 

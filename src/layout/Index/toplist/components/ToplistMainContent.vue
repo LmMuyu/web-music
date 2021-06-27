@@ -106,7 +106,7 @@ watch(isselect, (value) => {
 
 const putSelect = (value: boolean) => {
   console.log(value);
-  
+
   select = "children";
   if (value === false) {
     isselect.value = value;
@@ -129,6 +129,9 @@ const renderListData = computed(() => {
     indexOnly: index,
   }));
 });
+
+
+
 
 const stop = watch(
   () => renderListData.value,

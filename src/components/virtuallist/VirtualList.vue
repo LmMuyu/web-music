@@ -33,7 +33,6 @@
 <script setup lang="ts">
 import {
   computed,
-  defineEmit,
   defineProps,
   nextTick,
   onMounted,
@@ -90,6 +89,16 @@ const startOffset = ref(0);
 
 estimateList.value = getEachEstimateInfo(props.height, props.renderData);
 
+const rendWatch = watch(
+  () => props.renderData,
+  (value) => {
+    estimateList.value = getEachEstimateInfo(props.height, value);
+
+    setBarTrack();
+    rendWatch();
+  }
+);
+
 const offsetTranslate = computed(() => {
   return `translate(0,${startOffset.value}px) translateZ(0)`;
 });
@@ -99,14 +108,14 @@ const visbleCount = computed(() => {
 });
 
 const listHeight = computed(() => {
-  return estimateList.value[estimateList.value.length - 1]?.bottom;
+  if (estimateList.value.length === 0) return 0;
+
+  return estimateList.value[estimateList.value.length - 1].bottom || 0;
 });
 
 const sliceList = computed(() => {
-  const start = slicePos.start - beforCount.value;
-
-  const end =
-    Math.min(slicePos.end, props.renderData.length) + aftterCount.value;
+  const start = slicePos.start;
+  const end = Math.min(slicePos.end, props.renderData.length);
 
   return props.renderData.slice(start, end);
 });
@@ -131,23 +140,27 @@ function onScroll() {
 }
 
 function setStartOffset() {
-  startOffset.value =
-    slicePos.start >= 1
-      ? (startOffset.value = estimateList.value[slicePos.start - 1].bottom)
-      : 0;
-
-  if (slicePos.start - props.beforBuffer === 1) {
-    slicePos.start = 0;
+  if (slicePos.start >= 1) {
+    startOffset.value = estimateList.value[slicePos.start - 1].bottom || 0;
+    console.log(estimateList.value);
+  } else {
+    startOffset.value = 0;
   }
+
+  // if (slicePos.start - props.beforBuffer === 1) {
+  //   slicePos.start = 0;
+  // }
+}
+
+function setBarTrack() {
+  if (!bar_track.value || !estimateList.value.length) return;
+
+  const height = estimateList.value[estimateList.value.length - 1].bottom;
+  bar_track.value.style.height = height + "px";
 }
 
 const watchDomInfo = (value: HTMLElement | null) => {
   if (!value) return;
-  nextTick().then(() => {
-    rootClientHeight.value = value.clientHeight;
-    slicePos.start = 0 - beforCount.value;
-    slicePos.end = slicePos.start + visbleCount.value + aftterCount.value;
-  });
 };
 
 const stopDomInfo = watch(totalList, watchDomInfo);
@@ -181,45 +194,48 @@ function binarySearch(value: number, position: EstimateType[]) {
   return tempIndex;
 }
 
-let fromList: Element[] | null = null;
-
 function updateItemsSize() {
-  if (listItem.value && listItem.value.children.length) {
-    const listDom =
-      fromList || (fromList = Array.from(listItem.value.children));
+  // console.log(estimateList.value);
 
+  if (listItem.value && listItem.value.children.length) {
+    const listDom = listItem.value.children as unknown as HTMLElement[];
+
+    
     listDom.forEach((node) => {
       const estimate = estimateList.value;
+      console.log(node);
+
       const height = node.getBoundingClientRect().height;
       const index = +node.getAttribute("_id")!;
-      console.log(index);
 
       const oldHeight = estimate[index].height;
-      const dValue = oldHeight - height;
+      const vdiff = oldHeight - height;
 
-      if (dValue) {
-        estimate[index].bottom = estimate[index].bottom - dValue;
+      if (vdiff) {
+        estimate[index].bottom = estimate[index].bottom - vdiff;
         estimate[index].height = height;
 
         for (let k = index + 1; k < listDom.length; k++) {
           estimate[k].top = estimate[k - 1].bottom;
-          estimate[k].bottom = estimate[k].bottom - dValue;
+          estimate[k].bottom = estimate[k].bottom - vdiff;
         }
       }
     });
   }
 }
 
+onMounted(() => {
+  nextTick().then(() => {
+    rootClientHeight.value = totalList.value?.clientHeight || 0;
+    slicePos.start = 0;
+    slicePos.end = slicePos.start + visbleCount.value;
+  });
+});
+
 onUpdated(() => {
   nextTick(() => {
     updateItemsSize();
-
-    if (bar_track.value) {
-      const height = estimateList.value[estimateList.value.length - 1].bottom;
-      bar_track.value.style.height = height + "px";
-
-      setStartOffset();
-    }
+    setBarTrack();
   });
 });
 
