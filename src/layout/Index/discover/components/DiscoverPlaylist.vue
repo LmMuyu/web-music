@@ -13,7 +13,7 @@
           @mouseenter="mouseenter(index)"
           @mouseleave="negate"
         >
-          <div>
+          <div style="width: 144px; height: 90px">
             <img
               :src="
                 (play?.creator?.backgroundUrl || play?.creator?.coverImgUrl) +
@@ -47,7 +47,7 @@
 <script setup lang="ts">
 import { defineProps, ref } from "vue";
 
-import { useRrfNegate } from "../../../../utils/useRefNegate";
+import { useRefNegate } from "../../../../utils/useRefNegate";
 
 import { ElRow, ElCol } from "element-plus";
 import DiscoverPlayCount from "./DiscoverPlayCount.vue";
@@ -63,7 +63,7 @@ const props = defineProps({
 });
 
 const curIndex = ref(0);
-const { countRef, negate } = useRrfNegate(false);
+const { countRef, negate } = useRefNegate(false);
 
 function mouseenter(index: number) {
   curIndex.value = index;

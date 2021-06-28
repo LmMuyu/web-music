@@ -2,8 +2,6 @@ import { Ref } from "@vue/reactivity";
 import dayDate from "dayjs";
 
 import { toplistData, listDetail } from "../../../../api/toplist";
-import { mountApp } from "../../../../components/loading/app";
-import { loading } from "../components/hooks/data";
 
 import type { ListItem, TrackUpdateTimeObj } from "../types/requestType";
 import type { ListTitle } from "../types/dataType";
@@ -27,8 +25,6 @@ export async function allToplist() {
 }
 
 export async function getlistDetailData(id: number, mapRef: MapObj) {
-  mountApp("#rootcontent", () => (loading.value = false));
-
   const listDetailRes = setMapList({ id }, mapRef.value, false);
   if (listDetailRes) return listDetailRes;
 

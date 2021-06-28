@@ -1,6 +1,6 @@
 <template>
   <div
-    class="relative overflow-auto slider_track"
+    class="relative overflow-auto h-full slider_track"
     @scroll="onScroll"
     ref="totalList"
   >
@@ -109,8 +109,6 @@ const offsetTranslate = computed(() => {
 });
 
 const visbleCount = computed(() => {
-  console.log(rootClientHeight.value);
-
   return Math.ceil(rootClientHeight.value / props.height);
 });
 
@@ -149,13 +147,8 @@ function onScroll() {
 function setStartOffset() {
   if (slicePos.start >= 1) {
     startOffset.value = estimateList.value[slicePos.start - 1].bottom || 0;
-    console.log(estimateList.value);
   } else {
     startOffset.value = 0;
-  }
-
-  if (slicePos.start - props.beforBuffer === 1) {
-    slicePos.start = 0;
   }
 }
 
@@ -205,11 +198,10 @@ function updateItemsSize() {
   // console.log(estimateList.value);
 
   if (listItem.value && listItem.value.children.length) {
-    const listDom = listItem.value.children as unknown as HTMLElement[];
+    const listDom = Array.from(listItem.value.children);
 
     listDom.forEach((node) => {
       const estimate = estimateList.value;
-      console.log(node);
 
       const height = node.getBoundingClientRect().height;
       const index = +node.getAttribute("_id")!;

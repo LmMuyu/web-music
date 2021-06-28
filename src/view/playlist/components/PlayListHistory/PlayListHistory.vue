@@ -8,7 +8,7 @@
     ref="drawerNode"
   >
     <div class="h-full relative" ref="drawerMainContent">
-      <!-- <header class="p-4" ref="headerNode">
+      <header class="p-4" ref="headerNode">
         <p class="text-lg">历史记录</p>
       </header>
       <main>
@@ -22,7 +22,7 @@
             <ChildrenItem :scopedData="musicResultDetail(scopeData.song)" />
           </template>
         </VirtualList>
-      </main> -->
+      </main>
     </div>
   </ElDrawer>
 </template>
@@ -71,7 +71,7 @@ const drawerOpenClose = () => {};
 onMounted(() => {
   nextTick(() => {
     if (drawerMainContent.value) {
-      unmounApp = mountApp(drawerMainContent.value);
+      // unmounApp = mountApp(drawerMainContent.value);
     }
 
     if (drawerNode.value && headerNode.value) {

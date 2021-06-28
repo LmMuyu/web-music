@@ -1,44 +1,45 @@
 <template>
-  <div class="py-6" v-if="isCheckbox">
-    <el-checkbox v-model="isselect">全选</el-checkbox>
-  </div>
-  <div class="overflow-y-auto h-full" id="rootcontent">
-    <VirtualList
-      v-if="openVirtuallist"
-      :renderData="renderListData"
-      keyindex="indexOnly"
-      :height="61"
-    >
-      <!-- && !closeLoading ? loading : true -->
-      <template v-slot="{ scopeData: { renderItem, index, keyindex } }">
+  <main ref="rootcontent" class="h-full">
+    <div class="py-6" v-if="isCheckbox && countRef">
+      <el-checkbox v-model="isselect">全选</el-checkbox>
+    </div>
+    <div class="overflow-y-auto h-full" v-if="countRef">
+      <VirtualList
+        v-if="openVirtuallist"
+        :renderData="renderListData"
+        keyindex="indexOnly"
+        :height="61"
+      >
+        <template v-slot="{ scopeData: { renderItem, index, keyindex } }">
+          <ToplistMainItem
+            :index="index"
+            :isRank="isRank"
+            :keyindex="keyindex"
+            :renderItem="renderItem"
+            @mouseleave="leaveActive(index)"
+            @mouseenter="moveActive(index)"
+            :style="activeStyle(index)"
+            @change="putSelect"
+          />
+        </template>
+      </VirtualList>
+      <div
+        v-else
+        v-for="(renderItem, index) in renderListData"
+        :key="renderItem.index"
+      >
         <ToplistMainItem
-          :index="index"
-          :isRank="isRank"
-          :keyindex="keyindex"
           :renderItem="renderItem"
+          :index="renderItem.index"
+          :isRank="isRank"
+          :isCheckbox="false"
           @mouseleave="leaveActive(index)"
           @mouseenter="moveActive(index)"
-          :style="activeStyle(index)"
-          @change="putSelect"
+          :style="{ ...activeStyle(index), padding: '0px' }"
         />
-      </template>
-    </VirtualList>
-    <div
-      v-else
-      v-for="(renderItem, index) in renderListData"
-      :key="renderItem.index"
-    >
-      <ToplistMainItem
-        :renderItem="renderItem"
-        :index="renderItem.index"
-        :isRank="isRank"
-        :isCheckbox="false"
-        @mouseleave="leaveActive(index)"
-        @mouseenter="moveActive(index)"
-        :style="{ ...activeStyle(index), padding: '0px' }"
-      />
+      </div>
     </div>
-  </div>
+  </main>
 </template>
 <script setup lang="ts">
 import {
@@ -49,15 +50,15 @@ import {
   ref,
   watch,
 } from "@vue/runtime-core";
-import { loading } from "./hooks/data";
-import { unmountApp } from "../../../../components/loading/app";
+
+import { createLoading } from "../../../../components/loading/app";
+import { activeIndex } from "../../../../utils/activeIndex";
 
 import VirtualList from "/comps/virtuallist/VirtualList.vue";
 import ToplistMainItem from "./ToplistMainItem.vue";
 import { ElCheckbox } from "element-plus";
 
 import type { PropType } from "@vue/runtime-core";
-import { activeIndex } from "../../../../utils/activeIndex";
 
 const props = defineProps({
   listData: {
@@ -86,8 +87,11 @@ const props = defineProps({
   },
 });
 
+const { countRef, negate, mountApp, unmountApp } = createLoading();
+
 const features = ref(null);
 const hoverList: any[] = [];
+const rootcontent = ref<HTMLElement | null>(null);
 
 let select: "children" | "" = "";
 const isselect = ref(true);
@@ -104,8 +108,6 @@ watch(isselect, (value) => {
 });
 
 const putSelect = (value: boolean) => {
-  console.log(value);
-
   select = "children";
   if (value === false) {
     isselect.value = value;
@@ -129,16 +131,13 @@ const renderListData = computed(() => {
   }));
 });
 
-
-
-
-const stop = watch(
+const step = watch(
   () => renderListData.value,
-  () =>
-    unmountApp(() => {
-      loading.value = !loading.value;
-      stop();
-    })
+  () => {}
+  // unmountApp(() => {
+  //   negate();
+  //   step();
+  // })
 );
 
 const { leaveActive, moveActive, activeStyle } = new activeIndex(null, null, {
@@ -149,13 +148,17 @@ const { leaveActive, moveActive, activeStyle } = new activeIndex(null, null, {
 });
 
 onMounted(() => {
-  nextTick(() => {
+  nextTick().then(() => {
     hoverList.push({
       el: features.value,
       styles: {
         nackgroundColor: "#0984e3",
       },
     });
+
+    if (rootcontent.value) {
+      mountApp(rootcontent.value);
+    }
   });
 });
 </script>

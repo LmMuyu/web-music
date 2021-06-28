@@ -5,11 +5,7 @@
       :key="banner.encodeId"
       class="relative"
     >
-      <img
-        :src="banner.imageUrl + '?param=679y300'"
-        alt=""
-        class="w-full h-full object-cover"
-      />
+      <img :src="banner.imageUrl" alt="" class="w-full h-full object-cover" />
       <span
         class="position text-xs text-white p-1 rounded-tl-md"
         :style="{ backgroundColor: banner.titleColor }"

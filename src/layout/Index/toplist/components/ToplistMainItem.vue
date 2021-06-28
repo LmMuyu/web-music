@@ -44,7 +44,7 @@ import {
   defineEmit,
 } from "@vue/runtime-core";
 
-import { useRrfNegate } from "../../../../utils/useRefNegate";
+import { useRefNegate } from "../../../../utils/useRefNegate";
 
 import ToplistMainFeaturesModule from "./ToplistMainFeaturesModule.vue";
 import { ElCheckbox } from "element-plus";
@@ -84,7 +84,7 @@ const props = defineProps({
 const select: Ref<boolean> = props.renderItem.select;
 const curIndex = ref(0);
 
-const { negate, countRef: featuresModule } = useRrfNegate(false);
+const { negate, countRef: featuresModule } = useRefNegate(false);
 
 function currentIndex(index: number) {
   curIndex.value = index;

@@ -1,7 +1,7 @@
 import { ref, unref } from "@vue/reactivity";
 import type { Ref } from "@vue/reactivity";
 
-export function useRrfNegate(count: Ref<boolean> | boolean) {
+export function useRefNegate(count: Ref<boolean> | boolean) {
   const num = unref(count);
 
   const countRef = ref(num);
