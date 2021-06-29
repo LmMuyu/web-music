@@ -49,6 +49,7 @@ import {
   nextTick,
   ref,
   watch,
+  onUnmounted,
 } from "@vue/runtime-core";
 
 import { createLoading } from "../../../../components/loading/app";
@@ -160,6 +161,10 @@ onMounted(() => {
       mountApp(rootcontent.value);
     }
   });
+});
+
+onUnmounted(() => {
+  unmountApp();
 });
 </script>
 <style scoped lang="scss">

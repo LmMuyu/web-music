@@ -22,14 +22,14 @@
       </li>
     </ul>
   </div>
-  <ToplistMainContent
+  <!-- <ToplistMainContent
     :open-virtuallist="false"
     :is-checkbox="false"
     :listData="sliceList"
     :close-loading="true"
     :select-all="false"
     :is-rank="false"
-  />
+  /> -->
 </template>
 <script setup lang="ts">
 import { ref } from "@vue/reactivity";
