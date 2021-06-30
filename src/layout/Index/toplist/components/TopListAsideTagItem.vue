@@ -29,9 +29,9 @@ import { defineProps } from "@vue/runtime-core";
 import { activeIndex } from "../../../../utils/activeIndex";
 import { getlistDetailData } from "../hooks/request";
 import { setContentData } from "../hooks/methods";
-import { preloading } from "./hooks/methods";
 import { mainMapData } from "../hooks/data";
 import { currentID } from "./hooks/data";
+import { getMittBus } from "../../../../utils/mittBus";
 
 const props = defineProps({
   navItem: {
@@ -40,11 +40,13 @@ const props = defineProps({
   },
 });
 
-// const childrenData = preloading(props.navItem.childrenData);
+const mittBus = getMittBus();
 
 async function childTagItemClick(currID: number) {
   if (currentID.value === currID) return;
   currentID.value = currID;
+
+  mittBus.emit("markvrituallist");
 
   const mainData = await getlistDetailData(currID, mainMapData);
   setContentData(mainData);

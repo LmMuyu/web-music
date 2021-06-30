@@ -3,39 +3,63 @@ import { createApp } from "@vue/runtime-dom";
 import { useRefNegate } from "../../utils/useRefNegate";
 import Loading from "./Loading.vue";
 
-const div = document.createElement("div");
+export class createLoading {
+  private install: App<Element> | null = null;
+  private root: HTMLElement | null = null;
+  private div: HTMLDivElement;
+  public negate: () => void;
+  public countRef: any;
 
-div.classList.add(...["w-full", "h-full"]);
+  public mountApp: (
+    node: string | HTMLElement,
+    backCall?: Function | undefined
+  ) => any;
+  public unmountApp: (backcall?: Function | undefined) => void;
+  public isMountApp: () => boolean;
 
-let install: App<Element> | null = null;
-let root: HTMLElement | null = null;
+  constructor() {
+    const { countRef, negate } = useRefNegate(false);
+    this.div = document.createElement("div");
+    this.div.classList.add(...["w-full", "h-full"]);
 
-export function createLoading() {
-  const { countRef, negate } = useRefNegate(false);
+    this.install = null;
+    this.root = null;
+    this.countRef = countRef;
+    this.negate = negate;
+    this.mountApp = this.runMountApp();
+    this.unmountApp = this.runUnmountApp();
+    this.isMountApp = this.runIsMountApp();
+  }
 
-  return {
-    countRef,
-    negate,
-    mountApp,
-    unmountApp,
-  };
-}
+  private runMountApp() {
+    return (node: string | HTMLElement, backCall?: Function) => {
+      backCall?.();
+      this.install = createApp(Loading);
 
-export function mountApp(node: string | HTMLElement, backCall?: Function) {
-  backCall?.();
-  install = createApp(Loading);
+      this.root =
+        node instanceof HTMLElement ? node : document.querySelector(node);
+      this.install.mount(this.div);
+      this.root?.appendChild(this.div);
 
-  root = node instanceof HTMLElement ? node : document.querySelector(node);
-  install.mount(div);
-  root?.appendChild(div);
+      return this.unmountApp;
+    };
+  }
 
-  return unmountApp;
-}
+  private runUnmountApp() {
+    return (backcall?: Function) => {
+      if (this.install) {
+        this.install.unmount();
+        this.root?.removeChild(this.div);
+        this.root = this.install = null;
+        backcall?.();
+      }
+    };
+  }
 
-export function unmountApp(backcall?: Function) {
-  if (install) {
-    install.unmount();
-    root?.removeChild(div);
-    backcall?.();
+  private runIsMountApp() {
+    return () =>
+      Object.prototype.toString
+        .call(this.install)
+        .match(/\[object (.+)\]/)?.[1] === "Object";
   }
 }

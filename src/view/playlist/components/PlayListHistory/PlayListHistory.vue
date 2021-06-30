@@ -1,7 +1,6 @@
 <template>
   <ElDrawer
-    @closed="unmountApp"
-    @opened="drawerOpenClose"
+    @closed="unmountedLoadingCom"
     :showClose="false"
     :withHeader="false"
     :modelValue="true"
@@ -11,7 +10,7 @@
       <header class="p-4" ref="headerNode">
         <p class="text-lg">历史记录</p>
       </header>
-      <main>
+      <main v-if="countRef">
         <VirtualList
           :renderData="renderData"
           :height="32"
@@ -33,20 +32,18 @@ import {
   onMounted,
   ref,
   unref,
+  watch,
 } from "@vue/runtime-core";
 
 import { musicResultDetail } from "../../../../utils/musicDetail";
+import { createLoading } from "../../../../components/loading/app";
 import { setRenderDataID } from "./hooks/methods";
-import { unmountApp } from "./index";
 
 import VirtualList from "/comps/virtuallist/VirtualList.vue";
 import ChildrenItem from "./components/ChildrenItem.vue";
 import { ElDrawer } from "element-plus";
 
 import type { PropType } from "vue";
-import { mountApp } from "../../../../components/loading/app";
-
-type unmounAppFn = (backcall?: Function | undefined) => void;
 
 const props = defineProps({
   record: {
@@ -57,21 +54,35 @@ const props = defineProps({
   },
 });
 
-const drawerNode = ref<Record<string, any> | null>(null);
-const headerNode = ref<HTMLElement | null>(null);
-const drawerMainContent = ref<HTMLElement | null>(null);
+const { countRef, negate, mountApp, unmountApp, isMountApp } =
+  new createLoading();
+
 const drawerMainHeight = ref(0);
+const headerNode = ref<HTMLElement | null>(null);
+const drawerNode = ref<Record<string, any> | null>(null);
+const drawerMainContent = ref<HTMLElement | null>(null);
 
 const renderData = ref<any[]>([]);
+
+watch(
+  () => [renderData.value, drawerMainContent],
+  (value) =>{
+    nextTick(unmountedLoadingCom)
+  }
+);
+
 renderData.value = setRenderDataID(props.record.allData);
 
-let unmounApp: unmounAppFn | null = null;
-const drawerOpenClose = () => {};
+function unmountedLoadingCom() {
+  console.log(isMountApp());
+
+  isMountApp() && unmountApp(negate);
+}
 
 onMounted(() => {
   nextTick(() => {
     if (drawerMainContent.value) {
-      // unmounApp = mountApp(drawerMainContent.value);
+      mountApp(drawerMainContent.value);
     }
 
     if (drawerNode.value && headerNode.value) {

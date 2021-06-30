@@ -54,6 +54,7 @@ import {
 
 import { createLoading } from "../../../../components/loading/app";
 import { activeIndex } from "../../../../utils/activeIndex";
+import { getMittBus } from "../../../../utils/mittBus";
 
 import VirtualList from "/comps/virtuallist/VirtualList.vue";
 import ToplistMainItem from "./ToplistMainItem.vue";
@@ -88,7 +89,9 @@ const props = defineProps({
   },
 });
 
-const { countRef, negate, mountApp, unmountApp } = createLoading();
+const { countRef, negate, mountApp, unmountApp, isMountApp } =
+  new createLoading();
+const mittBus = getMittBus();
 
 const features = ref(null);
 const hoverList: any[] = [];
@@ -132,13 +135,11 @@ const renderListData = computed(() => {
   }));
 });
 
-const step = watch(
+watch(
   () => renderListData.value,
-  () => {}
-  // unmountApp(() => {
-  //   negate();
-  //   step();
-  // })
+  () => {
+    isMountApp() && unmountApp(negate);
+  }
 );
 
 const { leaveActive, moveActive, activeStyle } = new activeIndex(null, null, {
@@ -147,6 +148,20 @@ const { leaveActive, moveActive, activeStyle } = new activeIndex(null, null, {
   enterColor: "#c0dbf7",
   initSetStyle: false,
 });
+
+const busMap = mittBus.all;
+
+if (!busMap.has("markvrituallist")) {
+  mittBus.on("markvrituallist", () => {
+    countRef.value = false;
+
+    console.log(busMap);
+
+    if (!isMountApp() && rootcontent.value) {
+      mountApp(rootcontent.value);
+    }
+  });
+}
 
 onMounted(() => {
   nextTick().then(() => {

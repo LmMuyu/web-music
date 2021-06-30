@@ -29,6 +29,8 @@ export function unmountApp() {
     if (app && div && root) {
       app.unmount();
       root.removeChild(div);
+      root = null;
+      div = null;
     }
   });
 }
