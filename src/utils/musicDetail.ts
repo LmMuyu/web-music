@@ -131,7 +131,7 @@ export class resultOptions implements MusicDetailOption {
   }
 }
 
-export function musicResultDetail(data: Object) {  
+export function musicResultDetail(data: Object) {
   const options = new resultOptions(data);
   return new musicDetail(options);
 }

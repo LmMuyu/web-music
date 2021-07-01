@@ -179,7 +179,7 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-  unmountApp();
+  isMountApp() && unmountApp(negate);
 });
 </script>
 <style scoped lang="scss">

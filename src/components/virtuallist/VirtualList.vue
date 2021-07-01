@@ -1,6 +1,7 @@
 <template>
   <div
-    class="relative overflow-auto h-full slider_track"
+    class="relative overflow-auto slider_track"
+    style="height: 101%"
     @scroll="onScroll"
     ref="totalList"
   >
@@ -10,9 +11,8 @@
       ref="bar_track"
     ></div>
     <ul
-      class="flex flex-col"
+      class="flex flex-col h-full"
       :style="{
-        height: scrollHeight === 0 ? '100%' : scrollHeight + 'px',
         transform: offsetTranslate,
       }"
       ref="listItem"
@@ -120,7 +120,8 @@ const listHeight = computed(() => {
 
 const sliceList = computed(() => {
   const start = slicePos.start;
-  const end = Math.min(slicePos.end, props.renderData.length);
+  const end =
+    Math.min(slicePos.end, props.renderData.length) + aftterCount.value;
 
   return props.renderData.slice(start, end);
 });
@@ -195,8 +196,6 @@ function binarySearch(value: number, position: EstimateType[]) {
 }
 
 function updateItemsSize() {
-  // console.log(estimateList.value);
-
   if (listItem.value && listItem.value.children.length) {
     const listDom = Array.from(listItem.value.children);
 
@@ -226,7 +225,7 @@ onMounted(() => {
   nextTick().then(() => {
     rootClientHeight.value = totalList.value?.clientHeight || 0;
     slicePos.start = 0;
-    slicePos.end = slicePos.start + visbleCount.value;
+    slicePos.end = slicePos.start + visbleCount.value + aftterCount.value;
   });
 });
 

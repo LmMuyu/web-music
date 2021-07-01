@@ -4,21 +4,22 @@
     :showClose="false"
     :withHeader="false"
     :modelValue="true"
+    size="25%"
     ref="drawerNode"
   >
-    <div class="h-full relative" ref="drawerMainContent">
+    <div class="relative" ref="drawerMainContent">
       <header class="p-4" ref="headerNode">
         <p class="text-lg">历史记录</p>
       </header>
-      <main v-if="countRef">
+      <main class="px-4 mb-4 mainHeight" v-if="countRef">
         <VirtualList
           :renderData="renderData"
-          :height="32"
+          :height="39"
           keyindex="key"
           :scrollHeight="unref(drawerMainHeight)"
         >
-          <template v-slot="{ scopeData }">
-            <ChildrenItem :scopedData="musicResultDetail(scopeData.song)" />
+          <template v-slot="{ scopeData: { renderItem, index, keyindex } }">
+            <ChildrenItem :scopedData="musicResultDetail(renderItem.song)" />
           </template>
         </VirtualList>
       </main>
@@ -30,6 +31,7 @@ import {
   defineProps,
   nextTick,
   onMounted,
+  onUnmounted,
   ref,
   unref,
   watch,
@@ -38,6 +40,7 @@ import {
 import { musicResultDetail } from "../../../../utils/musicDetail";
 import { createLoading } from "../../../../components/loading/app";
 import { setRenderDataID } from "./hooks/methods";
+import { itemWidth } from "./hooks/useAutoWidth";
 
 import VirtualList from "/comps/virtuallist/VirtualList.vue";
 import ChildrenItem from "./components/ChildrenItem.vue";
@@ -66,24 +69,29 @@ const renderData = ref<any[]>([]);
 
 watch(
   () => [renderData.value, drawerMainContent],
-  (value) =>{
-    nextTick(unmountedLoadingCom)
+  (value) => {
+    nextTick(unmountedLoadingCom);
   }
 );
 
-renderData.value = setRenderDataID(props.record.allData);
+const resize = new ResizeObserver((entries) => {
+  console.log(entries);
+});
 
 function unmountedLoadingCom() {
-  console.log(isMountApp());
-
   isMountApp() && unmountApp(negate);
 }
+
+const widthAuto = itemWidth.value;
 
 onMounted(() => {
   nextTick(() => {
     if (drawerMainContent.value) {
       mountApp(drawerMainContent.value);
+      resize.observe(drawerMainContent.value);
     }
+
+    renderData.value = setRenderDataID(props.record.allData);
 
     if (drawerNode.value && headerNode.value) {
       drawerMainHeight.value =
@@ -92,4 +100,16 @@ onMounted(() => {
     }
   });
 });
+
+onUnmounted(() => {
+  if (drawerMainContent.value) {
+    resize.unobserve(drawerMainContent.value);
+  }
+});
 </script>
+
+<style scoped lang="scss">
+.mainHeight {
+  height: calc(100vh - 45px);
+}
+</style>
