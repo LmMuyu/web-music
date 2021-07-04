@@ -1,5 +1,5 @@
 <template>
-  <ElCarousel>
+  <ElCarousel ref="carouselRef">
     <ElCarouselItem
       v-for="banner in bannerData"
       :key="banner.encodeId"
@@ -17,14 +17,17 @@
 </template>
 
 <script setup lang="ts">
+import { defineProps, nextTick, onMounted, ref } from "vue";
+
 import { ElCarousel, ElCarouselItem } from "element-plus";
-import { defineProps, nextTick, onMounted } from "vue";
 
 import type { PropType } from "vue";
 
 const props = defineProps({
   bannerData: { type: Array as PropType<any[]>, default: () => [] },
 });
+
+const carouselRef = ref<any | null>(null);
 
 onMounted(() => {
   nextTick().then(() => {

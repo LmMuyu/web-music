@@ -40,7 +40,6 @@ import {
 import { musicResultDetail } from "../../../../utils/musicDetail";
 import { createLoading } from "../../../../components/loading/app";
 import { setRenderDataID } from "./hooks/methods";
-import { itemWidth } from "./hooks/useAutoWidth";
 
 import VirtualList from "/comps/virtuallist/VirtualList.vue";
 import ChildrenItem from "./components/ChildrenItem.vue";
@@ -74,21 +73,19 @@ watch(
   }
 );
 
-const resize = new ResizeObserver((entries) => {
-  console.log(entries);
-});
+// const resize = new ResizeObserver((entries) => {
+//   console.log(entries);
+// });
 
 function unmountedLoadingCom() {
   isMountApp() && unmountApp(negate);
 }
 
-const widthAuto = itemWidth.value;
-
 onMounted(() => {
   nextTick(() => {
     if (drawerMainContent.value) {
       mountApp(drawerMainContent.value);
-      resize.observe(drawerMainContent.value);
+      // resize.observe(drawerMainContent.value);
     }
 
     renderData.value = setRenderDataID(props.record.allData);
@@ -103,7 +100,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   if (drawerMainContent.value) {
-    resize.unobserve(drawerMainContent.value);
+    // resize.unobserve(drawerMainContent.value);
   }
 });
 </script>

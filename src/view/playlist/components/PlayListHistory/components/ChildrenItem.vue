@@ -4,7 +4,7 @@
       <span class="whitespace-nowrap text-lg">{{ scopedData.name }}</span>
       <div class="flex items-center text-gray-300 truncate">
         <i class="text-xs">-</i>
-        <p class="text-xs">{{ singerInfo }}</p>
+        <p class="text-xs h-auto">{{ singerInfo }}</p>
       </div>
     </div>
     <div class="w-1/6 h-full cursor-pointer">
