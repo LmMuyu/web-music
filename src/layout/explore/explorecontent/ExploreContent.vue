@@ -27,9 +27,11 @@ async function initVideoPlayer(id: number, duration: number) {
     "MediaSource" in window &&
     MediaSource.isTypeSupported('video/mp4; codecs="avc1.42E01E, mp4a.40.2"')
   ) {
+    // console.log(url);
+
     const index = url.match(/\.net/)?.index || 0;
     url = url.slice(index + 4);
-    console.log(url);
+    // console.log(url);
 
     try {
       const mvplaydata = await axios({
@@ -39,7 +41,7 @@ async function initVideoPlayer(id: number, duration: number) {
         headers: { Range: `bytes=${bytes.start}-${bytes.end}` },
       });
 
-      mediasource(mvplaydata.data);
+      mediasource(mvplaydata.data, duration);
     } catch (error) {
       console.log(error);
     }
@@ -48,15 +50,21 @@ async function initVideoPlayer(id: number, duration: number) {
   }
 }
 
-function mediasource(arraybuffer: ArrayBuffer) {
+function mediasource(arraybuffer: ArrayBuffer, duration: number) {
   if (!videoNode.value) return new Error("videoNode for null");
 
   const mse = new MediaSource();
   videoNode.value.src = URL.createObjectURL(mse);
-  mse.addEventListener("sourceopen", sourceOpen, false);
 
-  function sourceOpen(e: Event) {
-    const mediasource = e.target as MediaSource;
+  mse.addEventListener(
+    "sourceopen",
+    sourceOpen.bind(mse, mse, duration),
+    false
+  );
+
+  function sourceOpen(mediasource: MediaSource, duration: number) {
+    URL.revokeObjectURL(videoNode.value!.src);
+
     const mime = 'video/mp4; codecs="avc1.42E01E, mp4a.40.2"';
     const sourceBuffer = mediasource.addSourceBuffer(mime);
 
@@ -71,7 +79,7 @@ function mediasource(arraybuffer: ArrayBuffer) {
       false
     );
 
-    sourceBuffer.appendBuffer(arraybuffer);
+    sourceBuffer.appendBuffer(new Uint8Array(arraybuffer));
   }
 }
 </script>

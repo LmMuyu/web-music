@@ -67,8 +67,7 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
       open: true,
       proxy: {
         "/mvplay": {
-          target:
-            "http://219.132.164.11:9102/fseeca82d4.a.bdydns.com/1924164272",
+          target: "http://vodkgeyttp8.vod.126.net",
           changeOrigin: true,
           rewrite(path) {
             return path.replace(/\/mvplay/, "");
