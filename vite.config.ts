@@ -1,11 +1,11 @@
 import { defineConfig, CSSOptions, loadEnv } from "vite";
 //https://github.com/vuejs/jsx-next/blob/dev/packages/babel-plugin-jsx/README-zh_CN.md
+import path from "path";
 import vueJsx from "@vitejs/plugin-vue-jsx";
 import vue from "@vitejs/plugin-vue";
 import styleImport from "vite-plugin-style-import";
 import { ConfigEnv, UserConfig } from "vite";
 import createAlias from "./build/vite/alias";
-import path from "path";
 import { setTsconfig } from "./build/vite/setTsconfig";
 import { createProxy } from "./build/vite/proxy";
 
@@ -65,6 +65,16 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
     server: {
       port: Number(VITE_PORT),
       open: true,
+      proxy: {
+        "/mvplay": {
+          target:
+            "http://219.132.164.11:9102/fseeca82d4.a.bdydns.com/1924164272",
+          changeOrigin: true,
+          rewrite(path) {
+            return path.replace(/\/mvplay/, "");
+          },
+        },
+      },
     },
     esbuild: {},
   };
