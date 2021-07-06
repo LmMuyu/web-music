@@ -4,7 +4,7 @@
       :style="{ width: setWidth(0) }"
       class="flex items-center translate-x-4"
     >
-      <span class="cursor-default" style="font-size: 21px">热门推荐</span>
+      <span class="cursor-default font_size">热门推荐</span>
     </div>
     <div :style="{ width: setWidth(1) }">
       <ul class="list-none flex items-center h-full w-80">
@@ -78,5 +78,9 @@ const setWidth = computed(() => {
     height: 2px;
     background-color: #74b9ff;
   }
+}
+
+.font_size {
+  font-size: 21px;
 }
 </style>

@@ -21,7 +21,7 @@
           :returnresdata="returnresdata"
         />
       </el-header>
-      <el-main class="h-5/6 track_bar">
+      <el-main class="h-5/6 text track_bar">
         <component :is="compsId"></component>
       </el-main>
     </el-container>

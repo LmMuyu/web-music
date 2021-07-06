@@ -5,7 +5,7 @@
       :span="6"
       v-for="(play, index) in playlist"
       :key="play.id"
-      class="flex overflow-hidden my-4"
+      class="root_image_item flex overflow-hidden my-4"
     >
       <section class="text-center cneter">
         <div
@@ -13,14 +13,14 @@
           @mouseenter="mouseenter(index)"
           @mouseleave="negate"
         >
-          <div style="width: 144px; height: 90px">
+          <div>
             <img
               :src="
                 (play?.creator?.backgroundUrl || play?.creator?.coverImgUrl) +
                 '?param=144y90'
               "
               :alt="play.alg_sq_featured"
-              class="object-cover block cneter"
+              class="object-cover block w-full h-full cneter"
             />
           </div>
           <router-link
@@ -35,7 +35,7 @@
             :index="index"
           />
         </div>
-        <p class="whitespace-pre-wrap text-left" style="width: 140px">
+        <p class="whitespace-pre-wrap text-left fotn_title">
           <a href="javscript:;;">
             {{ play.name }}
           </a>
@@ -71,8 +71,20 @@ function mouseenter(index: number) {
 }
 </script>
 <style scoped lang="scss">
+.root_image_item {
+  width: 144px;
+  height: 144px;
+}
+
 .cneter {
   margin: 0 auto;
+
+  & > div {
+    & > div {
+      width: 144px;
+      height: 90px;
+    }
+  }
 }
 
 .playlist {
@@ -83,5 +95,9 @@ function mouseenter(index: number) {
 
 .bg_gray {
   background: rgba(0, 0, 0, 0.405);
+}
+
+.font_title {
+  font-size: 140px;
 }
 </style>

@@ -1,4 +1,11 @@
-export const thirdPartyLogin = [
+export interface thridparty {
+  icon: string;
+  text: string;
+  color: string;
+  size: string;
+}
+
+export const thirdPartyLogin: thridparty[] = [
   {
     icon: "iconweixin",
     text: "微信",

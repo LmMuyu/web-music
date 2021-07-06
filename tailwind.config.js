@@ -3,11 +3,13 @@ module.exports = {
   darkMode: false, // or 'media' or 'class'
   theme: {
     extend: {},
-    backgroundColor: (theme) => ({
-      ...theme("colors"),
-      wpbgColor: "#f5f5f5",
-      wybgColor: "#8a060b",
-    }),
+    backgroundColor: (theme) => {
+      return {
+        ...theme("colors"),
+        wpbgColor: "#f5f5f5",
+        wybgColor: "#8a060b",
+      };
+    },
   },
   variants: {
     extend: {},

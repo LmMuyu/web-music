@@ -15,6 +15,7 @@ const postcssOption = {
       viewportUnit: "rem",
       selectorBlackList: [".ignore", ".hairlines"],
       mediaQuery: false,
+      include: /\/src/,
     },
     cssnano: {
       preset: "advanced",

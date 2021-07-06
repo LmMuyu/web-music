@@ -1,6 +1,6 @@
 <template>
   <div class="flex items-center relative py-3 border_bar">
-    <div style="font-size:21px">推荐歌曲</div>
+    <div class="font_size">推荐歌曲</div>
     <ul class="flex items-center">
       <li
         v-for="(tagItem, index) in discoverMusic"
@@ -68,5 +68,9 @@ const sliceList = computed(() => list.value[curSlicePos.value]);
     height: 2px;
     background-color: #74b9ff;
   }
+}
+
+.font_size {
+  font-size: 21px;
 }
 </style>

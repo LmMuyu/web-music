@@ -35,14 +35,10 @@ export default {
   ) {
     const [userinfoData, cancelCompFu] = payload;
 
-    if (!userinfoData) {
-      return;
-    }
-
-    const infoData = await getUserInfoData(userinfoData.userID);
+    const infoData = await getUserInfoData(userinfoData.userID); //通过账号ID查找信息
     userinfoData.userInfoData = infoData.data.profile;
 
     state.commit("setUserInfo", userinfoData);
-    cancelCompFu();
+    cancelCompFu(); //销毁登录框
   },
 };

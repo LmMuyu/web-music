@@ -1,10 +1,19 @@
 <template>
   <div
-    class="select bg-white flex flex-col fixed left-2/4 top-2/4 transform -translate-x-2/4 -translate-y-2/4 z-50 shadow"
-    style="width: 530px; height: 372px"
-    :ref="mouse"
+    class="
+      login_model
+      shadow
+      bg-white
+      flex flex-col
+      fixed
+      left-2/4
+      top-2/4
+      transform
+      -translate-x-2/4 -translate-y-2/4
+      z-50
+    "
   >
-    <header class="bg-gray-900 py-3 flex" style="height: 12.499%">
+    <header class="py-3 flex" style="height: 12.499%; background: #74b9ff">
       <div style="width: 50%" class="flex items-center">
         <p class="transform translate-x-2 text-white font-bold text-lg">
           {{ headerTitle }}
@@ -34,9 +43,8 @@ import {
   shallowRef,
 } from "vue";
 
-
+import { injectKey } from "./api/data";
 import { isType } from "../../utils/methods";
-import mouse from "./api/mouse";
 
 const QrLogin = defineAsyncComponent(() => import("./qrLogin/QrLogin.vue"));
 const otherLogin = defineAsyncComponent(
@@ -57,10 +65,13 @@ const props = defineProps({
   },
 });
 
-const mitt: Emitter = getCurrentInstance()?.appContext.config.globalProperties
-  .mitt;
+const { proxy } = getCurrentInstance()!;
+//@ts-ignore
+const mitt: Emitter = proxy?.mitt;
+
 mitt.on("otherLogin", onOther);
-provide("cancelComp", props.cancel)
+provide("cancelComp", props.cancel);
+provide(injectKey, mitt);
 
 const headerTitle = ref("登录");
 const componentId = shallowRef(QrLogin);
@@ -73,6 +84,7 @@ let istype: boolean = false; //mitt
 function onOther(comp: string | otherOptions | undefined) {
   const type = isType(comp);
   if (!comp && type !== "Object") throw new Error("组件未传入!");
+  if (typeof comp === "string") comp = comp.trim();
 
   if (type === "Object") {
     const { comp: compinstance, type }: otherOptions = comp as otherOptions;
@@ -84,12 +96,14 @@ function onOther(comp: string | otherOptions | undefined) {
 
   switch (comp) {
     case COMP.OTHERLOGIN:
+      //@ts-ignore
       componentId.value = otherLogin;
       break;
     case COMP.QRLOGIN:
       componentId.value = QrLogin;
       break;
     case COMP.LOGINWITHPHONE:
+      //@ts-ignore
       componentId.value = OtherLoginCellPhone;
       break;
     default:
@@ -122,7 +136,11 @@ onBeforeUnmount(() => {
   z-index: 49;
 }
 
-.select {
+.login_model {
+  width: 554px;
+  height: 340px;
+  min-height: 280px;
+  min-width: 448px;
   -webkit-touch-callout: none;
   -moz-user-select: none; /*火狐*/
   -webkit-user-select: none; /*webkit浏览器*/

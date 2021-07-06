@@ -7,7 +7,15 @@
       <div class="pt-7 flex flex-col">
         <div>
           <button
-            class="outline-none border-none text-center py-2 p-20 text-gray-50 mp_Login"
+            class="
+              outline-none
+              border-none
+              text-center
+              py-2
+              p-20
+              text-gray-50
+              mp_Login
+            "
             @click="withPhone"
           >
             手机号登录
@@ -15,7 +23,15 @@
         </div>
         <div class="pt-7">
           <button
-            class="outline-none border-none text-center py-2 p-20 text-gray-900 signup"
+            class="
+              outline-none
+              border-none
+              text-center
+              py-2
+              p-20
+              text-gray-900
+              signup
+            "
           >
             <span class="px-6">注册</span>
           </button>
@@ -23,35 +39,22 @@
       </div>
     </div>
     <div class="w-2/4">
-      <ul class="flex flex-col items-center list-noneh-full icon">
-        <li
-          v-for="(other, index) in thirdPartyLogin"
-          :key="index"
-          class="flex items-center justify-center min-w-full pt-6 cursor-pointer"
-        >
-          <div
-            class="flex items-center justify-center border-solid border border-gray-400 w-12 h-12 round"
-          >
-            <i
-              :class="other.icon"
-              class="iconfont"
-              :style="{ color: other.color, fontSize: other.size }"
-            ></i>
-          </div>
-
-          <p class="transform translate-x-6">{{ other.text + "登录" }}</p>
-        </li>
-      </ul>
+      <OtherLoginThirdParty :third-party-login="thirdPartyLogin" />
     </div>
   </article>
 </template>
 <script setup lang="ts">
 import { defineEmit, inject } from "@vue/runtime-core";
-import { ElMessage } from "element-plus";
+
 import { thirdPartyLogin, footerDeal } from "../api/data";
+
+import OtherLoginThirdParty from "./OtherLoginThirdParty.vue";
+import { ElMessage } from "element-plus";
+
 const ctxEmit = defineEmit(["onOther"]);
 
 const protocol: { value: boolean } = inject("protocol")!; //是否同意条款
+// const other
 
 function createMessage(data: { text: string }[]) {
   let str = data.reduce(
@@ -71,8 +74,6 @@ function withPhone() {
 
     return;
   }
-
-  ctxEmit("onOther", "loginwithphone");
 }
 </script>
 <style lang="scss" scoped>

@@ -20,19 +20,19 @@ function setPlugin(element: App<Element>) {
 }
 
 const loginMethods = {
-  show(rootElement: string) {
-    loginInstance = Applogin();
-    Promise.resolve().then(() => setPlugin(loginInstance!));
+  show(rootElement: string | Element) {
+    loginInstance = loginInstance || Applogin();
+    setPlugin(loginInstance);
     loginInstance.mount(rootElement);
   },
   hidden() {
     loginInstance && loginInstance.unmount();
+    loginInstance = null;
   },
 };
 
 export default function loginApp(el: string) {
-  el = el ? el : "#login";
-
+  el = el || "#login";
   if (mount) return; //登录对话框在挂在中
 
   mount = true;

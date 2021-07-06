@@ -90,7 +90,7 @@ import {
 import { reactive, ref, toRaw } from "@vue/reactivity";
 
 import OtherLoginCellPhoneFooter from "./components/OtherLoginCellPhoneFooter.vue";
-import { ElInput, ElButton, ElContainer, ElFooter, ElMain } from "element-plus";
+import { ElInput, ElButton, ElContainer, ElFooter, ElMain, ElMessage } from "element-plus";
 
 import { onVerificationCode } from "../hooks/onVerificationCode";
 import getFile from "../../../../utils/getCurrentInstanceFile";
@@ -186,6 +186,13 @@ function phoneLogin() {
   login(formData, ({ data }: any) => {
     const { bindings } = data;
     const userData = bindings[1];
+
+    if (!userData) {
+      return ElMessage.error({
+        type:"error",
+        message:"登录失败!"
+      })
+    }
 
     const userInfo: UserInfo = {
       id: userData.id,
