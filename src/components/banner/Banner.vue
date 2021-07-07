@@ -33,11 +33,17 @@ onMounted(() => {
     const carousel = document.querySelector(".el-carousel__indicators");
 
     if (buttonList && buttonList.length >= 1) {
-      buttonList.forEach((v) => ((v as HTMLElement).style.outline = "none"));
+      buttonList.forEach((v) => {
+        const btn = v as HTMLElement;
+        btn.style.outline = "none";
+        btn.style.zIndex = "9";
+      });
     }
 
     if (carousel) {
-      (carousel as HTMLElement).style.display = "flex";
+      const tracks = carousel as HTMLElement;
+      tracks.style.display = "flex";
+      tracks.style.zIndex = "9";
     }
   });
 });
