@@ -13,9 +13,7 @@ export async function lwPhone(params: object, resultFn?: Function) {
     params
   ) as Captcha;
 
-  if (!phone) {
-    return;
-  }
+  if (!phone) return;
 
   phone = String(phone).trim();
   ctcode = ctcode.substr(1);
@@ -35,6 +33,7 @@ export async function lwPhone(params: object, resultFn?: Function) {
   formData.append("ctcode", ctcode);
 
   const res = await cellphone(formData);
+
   if (!res.data.hasPassword) {
     ElMessage.warning({
       message: "当前账号未注册!",
@@ -42,5 +41,5 @@ export async function lwPhone(params: object, resultFn?: Function) {
     });
   }
 
-  resultFn && resultFn(res.data);
+  resultFn?.(res.data);
 }

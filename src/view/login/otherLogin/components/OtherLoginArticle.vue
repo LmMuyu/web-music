@@ -44,17 +44,18 @@
   </article>
 </template>
 <script setup lang="ts">
-import { defineEmit, inject } from "@vue/runtime-core";
+import { inject } from "@vue/runtime-core";
 
 import { thirdPartyLogin, footerDeal } from "../api/data";
+import { injectKey } from "../../api/data";
 
 import OtherLoginThirdParty from "./OtherLoginThirdParty.vue";
 import { ElMessage } from "element-plus";
 
-const ctxEmit = defineEmit(["onOther"]);
+import type { Emitter } from "mitt";
 
 const protocol: { value: boolean } = inject("protocol")!; //是否同意条款
-// const other
+const mitt: Emitter | undefined = inject(injectKey);
 
 function createMessage(data: { text: string }[]) {
   let str = data.reduce(
@@ -66,6 +67,8 @@ function createMessage(data: { text: string }[]) {
 }
 
 function withPhone() {
+  if (!mitt) return new Error("otherLogin undefined");
+
   if (!protocol.value) {
     ElMessage.warning({
       type: "warning",
@@ -74,6 +77,8 @@ function withPhone() {
 
     return;
   }
+
+  mitt.emit("otherLogin", "loginwithphone");
 }
 </script>
 <style lang="scss" scoped>

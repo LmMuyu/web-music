@@ -6,7 +6,7 @@
           placeholder="请输入手机号"
           v-model.number="formData.phoneNumber"
           class="input-with-select"
-          @blur="lwPhone(formData, logging)"
+          @blur="lwPhone(formData)"
         >
           <template v-slot:prepend>
             <select
@@ -23,36 +23,12 @@
             </select>
           </template>
         </el-input>
-        <form action="##" class="w-full">
-          <el-input
-            show-password
-            placeholder="请输入密码"
-            v-model="formData.password"
-            class="py-1"
-          >
-          </el-input>
-        </form>
-        <div class="py-3 flex"></div>
         <el-input
-          placeholder="请输入验证码"
-          v-model="formData.verificationCode"
+          show-password
+          placeholder="请输入密码"
+          v-model="formData.password"
+          class="py-1"
         >
-          <template v-slot:append>
-            <div class="zidong">
-              <el-button
-                type="primary"
-                :disabled="disabled"
-                @click="
-                  onVerificationCode(
-                    formData.phoneNumber,
-                    countDownFn,
-                    formData.countries
-                  )
-                "
-                >{{ vccd === 0 ? "发送验证码" : vccd }}</el-button
-              >
-            </div>
-          </template>
         </el-input>
         <div class="py-3 flex justify-between w-52">
           <span class="flex items-center">
@@ -62,7 +38,9 @@
           <span class="cursor-pointer">忘记密码?</span>
         </div>
         <div class="flex justify-center prent_button">
-          <el-button type="primary" @click.stop="phoneLogin">登录</el-button>
+          <button @click.stop="phoneLogin" class="flex justify-center">
+            <cur-state :state="countRef" />
+          </button>
         </div>
       </div>
     </el-main>
@@ -81,25 +59,25 @@
   </el-container>
 </template>
 <script setup lang="ts">
-import {
-  computed,
-  getCurrentInstance,
-  onBeforeUnmount,
-  inject,
-} from "@vue/runtime-core";
+import { computed, inject } from "@vue/runtime-core";
 import { reactive, ref, toRaw } from "@vue/reactivity";
 
 import OtherLoginCellPhoneFooter from "./components/OtherLoginCellPhoneFooter.vue";
-import { ElInput, ElButton, ElContainer, ElFooter, ElMain, ElMessage } from "element-plus";
+import CurState from "./components/CurState.vue";
+import {
+  ElInput,
+  ElContainer,
+  ElFooter,
+  ElMain,
+  ElMessage,
+} from "element-plus";
 
-import { onVerificationCode } from "../hooks/onVerificationCode";
-import getFile from "../../../../utils/getCurrentInstanceFile";
-import observer from "../../../../utils/observer/Observer";
 import { getStore } from "../../../../utils/getStore";
 import { lwPhone } from "../hooks/lwPhone";
 import { login } from "../hooks/login";
 
 import type { UserInfo, TokenJsonStr } from "../../../../store/type";
+import { useRefNegate } from "../../../../utils/useRefNegate";
 
 const formData = reactive({
   phoneRes: false,
@@ -109,89 +87,31 @@ const formData = reactive({
   verificationCode: "",
 });
 
-let currFileName: string = "";
 const automaticLogin = ref(false);
-const vccd = ref(0); //过多久验证码才能重新获取
-const deaultVccdTime = 60; //过多久验证码才能重新获取
-const disabled = ref(true); //禁用发送验证码按钮
 
 const store = getStore();
 
 const cancelComp = inject<Function>("cancelComp") || (() => {});
-
-(async function () {
-  try {
-    const instance = getCurrentInstance() as unknown as {
-      type: {
-        __file: string;
-      };
-    };
-
-    currFileName = await getFile(instance);
-  } catch (error) {
-    throw new Error(error);
-  }
-})();
 
 const country = computed(() => {
   const countriesCode = toRaw(store.state.countriesCode)!;
   return countriesCode.reduce((pre, cur) => pre.concat(...cur.countryList), []);
 });
 
-function logging({
-  hasPassword,
-  nickname,
-}: {
-  hasPassword: boolean;
-  nickname: string;
-}) {
-  if (hasPassword) {
-    disabled.value = false;
-  }
-}
-
-//验证码倒计时
-const countDownFn = (function () {
-  let timer: NodeJS.Timeout | null = null;
-
-  //到零时清除倒计时
-  function clearCountdown() {
-    if (vccd.value <= 0) {
-      observer.off(currFileName);
-      timer = null;
-    }
-  }
-
-  return function () {
-    if (timer) {
-      return true;
-    }
-
-    vccd.value = deaultVccdTime;
-    timer = setInterval(() => {
-      vccd.value -= 1;
-      clearCountdown();
-      // console.log(vccd.value);
-    }, 1000);
-
-    if (currFileName) {
-      observer.on(currFileName, timer);
-    } else {
-      throw new Error();
-    }
-  };
-})();
+const { countRef, negate } = useRefNegate(true);
 
 function phoneLogin() {
+  negate();
+
   login(formData, ({ data }: any) => {
     const { bindings } = data;
     const userData = bindings[1];
 
     if (!userData) {
       return ElMessage.error({
-        type:"error",
-        message:"登录失败!"
-      })
+        type: "error",
+        message: "登录失败!",
+      });
     }
 
     const userInfo: UserInfo = {
@@ -208,10 +128,6 @@ function phoneLogin() {
 function createTokenJsonStr(userData: UserInfo): TokenJsonStr {
   return JSON.parse(userData.tokenJsonStr as unknown as string);
 }
-
-onBeforeUnmount(() => {
-  vccd.value !== 0 && observer.off(currFileName);
-});
 </script>
 <style lang="scss" scoped>
 .input-with-select {

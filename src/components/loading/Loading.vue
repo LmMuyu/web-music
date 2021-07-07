@@ -1,22 +1,22 @@
 <template>
   <div class="w-full h-full flex justify-center items-center">
-    <svg width="38" height="38" fill="none">
+    <svg :width="width" :height="height" fill="none">
       <circle
-        cx="19"
-        cy="19"
-        r="12"
-        stroke-dasharray="75"
-        stroke-dashoffset="52"
+        :cx="circlex"
+        :cy="circley"
+        :r="outerCircler"
+        :stroke-dasharray="outerDasharray"
+        :stroke-dashoffset="outerDashoffset"
         transform="rotate(-180,20,20)"
         style="stroke: #74b9ff; stroke-width: 2px"
         ref="outerRing"
       ></circle>
       <circle
-        cx="19"
-        cy="19"
-        r="16"
-        stroke-dasharray="100"
-        stroke-dashoffset="70"
+        :cx="circlex"
+        :cy="circley"
+        :r="innerCircley"
+        :stroke-dasharray="innerDasharray"
+        :stroke-dashoffset="innerDashoffset"
         transform="rotate(0,20,20)"
         style="stroke: #74b9ff; stroke-width: 2px"
         ref="innerCircle"
@@ -27,9 +27,20 @@
 <!-- preloader -->
 <script setup lang="ts">
 import { ref, unref } from "@vue/reactivity";
-import { nextTick, onMounted, onUnmounted } from "vue";
+import { computed, defineProps, nextTick, onMounted, onUnmounted } from "vue";
 
 import type { Ref } from "vue";
+
+const props = defineProps({
+  width: {
+    type: Number,
+    default: 38,
+  },
+  height: {
+    type: Number,
+    default: 38,
+  },
+});
 
 const innerCircle = ref<HTMLElement | null>(null);
 const outerRing = ref<HTMLElement | null>(null);
@@ -73,6 +84,20 @@ const transformRotate = (
   deg = rotateInfo[0] || 0;
   rafRotate(el.value, deg, rotateInfo[1], rotateInfo[2], mode, form);
 };
+
+const circlex = computed(() => props.width >>> 1);
+const circley = computed(() => props.height >>> 1);
+
+const circler = computed(() => (props.width / Math.PI) >>> 0);
+const pinum = computed(() => Number((circler.value / Math.PI).toFixed(2)));
+
+const outerCircler = computed(() => Math.PI * pinum.value);
+const outerDasharray = computed(() => (outerCircler.value * Math.PI * 2) >>> 0);
+const outerDashoffset = computed(() => outerDasharray.value * 0.7);
+
+const innerCircley = computed(() => Math.PI * pinum.value + 1);
+const innerDasharray = computed(() => (innerCircley.value * Math.PI * 2) >>> 0);
+const innerDashoffset = computed(() => innerDasharray.value * 0.7);
 
 onMounted(() => {
   nextTick().then(() => {

@@ -69,20 +69,21 @@ const { proxy } = getCurrentInstance()!;
 //@ts-ignore
 const mitt: Emitter = proxy?.mitt;
 
-mitt.on("otherLogin", onOther);
-provide("cancelComp", props.cancel);
-provide(injectKey, mitt);
-
 const headerTitle = ref("登录");
 const componentId = shallowRef(QrLogin);
 const currCompId = shallowRef("qrlogin");
 
+mitt.on("otherLogin", onOther);
+
 provide("currCompId", currCompId);
+provide("cancelComp", props.cancel);
+provide(injectKey, mitt);
 
 let istype: boolean = false; //mitt
 
 function onOther(comp: string | otherOptions | undefined) {
   const type = isType(comp);
+  
   if (!comp && type !== "Object") throw new Error("组件未传入!");
   if (typeof comp === "string") comp = comp.trim();
 
