@@ -5,9 +5,7 @@
         <slot></slot>
       </el-header>
       <el-main class="h-5/6 track_bar">
-        <keep-alive>
-          <component :is="componentId"></component>
-        </keep-alive>
+        <component :is="componentId"></component>
       </el-main>
     </el-container>
     <el-container

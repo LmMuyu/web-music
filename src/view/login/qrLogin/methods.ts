@@ -21,9 +21,9 @@ interface CurrComp {
   value: string;
 }
 
-const currComp: CurrComp = inject("currCompId")!;
-
 export function touchQrLogin(currentInstanceName: string) {
+  const currComp: CurrComp = inject("currCompId")!;
+
   const qrBase64 = ref("");
   const qrexpired = ref(false);
 

@@ -1,24 +1,22 @@
 <template>
-  <el-row class="w-full pb-5 dashed" style="height: 57px">
-    <el-col :span="13" class="flex items-center pb-5">
+  <el-row class="w-full dashed" style="height: 57px">
+    <el-col :span="12" class="flex items-center">
       <div class="flex items-end">
-        <span class="text-3xl">网易云{{ listData?.[0]?.name }}</span>
-        <span class="ml-5 text-xl text-gray-500 h-full">{{ dateFormat }}</span>
+        <span class="text-2xl">网易云{{ listData?.[0]?.name }}</span>
+        <span class="ml-5 text-lg text-gray-500 h-full">{{ dateFormat }}</span>
       </div>
     </el-col>
-    <el-col :span="5" class="flex items-center pb-5">
-      <div class="flex">
-        <span class="px-3 flex items-center cursor-pointer icons">
-          <i class="iconfont iconfenxiang px-1"></i>
-          <p class="text-sm">{{ listData[0]?.shareCount }}</p>
-        </span>
-        <span class="px-3 flex items-center cursor-pointer icons">
-          <i class="iconfont iconpinglun_huabanfuben px-1"></i>
-          <p class="text-sm">{{ listData[0]?.commentCount }}</p>
-        </span>
-      </div>
+    <el-col :span="5" class="flex items-center">
+      <span class="px-3 flex items-center cursor-pointer icons">
+        <i class="iconfont iconfenxiang px-1"></i>
+        <p class="text-sm">{{ listData[0]?.shareCount }}</p>
+      </span>
+      <span class="px-3 flex items-center cursor-pointer icons">
+        <i class="iconfont iconpinglun_huabanfuben px-1"></i>
+        <p class="text-sm">{{ listData[0]?.commentCount }}</p>
+      </span>
     </el-col>
-    <el-col :span="6" class="flex justify-end pb-5 relative">
+    <el-col :span="7" class="flex justify-end relative">
       <el-button type="primary" class="flex">
         <div class="flex items-center">
           <span class="iconplay">
@@ -58,6 +56,6 @@ const dateFormat = computed(() => {
   @include Iconfont(#ffffff, 14);
 }
 .dashed {
-  border-bottom: 1px dashed #b2bec3;
+  box-shadow: 0 1px bisque;
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex items-center p-3 w-full cursor-pointer borderslode"
+    class="flex items-center p-2 w-full cursor-pointer borderslode"
     ref="features"
     @mouseenter="[currentIndex(index), negate()]"
     @mouseleave="negate"
@@ -11,7 +11,7 @@
       <h4
         v-if="isRank"
         :class="[
-          index + 1 <= 3 ? 'text-red-600 text-2xl' : 'text-gray-300 text-xl',
+          index + 1 <= 3 ? 'text-red-600 text-2xl' : 'text_color text-xl',
         ]"
         class="text px-2"
       >
@@ -23,8 +23,10 @@
         target="_blank"
       >
         <div class="w-full flex py-4 items-center">
-          <span class="ml-3 flex">
-            {{ renderItem?.ar[0]?.name }} - {{ renderItem?.al?.name }}
+          <span class="music_name ml-3 flex">
+            <p class="text_color">
+              {{ renderItem?.ar[0]?.name }} - {{ renderItem?.al?.name }}
+            </p>
             <p v-html="aliasName(renderItem?.alia || [])"></p>
           </span>
         </div>
@@ -95,10 +97,22 @@ watch(select, (value) => ctxEmit("change", value));
 const aliasName = computed(() => {
   return function (item: []) {
     return item.reduce(
-      (pre, cur) => (pre += `<h4 class="text-gray-300">&nbsp -(${cur})</h4>`),
+      (pre, cur) => (pre += `<h4 class="text-sm text-gray-300">&nbsp -(${cur})</h4>`),
       ""
     );
   };
 });
 </script>
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+$textcolor: #74b9ff;
+
+.text_color {
+  color: $textcolor;
+}
+
+.music_name {
+  &:deep(.text_color) {
+    color: #2d3436;
+  }
+}
+</style>

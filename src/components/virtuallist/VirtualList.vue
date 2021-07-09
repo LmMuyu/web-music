@@ -1,7 +1,7 @@
 <template>
   <div
-    class="relative overflow-auto slider_track"
-    style="height: 101%"
+    class="relative overflow-y-auto slider_track"
+    style="height: 99%"
     @scroll="onScroll"
     ref="totalList"
   >

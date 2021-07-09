@@ -1,12 +1,10 @@
-import { Ref } from "@vue/reactivity";
 import dayDate from "dayjs";
 
+import LRUCache from "../../../../utils/LRUCache";
 import { toplistData, listDetail } from "../../../../api/toplist";
 
 import type { ListItem, TrackUpdateTimeObj } from "../types/requestType";
 import type { ListTitle } from "../types/dataType";
-
-type MapObj = Ref<Map<number, ListItem[]>>;
 
 export async function allToplist() {
   const { data } = await toplistData();
@@ -24,13 +22,12 @@ export async function allToplist() {
   return listTitle;
 }
 
-export async function getlistDetailData(id: number, mapRef: MapObj) {
-  const listDetailRes = setMapList({ id }, mapRef.value, false);
-  if (listDetailRes) return listDetailRes;
+export async function getlistDetailData(id: number) {
+  const res = LRUCache.get(id);
+  if (res !== -1) return [res];
 
   const result = await listDetail(id);
   const playlist: ListItem & { trackUpdateTime: number } = result.data.playlist;
-  const map = mapRef.value;
 
   const listItem: ListItem = {
     id: playlist.id,
@@ -41,22 +38,8 @@ export async function getlistDetailData(id: number, mapRef: MapObj) {
     trackUpdateTime: transformDate(playlist.trackUpdateTime),
   };
 
-  return setMapList(listItem, map);
-}
-
-function setMapList(
-  listItem: ListItem | { id: number },
-  mapRef: Map<number, ListItem[]>,
-  isSet: true | false = true
-) {
-  const id = listItem.id;
-
-  return mapRef.has(id)
-    ? mapRef.get(id)
-    : isSet
-    ? // @ts-ignore
-      mapRef.set(id, [listItem]).get(id)
-    : undefined;
+  LRUCache.put(id, listItem);
+  return [listItem];
 }
 
 function transformDate(time: number) {

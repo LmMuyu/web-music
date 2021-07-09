@@ -155,8 +155,6 @@ if (!busMap.has("markvrituallist")) {
   mittBus.on("markvrituallist", () => {
     countRef.value = false;
 
-    console.log(busMap);
-
     if (!isMountApp() && rootcontent.value) {
       mountApp(rootcontent.value);
     }

@@ -18,7 +18,7 @@ import {
   defineEmit,
   getCurrentInstance,
   onBeforeUnmount,
-  ref,
+  watch,
 } from "@vue/runtime-dom";
 
 const Expired = defineAsyncComponent(() => import("../components/Expired.vue"));
@@ -32,8 +32,6 @@ const ctxEmit = defineEmit(["onOther"]);
 const currentInstanceName =
   getCurrentInstance()?.type.__file?.match(/(\w+)\.vue$/)?.[1]!;
 
-const { qrBase64, qrexpired } = touchQrLogin(currentInstanceName);
-
 onBeforeUnmount(() => {
   observer.off(currentInstanceName);
 });
@@ -41,5 +39,11 @@ onBeforeUnmount(() => {
 function otherLogin() {
   ctxEmit("onOther", "otherLogin");
 }
+
+const { qrBase64, qrexpired } = touchQrLogin(currentInstanceName);
+
+watch(qrBase64, (value) => {
+  console.log(value);
+});
 </script>
 <style lang="scss" scoped></style>

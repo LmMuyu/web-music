@@ -29,7 +29,6 @@ import { defineProps } from "@vue/runtime-core";
 import { activeIndex } from "../../../../utils/activeIndex";
 import { getlistDetailData } from "../hooks/request";
 import { setContentData } from "../hooks/methods";
-import { mainMapData } from "../hooks/data";
 import { currentID } from "./hooks/data";
 import { getMittBus } from "../../../../utils/mittBus";
 
@@ -48,7 +47,7 @@ async function childTagItemClick(currID: number) {
 
   mittBus.emit("markvrituallist");
 
-  const mainData = await getlistDetailData(currID, mainMapData);
+  const mainData = await getlistDetailData(currID);
   setContentData(mainData);
 }
 

@@ -35,7 +35,7 @@ allToplist()
     return childItem;
   })
   .then(async (item) => {
-    const mainData = await getlistDetailData(item.id, mainMapData);
+    const mainData = await getlistDetailData(item.id);
     setContentData(mainData);
   });
 
