@@ -1,13 +1,10 @@
-import { defineConfig, CSSOptions, loadEnv } from "vite";
+import { CSSOptions, loadEnv } from "vite";
 //https://github.com/vuejs/jsx-next/blob/dev/packages/babel-plugin-jsx/README-zh_CN.md
-import path from "path";
 import vueJsx from "@vitejs/plugin-vue-jsx";
 import vue from "@vitejs/plugin-vue";
 import styleImport from "vite-plugin-style-import";
 import { ConfigEnv, UserConfig } from "vite";
-import createAlias from "./build/vite/alias";
-import { setTsconfig } from "./build/vite/setTsconfig";
-import { createProxy } from "./build/vite/proxy";
+import createAlias from "./vite/alias";
 
 const cssOptions: CSSOptions = {
   preprocessorOptions: {
@@ -62,6 +59,10 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
     resolve: {
       alias: [...aliasList],
     },
+    build: {
+      brotliSize: false,
+      sourcemap: true,
+    },
     server: {
       port: Number(VITE_PORT),
       open: true,
@@ -76,5 +77,8 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
       },
     },
     esbuild: {},
+    optimizeDeps: {
+      keepNames: true,
+    },
   };
 };
