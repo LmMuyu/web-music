@@ -2,7 +2,7 @@
   <div class="flex items-center h-full">
     <AudioAndVideoControls
       :playStatus="playStatus"
-      @play="audioPlay"
+      @play="onPlay"
     ></AudioAndVideoControls>
     <div class="px-2">
       <img
@@ -35,7 +35,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, defineProps, watch, defineEmit } from "vue";
+import { ref, defineProps, watch, defineEmits } from "vue";
 import { onBeforeRouteLeave } from "vue-router";
 
 //@ts-ignore
@@ -71,14 +71,16 @@ const props = defineProps({
   },
 });
 
-const emitCtx = defineEmit(["currPlayTime"]);
+const emitCtx = defineEmits(["currPlayTime"]);
 
 const currentTime = ref(0);
 const sliderMax = ref(0);
 const musicStatus = ref(true);
 let Audio: null | HTMLAudioElement = null;
 
-function audioPlay(status: Ref<boolean>) {
+const onPlay = () => audioPlay();
+
+function audioPlay(status: Ref<boolean> = ref(false)) {
   musicStatus.value = status.value;
 
   status.value ? Audio?.pause() : Audio?.play();

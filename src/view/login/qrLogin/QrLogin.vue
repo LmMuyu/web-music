@@ -15,7 +15,7 @@
 <script setup lang="ts">
 import {
   defineAsyncComponent,
-  defineEmit,
+  defineEmits,
   getCurrentInstance,
   onBeforeUnmount,
   watch,
@@ -27,7 +27,7 @@ import { ElButton } from "element-plus";
 import observer from "../../../utils/observer/Observer";
 import { touchQrLogin } from "./methods";
 
-const ctxEmit = defineEmit(["onOther"]);
+const ctxEmit = defineEmits(["onOther"]);
 
 const currentInstanceName =
   getCurrentInstance()?.type.__file?.match(/(\w+)\.vue$/)?.[1]!;

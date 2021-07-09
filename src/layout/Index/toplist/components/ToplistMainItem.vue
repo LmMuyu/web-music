@@ -43,7 +43,7 @@ import {
   ref,
   computed,
   watch,
-  defineEmit,
+  defineEmits,
 } from "@vue/runtime-core";
 
 import { useRefNegate } from "../../../../utils/useRefNegate";
@@ -53,7 +53,7 @@ import { ElCheckbox } from "element-plus";
 
 import type { PropType, Ref } from "vue";
 
-const ctxEmit = defineEmit(["change"]);
+const ctxEmit = defineEmits(["change"]);
 
 const props = defineProps({
   renderItem: {

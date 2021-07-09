@@ -2,7 +2,16 @@
   <header>
     <div class="flex items-center py-3">
       <div
-        class="div_yuan w-5 h-5 bg-red-500 relative flex items-center justify-center"
+        class="
+          div_yuan
+          w-5
+          h-5
+          bg-red-500
+          relative
+          flex
+          items-center
+          justify-center
+        "
       >
         <div class="div_yuan w-2 h-2 bg-white"></div>
       </div>
@@ -72,6 +81,7 @@
 <script setup lang="ts">
 import { ref, shallowRef } from "@vue/reactivity";
 import { computed } from "@vue/runtime-core";
+
 import { getTopList } from "../../../../api/discover/mainRequest";
 
 const list = ref<any>([]);
@@ -84,7 +94,7 @@ getTopList({
 }).then((res: any[]) => (list.value = res));
 
 const sliceTracks = computed(() => {
-  return function (tracks: Array<Record<string, string>>) {
+  return function (tracks: Array<Record<string, any>>) {
     if (tracks) {
       return tracks.slice(0, 10);
     }

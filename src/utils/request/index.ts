@@ -17,7 +17,7 @@ export default function request(config: AxiosRequestConfig) {
   isGet && (requestHttpToken = axios.CancelToken);
 
   const instance = axios.create({
-    baseURL: "https://netease-cloud-music-api-chi-ashy.vercel.app/",
+    baseURL: "https://netease-cloud-music-api-chi-ashy.vercel.app",
     method: "GET",
     timeout: 5000,
     headers: {},

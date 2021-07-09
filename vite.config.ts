@@ -62,6 +62,15 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
     build: {
       brotliSize: false,
       sourcemap: true,
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            "element-plus": ["element-plus"],
+            echarts: ["echarts"],
+            pinyin: ["pinyin"],
+          },
+        },
+      },
     },
     server: {
       port: Number(VITE_PORT),

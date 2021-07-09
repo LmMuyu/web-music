@@ -9,6 +9,7 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
     "plugins": [
       {
         "name": "typescript-style-plugin"
@@ -20,5 +21,11 @@
     "lib": ["esnext", "dom"],
     "types": ["vite/client"]
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue", "src/view/playlist/components/PlayListLyricNode.veu"]
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue",
+    "src/view/playlist/components/PlayListLyricNode.veu"
+  ]
 }
