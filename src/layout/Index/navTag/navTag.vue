@@ -21,12 +21,12 @@
   </ul>
 </template>
 <script setup lang="ts">
-import { defineEmits, ref } from "@vue/runtime-core";
+import { defineEmit, ref } from "@vue/runtime-core";
 
 import { contentTags } from "../../../components/maincontent/hooks/data";
 import { activeIndex } from "../../../utils/activeIndex";
 
-const ctxEmit = defineEmits(["loadComps"]);
+const ctxEmit = defineEmit(["loadComps"]);
 
 const curIndex = ref(0);
 const moveIndex = ref(0);

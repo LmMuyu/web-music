@@ -64,9 +64,9 @@ import {
   recordStorage,
 } from "./hooks/methods";
 
-import Audio from "/comps/player/Audio.vue";
-import PlayListMain from "./components/PlayListMain.vue";
 import { ElContainer, ElMain, ElFooter, ElRow, ElCol } from "element-plus";
+import PlayListMain from "./components/PlayListMain.vue";
+import Audio from "../../components/player/Audio.vue";
 
 interface MusicInfo {
   id: number;
@@ -76,14 +76,17 @@ interface MusicInfo {
   singer: Record<string, any>[];
 }
 
-type checkOptions = { message?: string; success?: boolean };
+type checkOptions = { message: string; success: boolean };
 
 const musicId = useRoute().query.id as string;
 const musicInfo = ref<MusicInfo | null>(null);
 const musicDetailInfo = ref({});
 const main = ref<HTMLElement | null>(null);
 const audiosrc = ref("");
-const checkOption = ref<checkOptions>({});
+const checkOption = ref<checkOptions>({
+  message: "ok",
+  success: true,
+});
 
 const record = ref({});
 
@@ -102,7 +105,7 @@ const singer = computed(
     ""
 );
 
-console.log(musicInfo.value?.name + "-" + singer.value);
+// console.log(musicInfo.value?.name + "-" + singer.value);
 
 const title = useWindowTitle();
 

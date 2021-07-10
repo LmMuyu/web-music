@@ -1,26 +1,36 @@
 import { shallowRef } from "@vue/reactivity";
 import { createAsComponent } from "../../../utils/createAsComponent";
 
-const Discover = createAsComponent("/layout/Index/discover/Discover.vue");
-const Toplist = createAsComponent("/layout/Index/toplist/Toplist.vue");
+console.log(import.meta.globEager("../../../layout"));
+
+const Discover = createAsComponent(
+  () => import("../../../layout/Index/discover/Discover.vue")
+);
+
+const Toplist = createAsComponent(
+  () => import("../../../layout/Index/toplist/Toplist.vue")
+);
+
 const ExploreContent = createAsComponent(
-  "/layout/explore/explorecontent/ExploreContent.vue"
+  () => import("../../../layout/explore/explorecontent/ExploreContent.vue")
 );
 
 const TopListAsideTag = createAsComponent(
-  "/layout/Index/toplist/components/TopListAsideTag.vue",
+  () => import("../../../layout/Index/toplist/components/TopListAsideTag.vue"),
   {
     loadComp: false,
   }
 );
+
 const DiscoverBar = createAsComponent(
-  "/layout/Index/discover/components/DiscoverBar.vue",
+  () => import("../../../layout/Index/discover/components/DiscoverBar.vue"),
   {
     loadComp: false,
   }
 );
+
 const ExploreRight = createAsComponent(
-  "/layout/explore/exploreright/ExploreRight.vue",
+  () => import("../../../layout/explore/exploreright/ExploreRight.vue"),
   {
     loadComp: false,
   }

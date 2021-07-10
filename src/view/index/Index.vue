@@ -9,6 +9,6 @@
 import { runLoadView } from "../../components/maincontent/hooks/component";
 
 import navTag from "../../layout/Index/navTag/navTag.vue";
-import mainContent from "/comps/maincontent/mainContent.vue";
+import mainContent from "../../components/maincontent/mainContent.vue";
 </script>
 <style scoped lang="scss"></style>

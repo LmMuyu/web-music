@@ -55,12 +55,14 @@ const OtherLoginCellPhone = defineAsyncComponent(
 );
 
 import { COMP } from "./enum";
+
 import type { otherOptions } from "./type";
 import type { Emitter } from "mitt";
+import type { PropType } from "vue";
 
 const props = defineProps({
   cancel: {
-    type: Function,
+    type: Function as PropType<() => void>,
     required: true,
   },
 });
@@ -83,7 +85,7 @@ let istype: boolean = false; //mitt
 
 function onOther(comp: string | otherOptions | undefined) {
   const type = isType(comp);
-  
+
   if (!comp && type !== "Object") throw new Error("组件未传入!");
   if (typeof comp === "string") comp = comp.trim();
 

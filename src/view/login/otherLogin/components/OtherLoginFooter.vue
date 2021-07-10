@@ -24,11 +24,11 @@
   </footer>
 </template>
 <script setup lang="ts">
-import { computed, defineEmits, inject } from "@vue/runtime-dom";
+import { computed, defineEmit, inject } from "@vue/runtime-dom";
 import { footerDeal } from "../api/data";
 import { ElMessage } from "element-plus";
 
-const ctxEmit = defineEmits(["onOther"]);
+const ctxEmit = defineEmit(["onOther"]);
 
 const protocol: { value: boolean } = inject("protocol")!; //是否同意条款
 let infoB = false;

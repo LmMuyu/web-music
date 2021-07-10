@@ -42,20 +42,17 @@
         </span>
       </div>
       <li
-        v-for="(track, index) in sliceTracks(listItme.data.playlist.tracks)"
+        v-for="track in sliceTracks(listItme.data.playlist.tracks)"
         :key="track.al.id"
         class="flex items-center pt-2 pb-2 pr-2"
-        @mouseenter="
-          iconActive = index;
-          userid = track.id;
-        "
+        @mouseenter="onMouseEnter(track.index, track)"
         @mouseleave="
           iconActive = Number.MAX_VALUE;
           userid = Number.MAX_VALUE;
         "
       >
-        <h3 :class="{ topTree: index + 1 <= 3 }" class="text-lg">
-          {{ index + 1 }}
+        <h3 :class="{ topTree: track.index + 1 <= 3 }" class="text-lg">
+          {{ track.index + 1 }}
         </h3>
         <a
           :href="track.al.id"
@@ -67,7 +64,9 @@
           class="iconss flex justify-end w-1/3"
           ref="icon"
           :class="
-            track.id === userid && iconActive === index ? 'block' : 'hidden'
+            track.id === userid && iconActive === track.index
+              ? 'block'
+              : 'hidden'
           "
         >
           <a href="#" title="播放" class="iconbofang"></a>
@@ -93,11 +92,16 @@ getTopList({
   url: "/toplist",
 }).then((res: any[]) => (list.value = res));
 
+const onMouseEnter = (index: number, track: Record<string, any>) => {
+  iconActive.value = index;
+  userid.value = track.id;
+};
+
 const sliceTracks = computed(() => {
-  return function (tracks: Array<Record<string, any>>) {
-    if (tracks) {
-      return tracks.slice(0, 10);
-    }
+  return function (tracks: Array<Record<string, any>>): Record<string, any>[] {
+    if (!tracks) return [];
+
+    return tracks.slice(0, 10).map((v, i) => ({ ...v, index: i }));
   };
 });
 </script>

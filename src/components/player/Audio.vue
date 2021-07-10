@@ -35,11 +35,11 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, defineProps, watch, defineEmits } from "vue";
+import { ref, defineProps, watch, defineEmit } from "vue";
 import { onBeforeRouteLeave } from "vue-router";
 
 //@ts-ignore
-import Slider from "/comps/slider/Slider.vue";
+import Slider from "../../components/slider/Slider.vue";
 import CalculationTime from "./components/CalculationTime.vue";
 import AudioAndVideoControls from "./components/AudioAndVideoControls.vue";
 
@@ -71,7 +71,7 @@ const props = defineProps({
   },
 });
 
-const emitCtx = defineEmits(["currPlayTime"]);
+const emitCtx = defineEmit(["currPlayTime"]);
 
 const currentTime = ref(0);
 const sliderMax = ref(0);

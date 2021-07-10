@@ -1,10 +1,12 @@
 import { CSSOptions, loadEnv } from "vite";
 //https://github.com/vuejs/jsx-next/blob/dev/packages/babel-plugin-jsx/README-zh_CN.md
+import styleImport from "vite-plugin-style-import";
+import rollupOptions from "./vite/rollupOptions";
 import vueJsx from "@vitejs/plugin-vue-jsx";
 import vue from "@vitejs/plugin-vue";
-import styleImport from "vite-plugin-style-import";
-import { ConfigEnv, UserConfig } from "vite";
 import createAlias from "./vite/alias";
+
+import type { ConfigEnv, UserConfig } from "vite";
 
 const cssOptions: CSSOptions = {
   preprocessorOptions: {
@@ -60,17 +62,7 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
       alias: [...aliasList],
     },
     build: {
-      brotliSize: false,
-      sourcemap: true,
-      rollupOptions: {
-        output: {
-          manualChunks: {
-            "element-plus": ["element-plus"],
-            echarts: ["echarts"],
-            pinyin: ["pinyin"],
-          },
-        },
-      },
+      rollupOptions,
     },
     server: {
       port: Number(VITE_PORT),
@@ -84,10 +76,6 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
           },
         },
       },
-    },
-    esbuild: {},
-    optimizeDeps: {
-      keepNames: true,
     },
   };
 };

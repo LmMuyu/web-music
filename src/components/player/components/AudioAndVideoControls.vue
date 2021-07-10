@@ -1,8 +1,10 @@
-<script setup lang="tsx">
+<script lang="tsx">
 import { defineComponent, watch } from "vue";
+
 import { promptbox } from "../../promptBox";
-import "../css/controls.scss";
 import { status } from "../hook/data";
+
+import "../css/controls.scss";
 
 export default defineComponent({
   emits: ["pre", "play", "next"],

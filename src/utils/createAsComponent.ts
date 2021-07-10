@@ -1,5 +1,8 @@
 import { defineAsyncComponent } from "@vue/runtime-core";
+
 import Loading from "../components/loading/Loading.vue";
+
+import type { AsyncComponentLoader } from "vue";
 
 interface createAsComponentOptions {
   timeout?: number;
@@ -7,21 +10,23 @@ interface createAsComponentOptions {
 }
 
 export function createAsComponent(
-  src: string,
+  src: AsyncComponentLoader<any>,
   options: createAsComponentOptions = {
     loadComp: true,
   }
 ) {
   return defineAsyncComponent({
-    loader: () => import(src),
+    loader: src,
     delay: 200,
     ...(options.loadComp ? { loadingComponent: Loading } : {}),
     timeout: options.timeout || 10000,
     suspensible: false,
     onError(error, retry, fail, attempts) {
       if (error.message.match(/fetch/) && attempts <= 3) {
+        console.log(error);
         retry();
       } else {
+        console.log(error);
         fail();
       }
     },

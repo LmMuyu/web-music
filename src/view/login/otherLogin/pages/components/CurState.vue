@@ -4,7 +4,8 @@
 </template>
 <script setup lang="ts">
 import { defineProps } from "@vue/runtime-core";
-import Loading from "/comps/loading/Loading.vue";
+
+import Loading from "../../../../../components/loading/Loading.vue";
 
 const props = defineProps({
   state: {

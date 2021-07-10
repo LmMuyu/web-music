@@ -3,11 +3,11 @@
   <OtherLoginFooter @onOther="onOther" />
 </template>
 <script setup lang="ts">
-import { defineEmits, provide, ref } from "@vue/runtime-dom";
+import { defineEmit, provide, ref } from "@vue/runtime-dom";
 import OtherLoginArticle from "./components/OtherLoginArticle.vue";
 import OtherLoginFooter from "./components/OtherLoginFooter.vue";
 
-const ctxEmit = defineEmits(["onOther"]);
+const ctxEmit = defineEmit(["onOther"]);
 const protocol = ref(false); //是否同意条款
 provide("protocol", protocol);
 

@@ -11,6 +11,8 @@
   </div>
 </template>
 <script setup lang="ts">
+import { defineAsyncComponent, defineProps, ref } from "vue";
+
 const DiscoverBillboard = defineAsyncComponent(
   () => import("../components/DiscoverBillboard.vue")
 );
@@ -24,9 +26,8 @@ const DiscoverMusic = defineAsyncComponent(
 );
 
 import DiscoverPlaylist from "../components/DiscoverPlaylist.vue";
-import { defineAsyncComponent, defineProps, ref } from "vue";
+import Banner from "../../../../components/banner/Banner.vue";
 import DiscoverHot from "../components/DiscoverHot.vue";
-import Banner from "/comps/banner/Banner.vue";
 
 import type { PropType } from "vue";
 import type { PlayListOptions } from "../type";

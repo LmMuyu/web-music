@@ -19,7 +19,7 @@
             @mouseleave="leaveActive(index)"
             @mouseenter="moveActive(index)"
             :style="activeStyle(index)"
-            @change="putSelect"
+            @change="onChange"
           />
         </template>
       </VirtualList>
@@ -56,7 +56,7 @@ import { createLoading } from "../../../../components/loading/app";
 import { activeIndex } from "../../../../utils/activeIndex";
 import { getMittBus } from "../../../../utils/mittBus";
 
-import VirtualList from "/comps/virtuallist/VirtualList.vue";
+import VirtualList from "../../../../components/virtuallist/VirtualList.vue";
 import ToplistMainItem from "./ToplistMainItem.vue";
 import { ElCheckbox } from "element-plus";
 
@@ -115,7 +115,6 @@ const putSelect = (value: boolean) => {
   select = "children";
   if (value === false) {
     isselect.value = value;
-
     return;
   }
 
@@ -160,6 +159,8 @@ if (!busMap.has("markvrituallist")) {
     }
   });
 }
+
+const onChange = () => putSelect(isselect.value);
 
 onMounted(() => {
   nextTick().then(() => {

@@ -41,7 +41,7 @@ import { musicResultDetail } from "../../../../utils/musicDetail";
 import { createLoading } from "../../../../components/loading/app";
 import { setRenderDataID } from "./hooks/methods";
 
-import VirtualList from "/comps/virtuallist/VirtualList.vue";
+import VirtualList from "../../../../components/virtuallist/VirtualList.vue";
 import ChildrenItem from "./components/ChildrenItem.vue";
 import { ElDrawer } from "element-plus";
 

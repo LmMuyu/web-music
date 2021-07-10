@@ -43,7 +43,7 @@ import {
   ref,
   computed,
   watch,
-  defineEmits,
+  defineEmit,
 } from "@vue/runtime-core";
 
 import { useRefNegate } from "../../../../utils/useRefNegate";
@@ -53,12 +53,12 @@ import { ElCheckbox } from "element-plus";
 
 import type { PropType, Ref } from "vue";
 
-const ctxEmit = defineEmits(["change"]);
+const ctxEmit = defineEmit(["change"]);
 
 const props = defineProps({
   renderItem: {
     type: Object,
-    default: () => ({}),
+    default: () => {},
   },
   index: {
     type: Number,
@@ -97,7 +97,8 @@ watch(select, (value) => ctxEmit("change", value));
 const aliasName = computed(() => {
   return function (item: []) {
     return item.reduce(
-      (pre, cur) => (pre += `<h4 class="text-sm text-gray-300">&nbsp -(${cur})</h4>`),
+      (pre, cur) =>
+        (pre += `<h4 class="text-sm text-gray-300">&nbsp -(${cur})</h4>`),
       ""
     );
   };

@@ -4,18 +4,20 @@
       <p class="text-center text-2xl">扫码登录</p>
       <div class="w-52 h-52 relative">
         <img :src="qrBase64" class="h-full w-full" draggable="false" />
-        <Expired @click="touchQrLogin" :qrexpired="qrexpired" />
+        <Expired @click="onQrLogin" :qrexpired="qrexpired" />
       </div>
     </div>
   </article>
   <footer style="height: 12.499%" class="flex items-center justify-center">
-    <ElButton round @click="otherLogin">选择其它方式登录</ElButton>
+    <ElButton round @click="ctxEmit('onOther', 'otherLogin')"
+      >选择其它方式登录</ElButton
+    >
   </footer>
 </template>
 <script setup lang="ts">
 import {
   defineAsyncComponent,
-  defineEmits,
+  defineEmit,
   getCurrentInstance,
   onBeforeUnmount,
   watch,
@@ -27,7 +29,7 @@ import { ElButton } from "element-plus";
 import observer from "../../../utils/observer/Observer";
 import { touchQrLogin } from "./methods";
 
-const ctxEmit = defineEmits(["onOther"]);
+const ctxEmit = defineEmit(["onOther"]);
 
 const currentInstanceName =
   getCurrentInstance()?.type.__file?.match(/(\w+)\.vue$/)?.[1]!;
@@ -36,9 +38,7 @@ onBeforeUnmount(() => {
   observer.off(currentInstanceName);
 });
 
-function otherLogin() {
-  ctxEmit("onOther", "otherLogin");
-}
+const onQrLogin = () => touchQrLogin(currentInstanceName);
 
 const { qrBase64, qrexpired } = touchQrLogin(currentInstanceName);
 
