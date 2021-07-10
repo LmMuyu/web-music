@@ -1,40 +1,26 @@
 import { shallowRef } from "@vue/reactivity";
+
 import { createAsComponent } from "../../../utils/createAsComponent";
+import { importCompsList } from "./data";
 
-console.log(import.meta.globEager("../../../layout"));
+const moduleFile = import.meta.glob("../../../layout/**");
+const controlViewComps = [];
+const controlViewChildrenComps = [];
 
-const Discover = createAsComponent(
-  () => import("../../../layout/Index/discover/Discover.vue")
-);
+for (const key in moduleFile) {
+  const fileName = key.match(/\/(\w+|\d+)\.vue$/);
 
-const Toplist = createAsComponent(
-  () => import("../../../layout/Index/toplist/Toplist.vue")
-);
+  if (fileName && importCompsList.has(fileName[1])) {
+    const importPath = moduleFile[fileName.input];
+    const compsOptions = importCompsList.get(fileName[1]);
 
-const ExploreContent = createAsComponent(
-  () => import("../../../layout/explore/explorecontent/ExploreContent.vue")
-);
+    const asyncComps = createAsComponent(importPath, compsOptions.options);
 
-const TopListAsideTag = createAsComponent(
-  () => import("../../../layout/Index/toplist/components/TopListAsideTag.vue"),
-  {
-    loadComp: false,
+    compsOptions.position === "main"
+      ? controlViewComps.push([fileName[1], asyncComps])
+      : controlViewChildrenComps.push([fileName[1], asyncComps]);
   }
-);
-
-const DiscoverBar = createAsComponent(
-  () => import("../../../layout/Index/discover/components/DiscoverBar.vue"),
-  {
-    loadComp: false,
-  }
-);
-
-const ExploreRight = createAsComponent(
-  () => import("../../../layout/explore/exploreright/ExploreRight.vue"),
-  {
-    loadComp: false,
-  }
-);
+}
 
 class controlComps {
   private compsMap: Map<string, any>;
@@ -79,22 +65,10 @@ class controlComps {
   }
 }
 
-const controlView = new controlComps(
-  [
-    ["Discover", Discover],
-    ["Toplist", Toplist],
-    ["ExploreContent", ExploreContent],
-  ],
-  "Discover",
-  "root"
-);
+const controlView = new controlComps(controlViewComps, "Discover", "root");
 
 const controlViewChildren = new controlComps(
-  [
-    ["TopListAsideTag", TopListAsideTag],
-    ["DiscoverBar", DiscoverBar],
-    ["ExploreRight", ExploreRight],
-  ],
+  controlViewChildrenComps,
   "DiscoverBar",
   "children"
 );

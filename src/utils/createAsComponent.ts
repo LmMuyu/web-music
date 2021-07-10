@@ -4,7 +4,7 @@ import Loading from "../components/loading/Loading.vue";
 
 import type { AsyncComponentLoader } from "vue";
 
-interface createAsComponentOptions {
+export interface createAsComponentOptions {
   timeout?: number;
   loadComp: boolean;
 }
@@ -23,10 +23,8 @@ export function createAsComponent(
     suspensible: false,
     onError(error, retry, fail, attempts) {
       if (error.message.match(/fetch/) && attempts <= 3) {
-        console.log(error);
         retry();
       } else {
-        console.log(error);
         fail();
       }
     },

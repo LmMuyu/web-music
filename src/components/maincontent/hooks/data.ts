@@ -1,3 +1,10 @@
+import type { createAsComponentOptions } from "../../../utils/createAsComponent";
+
+interface importMapCompsOptions {
+  options?: createAsComponentOptions;
+  position: "main" | "right";
+}
+
 export const contentTags = [
   {
     _id: "1000",
@@ -32,3 +39,33 @@ export const contentTags = [
     comname: "album",
   },
 ];
+
+export const importCompsList = new Map<string, importMapCompsOptions>();
+importCompsList
+  .set("Discover", {
+    position: "main",
+  })
+  .set("Toplist", {
+    position: "main",
+  })
+  .set("ExploreContent", {
+    position: "main",
+  })
+  .set("TopListAsideTag", {
+    options: {
+      loadComp: false,
+    },
+    position: "right",
+  })
+  .set("DiscoverBar", {
+    options: {
+      loadComp: false,
+    },
+    position: "right",
+  })
+  .set("ExploreRight", {
+    options: {
+      loadComp: false,
+    },
+    position: "right",
+  });
