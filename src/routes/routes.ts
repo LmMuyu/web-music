@@ -38,16 +38,6 @@ const routes: (RouteRecordRaw & META)[] = [
     component: () => import("../view/playlist/PlayList.vue"),
   },
   {
-    path: "/search",
-    name: "Search",
-    component: () => import("../view/search/Search.vue"),
-  },
-  {
-    path: "/searchresult",
-    name: "searchResult",
-    component: () => import("../view/searchresult/SearchResult.vue"),
-  },
-  {
     path: "/toplist",
     name: "Toplist",
     component: () => import("../layout/Index/toplist/Toplist.vue"),

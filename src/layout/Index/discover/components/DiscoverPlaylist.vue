@@ -1,15 +1,17 @@
 <template>
-  <ElRow tag="ul" class="flex flex-wrap">
-    <ElCol
-      tag="li"
-      :span="6"
-      v-for="(play, index) in playlist"
-      :key="play.id"
-      class="root_image_item flex overflow-hidden my-4"
+  <ul ref="listsong">
+    <div
+      class="flex justify-center flex-wrap"
+      v-if="loadingMountAttribute.countRef"
     >
-      <section class="text-center cneter">
-        <div
-          class="relative"
+      <li
+        v-for="(play, index) in playlist"
+        :key="play.id"
+        style="width: 25%"
+        class="root_image_item flex justify-center overflow-hidden my-4"
+      >
+        <section
+          class="relative w-full h-full text-center cneter"
           @mouseenter="mouseenter(index)"
           @mouseleave="negate"
         >
@@ -34,22 +36,22 @@
             :cur-index="curIndex"
             :index="index"
           />
-        </div>
-        <p class="whitespace-pre-wrap text-left fotn_title">
-          <a href="javscript:;;">
-            {{ play.name }}
-          </a>
-        </p>
-      </section>
-    </ElCol>
-  </ElRow>
+          <p class="whitespace-pre-wrap text-left fotn_title">
+            <a href="javscript:;;">
+              {{ play.name }}
+            </a>
+          </p>
+        </section>
+      </li>
+    </div>
+  </ul>
 </template>
 <script setup lang="ts">
-import { defineProps, ref } from "vue";
+import { defineProps, nextTick, onMounted, ref, watch } from "vue";
 
 import { useRefNegate } from "../../../../utils/useRefNegate";
+import { createLoading } from "../../../../components/loading/app";
 
-import { ElRow, ElCol } from "element-plus";
 import DiscoverPlayCount from "./DiscoverPlayCount.vue";
 
 import type { PropType } from "vue";
@@ -62,6 +64,10 @@ const props = defineProps({
   },
 });
 
+const listsong = ref<HTMLElement | null>(null);
+
+const loadingMountAttribute = new createLoading();
+
 const curIndex = ref(0);
 const { countRef, negate } = useRefNegate(false);
 
@@ -69,6 +75,21 @@ function mouseenter(index: number) {
   curIndex.value = index;
   negate();
 }
+
+onMounted(() => {
+  if (!loadingMountAttribute.isMountApp() && listsong.value) {
+    loadingMountAttribute.mountApp(listsong.value);
+
+    const step = watch(
+      () => props.playlist,
+      () =>
+        nextTick().then(() => {
+          loadingMountAttribute.unmountApp(loadingMountAttribute.negate);
+          step();
+        })
+    );
+  }
+});
 </script>
 <style scoped lang="scss">
 .root_image_item {
@@ -80,8 +101,11 @@ function mouseenter(index: number) {
   margin: 0 auto;
 
   & > div {
+    width: 144px;
+    height: 90px;
+
     & > div {
-      width: 144px;
+      width: 100%;
       height: 90px;
     }
   }

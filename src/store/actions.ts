@@ -1,10 +1,9 @@
-import type { Ref } from "@vue/reactivity";
 import { ref } from "@vue/reactivity";
+
 import { countries } from "../api/app/requestMain";
-import { getUserInfoData } from "../api/app/userInfo";
 import { useLocalStorage } from "../utils/useLocalStorage";
 
-import type { UserInfo } from "./type";
+import type { Ref } from "@vue/reactivity";
 
 type Commit = (type: string, payload?: any, options?: Object) => void;
 

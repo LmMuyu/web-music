@@ -1,14 +1,13 @@
 import { Ref } from "vue";
 
-import { getUserInfoData } from "../../../api/app/userInfo";
-import { UserInfo } from "../../../store/type";
 import { useLocalStorage } from "../../../utils/useLocalStorage";
+import { getUserInfoData } from "../../../api/app/userInfo";
 
-import {} from "../../../view/login/login";
+import type { UserInfo } from "../../../store/type";
 
 interface BCBUSOptions {
   userInfo: {};
-  asideCard: Ref<boolean> | boolean;
+  countRef: Ref<boolean> | boolean;
   negate: () => void;
 }
 
@@ -19,20 +18,26 @@ export const BCBus = (InfoCard: BCBUSOptions) => {
     BC.postMessage(""); //发送信号销毁登录框
 
     const info = ev.data;
-    rearStandUserdata(InfoCard.negate, info);
+
+    rearStandUserdata(InfoCard, InfoCard.negate, info);
   };
 
   BC.onmessageerror = function () {
     throw new Error("BroadcastChannel接收到一条无法反序列化的消息!");
   };
 
-  async function rearStandUserdata(negate: Function, payload: any) {
-    const userinfoData = payload.userinfoData;
+  async function rearStandUserdata(
+    InfoCard: BCBUSOptions,
+    negate: Function,
+    payload: any
+  ) {
+    const infoData = await getUserInfoData(payload.userID); //通过账号ID查找信息
+    const setInfoData = Object.assign(payload, {
+      userinfoData: infoData.data.profile,
+    });
 
-    const infoData = await getUserInfoData(userinfoData.userID); //通过账号ID查找信息
-    userinfoData.userInfoData = infoData.data.profile;
-
-    setUserInfo(userinfoData);
+    InfoCard.userInfo = setInfoData.userinfoData;
+    setUserInfo(setInfoData);
 
     // state.commit("setUserInfo", userinfoData);
     negate();

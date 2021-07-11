@@ -11,16 +11,16 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, ref } from "vue";
-
-import router from "./routes";
+import { useRouter } from "vue-router";
+import { reactive, ref } from "vue";
 import { useStore } from "vuex";
-import { list } from "./headerList";
+
 import { searchDefault } from "./api/app/searchDefault";
 
 import Main from "./layout/main/Main.vue";
 
 import type { UserInfo } from "./store/type";
+import request from "./utils/request";
 
 type linkType =
   | "info"
@@ -32,7 +32,10 @@ type linkType =
   | undefined;
 
 const store = useStore();
+const router = useRouter();
+
 store.dispatch("countriesCode");
+store.commit("setLocalStorage");
 
 const header = reactive({
   searchDefault: null,
@@ -41,20 +44,6 @@ const header = reactive({
 const userInfo = ref<UserInfo | null>(null);
 const showTag = ref(false);
 const linkType = ref<linkType>("info");
-
-const styles = reactive({
-  backgroundColor: "rgb(51, 51, 51, 1)",
-  color: "rgb(204,204,204,1)",
-  height: "100%",
-});
-
-const gridWidth = computed(() => {
-  for (const value of list) {
-    if (value.hasOwnProperty("tags")) {
-      return 100 / value.tags!.length + "%";
-    }
-  }
-});
 
 async function search() {
   const { data: defData } = await searchDefault({ url: "/search/default" });
@@ -79,6 +68,12 @@ store.watch(
     userInfo.value = value;
   }
 );
+
+request({
+  url: "/msg/private",
+}).then((res) => {
+  console.log(res);
+});
 </script>
 
 <style lang="scss">

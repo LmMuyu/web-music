@@ -1,8 +1,6 @@
-import { reactive } from "@vue/reactivity";
+import { findLoginInfo } from "./methods";
 
-import { useLocalStorage } from "../utils/useLocalStorage";
-
-import type { State, UserInfo } from "./type";
+import type { State } from "./type";
 import type { MusicDetailOption } from "../utils/musicDetail";
 
 export default {
@@ -12,5 +10,9 @@ export default {
 
   setMusicInfo(store: State, musicInfo: MusicDetailOption) {
     store.musicInfo = musicInfo;
+  },
+
+  setLocalStorage(state: State) {
+    state.userInfo = findLoginInfo();
   },
 };

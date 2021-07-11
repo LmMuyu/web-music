@@ -140,6 +140,7 @@ function phoneLogin() {
     // store.dispatch("getUserInfo", [userInfo, cancelComp as () => void]);
     const BC = new BroadcastChannel("login");
     BC.postMessage(userInfo);
+    
     BC.onmessage = function () {
       if (!cancelComp) throw new Error("cencelComp for Null");
       cancelComp(); //销毁登录框

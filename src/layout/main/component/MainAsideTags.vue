@@ -6,7 +6,7 @@
     </nav>
   </main>
   <footer class="flex items-center" style="height: 15%">
-    <MainAsideCard v-if="InfoCard.asideCard" :infoData="InfoCard.userInfo" />
+    <MainAsideCard v-if="InfoCard.countRef" :infoData="InfoCard.userInfo" />
     <MainLoginButton
       class="flex justify-center outline"
       v-else
@@ -16,6 +16,7 @@
 </template>
 <script setup lang="ts">
 import { nextTick, onMounted, reactive } from "@vue/runtime-core";
+import { useStore } from "vuex";
 
 import { useRefNegate } from "../../../utils/useRefNegate";
 import { BCBus } from "../hooks/useBroadcastChannel";
@@ -25,22 +26,38 @@ import MainLoginButton from "./MainLoginButton.vue";
 import MainAsideCard from "./MainAsideCard.vue";
 import MainTag from "./MainTag.vue";
 
-const { countRef: asideCard, negate } = useRefNegate(false);
+const store = useStore();
+
+const { countRef, negate } = useRefNegate(false);
 
 const InfoCard = reactive({
   userInfo: {},
-  asideCard,
+  countRef,
   negate,
 });
 
 BCBus(InfoCard); //接受登录后的用户信息
 
+store.watch(
+  () => store.state.userInfo,
+  (value) => {
+    if (!value) return;
+    InfoCard.userInfo = value.userinfoData;
+    negate();
+  },
+  { immediate: true }
+);
+
 onMounted(() => {
   nextTick().then(() => {
-    const btn = document.querySelector(".el-button");
-    //@ts-ignore
-    btn.style.outline = "none";
-    btn?.classList.add(...["justify-center", "w-1/2"]);
+    const btn = document.querySelector(".el-button") as HTMLElement;
+
+    if (btn) {
+      btn.style.outline = "none";
+      btn.classList.add(...["justify-center", "w-1/2"]);
+    } else if (!countRef.value) {
+      console.error("ErrorType:'btn' for null");
+    }
   });
 });
 </script>
