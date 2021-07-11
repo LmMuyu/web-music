@@ -38,7 +38,15 @@
           <span class="cursor-pointer">忘记密码?</span>
         </div>
         <div class="flex justify-center prent_button">
-          <button @click.stop="phoneLogin" class="flex justify-center">
+          <button
+            :style="{ backgroundColor: '#74b9ff', outline: 'none' }"
+            @click.stop="phoneLogin"
+            class="relative flex justify-center items-center px-32 shadow_box"
+          >
+            <div
+              class="absolute top-0 bottom-0 w-full h-full"
+              style="background-color: #dfe6e9; opacity: 0"
+            ></div>
             <cur-state :state="countRef" />
           </button>
         </div>
@@ -62,6 +70,12 @@
 import { computed, inject } from "@vue/runtime-core";
 import { reactive, ref, toRaw } from "@vue/reactivity";
 
+import { useRefNegate } from "../../../../utils/useRefNegate";
+import { showMessage } from "../../../../utils/useMessage";
+import { getStore } from "../../../../utils/getStore";
+import { lwPhone } from "../hooks/lwPhone";
+import { login } from "../hooks/login";
+
 import OtherLoginCellPhoneFooter from "./components/OtherLoginCellPhoneFooter.vue";
 import CurState from "./components/CurState.vue";
 import {
@@ -72,24 +86,18 @@ import {
   ElMessage,
 } from "element-plus";
 
-import { getStore } from "../../../../utils/getStore";
-import { lwPhone } from "../hooks/lwPhone";
-import { login } from "../hooks/login";
-
 import type { UserInfo, TokenJsonStr } from "../../../../store/type";
-import { useRefNegate } from "../../../../utils/useRefNegate";
+
+const store = getStore();
 
 const formData = reactive({
   phoneRes: false,
   countries: "+86",
   phoneNumber: "",
   password: "",
-  verificationCode: "",
 });
 
 const automaticLogin = ref(false);
-
-const store = getStore();
 
 const cancelComp = inject<Function>("cancelComp") || (() => {});
 
@@ -101,6 +109,14 @@ const country = computed(() => {
 const { countRef, negate } = useRefNegate(true);
 
 function phoneLogin() {
+  if (!formData.phoneNumber) {
+    showMessage("error", "请输入手机号");
+    return;
+  } else if (!formData.password) {
+    showMessage("error", "请输入密码");
+    return;
+  }
+
   negate();
 
   login(formData, ({ data }: any) => {
@@ -121,7 +137,13 @@ function phoneLogin() {
       tokenJsonStr: createTokenJsonStr(userData),
     };
 
-    store.dispatch("getUserInfo", [userInfo, cancelComp as () => void]);
+    // store.dispatch("getUserInfo", [userInfo, cancelComp as () => void]);
+    const BC = new BroadcastChannel("login");
+    BC.postMessage(userInfo);
+    BC.onmessage = function () {
+      if (!cancelComp) throw new Error("cencelComp for Null");
+      cancelComp(); //销毁登录框
+    };
   });
 }
 
@@ -141,9 +163,11 @@ function createTokenJsonStr(userData: UserInfo): TokenJsonStr {
     width: 150px;
   }
 }
-.prent_button {
-  & > button {
-    padding: 0 78px !important;
+
+.shadow_box:hover {
+  .shadow_box > div {
+    opacity: 0.2;
   }
+  box-shadow: 0 0 1px 1px #81ecec, 0 0 1px 1px #81ecec;
 }
 </style>

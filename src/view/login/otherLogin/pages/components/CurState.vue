@@ -1,5 +1,5 @@
 <template>
-  <span v-if="state"> 登录 </span>
+  <span v-if="state" class="text-white h-full w-full py-3"> 登录 </span>
   <Loading v-else :width="31.4" :height="31.4" />
 </template>
 <script setup lang="ts">

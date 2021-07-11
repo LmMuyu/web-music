@@ -28,17 +28,4 @@ export default {
       console.log(err);
     }
   },
-
-  async getUserInfo(
-    state: { commit: Commit },
-    payload: [UserInfo, () => void]
-  ) {
-    const [userinfoData, cancelCompFu] = payload;
-
-    const infoData = await getUserInfoData(userinfoData.userID); //通过账号ID查找信息
-    userinfoData.userInfoData = infoData.data.profile;
-
-    state.commit("setUserInfo", userinfoData);
-    cancelCompFu(); //销毁登录框
-  },
 };

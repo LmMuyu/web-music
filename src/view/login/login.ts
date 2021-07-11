@@ -9,7 +9,7 @@ let mount = false;
 //初始化组件
 const Applogin = () => createApp(Login, { cancel: cancelLogin });
 
-function cancelLogin() {
+ function cancelLogin() {
   mount = false;
   loginMethods.hidden();
 }
