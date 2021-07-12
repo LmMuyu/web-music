@@ -68,4 +68,10 @@ importCompsList
       loadComp: false,
     },
     position: "right",
+  })
+  .set("Message", {
+    options: {
+      loadComp: true,
+    },
+    position: "main",
   });

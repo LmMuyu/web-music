@@ -34,7 +34,7 @@ const { minwidth, minheight } = useMinWh();
 
 <style scoped lang="scss">
 .right_border {
-  border-right: 1px solid rgb(99, 110, 114, 0.4);
+  border-right: 1px solid #f5f6fa;
 }
 
 .min-h-w {

@@ -1,5 +1,17 @@
+interface Container {
+  main?: boolean;
+  header?: boolean;
+  center?: boolean;
+  footer?: boolean;
+}
+
 export interface META {
   showTag?: boolean;
+  defaultView?: [string, string?];
+  mainContentOptions?: {
+    left?: Container;
+    right?: Container;
+  };
 }
 
 export interface Route {

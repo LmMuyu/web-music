@@ -50,10 +50,14 @@ class controlComps {
   putView(compName: string[]) {
     if (this.type == "root") {
       const name = compName[0];
-      this.switchComps.call(this, name);
+      if (name) {
+        this.switchComps.call(this, name);
+      }
     } else {
       const name = compName[1];
-      this.switchComps.call(this, name);
+      if (name) {
+        this.switchComps.call(this, name);
+      }
     }
   }
 

@@ -17,7 +17,7 @@ export const AsideTags = ref([
     index: "tag_3",
     icon: "iconbiaoqiankuozhan_xinxi-357",
     title: "信息",
-    path: "/index",
+    path: "/message",
   },
   {
     index: "tag_4",

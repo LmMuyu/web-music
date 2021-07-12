@@ -20,7 +20,6 @@ import { searchDefault } from "./api/app/searchDefault";
 import Main from "./layout/main/Main.vue";
 
 import type { UserInfo } from "./store/type";
-import request from "./utils/request";
 
 type linkType =
   | "info"
@@ -68,12 +67,6 @@ store.watch(
     userInfo.value = value;
   }
 );
-
-request({
-  url: "/msg/private",
-}).then((res) => {
-  console.log(res);
-});
 </script>
 
 <style lang="scss">

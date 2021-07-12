@@ -1,21 +1,11 @@
+import { createAsComponent } from "../utils/createAsComponent";
+
 import type { RouteRecordRaw } from "vue-router";
 import type { META } from "./type/type";
-// import createRoute from "./path/createRoute";
 
-// const pathList = [
-//   "song",
-//   "playList",
-//   "video",
-//   "sim_query",
-//   "mlog",
-//   "talk",
-//   "artist",
-//   "album",
-//   "djRadio",
-//   "user",
-// ];
-
-const routes: (RouteRecordRaw & META)[] = [
+const routes: (RouteRecordRaw & {
+  meta?: META;
+})[] = [
   {
     path: "/",
     redirect: "/index",
@@ -54,6 +44,24 @@ const routes: (RouteRecordRaw & META)[] = [
       defaultView: ["ExploreContent", "ExploreRight"],
     },
     component: () => import("../view/explore/explore.vue"),
+  },
+  {
+    path: "/message",
+    name: "Message",
+    meta: {
+      defaultView: ["Message"],
+      mainContentOptions: {
+        left: {
+          header: false,
+        },
+        right: {
+          main: false,
+        },
+      },
+    },
+    component: createAsComponent(() => import("../view/message/Message.vue"), {
+      loadComp: true,
+    }),
   },
 ];
 

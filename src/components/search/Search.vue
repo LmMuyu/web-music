@@ -1,19 +1,24 @@
 <template>
-  <div :class="rootClass">
-    <span class="icon_text bg-white py-1 px-1 rounded-l-lg" v-if="isIcon">
-      <i class="iconfont iconsousuo"></i>
-    </span>
-    <input
-      :type="type"
-      :disabled="disabled"
-      :placeholder="placeholder"
-      @focus="onFocus"
-      @blur="onBlur"
-      @keydown.enter="keyupEnter"
-      v-model="text"
-      class="text-black w-48 py-2 px-2 border-none outline-none"
-      :class="[{ 'rounded-r-lg': isIcon }, setClass]"
-    />
+  <div
+    class="flex items-center justify-center"
+    :class="isrootClass && rootClass"
+  >
+    <div :class="rootClass">
+      <span class="icon_text bg-white py-1 px-1 rounded-l-lg" v-if="isIcon">
+        <i class="iconfont iconsousuo"></i>
+      </span>
+      <input
+        :type="type"
+        :disabled="disabled"
+        :placeholder="placeholder"
+        @focus="onFocus"
+        @blur="onBlur"
+        @keydown.enter="keyupEnter"
+        v-model="text"
+        class="text-black w-48 py-2 px-2 border-none outline-none"
+        :class="[{ 'rounded-r-lg': isIcon }, setClass]"
+      />
+    </div>
   </div>
 </template>
 
@@ -48,6 +53,10 @@ const props = defineProps({
   class: [String, Array],
   inputClass: {
     type: [String, Array] as PropType<string | string[]>,
+  },
+  isrootClass: {
+    type: Boolean,
+    default: true,
   },
 });
 
