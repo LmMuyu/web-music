@@ -10,7 +10,7 @@
         />
       </el-header>
       <ElMain>
-        <MessagePrivateLetter :privateLetterList="privateLetterList" />
+        <MessagePrivateLetter :privateLetterList="privateLetter.main" />
       </ElMain>
     </ElCol>
     <ElCol :span="12"> xx </ElCol>
@@ -19,7 +19,7 @@
 </template>
 <script setup lang="ts">
 import { onMounted } from "@vue/runtime-core";
-import { ref } from "@vue/reactivity";
+import { reactive, ref } from "@vue/reactivity";
 import { useStore } from "vuex";
 
 import { getPrivateLetter, getUserMessage } from "../../api/message";
@@ -32,7 +32,10 @@ const returnresdata = (data: any) => {
   console.log(data);
 };
 
-const privateLetterList = ref([]);
+const privateLetter = reactive({
+  main: [],
+  viewMess: [],
+});
 
 const store = useStore();
 
@@ -40,10 +43,14 @@ const watchStep = store.watch(
   () => store.state.userInfo,
   async (value) => {
     if (!value) return;
-    const list = await getPrivateLetter();
-    console.log(list);
+    // const list = await getPrivateLetter();
+    // console.log(list.data.msgs);
 
-    // getUserMessage(list);
+    // privateLetter.main = list.data.msgs;
+
+    // const privateMesList = await getUserMessage(list);
+    // privateLetter.viewMess = privateMesList;
+    
   },
   {
     immediate: true,

@@ -1,3 +1,4 @@
+import { async_pool } from "../../utils/asyncPool";
 import request from "../../utils/request";
 
 export async function getPrivateLetter() {
@@ -8,8 +9,9 @@ export async function getPrivateLetter() {
 
 export async function getUserMessage(privateletterList: Record<string, any>) {
   const msgs: any[] = privateletterList.data.msgs;
+  // console.log(msgs);
 
-  const privateMesList = await Promise.all(
+  return await async_pool(
     msgs.map((res) =>
       request({
         url: "/msg/private/history",
@@ -18,8 +20,7 @@ export async function getUserMessage(privateletterList: Record<string, any>) {
           limit: 5,
         },
       })
-    )
+    ),
+    4
   );
-
-  console.log(privateMesList);
 }
