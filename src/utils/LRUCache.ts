@@ -100,4 +100,4 @@ class LRUCache {
   }
 }
 
-export default new LRUCache();
+export default LRUCache;

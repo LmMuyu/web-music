@@ -1,50 +1,54 @@
 <template>
-  <ul class="h-full overflow-y-hidden">
+  <ul class="h-full relative overflow-auto">
     <li
-      class="flex w-full py-2"
-      v-for="(mess, index) in privateLetterList"
+      class="flex w-full py-3 px-6"
+      v-for="mess in privateLetterList"
       :key="mess.fromUser.userId"
+      @click="onFindID(mess.fromUser.userId)"
     >
       <div style="width: 20%" class="flex items-center">
         <ElAvatar :src="mess.fromUser.avatarUrl" />
       </div>
-      <div style="width: 80%" class="flex flex-col items-baseline">
+      <div style="width: 80%" class="h-auto flex flex-col">
         <div class="w-full flex items-center justify-between">
           <span class="text-sm">{{ mess.fromUser.nickname }}</span>
           <span class="text-xs whitespace-nowrap">{{
             diffTime(mess.lastMsgTime)
           }}</span>
         </div>
-        <div class="flex justify-between">
-          <span class="text-sm">awdaw</span>
-          <span class="text-sm float-right">{{ mess.newMsgCount }}</span>
+        <div class="w-full flex justify-between">
+          <span style="width: 90%" class="text-sm truncate">{{
+            lastMsg(mess.lastMsg)
+          }}</span>
+          <div style="width: 10%">
+            <span
+              v-if="mess.newMsgCount > 0"
+              class="
+                flex
+                justify-center
+                items-center
+                text-sm
+                float-right
+                bg_color
+              "
+              >{{ mess.newMsgCount }}</span
+            >
+          </div>
         </div>
       </div>
     </li>
   </ul>
 </template>
 <script setup lang="ts">
-import { computed, defineProps } from "vue";
+import { computed, defineProps, defineEmits } from "vue";
 import dayjs from "dayjs";
 
 import { ElAvatar } from "element-plus";
 
 import type { PropType } from "vue";
+import type { dayAttribute } from "../../../type";
 
-interface dayAttribute {
-  $D: number;
-  $H: number;
-  $L: string;
-  $M: number;
-  $W: number;
-  $d: string;
-  $m: number;
-  $ms: number;
-  $s: number;
-  $u: undefined;
-  $x: Object;
-  $y: number;
-}
+const ctxEmits = defineEmits(["viewmsg"]);
 
 const props = defineProps({
   privateLetterList: {
@@ -52,6 +56,8 @@ const props = defineProps({
     default: () => [],
   },
 });
+
+const onFindID = (id: number) => ctxEmits("viewmsg", id);
 
 const returnDateList = (dateAttribute: dayAttribute) => [
   dateAttribute.$y,
@@ -61,6 +67,13 @@ const returnDateList = (dateAttribute: dayAttribute) => [
   dateAttribute.$m,
   dateAttribute.$s,
 ];
+
+const lastMsg = computed(() => {
+  return function (mes: string) {
+    const lastMes = JSON.parse(mes);
+    return lastMes["msg"];
+  };
+});
 
 const diffTime = computed(() => {
   return function (time: number) {
@@ -90,4 +103,12 @@ const diffTime = computed(() => {
   };
 });
 </script>
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.bg_color {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  color: #0984e3;
+  background-color: #93c5f7;
+}
+</style>

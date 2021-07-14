@@ -1,10 +1,12 @@
 import dayDate from "dayjs";
 
-import LRUCache from "../../../../utils/LRUCache";
+import LRU from "../../../../utils/LRUCache";
 import { toplistData, listDetail } from "../../../../api/toplist";
 
 import type { ListItem, TrackUpdateTimeObj } from "../types/requestType";
 import type { ListTitle } from "../types/dataType";
+
+const LRUCache = new LRU();
 
 export async function allToplist() {
   const { data } = await toplistData();
