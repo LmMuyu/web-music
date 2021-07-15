@@ -14,7 +14,7 @@ export class createLoading {
     node: string | HTMLElement,
     backCall?: Function | undefined
   ) => any;
-  public unmountApp: (backcall?: Function | undefined) => void;
+  public unmountApp: (backcall?: Function | undefined) => boolean;
   public isMountApp: () => boolean;
 
   constructor() {
@@ -46,12 +46,13 @@ export class createLoading {
   }
 
   private runUnmountApp() {
-    return (backcall?: Function) => {
+    return (backcall?: Function): boolean => {
       if (this.install) {
         this.install.unmount();
         this.root?.removeChild(this.div);
         this.root = this.install = null;
-        backcall?.();
+
+        return backcall?.() || true;
       }
     };
   }

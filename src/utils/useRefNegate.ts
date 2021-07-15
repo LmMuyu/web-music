@@ -8,6 +8,8 @@ export function useRefNegate(count: Ref<boolean> | boolean) {
 
   function negate() {
     countRef.value = !countRef.value;
+
+    return true;
   }
 
   return {

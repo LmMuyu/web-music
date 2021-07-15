@@ -1,10 +1,16 @@
 <template>
   <ul class="h-full relative overflow-auto">
     <li
-      class="flex w-full py-3 px-6"
+      class="flex w-full py-3 px-6 cursor-pointer"
       v-for="mess in privateLetterList"
       :key="mess.fromUser.userId"
-      @click="onFindID(mess.fromUser.userId)"
+      @click="
+        onFindID(
+          mess.fromUser.userId,
+          mess.fromUser.avatarUrl,
+          mess.fromUser.nickname
+        )
+      "
     >
       <div style="width: 20%" class="flex items-center">
         <ElAvatar :src="mess.fromUser.avatarUrl" />
@@ -40,7 +46,7 @@
   </ul>
 </template>
 <script setup lang="ts">
-import { computed, defineProps, defineEmits } from "vue";
+import { computed, defineProps, defineEmit } from "vue";
 import dayjs from "dayjs";
 
 import { ElAvatar } from "element-plus";
@@ -48,7 +54,7 @@ import { ElAvatar } from "element-plus";
 import type { PropType } from "vue";
 import type { dayAttribute } from "../../../type";
 
-const ctxEmits = defineEmits(["viewmsg"]);
+const ctxEmit = defineEmit(["viewmsg"]);
 
 const props = defineProps({
   privateLetterList: {
@@ -57,7 +63,8 @@ const props = defineProps({
   },
 });
 
-const onFindID = (id: number) => ctxEmits("viewmsg", id);
+const onFindID = (id: number, avatarUrl: string, nickname: string) =>
+  ctxEmit("viewmsg", { id, avatarUrl, nickname });
 
 const returnDateList = (dateAttribute: dayAttribute) => [
   dateAttribute.$y,

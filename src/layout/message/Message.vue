@@ -1,5 +1,5 @@
 <template>
-  <ElRow class="flex h-full overflow-hidden border_radius">
+  <ElRow class="flex h-full overflow-hidden relative border_radius">
     <ElCol :span="7" class="solide_border">
       <el-container class="h-full container">
         <el-header class="flex items-center justify-center">
@@ -10,35 +10,44 @@
             :returnresdata="returnresdata"
           />
         </el-header>
-        <el-main class="h-full main_padding">
+        <el-main ref="msgmain" class="h-full main_padding">
           <MessagePrivateLetter
+            v-if="countRef"
             @viewmsg="findViewMsg"
             :privateLetterList="privateLetter.main"
           />
         </el-main>
       </el-container>
     </ElCol>
-    <ElCol :span="12">
-      <MessageChatBox :viewMsg="privateLetter.viewMsg" />
+    <ElCol class="w-full h-full absolute right-0 top-0" :span="17">
+      <MessageChatBox
+        v-if="privateLetter.viewMsg.length > 0"
+        :viewMsg="privateLetter.viewMsg"
+      />
     </ElCol>
-    <ElCol :span="5"> dawd</ElCol>
   </ElRow>
 </template>
 <script setup lang="ts">
-import { onMounted } from "@vue/runtime-core";
-import { reactive } from "@vue/reactivity";
+import { onMounted, nextTick, watch } from "@vue/runtime-core";
+import { reactive, ref } from "@vue/reactivity";
 import { useStore } from "vuex";
 
 import { getPrivateLetter, getUserMessage } from "../../api/message";
+import { createLoading } from "../../components/loading/app";
 import LRU from "../../utils/LRUCache";
 
 import { ElRow, ElCol, ElHeader, ElMain, ElContainer } from "element-plus";
 import MessagePrivateLetter from "./components/MessagePrivateLetter.vue";
 import MessageChatBox from "./components/MessageChatBox.vue";
 import Search from "../../components/search/Search.vue";
+import { promptbox } from "../../components/promptBox";
 
 const store = useStore();
 const LRUcatch = new LRU();
+
+const msgmain = ref<any | null>(null);
+const { countRef, isMountApp, mountApp, negate, unmountApp } =
+  new createLoading();
 
 const returnresdata = (data: any) => {
   console.log(data);
@@ -50,13 +59,29 @@ const privateLetter = reactive({
   storeMsg: [],
 });
 
-const findViewMsg = (id: number) => {
+const findViewMsg = (useroptions: Record<string, any>) => {
+  const res = LRUcatch.get(useroptions.id);
+
+  if (res !== -1) {
+    privateLetter.viewMsg.push(useroptions, res.data.msgs);
+    return;
+  }
+
   if (privateLetter.storeMsg.length > 0) {
     const msgObj = privateLetter.storeMsg.find(
-      (v) => v.config.params.uid === id
+      (v) => v.config.params.uid === useroptions.id
     );
 
-    privateLetter.viewMsg = msgObj;
+    if (!msgObj) {
+      return promptbox({
+        title: "无法找到对应用户信息",
+      });
+    }
+
+    LRUcatch.put(useroptions.id, msgObj);
+    console.log(LRUcatch.viewAllCache);
+
+    privateLetter.viewMsg.push(useroptions, msgObj.data.msgs);
   }
 };
 
@@ -76,6 +101,19 @@ const watchStep = store.watch(
 );
 
 onMounted(() => {
+  nextTick().then(() => {
+    if (!isMountApp() && msgmain.value) {
+      mountApp(msgmain.value.$el);
+
+      const stepWatch = watch(
+        () => privateLetter.main,
+        () => {
+          unmountApp(negate) && stepWatch();
+        }
+      );
+    }
+  });
+
   watchStep();
 });
 </script>
