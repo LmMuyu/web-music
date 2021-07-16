@@ -1,7 +1,7 @@
 export function debounce(fn: Function, delay: number = 150) {
   let times: NodeJS.Timeout | null = null;
 
-  function _debounce(arg: any) {
+  function _debounce(arg?: any) {
     if (times) {
       clearTimeout(times);
     }

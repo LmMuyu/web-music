@@ -1,33 +1,42 @@
 <template>
-  <div class="flex overflow-x-hidden">
+  <div
+    class="flex justify-start py-2"
+    :class="isfromuser && 'flex-row-reverse'"
+  >
     <div>
-      <el-avatar :size="32"></el-avatar>
+      <el-avatar :size="32" :src="messageInfo.fromUser.avatarUrl"></el-avatar>
     </div>
-    <div class="flex flex-col">
-      <pre>2021:222</pre>
-      <p style="word-wrap: break-word; width: 50%">
-        dakwdkakwdkakwdkaosjdjaowjdoajdoojawdjawjdoawjodjoajwodjoawjodoawjdoawdjoajo
-      </p>
-    </div>
-  </div>
-  <div class="flex flex-row-reverse justify-start">
-    <div>
-      <el-avatar :size="32"></el-avatar>
-    </div>
-    <div class="px-2 flex flex-col items-end">
+    <div class="px-2 flex flex-col w-1/2" :class="isfromuser && 'items-end'">
       <pre class="text-xs py-2">2021:222</pre>
-      <p style="word-wrap: break-word; width: 50%" class="bg_color  text-sm p-3 rounded-md">
-        dakwdkakwdkakwdkaosjdjaowjdoajdoojawdjawjdoawjodjoajwodjoawjodoawjdoawdjoajo
+      <p
+        style="word-wrap: break-word"
+        class="text-sm p-3 rounded-md"
+        :style="{ backgroundColor: isfromuser ? '#dcf3fe' : '#F2F6FA' }"
+      >
+        {{ putmsg(messageInfo.msg) }}
       </p>
     </div>
   </div>
 </template>
 <script setup lang="ts">
+import { computed, defineProps } from "vue";
+
 import { ElAvatar } from "element-plus";
+
+const props = defineProps({
+  messageInfo: {
+    type: Object,
+  },
+  isfromuser: {
+    type: Boolean,
+    required: true,
+  },
+});
+
+const putmsg = computed(() => {
+  return function (str: string) {
+    return JSON.parse(str)["msg"];
+  };
+});
 </script>
-<style scoped lang="scss">
-.bg_color {
-  background-color: #dcf3fe;
-  // #F2F6FA
-}
-</style>
+<style scoped lang="scss"></style>

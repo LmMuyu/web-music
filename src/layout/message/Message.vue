@@ -10,7 +10,7 @@
             :returnresdata="returnresdata"
           />
         </el-header>
-        <el-main ref="msgmain" class="h-full main_padding">
+        <el-main ref="msgmain" class="h-full relative main_padding">
           <MessagePrivateLetter
             v-if="countRef"
             @viewmsg="findViewMsg"
@@ -21,9 +21,11 @@
     </ElCol>
     <ElCol class="w-full h-full absolute right-0 top-0" :span="17">
       <MessageChatBox
+        @emitRequest="onEmitRequest"
         v-if="privateLetter.viewMsg.length > 0"
         :viewMsg="privateLetter.viewMsg"
       />
+      <MessageBackground v-else />
     </ElCol>
   </ElRow>
 </template>
@@ -32,15 +34,20 @@ import { onMounted, nextTick, watch } from "@vue/runtime-core";
 import { reactive, ref } from "@vue/reactivity";
 import { useStore } from "vuex";
 
-import { getPrivateLetter, getUserMessage } from "../../api/message";
+import {
+  getPrivateLetter,
+  getUserMessageList,
+  getUserMessage,
+} from "../../api/message";
 import { createLoading } from "../../components/loading/app";
+import { promptbox } from "../../components/promptBox";
 import LRU from "../../utils/LRUCache";
 
 import { ElRow, ElCol, ElHeader, ElMain, ElContainer } from "element-plus";
 import MessagePrivateLetter from "./components/MessagePrivateLetter.vue";
+import MessageBackground from "./components/MessageBackground.vue";
 import MessageChatBox from "./components/MessageChatBox.vue";
 import Search from "../../components/search/Search.vue";
-import { promptbox } from "../../components/promptBox";
 
 const store = useStore();
 const LRUcatch = new LRU();
@@ -58,6 +65,21 @@ const privateLetter = reactive({
   viewMsg: [],
   storeMsg: [],
 });
+
+const onEmitRequest = async (id: number) => {
+  const viewmsg = privateLetter.viewMsg;
+  const storemsg = privateLetter.storeMsg;
+
+  if (viewmsg[0].id === id) {
+    const result = await getUserMessage(id, viewmsg[1].length + 5);
+
+    privateLetter.viewMsg[1].unshift(
+      ...result.data.msgs.slice(viewmsg.length + 1)
+    );
+    console.log(privateLetter.viewMsg);
+    LRUcatch.put(id, result);
+  }
+};
 
 const findViewMsg = (useroptions: Record<string, any>) => {
   const res = LRUcatch.get(useroptions.id);
@@ -79,7 +101,7 @@ const findViewMsg = (useroptions: Record<string, any>) => {
     }
 
     LRUcatch.put(useroptions.id, msgObj);
-    console.log(LRUcatch.viewAllCache);
+    console.log(LRUcatch.viewAllCache());
 
     privateLetter.viewMsg.push(useroptions, msgObj.data.msgs);
   }
@@ -92,7 +114,7 @@ const watchStep = store.watch(
     const list = await getPrivateLetter();
     privateLetter.main = list.data.msgs;
 
-    const privateMesList = await getUserMessage(list);
+    const privateMesList = await getUserMessageList(list);
     privateLetter.storeMsg = privateMesList;
   },
   {

@@ -1,5 +1,5 @@
 <template>
-  <ul class="h-full relative overflow-auto">
+  <ul class="overflow-auto absolute left-0 top-0 w-full h-full track">
     <li
       class="flex w-full py-3 px-6 cursor-pointer"
       v-for="mess in privateLetterList"
@@ -15,17 +15,22 @@
       <div style="width: 20%" class="flex items-center">
         <ElAvatar :src="mess.fromUser.avatarUrl" />
       </div>
-      <div style="width: 80%" class="h-auto flex flex-col">
+      <div style="width: 80%" class="flex flex-col justify-between">
         <div class="w-full flex items-center justify-between">
-          <span class="text-sm">{{ mess.fromUser.nickname }}</span>
+          <span class="text-sm" style="color: #2f4154">{{
+            mess.fromUser.nickname
+          }}</span>
           <span class="text-xs whitespace-nowrap">{{
             diffTime(mess.lastMsgTime)
           }}</span>
         </div>
         <div class="w-full flex justify-between">
-          <span style="width: 90%" class="text-sm truncate">{{
-            lastMsg(mess.lastMsg)
-          }}</span>
+          <span
+            :style="{ color: mess.newMsgCount > 0 ? '#556574' : '#a6aeb6' }"
+            style="width: 90%"
+            class="text-xs truncate"
+            >{{ lastMsg(mess.lastMsg) }}</span
+          >
           <div style="width: 10%">
             <span
               v-if="mess.newMsgCount > 0"
@@ -115,7 +120,11 @@ const diffTime = computed(() => {
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  color: #0984e3;
-  background-color: #93c5f7;
+  color: #1f84cf;
+  background-color: #e5f3fe;
+}
+
+.track::-webkit-scrollbar {
+  display: none;
 }
 </style>
