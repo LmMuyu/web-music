@@ -1,19 +1,22 @@
 <template>
   <el-container class="h-full">
     <el-header class="flex items-center solide_border">
-      <el-avatar size="medium" :src="viewMsg[0].avatarUrl"></el-avatar>
+      <el-avatar :size="32" :src="viewMsg[0].avatarUrl"></el-avatar>
       <span class="ml-4">{{ viewMsg[0].nickname }}</span>
     </el-header>
     <el-container class="relative">
       <el-container class="absolute top-0 bottom-0 w-full h-full">
         <el-main class="overflow-x-hidden" ref="mesMain" @scroll="onScroll">
           <MessageChatBoxItem
-            v-for="mes in mesList"
+            v-for="(mes) in mesList"
             :key="mes.id"
             :message-info="mes"
             :isfromuser="viewMsg[0].id !== mes.fromUser.userId"
-        /></el-main>
-        <el-footer class="solide_border_top">Footer</el-footer>
+          />
+        </el-main>
+        <el-footer class="flex items-cneter solide_border_top">
+          <MessageFoolterWriteBox v-model:vlaue="modelValue" />
+        </el-footer>
       </el-container>
     </el-container>
   </el-container>
@@ -26,10 +29,13 @@ import {
   ref,
   nextTick,
   defineEmit,
+  watch,
 } from "vue";
 
 import { debounce } from "../../../utils/debounce";
 
+import MessageFoolterWriteBox from "./MessageFoolterWriteBox.vue"
+import MessageChatBoxItem from "./MessageChatBoxItem.vue";
 import {
   ElContainer,
   ElFooter,
@@ -38,11 +44,16 @@ import {
   ElMain,
   ElAvatar,
 } from "element-plus";
-import MessageChatBoxItem from "./MessageChatBoxItem.vue";
 
 import type { PropType } from "vue";
 
 const ctxEmit = defineEmit(["emitRequest"]);
+
+const modelValue = ref("ddddd")
+
+watch(modelValue, (value) => {
+  console.log(value);
+})
 
 const props = defineProps({
   viewMsg: {
@@ -53,7 +64,14 @@ const props = defineProps({
 
 const mesMain = ref<any | null>(null);
 
-const mesList = computed<any>(() => props.viewMsg[1].reverse());
+const mesList = computed<any>(() =>
+  props.viewMsg[1]
+    .map((v, i) => ({
+      keyindex: i,
+      ...v,
+    }))
+    .reverse()
+);
 
 const ebounceFn = debounce(
   () => ctxEmit("emitRequest", props.viewMsg[0].id),

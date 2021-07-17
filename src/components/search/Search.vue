@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="flex items-center justify-center"
-    :class="isrootClass && rootClass"
-  >
+  <div class="flex items-center justify-center" :class="isrootClass && rootClass">
     <div :class="rootClass">
       <span class="icon_text bg-white py-1 px-1 rounded-l-lg" v-if="isIcon">
         <i class="iconfont iconsousuo"></i>
@@ -58,9 +55,13 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  modelValue: {
+    type: String,
+    default: ""
+  }
 });
 
-const ctxEmit = defineEmit(["change", "focus", "blur"]);
+const ctxEmit = defineEmit(["change", "focus", "blur", "update:modelValue"]);
 let searchValue = "";
 
 function onFocus() {
@@ -136,8 +137,8 @@ const rootClass = computed(() => {
   return typeof props.class === "string"
     ? putClass(classList, props.class)
     : Array.isArray(props.class)
-    ? putClass(classList, props.class!.join(" "))
-    : "";
+      ? putClass(classList, props.class!.join(" "))
+      : "";
 });
 </script>
 

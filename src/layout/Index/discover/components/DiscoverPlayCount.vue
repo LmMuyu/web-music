@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="w-36 h-full absolute top-0 bottom-0 flex items-end overflow-y-hidden"
-  >
+  <div class="w-full h-full absolute top-0 bottom-0 flex items-end overflow-y-hidden">
     <div
       bg_gray
       class="translateAm icon flex items-center transform w-full text-left"
@@ -11,9 +9,7 @@
       style="background: #74b9ff"
     >
       <i class="iconfont iconicon_headset"></i>
-      <p class="transform translate-x-1 text-white text-sm">
-        {{ putPlayCount(playCount) }}
-      </p>
+      <p class="transform translate-x-1 text-white text-sm">{{ putPlayCount(playCount) }}</p>
     </div>
   </div>
 </template>

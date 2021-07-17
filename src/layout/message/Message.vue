@@ -73,7 +73,7 @@ const onEmitRequest = async (id: number) => {
   if (viewmsg[0].id === id) {
     const result = await getUserMessage(id, viewmsg[1].length + 5);
 
-    privateLetter.viewMsg[1].unshift(
+    privateLetter.viewMsg[1].push(
       ...result.data.msgs.slice(viewmsg.length + 1)
     );
     console.log(privateLetter.viewMsg);

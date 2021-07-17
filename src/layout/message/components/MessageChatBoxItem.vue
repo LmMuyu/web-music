@@ -1,20 +1,15 @@
 <template>
-  <div
-    class="flex justify-start py-2"
-    :class="isfromuser && 'flex-row-reverse'"
-  >
+  <div class="flex justify-start py-2" :class="isfromuser && 'flex-row-reverse'">
     <div>
       <el-avatar :size="32" :src="messageInfo.fromUser.avatarUrl"></el-avatar>
     </div>
-    <div class="px-2 flex flex-col w-1/2" :class="isfromuser && 'items-end'">
+    <div class="px-2 flex flex-col w-3/4" :class="isfromuser && 'items-end'">
       <pre class="text-xs py-2">2021:222</pre>
       <p
         style="word-wrap: break-word"
-        class="text-sm p-3 rounded-md"
+        class="text-sm text-left p-3 rounded-md"
         :style="{ backgroundColor: isfromuser ? '#dcf3fe' : '#F2F6FA' }"
-      >
-        {{ putmsg(messageInfo.msg) }}
-      </p>
+      >{{ putmsg(messageInfo.msg) }}</p>
     </div>
   </div>
 </template>
