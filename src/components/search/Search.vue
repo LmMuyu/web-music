@@ -1,6 +1,9 @@
 <template>
-  <div class="flex items-center justify-center" :class="isrootClass && rootClass">
-    <div :class="rootClass">
+  <div
+    class="flex items-center justify-center"
+    :class="isrootClass && rootClass"
+  >
+    <div :class="!isrootClass && rootClass">
       <span class="icon_text bg-white py-1 px-1 rounded-l-lg" v-if="isIcon">
         <i class="iconfont iconsousuo"></i>
       </span>
@@ -12,7 +15,7 @@
         @blur="onBlur"
         @keydown.enter="keyupEnter"
         v-model="text"
-        class="text-black w-48 py-2 px-2 border-none outline-none"
+        style="background-color: #f5f7f9"
         :class="[{ 'rounded-r-lg': isIcon }, setClass]"
       />
     </div>
@@ -25,6 +28,7 @@ import { defineEmit, defineProps, customRef, computed } from "vue";
 import { keyupEnter } from "./api/onSearch";
 
 import type { PropType } from "vue";
+import { isType } from "../../utils/methods";
 
 const props = defineProps({
   type: {
@@ -57,8 +61,8 @@ const props = defineProps({
   },
   modelValue: {
     type: String,
-    default: ""
-  }
+    default: "",
+  },
 });
 
 const ctxEmit = defineEmit(["change", "focus", "blur", "update:modelValue"]);
@@ -108,9 +112,45 @@ const changeModel = (value?: any, delay: number = 300) => {
 const text = changeModel();
 
 const setClass = computed(() => {
-  return typeof props.inputClass === "string"
-    ? props.inputClass
-    : props.inputClass?.join("");
+  if (props.inputClass) {
+    const borderList = ["dotted", "dashed", "double", "solid"];
+
+    const setClassList = [
+      "text-black",
+      "w-48",
+      "py-2",
+      "px-2",
+      "border-none",
+      "outline-none",
+    ];
+    const classList: string[] =
+      props.inputClass instanceof Array
+        ? props.inputClass
+        : props.inputClass.split(" ");
+
+    let replacePos: null | number = null;
+
+    const newClassList = classList.map((value: string) => {
+      const index = value.indexOf("-");
+
+      if (value.startsWith("border") && index > -1) {
+        const styletype = value.slice(index + 1);
+        const isStyle = borderList.indexOf(styletype) > -1;
+
+        if (isStyle) {
+          const i = replacePos || setClassList.indexOf("border-none");
+          setClassList[i] = value;
+          replacePos = i;
+        }
+      } else if (!setClassList.includes(value)) {
+        return value;
+      }
+    });
+
+    return [...newClassList, ...setClassList];
+  }
+
+  return [];
 });
 
 function putClass(classList: string[], inputClass: string) {
@@ -137,8 +177,8 @@ const rootClass = computed(() => {
   return typeof props.class === "string"
     ? putClass(classList, props.class)
     : Array.isArray(props.class)
-      ? putClass(classList, props.class!.join(" "))
-      : "";
+    ? putClass(classList, props.class!.join(" "))
+    : "";
 });
 </script>
 

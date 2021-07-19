@@ -62,8 +62,6 @@ const paddingList = computed(() => {
   return posList.flat(Infinity)
 })
 
-console.log(paddingList.value);
-
 onMounted(() => {
   if (!loadingMountAttribute.isMountApp() && listsong.value) {
     loadingMountAttribute.mountApp(listsong.value);

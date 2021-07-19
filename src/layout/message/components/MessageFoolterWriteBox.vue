@@ -1,29 +1,35 @@
 <template>
-  <!-- <writer-box :returnresdata="returnresdata" :disabled="true" :is-icon="false"></writer-box> -->
-  <input type="text" :value="vlaue" @input="onInput" />
+  <writer-box
+    :returnresdata="returnresdata"
+    class="w-1/2 justify-start"
+    inputClass="border border-solid border-gray-700 rounded-lg"
+    :is-icon="false"
+  ></writer-box>
 </template>
-<script setup lang='ts'>
+<script setup lang="ts">
 import { defineEmit, watch } from "@vue/runtime-core";
 
-import WriterBox from "../../../components/search/Search.vue"
-import { useModel } from "../../../utils/vue/useModel";
+import WriterBox from "../../../components/search/Search.vue";
 
-const ctxEmit = defineEmit(["portmsg", "update:vlaue"])
+const ctxEmit = defineEmit(["portmsg", "update:vlaue"]);
 
 const props = defineProps({
   vlaue: {
     type: String,
-    default: ""
-  }
-})
+    default: "",
+  },
+});
 
+// let data = ""
 
-const onInput = useModel(ctxEmit, "update:value")
+// const onInput = (e: InputEvent) => {
+//   const inputData = e?.data
 
+//   const str = inputData === null ? data.substring(0, data.length - 1) : data += inputData
 
-const returnresdata = (msg: string) => {
+//   return str
+// }
 
-}
-
+const returnresdata = (msg: string) => {};
 </script>
-<style scoped lang='scss'></style>
+<style scoped lang="scss"></style>

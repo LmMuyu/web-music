@@ -23,11 +23,7 @@
           />
         </template>
       </VirtualList>
-      <div
-        v-else
-        v-for="(renderItem, index) in renderListData"
-        :key="renderItem.index"
-      >
+      <div v-else v-for="(renderItem, index) in renderListData" :key="renderItem.index">
         <ToplistMainItem
           :renderItem="renderItem"
           :index="renderItem.index"
@@ -155,6 +151,7 @@ if (!busMap.has("markvrituallist")) {
     countRef.value = false;
 
     if (!isMountApp() && rootcontent.value) {
+      console.log(isMountApp());
       mountApp(rootcontent.value);
     }
   });

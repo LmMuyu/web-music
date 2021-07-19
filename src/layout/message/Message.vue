@@ -76,7 +76,6 @@ const onEmitRequest = async (id: number) => {
     privateLetter.viewMsg[1].push(
       ...result.data.msgs.slice(viewmsg.length + 1)
     );
-    console.log(privateLetter.viewMsg);
     LRUcatch.put(id, result);
   }
 };

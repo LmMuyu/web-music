@@ -1,15 +1,27 @@
 <template>
-  <ul class="overflow-auto absolute left-0 top-0 w-full h-full track">
+  <ul
+    class="overflow-auto absolute left-0 top-0 w-full h-full track"
+    ref="ulList"
+  >
+    <div class="h-full w-1 z-10 bg-black absolute top-0 bottom-0 width_track">
+      <span
+        ref="track_slider"
+        style="height: 46.05px"
+        class="absolute top-0 left-0 width_slider"
+      >
+      </span>
+    </div>
     <li
       class="flex w-full py-3 px-6 cursor-pointer"
       v-for="mess in privateLetterList"
       :key="mess.fromUser.userId"
       @click="
-        onFindID(
-          mess.fromUser.userId,
-          mess.fromUser.avatarUrl,
-          mess.fromUser.nickname
-        )
+        transitionOffset($event),
+          onFindID(
+            mess.fromUser.userId,
+            mess.fromUser.avatarUrl,
+            mess.fromUser.nickname
+          )
       "
     >
       <div style="width: 20%" class="flex items-center">
@@ -17,18 +29,18 @@
       </div>
       <div style="width: 80%" class="flex flex-col justify-between">
         <div class="w-full flex items-center justify-between">
-          <span class="text-sm" style="color: #2f4154">{{
-            mess.fromUser.nickname
-          }}</span>
-          <span class="text-xs whitespace-nowrap">{{
-            diffTime(mess.lastMsgTime)
-          }}</span>
+          <span class="text-sm" style="color: #2f4154">
+            {{ mess.fromUser.nickname }}
+          </span>
+          <span class="text-xs whitespace-nowrap">
+            {{ diffTime(mess.lastMsgTime) }}
+          </span>
         </div>
         <div class="w-full flex justify-between">
           <span
             :style="{ color: mess.newMsgCount > 0 ? '#556574' : '#a6aeb6' }"
             style="width: 90%"
-            class="text-xs truncate"
+            class="text-xs truncate text"
             >{{ lastMsg(mess.lastMsg) }}</span
           >
           <div style="width: 10%">
@@ -51,8 +63,17 @@
   </ul>
 </template>
 <script setup lang="ts">
-import { computed, defineProps, defineEmit } from "vue";
+import {
+  computed,
+  defineProps,
+  defineEmit,
+  ref,
+  onMounted,
+  nextTick,
+} from "vue";
 import dayjs from "dayjs";
+
+import { useSlidingTrack } from "../../../utils/useSlidingTrack";
 
 import { ElAvatar } from "element-plus";
 
@@ -67,6 +88,16 @@ const props = defineProps({
     default: () => [],
   },
 });
+
+const track_slider = ref<HTMLElement | null>(null);
+const ulList = ref<HTMLElement | null>(null);
+
+const { initTrackPos, transitionOffset, getSliderTrack } = useSlidingTrack(
+  track_slider.value,
+  {
+    direction: "vertical",
+  }
+);
 
 const onFindID = (id: number, avatarUrl: string, nickname: string) =>
   ctxEmit("viewmsg", { id, avatarUrl, nickname });
@@ -114,6 +145,15 @@ const diffTime = computed(() => {
     }
   };
 });
+
+onMounted(() => {
+  nextTick(async () => {
+    if (ulList.value && track_slider.value) {
+      getSliderTrack(track_slider.value);
+      initTrackPos(ulList.value, 3);
+    }
+  });
+});
 </script>
 <style scoped lang="scss">
 .bg_color {
@@ -126,5 +166,16 @@ const diffTime = computed(() => {
 
 .track::-webkit-scrollbar {
   display: none;
+}
+
+.text {
+  margin: auto 0;
+}
+
+.width_track {
+  & > .width_slider {
+    width: inherit;
+    background-color: #028bfa;
+  }
 }
 </style>
