@@ -100,8 +100,10 @@ const findViewMsg = (useroptions: Record<string, any>) => {
     }
 
     LRUcatch.put(useroptions.id, msgObj);
+
     console.log(LRUcatch.viewAllCache());
 
+    privateLetter.viewMsg.length = 0;
     privateLetter.viewMsg.push(useroptions, msgObj.data.msgs);
   }
 };

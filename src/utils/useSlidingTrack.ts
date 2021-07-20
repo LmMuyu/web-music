@@ -1,11 +1,16 @@
 interface trackOptions {
   direction: "vertical" | "parallel";
+  viewportFollow?: boolean;
 }
 
 type Track = string | HTMLElement | null;
 
 export function useSlidingTrack(track: Track, options: trackOptions) {
   let direction = options.direction || "parallel"; //vertical
+  const viewportFollow =
+    typeof options.viewportFollow === "undefined" ? true : false;
+
+  let root: HTMLElement | null = null;
   let initTran = false;
   let ElChildren: Element[] = [];
   let initCompIndex = false;
@@ -24,12 +29,15 @@ export function useSlidingTrack(track: Track, options: trackOptions) {
       direction === "vertical"
         ? `scale(${1},${scale})`
         : `scale(${scale},${1})`;
+
+    // setViewPort(y);
   };
 
   const computedScale = (el, width, height) => {
     if (!pre) pre = el;
 
-    const rect = pre.getBoundingClientRect();
+    const index_key = pre.index_key;
+    const rect = pre === el ? { width, height } : elPos[index_key];
     let scale = 1;
 
     if (direction === "vertical" && el !== pre) {
@@ -46,7 +54,10 @@ export function useSlidingTrack(track: Track, options: trackOptions) {
   const transitionOffset = (e) => {
     !initCompIndex && initElIndex(ElChildren);
 
-    const tarel = isEl(e) ? e : e.target;
+    let tarel = isEl(e) ? e : e.target;
+    tarel = getCorrespondElement(tarel);
+
+    if (pre === tarel) return;
 
     const { x, y, width, height } =
       elPos[tarel.index_key] ?? getBoundingClientRect(tarel);
@@ -89,8 +100,6 @@ export function useSlidingTrack(track: Track, options: trackOptions) {
     Math.ceil(Math.sqrt(Math.ceil(parseFloat(value))));
 
   function getBoundingClientRect(el: HTMLElement) {
-    el = getCorrespondElement(el);
-
     const { offsetWidth, offsetHeight, offsetLeft, offsetTop } = el;
 
     const compStyle = window.getComputedStyle(el);
@@ -125,16 +134,19 @@ export function useSlidingTrack(track: Track, options: trackOptions) {
 
   function initTrackPos(elTag, defaultPos = 0) {
     if (initPos) return;
+    let target = elTag;
 
-    if (elTag instanceof HTMLElement) {
-      ElChildren = Array.from(elTag.children);
-      transitionOffset(elTag.children[defaultPos]);
+    if (target instanceof HTMLElement) {
+      root = target;
+      ElChildren = Array.from(target.children);
+      transitionOffset(target.children[defaultPos]);
       return;
     }
 
-    const target = getDocumentEl(elTag);
+    target = getDocumentEl(target);
 
     if (target) {
+      root = target;
       ElChildren = Array.from(target.children);
       transitionOffset(target.children[defaultPos]);
       initPos = true;
@@ -175,6 +187,12 @@ export function useSlidingTrack(track: Track, options: trackOptions) {
     }
 
     return (_track = getDocumentEl(elTag));
+  }
+
+  function setViewPort(pos: number) {
+    if (viewportFollow) {
+      root.scrollTop = pos;
+    }
   }
 
   const getElement = (elTag) => document.querySelector(elTag);

@@ -8,7 +8,7 @@
       <el-container class="absolute top-0 bottom-0 w-full h-full">
         <el-main class="overflow-x-hidden" ref="mesMain" @scroll="onScroll">
           <MessageChatBoxItem
-            v-for="(mes) in mesList"
+            v-for="mes in mesList"
             :key="mes.id"
             :message-info="mes"
             :isfromuser="viewMsg[0].id !== mes.fromUser.userId"
@@ -34,12 +34,11 @@ import {
 
 import { debounce } from "../../../utils/debounce";
 
-import MessageFoolterWriteBox from "./MessageFoolterWriteBox.vue"
+import MessageFoolterWriteBox from "./MessageFoolterWriteBox.vue";
 import MessageChatBoxItem from "./MessageChatBoxItem.vue";
 import {
   ElContainer,
   ElFooter,
-  ElAside,
   ElHeader,
   ElMain,
   ElAvatar,
@@ -49,11 +48,11 @@ import type { PropType } from "vue";
 
 const ctxEmit = defineEmit(["emitRequest"]);
 
-const modelValue = ref("ddddd")
+const modelValue = ref("ddddd");
 
 watch(modelValue, (value) => {
   console.log(value);
-})
+});
 
 const props = defineProps({
   viewMsg: {
@@ -86,18 +85,25 @@ const onScroll = (e: Event) => {
   }
 };
 
-onMounted(() => {
-  nextTick().then(() => {
-    if (mesMain.value) {
-      const el = mesMain.value.$el;
+function setMainScrollTop() {
+  if (mesMain.value) {
+    const el = mesMain.value.$el;
 
-      const scrollHeight = el.scrollHeight;
+    const scrollHeight = el.scrollHeight;
 
-      if (scrollHeight) {
-        el.scrollTop = scrollHeight;
-      }
+    if (scrollHeight) {
+      el.scrollTop = scrollHeight;
     }
-  });
+  }
+}
+
+watch(
+  () => props.viewMsg,
+  () => setMainScrollTop()
+);
+
+onMounted(() => {
+  nextTick().then(() => setMainScrollTop());
 });
 </script>
 <style scoped lang="scss">
