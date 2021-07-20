@@ -3,10 +3,10 @@
     class="overflow-auto absolute left-0 top-0 w-full h-full track"
     ref="ulList"
   >
-    <div class="h-full w-1 z-10 bg-black absolute top-0 bottom-0 width_track">
+    <div class="h-full w-1 z-10 absolute top-0 bottom-0 width_track">
       <span
         ref="track_slider"
-        style="height: 46.05px"
+        style="height: 4.5rem"
         class="absolute top-0 left-0 width_slider"
       >
       </span>
@@ -15,7 +15,7 @@
       class="flex w-full py-3 px-6 cursor-pointer"
       v-for="mess in privateLetterList"
       :key="mess.fromUser.userId"
-      @click="
+      @click.stop="
         transitionOffset($event),
           onFindID(
             mess.fromUser.userId,

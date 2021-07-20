@@ -1,15 +1,18 @@
 interface trackOptions {
-  direction: "vertical" | "parallel"
+  direction: "vertical" | "parallel";
 }
 
-type Track = string | HTMLElement | null
+type Track = string | HTMLElement | null;
 
 export function useSlidingTrack(track: Track, options: trackOptions) {
   let direction = options.direction || "parallel"; //vertical
   let initTran = false;
+  let ElChildren: Element[] = [];
+  let initCompIndex = false;
   let index = 0;
+  let initPos = false;
   let pre = null;
-  let _track: Track = track
+  let _track: Track = track;
   const elPos = {};
 
   const setStyle = (el: HTMLElement, { x, y, scale }) => {
@@ -18,7 +21,9 @@ export function useSlidingTrack(track: Track, options: trackOptions) {
     el.style.left = x + "px";
     el.style.top = y + "px";
     el.style.transform =
-      direction === "vertical" ? `scale(${1},${1})` : `scale(${1},${1})`;
+      direction === "vertical"
+        ? `scale(${1},${scale})`
+        : `scale(${scale},${1})`;
   };
 
   const computedScale = (el, width, height) => {
@@ -39,6 +44,8 @@ export function useSlidingTrack(track: Track, options: trackOptions) {
   };
 
   const transitionOffset = (e) => {
+    !initCompIndex && initElIndex(ElChildren);
+
     const tarel = isEl(e) ? e : e.target;
 
     const { x, y, width, height } =
@@ -78,17 +85,22 @@ export function useSlidingTrack(track: Track, options: trackOptions) {
     }
   };
 
+  const computedRect = (value: string) =>
+    Math.ceil(Math.sqrt(Math.ceil(parseFloat(value))));
 
   function getBoundingClientRect(el: HTMLElement) {
-    const { offsetWidth, offsetHeight, offsetLeft, offsetTop } = el
-    console.log(window.getComputedStyle(el));
+    el = getCorrespondElement(el);
+
+    const { offsetWidth, offsetHeight, offsetLeft, offsetTop } = el;
+
+    const compStyle = window.getComputedStyle(el);
 
     return {
-      x: offsetLeft,
-      y: offsetTop,
-      width: offsetWidth,
-      height: offsetHeight
-    }
+      x: offsetLeft - computedRect(compStyle.paddingLeft),
+      y: offsetTop - computedRect(compStyle.paddingTop),
+      width: offsetWidth - computedRect(compStyle.paddingLeft),
+      height: offsetHeight - computedRect(compStyle.paddingTop),
+    };
   }
 
   function getDocumentEl(elTag) {
@@ -107,19 +119,28 @@ export function useSlidingTrack(track: Track, options: trackOptions) {
         }
       }
 
-      return new Error("无法找到对应元素");
+      return "";
     }
   }
 
   function initTrackPos(elTag, defaultPos = 0) {
+    if (initPos) return;
 
     if (elTag instanceof HTMLElement) {
+      ElChildren = Array.from(elTag.children);
       transitionOffset(elTag.children[defaultPos]);
       return;
     }
 
     const target = getDocumentEl(elTag);
-    transitionOffset(target.children[defaultPos]);
+
+    if (target) {
+      ElChildren = Array.from(target.children);
+      transitionOffset(target.children[defaultPos]);
+      initPos = true;
+    } else {
+      throw new Error("无法找到对应元素");
+    }
   }
 
   function initTransition(el) {
@@ -131,14 +152,29 @@ export function useSlidingTrack(track: Track, options: trackOptions) {
     initTran = true;
   }
 
-  function getSliderTrack(elTag: any) {
-    if (elTag instanceof HTMLElement && !_track) {
-      _track = elTag
+  function initElIndex(children: any[]) {
+    children.forEach((el, i) => (el.comp_index = i));
+    initCompIndex = true;
+  }
 
-      return
+  function getCorrespondElement(el: HTMLElement) {
+    let target = el;
+
+    while (!target.comp_index && target !== null) {
+      target = target.parentElement;
     }
 
-    return _track = getDocumentEl(elTag)
+    return target ?? el;
+  }
+
+  function getSliderTrack(elTag: any) {
+    if (elTag instanceof HTMLElement && !_track) {
+      _track = elTag;
+
+      return;
+    }
+
+    return (_track = getDocumentEl(elTag));
   }
 
   const getElement = (elTag) => document.querySelector(elTag);
@@ -147,6 +183,6 @@ export function useSlidingTrack(track: Track, options: trackOptions) {
   return {
     initTrackPos,
     transitionOffset,
-    getSliderTrack
+    getSliderTrack,
   };
 }
