@@ -13,6 +13,7 @@ const store = createStore<State>({
       countriesCode: null,
       userInfo: null,
       musicInfo: null,
+      loginState: 200,
     };
   },
   getters,

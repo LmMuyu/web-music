@@ -15,4 +15,8 @@ export default {
   setLocalStorage(state: State) {
     state.userInfo = findLoginInfo();
   },
+
+  setLoginStateus(state: State, loginState: number) {
+    state.loginState = loginState;
+  },
 };

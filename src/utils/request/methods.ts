@@ -1,4 +1,7 @@
 import Cookie from "js-cookie";
+
+import store from "../../store";
+
 import type { CookieAttributes } from "js-cookie";
 
 interface cookieOptions {
@@ -66,4 +69,28 @@ function splitCookie(cookie: string, cookieObj: cookieOptions) {
     expires,
     domain: window.location.host,
   });
+}
+
+const removeLocalStoreageKey = () => {
+  const info = localStorage.getItem("userInfo");
+  const token = localStorage.getItem("token");
+
+  if (info && token) {
+    localStorage.removeItem("userInfo");
+    localStorage.removeItem("token");
+  }
+};
+
+export function loginStateus(url: string, httpRes: Record<string, any>) {
+  if (url === "/login/status") {
+    Promise.resolve(httpRes.data).then(({ data }) => {
+      if (data.account === null && data.profile === null) {
+        store.commit("setLoginStateus", 301);
+        removeLocalStoreageKey();
+      } else {
+        store.commit("setLocalStorage");
+        store.commit("setLoginStateus", 200);
+      }
+    });
+  }
 }

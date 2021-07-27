@@ -1,12 +1,10 @@
 import axios from "axios";
 
-import setCatch from "../../utils/catch/setCatch";
 import { promptbox } from "../../components/promptBox";
+import { loginStateus, setCookie } from "./methods";
+import store from "../../store";
 
 import type { AxiosRequestConfig, Canceler, CancelTokenStatic } from "axios";
-import { setCookie } from "./methods";
-
-const catchMethods = setCatch();
 
 export default function request(config: AxiosRequestConfig) {
   let requestHttpToken: CancelTokenStatic | undefined;
@@ -44,8 +42,12 @@ export default function request(config: AxiosRequestConfig) {
 
   instance.interceptors.response.use(
     (httpRes) => {
+      const url = httpRes.config.url;
+
       (httpRes?.data?.cookie as string)?.length > 0 &&
         Promise.resolve().then(() => setCookie(httpRes.data.cookie));
+
+      loginStateus(url, httpRes);
 
       return httpRes;
     },
@@ -64,6 +66,12 @@ export default function request(config: AxiosRequestConfig) {
               );
 
               return response;
+            case 301:
+              store.commit("setLoginStateus", 301);
+              promptbox({
+                title: "请先登录!",
+              });
+              return 301;
             default:
               return Promise.reject(config);
           }

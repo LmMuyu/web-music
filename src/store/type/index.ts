@@ -4,6 +4,7 @@ export interface State {
   countriesCode: null | Array<Record<string, any>>;
   userInfo: null | UserInfo;
   musicInfo: null | MusicDetailOption;
+  loginState: number;
 }
 
 export interface TokenJsonStr {

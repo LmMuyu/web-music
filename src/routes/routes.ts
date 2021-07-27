@@ -1,6 +1,6 @@
 import { createAsComponent } from "../utils/createAsComponent";
 
-import type { RouteRecordRaw } from "vue-router";
+import { RouteRecordRaw } from "vue-router";
 import type { META } from "./type/type";
 
 const routes: (RouteRecordRaw & {

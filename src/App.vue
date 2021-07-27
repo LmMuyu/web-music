@@ -16,10 +16,11 @@ import { reactive, ref } from "vue";
 import { useStore } from "vuex";
 
 import { searchDefault } from "./api/app/searchDefault";
+import { loginStateus } from "./api/app/login";
 
 import Main from "./layout/main/Main.vue";
 
-import type { UserInfo } from "./store/type";
+import type { State, UserInfo } from "./store/type";
 
 type linkType =
   | "info"
@@ -34,7 +35,6 @@ const store = useStore();
 const router = useRouter();
 
 store.dispatch("countriesCode");
-store.commit("setLocalStorage");
 
 const header = reactive({
   searchDefault: null,
@@ -44,6 +44,8 @@ const userInfo = ref<UserInfo | null>(null);
 const showTag = ref(false);
 const linkType = ref<linkType>("info");
 
+loginStateus();
+
 async function search() {
   const { data: defData } = await searchDefault({ url: "/search/default" });
   header.searchDefault = defData.data;
@@ -51,14 +53,25 @@ async function search() {
 
 search();
 
-router.beforeEach((to, from, next) => {
+const pathList = ["/message"];
+
+async function redirectPath(path: string) {
+  await loginStateus();
+  const loginstateus = (store.state as State).loginState;
+
+  if (loginstateus === 301 && pathList.includes(path)) {
+    router.replace({ path: "/index" });
+  }
+}
+
+router.beforeEach((to, from) => {
+  redirectPath(to.path);
+
   const meta = to.meta;
 
   if (meta.hasOwnProperty("showTag")) {
     showTag.value = meta.showTag as boolean;
   }
-
-  next();
 });
 
 store.watch(
