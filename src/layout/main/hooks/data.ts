@@ -23,7 +23,7 @@ export const AsideTags = ref([
     index: "tag_4",
     icon: "iconshuqian",
     title: "订阅",
-    path: "/index",
+    path: "/subscription",
   },
   {
     index: "tag_5",

@@ -14,7 +14,10 @@
             :isfromuser="viewMsg[0].id !== mes.fromUser.userId"
           />
         </el-main>
-        <el-footer class="flex items-cneter solide_border_top">
+        <el-footer
+          :height="`${size}px`"
+          class="flex items-cneter solide_border_top"
+        >
           <MessageFoolterWriteBox v-model:vlaue="modelValue" />
         </el-footer>
       </el-container>
@@ -33,6 +36,7 @@ import {
 } from "vue";
 
 import { debounce } from "../../../utils/debounce";
+import { size } from "../hook/data";
 
 import MessageFoolterWriteBox from "./MessageFoolterWriteBox.vue";
 import MessageChatBoxItem from "./MessageChatBoxItem.vue";

@@ -63,6 +63,23 @@ const routes: (RouteRecordRaw & {
       loadComp: true,
     }),
   },
+  {
+    path: "/subscription",
+    name: "Subscription",
+    meta: {
+      defaultView: ["SubscriptionContent", "SubscriptionRight"],
+      mainContentOptions: {
+        left: {
+          header: false,
+          footer: false,
+        },
+        right: {
+          header: false,
+        },
+      },
+    },
+    component: () => import("../view/subscription/Subscription.vue"),
+  },
 ];
 
 export default routes;

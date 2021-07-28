@@ -1,12 +1,13 @@
 <template>
-  <ul ref="listsong">
-    <div class="flex flex-wrap" v-if="loadingMountAttribute.countRef">
+  <div ref="listsong" class="relative">
+    <div v-if="markRef" class="w-full Hmark"></div>
+    <ul class="flex flex-wrap" v-if="loadingMountAttribute.countRef">
       <li
         v-for="(play, index) in playlist"
         :key="play.id"
-        style="width: 25%"
+        style="width: 23.5%"
         class="root_image_item flex justify-center overflow-hidden my-4"
-        :class="{ 'px-4': paddingList.includes(index + 1) }"
+        :class="marginClass(index)"
       >
         <DiscoverCard
           :countRef="countRef"
@@ -17,8 +18,8 @@
           :onMouseenter="onMouseenter"
         />
       </li>
-    </div>
-  </ul>
+    </ul>
+  </div>
 </template>
 <script setup lang="ts">
 import { computed, defineProps, nextTick, onMounted, ref, watch } from "vue";
@@ -40,27 +41,31 @@ const props = defineProps({
 
 const listsong = ref<HTMLElement | null>(null);
 
-const loadingMountAttribute = new createLoading();
+const loadingMountAttribute = new createLoading([
+  "absolute",
+  "left-0",
+  "top-0",
+]);
 
 const curIndex = ref(0);
 const { countRef, negate } = useRefNegate(false);
+const { countRef: markRef, negate: markNegate } = useRefNegate(true);
 
 const onMouseenter = (index: number) => {
   curIndex.value = index;
   negate();
-}
+};
 
 const paddingList = computed(() => {
-  const posList = []
-  const len = props.playlist.length / 4
+  const posList = [];
+  const len = props.playlist.length / 4;
 
   for (let i = 0; i < len; i++) {
-    posList.push([2 + (4 * i), 3 + (4 * i)])
+    posList.push([2 + 4 * i, 3 + 4 * i]);
   }
 
-
-  return posList.flat(Infinity)
-})
+  return posList.flat(Infinity);
+});
 
 onMounted(() => {
   if (!loadingMountAttribute.isMountApp() && listsong.value) {
@@ -70,11 +75,24 @@ onMounted(() => {
       () => props.playlist,
       () =>
         nextTick().then(() => {
-          loadingMountAttribute.unmountApp(loadingMountAttribute.negate);
+          loadingMountAttribute.unmountApp(() => {
+            loadingMountAttribute.negate();
+            markNegate();
+          });
           step();
         })
     );
   }
+});
+
+const marginClass = computed(() => {
+  return function (index: number) {
+    if (paddingList.value.includes(index + 1)) {
+      if ((index + 1) % 2 === 0) return "ml-4";
+
+      return "mx-4";
+    }
+  };
 });
 </script>
 <style scoped lang="scss">
@@ -109,5 +127,9 @@ onMounted(() => {
 
 .font_title {
   font-size: 140px;
+}
+
+.Hmark {
+  height: #{145.42 * 2}px;
 }
 </style>

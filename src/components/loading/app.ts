@@ -17,10 +17,10 @@ export class createLoading {
   public unmountApp: (backcall?: Function | undefined) => boolean;
   public isMountApp: () => boolean;
 
-  constructor() {
+  constructor(classList: string[] | string = []) {
     const { countRef, negate } = useRefNegate(false);
     this.div = document.createElement("div");
-    this.div.classList.add(...["w-full", "h-full"]);
+    this.div.classList.add(...this.addClass(classList));
 
     this.install = null;
     this.root = null;
@@ -29,6 +29,12 @@ export class createLoading {
     this.mountApp = this.runMountApp();
     this.unmountApp = this.runUnmountApp();
     this.isMountApp = this.runIsMountApp();
+  }
+
+  private addClass(classList: string[] | string) {
+    return ["w-full", "h-full"].concat(
+      classList instanceof String ? classList.split(" ") : classList
+    );
   }
 
   private runMountApp() {

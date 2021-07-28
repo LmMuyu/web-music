@@ -74,4 +74,16 @@ importCompsList
       loadComp: true,
     },
     position: "main",
+  })
+  .set("SubscriptionContent", {
+    options: {
+      loadComp: false,
+    },
+    position: "main",
+  })
+  .set("SubscriptionRight", {
+    options: {
+      loadComp: false,
+    },
+    position: "right",
   });

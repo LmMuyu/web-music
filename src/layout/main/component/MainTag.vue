@@ -1,19 +1,24 @@
 <template>
-  <ul class="list-none" ref="x">
-    <li
-      v-for="(tag, index) in AsideTags"
-      :key="tag.index"
-      class="flex items-center cursor-pointer py-4 icons"
-      @click="[clickActive(index), toPath(tag.path)]"
-      @mouseenter="moveActive(index)"
-      @mouseleave="leaveActive(index)"
-    >
-      <i class="iconfont" :class="[tag.icon]" :style="activeStyle(index)"></i>
-      <a class="text-2xl px-5 text_color" :style="activeStyle(index)">{{
-        tag.title
-      }}</a>
-    </li>
-  </ul>
+  <nav>
+    <ul class="list-none">
+      <li
+        class="flex items-center cursor-pointer py-4 icons"
+        v-for="(tag, index) in AsideTags"
+        :key="tag.index"
+        @mouseenter="moveActive(index)"
+        @mouseleave="leaveActive(index)"
+        @click="
+          clickActive(index);
+          toPath(tag.path);
+        "
+      >
+        <i class="iconfont" :class="[tag.icon]" :style="activeStyle(index)"></i>
+        <a class="text-2xl px-5 text_color" :style="activeStyle(index)">{{
+          tag.title
+        }}</a>
+      </li>
+    </ul>
+  </nav>
 </template>
 <script setup lang="ts">
 import { useRouter } from "vue-router";

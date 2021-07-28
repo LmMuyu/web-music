@@ -112,12 +112,16 @@ const findViewMsg = (useroptions: Record<string, any>) => {
 const watchStep = store.watch(
   () => store.state.userInfo,
   async (value) => {
-    if (!value) return;
-    const list = await getPrivateLetter();
-    privateLetter.main = list.data.msgs;
+    try {
+      if (!value) return;
+      const list = await getPrivateLetter();
+      privateLetter.main = list.data.msgs;
 
-    const privateMesList = await getUserMessageList(list);
-    privateLetter.storeMsg = privateMesList;
+      const privateMesList = await getUserMessageList(list);
+      privateLetter.storeMsg = privateMesList;
+    } catch (err) {
+      console.log(err);
+    }
   },
   {
     immediate: true,
