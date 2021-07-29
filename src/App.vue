@@ -51,7 +51,7 @@ async function search() {
 
 search();
 
-const pathList = ["/message"];
+const pathList = ["/message", "/subscription"];
 
 async function redirectPath(path: string) {
   await loginStateus();

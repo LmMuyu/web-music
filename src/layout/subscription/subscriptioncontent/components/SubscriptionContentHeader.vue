@@ -1,14 +1,15 @@
 <template>
-  <div class="flex w-full">
-    <div class="w-1/2">动态</div>
-    <div class="flex justify-center w-1/2">
-      <span class="flex justify-between px-4 my-1 rounded-2xl rounded_text">
-        <svg width="24" height="24" style="stroke: #fff; stroke-width: 1px">
-          <rect width="3" height="12" x="12" y="5" stroke="#0984e3"></rect>
-          <rect width="3" height="12" x="5" y="12" stroke="#0984e3"></rect>
-        </svg>
-        写动态
-      </span>
+  <div class="flex w-full header_h">
+    <div class="w-1/2 text-2xl">
+      <p>动态</p>
+    </div>
+    <div class="w-1/2">
+      <div class="flex justify-center items-center">
+        <span class="rounded_text icon flex items-center justify-center">
+          <i class="iconfont iconlnicon34"></i>
+          <p>写动态</p>
+        </span>
+      </div>
     </div>
   </div>
 </template>
@@ -17,5 +18,13 @@
 .rounded_text {
   color: #fff;
   background: #74b9ff;
+}
+
+.icon {
+  @include Iconfont("#2d3436");
+}
+
+.header_h {
+  height: 60px;
 }
 </style>
