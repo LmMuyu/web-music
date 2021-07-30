@@ -1,7 +1,7 @@
 <template>
   <header style="height: 10%">44444</header>
   <main class="h-3/4"><MainTag /></main>
-  <footer class="flex items-center" style="height: 15%">
+  <footer class="flex items-center relative" style="height: 15%">
     <MainAsideCard v-if="InfoCard.countRef" :infoData="InfoCard.userInfo" />
     <MainLoginButton
       class="flex justify-center outline"

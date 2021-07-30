@@ -5,9 +5,19 @@
     </div>
     <div class="w-1/2">
       <div class="flex justify-center items-center">
-        <span class="rounded_text icon flex items-center justify-center">
-          <i class="iconfont iconlnicon34"></i>
-          <p>写动态</p>
+        <span
+          class="
+            rounded_text
+            icon
+            flex
+            items-center
+            justify-center
+            px-4
+            rounded-full
+          "
+        >
+          <i class="iconfont iconlnicon34 mx-1"></i>
+          <p class="h-full">写动态</p>
         </span>
       </div>
     </div>
@@ -25,6 +35,6 @@
 }
 
 .header_h {
-  height: 60px;
+  height: 44px;
 }
 </style>

@@ -1,11 +1,10 @@
 import request from "../../utils/request";
 
-export function getSubScriptDynamic(uid: number) {
+export function getSubScriptDynamic(lasttime: number = -1) {
   return request({
-    url: "/user/event",
+    url: "/event",
     params: {
-      limit: 10,
-      uid,
+      pagesize: 5,
     },
   });
 }

@@ -1,5 +1,5 @@
 <template>
-  <ElRow class="w-full mr-8 cursor-pointer">
+  <ElRow class="w-full mr-8 cursor-pointer absolute left-0 bottom-0">
     <ElCol :span="8" class="flex items-center">
       <ElAvatar :src="infoData?.avatarUrl" :size="42"> </ElAvatar>
     </ElCol>

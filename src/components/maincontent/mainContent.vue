@@ -1,5 +1,5 @@
 <template>
-  <div class="flex h-full">
+  <div class="flex h-full" :style="{ minHeight: minHeight + 'px' }">
     <el-container v-if="shieldContainer(left?.main)" class="w-2/3">
       <el-header
         v-if="shieldContainer(left?.header)"
@@ -41,6 +41,7 @@
   </div>
 </template>
 <script setup lang="ts">
+import { computed, ref } from "@vue/runtime-core";
 import { useRoute } from "vue-router";
 
 import { componentId, compsId, runLoadView } from "./hooks/component";
@@ -49,10 +50,11 @@ import { ElContainer, ElHeader, ElMain } from "element-plus";
 import Search from "../search/Search.vue";
 
 import type { META } from "../../routes/type/type";
-import { computed } from "@vue/runtime-core";
 
 const router = useRoute();
 const meta: META = router.meta;
+//@ts-ignore
+const minHeight = ref(window._globalMinHeight);
 
 const defaultView = meta.defaultView;
 const { left, right } = meta?.mainContentOptions || { left: {}, right: {} };

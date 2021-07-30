@@ -21,5 +21,5 @@ export interface UserInfo {
   id: number;
   token: number;
   tokenJsonStr: TokenJsonStr;
-  userInfoData?: Object;
+  userinfoData?: Record<string, any>;
 }
