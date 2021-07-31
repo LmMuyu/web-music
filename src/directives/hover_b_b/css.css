@@ -1,0 +1,9 @@
+.hover_b_b {
+  border-width: 1px;
+  border-style: solid;
+  border-color: #fff;
+}
+
+.hover_b_b:hover {
+  border-color: #2d3436;
+}

@@ -36,20 +36,9 @@ const router = useRouter();
 
 store.dispatch("countriesCode");
 
-const header = reactive({
-  searchDefault: null,
-});
-
 const userInfo = ref<UserInfo | null>(null);
 const showTag = ref(false);
 const linkType = ref<linkType>("info");
-
-async function search() {
-  const { data: defData } = await searchDefault({ url: "/search/default" });
-  header.searchDefault = defData.data;
-}
-
-search();
 
 const pathList = ["/message", "/subscription"];
 

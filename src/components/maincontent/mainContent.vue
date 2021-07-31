@@ -1,5 +1,5 @@
 <template>
-  <div class="flex h-full" :style="{ minHeight: minHeight + 'px' }">
+  <div class="flex h-full">
     <el-container v-if="shieldContainer(left?.main)" class="w-2/3">
       <el-header
         v-if="shieldContainer(left?.header)"
@@ -53,8 +53,6 @@ import type { META } from "../../routes/type/type";
 
 const router = useRoute();
 const meta: META = router.meta;
-//@ts-ignore
-const minHeight = ref(window._globalMinHeight);
 
 const defaultView = meta.defaultView;
 const { left, right } = meta?.mainContentOptions || { left: {}, right: {} };

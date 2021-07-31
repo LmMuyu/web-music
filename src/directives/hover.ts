@@ -104,7 +104,7 @@ class hover {
     const value = binding.value;
     if (!value) return;
     this.value = value;
-    
+
     el.addEventListener("mouseenter", this.mouseEnter.bind(this, value, el));
     el.addEventListener("mouseleave", this.mouseLeave.bind(this, el));
   }

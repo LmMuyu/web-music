@@ -80,6 +80,18 @@ const routes: (RouteRecordRaw & {
     },
     component: () => import("../view/subscription/Subscription.vue"),
   },
+  {
+    path: "/user",
+    name: "User",
+    children: [
+      {
+        path: " home",
+        name: "Home",
+        component: () => import("../view/user/children/Home.vue"),
+      },
+    ],
+    component: () => import("../view/user/User.vue"),
+  },
 ];
 
 export default routes;

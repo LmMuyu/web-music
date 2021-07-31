@@ -77,7 +77,6 @@ export class musicDetail {
 }
 
 //resultOptions
-const listInfoAr = ["ar", "creator"];
 
 function singerOptions(data: any) {
   if (!data) return [];
@@ -112,10 +111,22 @@ export class resultOptions implements MusicDetailOption {
   }
 
   getPicUrl(options: any) {
-    return options.coverUrl || options.coverImgUrl || options["al"]["picUrl"];
+    let test = false;
+
+    for (const key in options) {
+      test = /img\d+[x | y]\d+/.test(key);
+      if (test) {
+        return options[key];
+      }
+    }
+
+    return (
+      options.coverUrl || options.coverImgUrl || options["al"]["picUrl"] || ""
+    );
   }
 
   getAr(options: any) {
+    const listInfoAr = ["ar", "creator", "artists"];
     let singerInfoOption = {};
 
     for (let i = 0; i < listInfoAr.length; i++) {
@@ -132,6 +143,10 @@ export class resultOptions implements MusicDetailOption {
 }
 
 export function musicResultDetail(data: Object) {
+  if (isType(data) !== "Object" || Object.keys(data).length <= 0) {
+    return undefined;
+  }
+
   const options = new resultOptions(data);
   return new musicDetail(options);
 }
