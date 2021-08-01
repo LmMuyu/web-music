@@ -12,6 +12,7 @@
       />
     </main>
     <footer>
+      <div v-html="`<a href='/activity' >4444</a>`"></div>
       <mainContentFooter :likedCount="event.info.likedCount" />
     </footer>
   </section>

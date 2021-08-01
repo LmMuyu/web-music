@@ -85,12 +85,17 @@ const routes: (RouteRecordRaw & {
     name: "User",
     children: [
       {
-        path: " home",
+        path: "home",
         name: "Home",
         component: () => import("../view/user/children/Home.vue"),
       },
     ],
     component: () => import("../view/user/User.vue"),
+  },
+  {
+    path: "/activity",
+    name: "Activity",
+    component: () => import("../view/activity/Activity.vue"),
   },
 ];
 

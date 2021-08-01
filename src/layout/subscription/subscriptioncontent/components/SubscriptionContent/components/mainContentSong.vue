@@ -13,6 +13,7 @@
       </router-link>
       <router-link
         style="color: #74b9ff"
+        class="decoration"
         v-for="singerInfo in musicDetail.singerInfo"
         :key="singerInfo.id"
         :to="{ path: '/user/home', query: { uid: singerInfo.id } }"
@@ -32,4 +33,8 @@ const props = defineProps({
   },
 });
 </script>
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.decoration {
+  text-decoration: solid black;
+}
+</style>
