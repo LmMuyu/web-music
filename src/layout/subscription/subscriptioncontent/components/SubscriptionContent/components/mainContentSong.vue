@@ -3,28 +3,31 @@
     <div class="w-12 h-full">
       <img :src="musicDetail.picUrl" class="object-cover" alt="" />
     </div>
-    <div class="flex flex-col justify-around ml-4">
+    <div class="flex flex-col justify-around ml-4 decor">
       <router-link
         style="color: #74b9ff"
         :to="{ path: '/playlist', query: { id: musicDetail.id } }"
+        class="decoration"
         target="_blank"
       >
         {{ musicDetail.name }}
       </router-link>
-      <router-link
-        style="color: #74b9ff"
-        class="decoration"
-        v-for="singerInfo in musicDetail.singerInfo"
-        :key="singerInfo.id"
-        :to="{ path: '/user/home', query: { uid: singerInfo.id } }"
-      >
-        {{ singerInfo.name }}
-      </router-link>
+      <div class="flex items-center decor">
+        <router-link
+          style="color: #74b9ff"
+          class="decoration"
+          v-for="(singer, index) in musicDetail.singerInfo"
+          :key="singer.id"
+          :to="{ path: '/user/home', query: { uid: singer.id } }"
+        >
+          {{ singer.name }}{{ addIdentifier(index) }}
+        </router-link>
+      </div>
     </div>
   </section>
 </template>
 <script setup lang="ts">
-import { defineProps } from "vue";
+import { computed, defineProps } from "vue";
 
 const props = defineProps({
   musicDetail: {
@@ -32,9 +35,21 @@ const props = defineProps({
     default: () => ({}),
   },
 });
+
+const addIdentifier = computed(() => {
+  return function (index: any) {
+    return index < props.musicDetail.singerInfo.length - 1 && "/";
+  };
+});
 </script>
 <style scoped lang="scss">
-.decoration {
-  text-decoration: solid black;
+.decor {
+  &:deep(.decoration) {
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 }
 </style>

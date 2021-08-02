@@ -1,12 +1,8 @@
-import path from "path";
-import fs from "fs";
+import stylecss from "./css.css";
 
 import type { Directive } from "vue";
 
 export async function setHover() {
-  // console.log(path.join(__dirname, "/src/directives/hover_b_b/css.css"));
-  console.log(import.meta.url);
-
   const hover_b_b: Directive & {
     setConstructor: (name: string, color: string) => void;
   } = {
@@ -14,6 +10,9 @@ export async function setHover() {
       this.defaultColor = color;
       this.name = name;
     },
+    // beforeMount(el, binding) {
+    //   console.log(el, bind);
+    // },
   };
 
   return hover_b_b;

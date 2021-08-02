@@ -13,6 +13,7 @@ import "element-plus/lib/theme-chalk/el-icon.css";
 
 windowRem();
 
+
 const app = createApp(App);
 app.directive(hover.name, hover);
 app.directive("lazy", lazy);

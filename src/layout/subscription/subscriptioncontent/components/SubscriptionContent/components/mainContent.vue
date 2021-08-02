@@ -3,16 +3,20 @@
     <header>
       <mainContentHeader :type="event.type" :userinfo="event.user" />
     </header>
-    <main class="py-6">
-      <mainContentText :eventJson="eventJson" />
+    <main class="py-6" v-if="!eventJson.event">
+      <mainContentText
+        :eventJson="eventJson"
+        :actId="event.extJsonInfo.actId"
+        :actIds="event.extJsonInfo.actIds ?? []"
+      />
       <mainContentSong v-if="!!musicDetail" :music-detail="musicDetail" />
       <mainContentImageList
         :pics="event.pics ?? []"
         :isMarginTop="!!musicDetail"
       />
     </main>
+    <main v-else>5555</main>
     <footer>
-      <div v-html="`<a href='/activity' >4444</a>`"></div>
       <mainContentFooter :likedCount="event.info.likedCount" />
     </footer>
   </section>
@@ -37,7 +41,7 @@ const props = defineProps({
 
 const eventJson = computed(() => {
   const json = JSON.parse(props.event.json);
-  // console.log(json);
+  console.log(json);
 
   return json;
 });
