@@ -96,6 +96,20 @@ export class resultOptions implements MusicDetailOption {
     this.ar = this.getAr(options);
   }
 
+  picUrlRecursion(options: any) {
+    let test = false;
+
+    for (const key in options) {
+      test = /img\d+[x | y]\d+/.test(key);
+
+      if (test) {
+        return options[key];
+      }
+    }
+
+    return this.picUrlRecursion(options.album);
+  }
+
   getID(options: any, type: string) {
     const id = options.id || options.vid;
 
@@ -111,14 +125,9 @@ export class resultOptions implements MusicDetailOption {
   }
 
   getPicUrl(options: any) {
-    let test = false;
+    const url = this.picUrlRecursion(options);
 
-    for (const key in options) {
-      test = /img\d+[x | y]\d+/.test(key);
-      if (test) {
-        return options[key];
-      }
-    }
+    if (url) return url;
 
     return (
       options.coverUrl || options.coverImgUrl || options["al"]["picUrl"] || ""

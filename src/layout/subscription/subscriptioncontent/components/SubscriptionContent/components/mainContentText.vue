@@ -1,6 +1,10 @@
 <template>
   <div class="root line_h">
-    <p v-html="toParseJson" ref="rootp" class="multiple_lines_omitted"></p>
+    <p
+      v-html="toParseJson"
+      ref="rootp"
+      class="multiple_lines_omitted deep_style"
+    ></p>
   </div>
 </template>
 <script setup lang="ts">
@@ -60,7 +64,7 @@ const toParseJson = computed(() => {
     let s = !!$1.trim();
 
     if (s) {
-      return `<a herf="javascript:;;" style="color:#74b9ff;" data-actId="${
+      return `<a herf="javascript:;;" style="color:#74b9ff;" data-id="${
         sortActIds.value[index++]
       }" class="activity decoration cursor-pointer">${$1}</a>`;
     } else {
@@ -72,7 +76,7 @@ const toParseJson = computed(() => {
 const HyperlinkClick = (e: Event) => {
   const target = e.target as HTMLElement;
 
-  const actId = target.getAttribute("data-actId");
+  const actId = target.getAttribute("data-id");
 
   router.push({
     path: "/activity",
@@ -84,7 +88,10 @@ const HyperlinkClick = (e: Event) => {
 
 onMounted(() => {
   nextTick().then(() => {
-    HyperlinkList.value = Array.from(rootp.value.querySelectorAll(".activity"));
+    HyperlinkList.value.concat(
+      Array.from(rootp.value.querySelectorAll(".activity")),
+      Array.from(rootp.value.querySelectorAll(".user"))
+    );
 
     HyperlinkList.value.map((v) => {
       v.addEventListener("click", HyperlinkClick, false);
@@ -118,5 +125,9 @@ onUnmounted(() => {
       text-decoration: underline;
     }
   }
+}
+
+.deep_style {
+  @include hover_dec;
 }
 </style>

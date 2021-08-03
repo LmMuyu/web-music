@@ -17,3 +17,13 @@
   right: 0;
   bottom: 0;
 }
+
+@mixin hover_dec($enter_color: "#74b9ff") {
+  &:deep(.hover_init) {
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}

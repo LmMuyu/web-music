@@ -1,11 +1,11 @@
 <template>
-  <section>
-    <header>
+  <section style="background-color: #f5f6fa; transform: scale(0.92)" class="p-6">
+    <!-- <header>
       <mainContentHeader :type="event.type" :userinfo="event.user" />
-    </header>
-    <main class="py-6" v-if="!eventJson.event">
+    </header> -->
+    <main v-if="!eventJson.event">
       <mainContentText
-        :eventJson="eventJson"
+        :eventJson="addNewEventJson"
         :actId="event.extJsonInfo.actId"
         :actIds="event.extJsonInfo.actIds ?? []"
       />
@@ -15,15 +15,8 @@
         :isMarginTop="!!musicDetail"
       />
     </main>
-    <main v-else>
-      <recursionMainContent :event="eventJson.event" />
-    </main>
     <footer>
-      <mainContentFooter
-        :likedCount="event.info.likedCount"
-        :recursion="recursion"
-        @linke="onLinke"
-      />
+      <mainContentFooter :likedCount="event.info.likedCount" />
     </footer>
   </section>
 </template>
@@ -31,23 +24,18 @@
 import { computed } from "@vue/runtime-core";
 
 import { musicResultDetail } from "../../../../../../utils/musicDetail";
+import { eventType } from "../../../hooks/eventType";
 
 import mainContentImageList from "./mainContentImageList.vue";
-import recursionMainContent from "./recursionMainContent.vue";
-import mainContentHeader from "./mainContentHeader.vue";
+// import mainContentHeader from "./mainContentHeader.vue";
 import mainContentFooter from "./mainContentFooter.vue";
 import mainContentSong from "./mainContentSong.vue";
 import mainContentText from "./mainContentText.vue";
-import { postLinke } from "../../../../../../api/subscription";
 
 const props = defineProps({
   event: {
     type: Object,
     default: () => {},
-  },
-  recursion: {
-    type: Boolean,
-    default: false,
   },
 });
 
@@ -58,12 +46,16 @@ const eventJson = computed(() => {
   return json;
 });
 
+const addNewEventJson = computed(() => {
+  return {
+    msg: `<a herf="jacascript:;;" data-id="${
+      props.event.user.userId ?? props.event.user.uid
+    }" style="color:#74b9ff" class="user hover_init cursor-pointer">@${
+      props.event.user.nickname
+    }</a>  ${eventType.value(props.event.type)}：${eventJson.value["msg"]}`,
+  };
+});
+
 const musicDetail = musicResultDetail(eventJson.value["song"] ?? {});
-
-async function onLinke() {
-  console.log(44);
-
-  // postLinke()
-}
 </script>
 <style scoped lang="scss"></style>
