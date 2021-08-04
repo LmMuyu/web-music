@@ -1,11 +1,14 @@
 <template>
-  <section style="background-color: #f5f6fa; transform: scale(0.92)" class="p-6">
+  <section
+    style="background-color: #f5f6fa; transform: scale(0.92)"
+    class="p-6"
+  >
     <!-- <header>
       <mainContentHeader :type="event.type" :userinfo="event.user" />
     </header> -->
-    <main v-if="!eventJson.event">
+    <main>
       <mainContentText
-        :eventJson="addNewEventJson"
+        :msg="addNewEventJson.msg"
         :actId="event.extJsonInfo.actId"
         :actIds="event.extJsonInfo.actIds ?? []"
       />
@@ -16,7 +19,10 @@
       />
     </main>
     <footer>
-      <mainContentFooter :likedCount="event.info.likedCount" />
+      <mainContentFooter
+        :likedCount="event.info.likedCount"
+        :latestLikedUsers="event.info.commentThread.latestLikedUsers ?? []"
+      />
     </footer>
   </section>
 </template>

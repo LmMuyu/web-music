@@ -3,9 +3,9 @@
     <header>
       <mainContentHeader :type="event.type" :userinfo="event.user" />
     </header>
-    <main class="py-6" v-if="!eventJson.event">
+    <main class="py-6">
       <mainContentText
-        :eventJson="eventJson"
+        :msg="eventJson.msg ?? ''"
         :actId="event.extJsonInfo.actId"
         :actIds="event.extJsonInfo.actIds ?? []"
       />
@@ -15,13 +15,13 @@
         :isMarginTop="!!musicDetail"
       />
     </main>
-    <main v-else>
+    <main v-if="!!eventJson.event">
       <recursionMainContent :event="eventJson.event" />
     </main>
     <footer>
       <mainContentFooter
         :likedCount="event.info.likedCount"
-        :recursion="recursion"
+        :latestLikedUsers="event.info.commentThread.latestLikedUsers ?? []"
         @linke="onLinke"
       />
     </footer>
@@ -31,6 +31,7 @@
 import { computed } from "@vue/runtime-core";
 
 import { musicResultDetail } from "../../../../../../utils/musicDetail";
+import { onLinke } from "../../../hooks/onLinke";
 
 import mainContentImageList from "./mainContentImageList.vue";
 import recursionMainContent from "./recursionMainContent.vue";
@@ -38,16 +39,11 @@ import mainContentHeader from "./mainContentHeader.vue";
 import mainContentFooter from "./mainContentFooter.vue";
 import mainContentSong from "./mainContentSong.vue";
 import mainContentText from "./mainContentText.vue";
-import { postLinke } from "../../../../../../api/subscription";
 
 const props = defineProps({
   event: {
     type: Object,
     default: () => {},
-  },
-  recursion: {
-    type: Boolean,
-    default: false,
   },
 });
 
@@ -59,11 +55,5 @@ const eventJson = computed(() => {
 });
 
 const musicDetail = musicResultDetail(eventJson.value["song"] ?? {});
-
-async function onLinke() {
-  console.log(44);
-
-  // postLinke()
-}
 </script>
 <style scoped lang="scss"></style>

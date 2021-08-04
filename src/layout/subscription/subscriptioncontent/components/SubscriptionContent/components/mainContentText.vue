@@ -21,9 +21,9 @@ import { useRouter } from "vue-router";
 import type { PropType } from "vue";
 
 const props = defineProps({
-  eventJson: {
-    type: Object,
-    default: () => ({}),
+  msg: {
+    type: String,
+    default: "",
   },
   actId: {
     type: Number,
@@ -56,7 +56,8 @@ const sortActIds = computed(() => {
 });
 
 const toParseJson = computed(() => {
-  const renderStr: string = props.eventJson["msg"];
+  const renderStr: string = props.msg;
+  if (!renderStr) return "";
 
   let index = 0;
 

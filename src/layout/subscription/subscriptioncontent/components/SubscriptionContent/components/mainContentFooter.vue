@@ -6,7 +6,10 @@
         class="flex justify-center items-center px-4 cursor-pointer icons"
         @click="onLinke"
       >
-        <i class="iconfont icondianzan1"></i>
+        <i
+          class="iconfont icondianzan1"
+          :class="{ 'text-red-400': isLinke }"
+        ></i>
         <p style="color: #b2bec3" class="text-sm">
           {{ likedCount === 0 ? "" : `(${likedCount})` }}
         </p>
@@ -27,7 +30,10 @@
   </section>
 </template>
 <script setup lang="ts">
-import { defineEmit } from "vue";
+import { computed, defineEmit, shallowRef } from "vue";
+import { useStore } from "vuex";
+
+import type { State } from "../../../../../../store/type";
 
 const ctxEmit = defineEmit(["linke"]);
 
@@ -36,9 +42,52 @@ const props = defineProps({
     type: Number,
     default: 0,
   },
+  latestLikedUsers: {
+    type: Array,
+    default: () => [],
+  },
 });
 
-const onLinke = () => ctxEmit("linke");
+const onLinke = () =>
+  ctxEmit("linke", (res: any) => {
+    console.log(res);
+  });
+
+const store = useStore();
+const state = store.state as State;
+const isLatestLinke = shallowRef(false);
+
+const isLinke = computed(() => {
+  const len = props.latestLikedUsers.length;
+  const userid = state.userInfo.userID;
+
+  if (len === 0) return false;
+
+  if (len === 1) {
+    const isEqual = props.latestLikedUsers[0]["s"] === userid;
+
+    if (isEqual) {
+      return true;
+    }
+  }
+
+  let before = 0;
+  let after = len - 1;
+
+  while (true) {
+    const beforeId = props.latestLikedUsers[before]["s"];
+    const afterId = props.latestLikedUsers[after]["s"];
+
+    if (beforeId == userid || afterId == userid) return true;
+
+    before += 1;
+    after -= 1;
+
+    if (before === after + 1 || before > len - 1 || after < 0) return false;
+  }
+});
+
+isLatestLinke.value = isLinke.value;
 </script>
 <style scoped lang="scss">
 .footer_heigth {
