@@ -1,8 +1,5 @@
 <template>
-  <section
-    style="background-color: #f5f6fa; transform: scale(0.92)"
-    class="p-6"
-  >
+  <section style="background-color: #f5f6fa" class="px-6 pt-4 w-full h-full">
     <!-- <header>
       <mainContentHeader :type="event.type" :userinfo="event.user" />
     </header> -->
@@ -21,7 +18,9 @@
     <footer>
       <mainContentFooter
         :likedCount="event.info.likedCount"
+        :recursion="true"
         :latestLikedUsers="event.info.commentThread.latestLikedUsers ?? []"
+        @linke="transferFn"
       />
     </footer>
   </section>
@@ -31,6 +30,7 @@ import { computed } from "@vue/runtime-core";
 
 import { musicResultDetail } from "../../../../../../utils/musicDetail";
 import { eventType } from "../../../hooks/eventType";
+import { onLinke } from "../../../hooks/onLinke";
 
 import mainContentImageList from "./mainContentImageList.vue";
 // import mainContentHeader from "./mainContentHeader.vue";
@@ -63,5 +63,9 @@ const addNewEventJson = computed(() => {
 });
 
 const musicDetail = musicResultDetail(eventJson.value["song"] ?? {});
+
+function transferFn(...res: any) {
+  onLinke(props.event, res[0], res[1] ? 0 : 1);
+}
 </script>
 <style scoped lang="scss"></style>

@@ -22,7 +22,7 @@
       <mainContentFooter
         :likedCount="event.info.likedCount"
         :latestLikedUsers="event.info.commentThread.latestLikedUsers ?? []"
-        @linke="onLinke"
+        @linke="transferFn"
       />
     </footer>
   </section>
@@ -55,5 +55,9 @@ const eventJson = computed(() => {
 });
 
 const musicDetail = musicResultDetail(eventJson.value["song"] ?? {});
+
+function transferFn(...res: any) {
+  onLinke(props.event, res[0], res[1] ? 0 : 1);
+}
 </script>
 <style scoped lang="scss"></style>

@@ -4,20 +4,25 @@ export function getSubScriptDynamic(lasttime: number = -1) {
   return request({
     url: "/event",
     params: {
-      pagesize: 10,
+      pagesize: 5,
     },
   });
 }
 
-export function postLinke(cid: number, threadId: string, t: 0 | 1) {
-  return request({
+export async function postLinke(
+  threadId: string,
+  t: 0 | 1,
+  successFn: Function
+) {
+  const res = await request({
     method: "post",
-    url: "/comment/like",
+    url: "/resource/like",
     data: {
       t,
-      cid,
       type: 6,
       threadId,
     },
   });
+
+  successFn(res);
 }
