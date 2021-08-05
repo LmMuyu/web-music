@@ -3,7 +3,7 @@
     <p
       v-html="toParseJson"
       ref="rootp"
-      class="multiple_lines_omitted deep_style"
+      class="multiple_lines_omitted deep_style cursor-default"
     ></p>
   </div>
 </template>

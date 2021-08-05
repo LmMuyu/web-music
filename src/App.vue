@@ -1,10 +1,10 @@
 <template>
   <Main>
     <router-view v-slot="{ Component, route }">
-      <keep-alive v-if="route.meta.KeepAlive">
+      <keep-alive v-if="route.meta.KeepAlive ?? true">
         <component :is="Component" />
       </keep-alive>
-
+      
       <component :is="Component" v-else />
     </router-view>
   </Main>
@@ -12,10 +12,9 @@
 
 <script setup lang="ts">
 import { useRouter } from "vue-router";
-import { reactive, ref } from "vue";
 import { useStore } from "vuex";
+import { ref } from "vue";
 
-import { searchDefault } from "./api/app/searchDefault";
 import { loginStateus } from "./api/app/login";
 
 import Main from "./layout/main/Main.vue";

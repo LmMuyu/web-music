@@ -41,7 +41,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, ref } from "@vue/runtime-core";
+import { computed, onActivated } from "@vue/runtime-core";
 import { useRoute } from "vue-router";
 
 import { componentId, compsId, runLoadView } from "./hooks/component";
@@ -57,7 +57,9 @@ const meta: META = router.meta;
 const defaultView = meta.defaultView;
 const { left, right } = meta?.mainContentOptions || { left: {}, right: {} };
 
-runLoadView(defaultView);
+onActivated(() => {
+  runLoadView(defaultView);
+});
 
 const returnresdata = (any: any) => {
   console.log(any);
