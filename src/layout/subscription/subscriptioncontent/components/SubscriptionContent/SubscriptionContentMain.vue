@@ -33,7 +33,7 @@ const { countRef, negate } = useRefNegate(false);
 const previewImg = new preview();
 
 function onClick() {
-  previewImg.mount([]);
+  previewImg.mount(events.value[0].pics ?? []);
 }
 //@ts-ignore
 const events = ref([]);

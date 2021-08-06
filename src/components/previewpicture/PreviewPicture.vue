@@ -1,6 +1,9 @@
 <template>
-  <section class="icon h-full w-full relative overflow-hidden">
-    <button class="iconfont icondel absolute top-0 left-0"></button>
+  <section class="icon absolute top-0 bottom-0 h-full w-full overflow-hidden">
+    <button
+      class="iconfont icondel absolute top-0 left-0"
+      @click="unmount"
+    ></button>
     <button
       class="
         iconfont
@@ -24,14 +27,15 @@
       "
     ></button>
     <main class="margin_auto" style="height: 90%">
-      <!-- <img :src="imgList[currentIndex]['pcSquareUrl'] ?? ''" /> -->
-    4444
+      <!-- <img :src="imgList[currentIndex]?.['pcSquareUrl'] ?? ''" /> -->
     </main>
     <footer style="height: 10%"></footer>
   </section>
 </template>
 <script setup lang="ts">
-import { ref } from "@vue/runtime-core";
+import { computed, ref, watch } from "@vue/runtime-core";
+
+import { useThemeColor } from "./hooks/useThemeColor";
 
 import type { PropType } from "vue";
 
@@ -45,15 +49,30 @@ const props = defineProps({
     default: () => ({}),
   },
   unmount: {
-    type: Function,
+    type: Function as PropType<(payload: any) => void>,
   },
 });
 
 const currentIndex = ref(0);
+
+const bgcolor = computed(async () => {
+  const src = props.imgList[currentIndex.value]?.["pcSquareUrl"] ?? "";
+  return await useThemeColor(src);
+});
+
+watch(
+  () => bgcolor,
+  (value) => {
+    console.log(value);
+  },
+  {
+    deep: true,
+  }
+);
 </script>
 <style scoped lang="scss">
 .icon {
-  @include Iconfont(#f5f6fa, 20);
+  @include Iconfont(#0033ff, 20);
 }
 
 .margin_auto {
