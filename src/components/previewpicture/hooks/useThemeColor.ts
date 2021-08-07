@@ -1,12 +1,17 @@
+import { isRef, ref, watchEffect, unref } from "@vue/runtime-dom";
 import axios from "axios";
 
-export async function useThemeColor(path: string) {
+import type { Ref } from "vue";
+
+type INFO = { width: number; height: number };
+
+export async function useThemeColor(path: string, imageInfo: INFO) {
   if (!path) return;
 
-  function themeColor(src: string, width: number = 500, height: number = 500) {
+  function themeColor(src: string, imageInfo: INFO) {
     return new Promise(async (resolve, reject) => {
       const newsrc = await axios({
-        url: src,
+        url: src + `?param=${imageInfo.width}y${imageInfo.height}`,
         method: "GET",
         responseType: "blob",
       });
@@ -86,10 +91,37 @@ export async function useThemeColor(path: string) {
     return color;
   }
 
-  const res = await themeColor(path);
-
-  const data = colorArr(res);
-  const color = getColor(data);
+  const res = await themeColor(path, imageInfo); //获取数据
+  const data = colorArr(res); //处理数据
+  const color = getColor(data); //得到主题颜色
 
   return color;
+}
+
+export function returnThemmColor(src: string | Ref<string>, imageInfo: INFO) {
+  console.log(imageInfo);
+
+  if (!unref(src) || imageInfo.height == 0 || imageInfo.width == 0) return {};
+
+  const url = isRef(src) ? src : ref(src);
+  const styleColor = ref("");
+  const store = {};
+
+  const stopEffect = watchEffect(async () => {
+    console.log(store);
+
+    if (store[url.value]) return (styleColor.value = store[url.value]);
+
+    const res = await useThemeColor(url.value, imageInfo);
+
+    !store[url.value] && (store[url.value] = `rgb(${res})`);
+
+    styleColor.value = `rgb(${res})`;
+  });
+
+  return {
+    stopEffect,
+    styleColor,
+    setsrcpipe: url,
+  };
 }

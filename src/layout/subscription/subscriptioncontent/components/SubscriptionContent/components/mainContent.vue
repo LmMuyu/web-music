@@ -13,6 +13,7 @@
       <mainContentImageList
         :pics="event.pics ?? []"
         :isMarginTop="!!musicDetail"
+        @click.capture="onEmitPreviewInfo"
       />
     </main>
     <main v-if="!!eventJson.event">
@@ -28,7 +29,7 @@
   </section>
 </template>
 <script setup lang="ts">
-import { computed } from "@vue/runtime-core";
+import { computed, defineEmit } from "@vue/runtime-core";
 
 import { musicResultDetail } from "../../../../../../utils/musicDetail";
 import { onLinke } from "../../../hooks/onLinke";
@@ -39,6 +40,8 @@ import mainContentHeader from "./mainContentHeader.vue";
 import mainContentFooter from "./mainContentFooter.vue";
 import mainContentSong from "./mainContentSong.vue";
 import mainContentText from "./mainContentText.vue";
+
+const ctxEmit = defineEmit(["emitPics"]);
 
 const props = defineProps({
   event: {
@@ -58,6 +61,12 @@ const musicDetail = musicResultDetail(eventJson.value["song"] ?? {});
 
 function transferFn(...res: any) {
   onLinke(props.event, res[0], res[1] ? 0 : 1);
+}
+
+function onEmitPreviewInfo(e: PointerEvent) {
+  const index = (e.target as HTMLElement).getAttribute("key-index");
+
+  ctxEmit("emitPics", [props.event.pics, index]);
 }
 </script>
 <style scoped lang="scss"></style>

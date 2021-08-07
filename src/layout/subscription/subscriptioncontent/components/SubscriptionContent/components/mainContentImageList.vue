@@ -1,7 +1,7 @@
 <template>
   <ul ref="refGrid" :class="{ 'mt-6': isMarginTop }">
     <li v-for="(file, index) in picList" :key="index">
-      <img :src="file" class="object-fit" />
+      <img :src="file" class="object-fit" :key-index="index" />
     </li>
   </ul>
 </template>

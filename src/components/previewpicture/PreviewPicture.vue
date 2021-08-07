@@ -1,7 +1,12 @@
 <template>
-  <section class="icon absolute top-0 bottom-0 h-full w-full overflow-hidden">
+  <section
+    class="icon absolute top-0 bottom-0 h-full w-full overflow-hidden"
+    :style="{ backgroundColor: styleColor }"
+  >
+    <div class="absolute top-0 bottom-0 w-full h-full opacity-50"></div>
+
     <button
-      class="iconfont icondel absolute top-0 left-0"
+      class="iconfont icondel absolute top-0 left-0 close"
       @click="unmount"
     ></button>
     <button
@@ -13,6 +18,7 @@
         left-0
         transform
         -translate-y-1/2
+        before
       "
     ></button>
     <button
@@ -20,22 +26,50 @@
         iconfont
         iconmore
         absolute
-        top-0
-        left-1/2
+        top-1/2
+        right-0
         transform
         -translate-y-1/2
+        after
       "
     ></button>
-    <main class="margin_auto" style="height: 90%">
-      <!-- <img :src="imgList[currentIndex]?.['pcSquareUrl'] ?? ''" /> -->
+    <main
+      class="
+        margin_auto
+        flex
+        items-center
+        justify-center
+        overflow-hidden
+        z-10
+        opacity-100
+      "
+      ref="main"
+      style="height: 90%"
+    >
+      <div :style="imageInfo">
+        <img
+          class="object-cover"
+          :src="imgList[currentIndex]?.['originUrl'] ?? ''"
+        />
+      </div>
     </main>
-    <footer style="height: 10%"></footer>
+    <footer style="height: 10%" class="w-full" ref="footer">
+      <PreviewFooter />
+    </footer>
   </section>
 </template>
 <script setup lang="ts">
-import { computed, ref, watch } from "@vue/runtime-core";
+import {
+  computed,
+  nextTick,
+  onMounted,
+  reactive,
+  ref,
+  watchEffect,
+} from "@vue/runtime-core";
 
-import { useThemeColor } from "./hooks/useThemeColor";
+import { returnThemmColor } from "./hooks/useThemeColor";
+import PreviewFooter from "./components/Footer.vue";
 
 import type { PropType } from "vue";
 
@@ -43,6 +77,10 @@ const props = defineProps({
   imgList: {
     type: Array as PropType<any[]>,
     default: () => [],
+  },
+  index: {
+    type: String,
+    default: 0,
   },
   options: {
     type: Object,
@@ -53,26 +91,77 @@ const props = defineProps({
   },
 });
 
-const currentIndex = ref(0);
+const currentIndex = ref(props.index);
+const footer = ref<HTMLElement | null>(null);
+const main = ref<HTMLElement | null>(null);
 
-const bgcolor = computed(async () => {
-  const src = props.imgList[currentIndex.value]?.["pcSquareUrl"] ?? "";
-  return await useThemeColor(src);
+const imageMaxInfo = reactive({
+  widthMax: 0,
+  heightMax: 0,
 });
 
-watch(
-  () => bgcolor,
-  (value) => {
-    console.log(value);
-  },
-  {
-    deep: true,
-  }
+const imageInfo = computed(() => {
+  return {
+    maxWidth: imageMaxInfo.widthMax + "px",
+    maxHeight: imageMaxInfo.heightMax + "px",
+  };
+});
+
+const whInfo = computed(() => {
+  return function (widthMax: number, heightMax: number) {
+    const info = JSON.parse(JSON.stringify(props.imgList[currentIndex.value]));
+    console.log(info);
+
+    if (info.width > widthMax) {
+      info.width = widthMax;
+    }
+
+    if (info.height > heightMax) {
+      info.height = heightMax;
+    }
+
+    return {
+      width: info.width,
+      height: info.height,
+    };
+  };
+});
+
+const { stopEffect, styleColor, setsrcpipe } = returnThemmColor(
+  props.imgList[currentIndex.value]?.["originUrl"] ?? "",
+  whInfo.value(imageMaxInfo.widthMax, imageMaxInfo.heightMax)
 );
+
+watchEffect(() => {
+  console.log(whInfo.value(imageMaxInfo.widthMax, imageMaxInfo.heightMax));
+});
+
+onMounted(() => {
+  nextTick().then(() => {
+    const bodyHegiht = document.documentElement.offsetHeight;
+    const offsetHeight = footer.value.offsetHeight;
+
+    const offsetWidth = main.value.offsetWidth * 0.77;
+
+    imageMaxInfo.heightMax = bodyHegiht - offsetHeight;
+    imageMaxInfo.widthMax = offsetWidth;
+  });
+});
 </script>
 <style scoped lang="scss">
 .icon {
-  @include Iconfont(#0033ff, 20);
+  @include Iconfont(#d8dadb, 20);
+
+  .close {
+    font-size: 42px !important;
+  }
+
+  .before {
+    font-size: 28px !important;
+  }
+  .after {
+    font-size: 28px !important;
+  }
 }
 
 .margin_auto {

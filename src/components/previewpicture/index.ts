@@ -6,7 +6,7 @@ export default class preview {
   app: App<Element>;
   options: any;
 
-  mount(imgList: any[], options?: any) {
+  mount(imgList: any[], index: number, options?: any) {
     if (this.app) return;
 
     options = options ?? this.options ?? {};
@@ -15,19 +15,19 @@ export default class preview {
     document.querySelector("body").appendChild(this.mounttag);
 
     this.app = createApp(PreviewPicture, {
+      index,
       imgList,
       options,
-      unmount: this.unmount,
+      unmount: this.unmount.bind(this),
     });
 
     this.app.mount(this.mounttag);
   }
-  unmount(backCall?: Function) {
-    console.log(this.app);
-
+  unmount() {
     this.app.unmount();
     this.mounttag.parentNode.removeChild(this.mounttag);
     this.mounttag = null;
-    backCall?.();
+    this.app = null;
+    return true;
   }
 }

@@ -1,6 +1,5 @@
 <template>
   <div v-if="countRef" ref="section">
-    <button @click="onClick">点击</button>
     <section
       class="flex pt-5 border_style"
       v-for="event in events"
@@ -10,7 +9,7 @@
         <el-avatar :src="event.user.avatarUrl"></el-avatar>
       </div>
       <div style="width: 90%">
-        <mainContent :event="event" />
+        <mainContent @emitPics="onClick" :event="event" />
       </div>
     </section>
   </div>
@@ -32,8 +31,8 @@ const store = useStore();
 const { countRef, negate } = useRefNegate(false);
 const previewImg = new preview();
 
-function onClick() {
-  previewImg.mount(events.value[0].pics ?? []);
+function onClick(picInfo: any[]) {
+  previewImg.mount(picInfo[0], picInfo[1]);
 }
 //@ts-ignore
 const events = ref([]);
@@ -55,10 +54,15 @@ store.watch(
 );
 
 async function getFriend(id: number) {
-  const res = await getSubScriptDynamic(id);
+  try {
+    const res = await getSubScriptDynamic(id);
 
-  lasttime = res.data.lasttime;
-  events.value = res.data.event;
+    lasttime = res.data.lasttime;
+    events.value = res.data.event;
+  } catch (err) {
+    //导航到404页面
+    console.log(err);
+  }
 }
 
 function onScroll(e: Event) {
