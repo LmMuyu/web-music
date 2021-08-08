@@ -1,10 +1,6 @@
 <template>
   <div v-if="countRef" ref="section">
-    <section
-      class="flex pt-5 border_style"
-      v-for="event in events"
-      :key="event.id"
-    >
+    <section class="flex pt-5 border_style" v-for="event in events" :key="event.id">
       <div style="width: 10%">
         <el-avatar :src="event.user.avatarUrl"></el-avatar>
       </div>
@@ -15,7 +11,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { nextTick, onUnmounted, watch } from "@vue/runtime-core";
+import { getCurrentInstance, nextTick, onUnmounted, watch } from "@vue/runtime-core";
 import { reactive, ref } from "@vue/reactivity";
 import { useStore } from "vuex";
 
@@ -27,13 +23,13 @@ import mainContent from "./components/mainContent.vue";
 import { ElAvatar } from "element-plus";
 
 const store = useStore();
+const { proxy } = getCurrentInstance()
+console.log(proxy);
+
 
 const { countRef, negate } = useRefNegate(false);
 const previewImg = new preview();
 
-function onClick(picInfo: any[]) {
-  previewImg.mount(picInfo[0], picInfo[1]);
-}
 //@ts-ignore
 const events = ref([]);
 const section = ref<HTMLElement | null>(null);
@@ -77,6 +73,12 @@ const stopScroll = watch(events, () => {
     section.value.addEventListener("scroll", onScroll, false);
   });
 });
+
+
+
+function onClick(picInfo: any[]) {
+  previewImg.mount(picInfo[0], picInfo[1]);
+}
 
 onUnmounted(() => {
   stopScroll();

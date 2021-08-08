@@ -67,7 +67,7 @@ function setStyle() {
       el.style.display = "grid";
       el.style.gridTemplateColumns = `repeat(3,${w.value + "px"})`;
       el.style.gridTemplateRows = `repeat(${row.value},${h.value + "px"})`;
-      el.style.gridGap = "2px";
+      el.style.gridGap = "5px";
     }
   });
 }

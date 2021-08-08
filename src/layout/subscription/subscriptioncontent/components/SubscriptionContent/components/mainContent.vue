@@ -46,7 +46,7 @@ const ctxEmit = defineEmit(["emitPics"]);
 const props = defineProps({
   event: {
     type: Object,
-    default: () => {},
+    default: () => { },
   },
 });
 
@@ -69,4 +69,5 @@ function onEmitPreviewInfo(e: PointerEvent) {
   ctxEmit("emitPics", [props.event.pics, index]);
 }
 </script>
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+</style>

@@ -41,7 +41,6 @@ export async function useThemeColor(path: string, imageInfo: INFO) {
     ctx2d.drawImage(img, 0, 0);
 
     const ImageData = ctx2d.getImageData(0, 0, 500, 500).data;
-
     return ImageData;
   }
 
@@ -86,9 +85,7 @@ export async function useThemeColor(path: string, imageInfo: INFO) {
       return b.count - a.count;
     });
 
-    const color = sortList[0].color.split(" ").join(",");
-
-    return color;
+    return sortList[0].color.split(" ").join(",");
   }
 
   const res = await themeColor(path, imageInfo); //获取数据
@@ -99,8 +96,6 @@ export async function useThemeColor(path: string, imageInfo: INFO) {
 }
 
 export function returnThemmColor(src: string | Ref<string>, imageInfo: INFO) {
-  console.log(imageInfo);
-
   if (!unref(src) || imageInfo.height == 0 || imageInfo.width == 0) return {};
 
   const url = isRef(src) ? src : ref(src);
@@ -108,9 +103,9 @@ export function returnThemmColor(src: string | Ref<string>, imageInfo: INFO) {
   const store = {};
 
   const stopEffect = watchEffect(async () => {
-    console.log(store);
-
     if (store[url.value]) return (styleColor.value = store[url.value]);
+
+    console.log(Date.now());
 
     const res = await useThemeColor(url.value, imageInfo);
 

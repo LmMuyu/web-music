@@ -1,56 +1,24 @@
 <template>
   <section
-    class="icon absolute top-0 bottom-0 h-full w-full overflow-hidden"
-    :style="{ backgroundColor: styleColor }"
+    style="background-color:rgba(91, 112, 131, 0.4)"
+    class="icon root absolute top-0 bottom-0 h-full w-full overflow-hidden"
   >
-    <div class="absolute top-0 bottom-0 w-full h-full opacity-50"></div>
+    <div
+      class="absolute top-0 left-0 w-full h-full opacity-60"
+      :style="{ backgroundColor: styleColor }"
+    ></div>
+    <div class="absolute top-0 left-0 m-2" style="z-index:10">
+      <i class="iconfont icondel cursor-pointer close delete_btn" @click="unmount"></i>
+    </div>
 
-    <button
-      class="iconfont icondel absolute top-0 left-0 close"
-      @click="unmount"
-    ></button>
-    <button
-      class="
-        iconfont
-        iconarrow-right-copy
-        absolute
-        top-1/2
-        left-0
-        transform
-        -translate-y-1/2
-        before
-      "
-    ></button>
-    <button
-      class="
-        iconfont
-        iconmore
-        absolute
-        top-1/2
-        right-0
-        transform
-        -translate-y-1/2
-        after
-      "
-    ></button>
     <main
-      class="
-        margin_auto
-        flex
-        items-center
-        justify-center
-        overflow-hidden
-        z-10
-        opacity-100
-      "
+      class="margin_auto relative flex items-center justify-center overflow-hidden z-10 opacity-100"
       ref="main"
       style="height: 90%"
     >
-      <div :style="imageInfo">
-        <img
-          class="object-cover"
-          :src="imgList[currentIndex]?.['originUrl'] ?? ''"
-        />
+      <DirectionIndicator :isIfBtnArr="isIfBtn" @switchPicture="switchImage" />
+      <div :style="imageInfo" class="z-10">
+        <img class="object-cover" :src="imgList[currentIndex]?.['originUrl'] ?? ''" />
       </div>
     </main>
     <footer style="height: 10%" class="w-full" ref="footer">
@@ -63,12 +31,16 @@ import {
   computed,
   nextTick,
   onMounted,
+  onUnmounted,
   reactive,
   ref,
-  watchEffect,
+  unref,
+  watch,
 } from "@vue/runtime-core";
 
 import { returnThemmColor } from "./hooks/useThemeColor";
+
+import DirectionIndicator from "./components/DirectionIndicator.vue";
 import PreviewFooter from "./components/Footer.vue";
 
 import type { PropType } from "vue";
@@ -91,7 +63,7 @@ const props = defineProps({
   },
 });
 
-const currentIndex = ref(props.index);
+const currentIndex = ref(parseInt(props.index));
 const footer = ref<HTMLElement | null>(null);
 const main = ref<HTMLElement | null>(null);
 
@@ -100,6 +72,31 @@ const imageMaxInfo = reactive({
   heightMax: 0,
 });
 
+
+
+const { stopEffect, styleColor, setsrcpipe } = returnThemmColor(
+  props.imgList[currentIndex.value]?.["originUrl"] ?? "",
+  {
+    width: props.imgList[currentIndex.value]["width"],
+    height: props.imgList[currentIndex.value]["height"],
+  }
+);
+
+
+
+function switchImage(direction: "prev" | "next") {
+  if (direction === "prev" && currentIndex.value !== 0) {
+    currentIndex.value -= 1
+  } else if (direction === "next" && currentIndex.value !== props.imgList.length - 1) {
+    currentIndex.value += 1
+  }
+
+}
+
+watch(currentIndex, (value) => {
+  setsrcpipe.value = props.imgList[value]?.["originUrl"] ?? ""
+})
+
 const imageInfo = computed(() => {
   return {
     maxWidth: imageMaxInfo.widthMax + "px",
@@ -107,34 +104,20 @@ const imageInfo = computed(() => {
   };
 });
 
-const whInfo = computed(() => {
-  return function (widthMax: number, heightMax: number) {
-    const info = JSON.parse(JSON.stringify(props.imgList[currentIndex.value]));
-    console.log(info);
+const isIfBtn = computed(() => {
+  const len = props.imgList.length
+  const index = Number(unref(currentIndex.value))
+  const ifarr: [boolean, boolean] = [false, false]
 
-    if (info.width > widthMax) {
-      info.width = widthMax;
-    }
+  if (len === 1) return ifarr
 
-    if (info.height > heightMax) {
-      info.height = heightMax;
-    }
+  ifarr[0] = index - 1 < 0 ? false : true
+  ifarr[1] = index + 1 > len - 1 ? false : true
 
-    return {
-      width: info.width,
-      height: info.height,
-    };
-  };
-});
+  return ifarr
+})
 
-const { stopEffect, styleColor, setsrcpipe } = returnThemmColor(
-  props.imgList[currentIndex.value]?.["originUrl"] ?? "",
-  whInfo.value(imageMaxInfo.widthMax, imageMaxInfo.heightMax)
-);
 
-watchEffect(() => {
-  console.log(whInfo.value(imageMaxInfo.widthMax, imageMaxInfo.heightMax));
-});
 
 onMounted(() => {
   nextTick().then(() => {
@@ -147,20 +130,28 @@ onMounted(() => {
     imageMaxInfo.widthMax = offsetWidth;
   });
 });
+
+
+onUnmounted(() => {
+  stopEffect()
+})
+
 </script>
 <style scoped lang="scss">
+.root {
+  &:nth-child(1) {
+    .delete_btn {
+      border-radius: 50%;
+      outline: none;
+    }
+  }
+}
+
 .icon {
-  @include Iconfont(#d8dadb, 20);
+  @include Iconfont(#fff, 16);
 
   .close {
-    font-size: 42px !important;
-  }
-
-  .before {
-    font-size: 28px !important;
-  }
-  .after {
-    font-size: 28px !important;
+    font-size: 32px !important;
   }
 }
 

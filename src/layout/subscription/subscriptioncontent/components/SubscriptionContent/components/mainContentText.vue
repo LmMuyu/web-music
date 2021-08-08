@@ -110,13 +110,13 @@ onUnmounted(() => {
 .line_h {
   line-height: 24px;
 }
-.multiple_lines_omitted {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 6;
-  -webkit-box-orient: vertical;
-}
+// .multiple_lines_omitted {
+//   overflow: hidden;
+//   text-overflow: ellipsis;
+//   display: -webkit-box;
+//   -webkit-line-clamp: 6;
+//   -webkit-box-orient: vertical;
+// }
 
 .root {
   &:deep(.decoration) {
