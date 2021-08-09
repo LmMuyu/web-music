@@ -11,7 +11,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { getCurrentInstance, nextTick, onUnmounted, watch } from "@vue/runtime-core";
+import { getCurrentInstance, nextTick, onDeactivated, onUnmounted, watch } from "@vue/runtime-core";
 import { reactive, ref } from "@vue/reactivity";
 import { useStore } from "vuex";
 
@@ -23,8 +23,8 @@ import mainContent from "./components/mainContent.vue";
 import { ElAvatar } from "element-plus";
 
 const store = useStore();
-const { proxy } = getCurrentInstance()
-console.log(proxy);
+// const instance = getCurrentInstance()
+// console.log(instance);
 
 
 const { countRef, negate } = useRefNegate(false);
@@ -79,6 +79,11 @@ const stopScroll = watch(events, () => {
 function onClick(picInfo: any[]) {
   previewImg.mount(picInfo[0], picInfo[1]);
 }
+
+
+onDeactivated(() => {
+  previewImg.unmount(true)
+})
 
 onUnmounted(() => {
   stopScroll();

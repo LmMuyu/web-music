@@ -1,8 +1,5 @@
 <template>
   <section style="background-color: #f5f6fa" class="px-6 pt-4 w-full h-full">
-    <!-- <header>
-      <mainContentHeader :type="event.type" :userinfo="event.user" />
-    </header> -->
     <main>
       <mainContentText
         :msg="addNewEventJson.msg"
@@ -13,6 +10,7 @@
       <mainContentImageList
         :pics="event.pics ?? []"
         :isMarginTop="!!musicDetail"
+        @click.capture="onEmitPreviewInfo"
       />
     </main>
     <footer>
@@ -26,39 +24,37 @@
   </section>
 </template>
 <script setup lang="ts">
-import { computed } from "@vue/runtime-core";
+import { computed, defineEmit } from "@vue/runtime-core";
 
 import { musicResultDetail } from "../../../../../../utils/musicDetail";
 import { eventType } from "../../../hooks/eventType";
 import { onLinke } from "../../../hooks/onLinke";
 
 import mainContentImageList from "./mainContentImageList.vue";
-// import mainContentHeader from "./mainContentHeader.vue";
 import mainContentFooter from "./mainContentFooter.vue";
 import mainContentSong from "./mainContentSong.vue";
 import mainContentText from "./mainContentText.vue";
 
+const ctxEmit = defineEmit(["emitPics"])
+
 const props = defineProps({
   event: {
     type: Object,
-    default: () => {},
+    default: () => { },
   },
 });
 
 const eventJson = computed(() => {
   const json = JSON.parse(props.event.json);
-  // console.log(json);
 
   return json;
 });
 
 const addNewEventJson = computed(() => {
   return {
-    msg: `<a herf="jacascript:;;" data-id="${
-      props.event.user.userId ?? props.event.user.uid
-    }" style="color:#74b9ff" class="user hover_init cursor-pointer">@${
-      props.event.user.nickname
-    }</a>  ${eventType.value(props.event.type)}：${eventJson.value["msg"]}`,
+    msg: `<a herf="jacascript:;;" data-id="${props.event.user.userId ?? props.event.user.uid
+      }" style="color:#74b9ff" class="user hover_init cursor-pointer">@${props.event.user.nickname
+      }</a>  ${eventType.value(props.event.type)}：${eventJson.value["msg"]}`,
   };
 });
 
@@ -67,5 +63,13 @@ const musicDetail = musicResultDetail(eventJson.value["song"] ?? {});
 function transferFn(...res: any) {
   onLinke(props.event, res[0], res[1] ? 0 : 1);
 }
+
+function onEmitPreviewInfo(e: PointerEvent) {
+  const index = (e.target as HTMLElement).getAttribute("key-index");
+
+  ctxEmit("emitPics", [props.event.pics, index]);
+}
+
 </script>
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+</style>

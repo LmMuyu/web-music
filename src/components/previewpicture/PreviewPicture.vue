@@ -5,7 +5,7 @@
   >
     <div
       class="absolute top-0 left-0 w-full h-full opacity-60"
-      :style="{ backgroundColor: styleColor }"
+      :style="{ backgroundColor: styleColor ?? '#fff' }"
     ></div>
     <div class="absolute top-0 left-0 m-2" style="z-index:10">
       <i class="iconfont icondel cursor-pointer close delete_btn" @click="unmount"></i>
@@ -18,7 +18,7 @@
     >
       <DirectionIndicator :isIfBtnArr="isIfBtn" @switchPicture="switchImage" />
       <div :style="imageInfo" class="z-10">
-        <img class="object-cover" :src="imgList[currentIndex]?.['originUrl'] ?? ''" />
+        <img class="object-cover" :src="previewList[currentIndex]?.['originUrl'] ?? ''" />
       </div>
     </main>
     <footer style="height: 10%" class="w-full" ref="footer">
@@ -46,7 +46,7 @@ import PreviewFooter from "./components/Footer.vue";
 import type { PropType } from "vue";
 
 const props = defineProps({
-  imgList: {
+  previewList: {
     type: Array as PropType<any[]>,
     default: () => [],
   },
@@ -72,13 +72,11 @@ const imageMaxInfo = reactive({
   heightMax: 0,
 });
 
-
-
 const { stopEffect, styleColor, setsrcpipe } = returnThemmColor(
-  props.imgList[currentIndex.value]?.["originUrl"] ?? "",
+  props.previewList[currentIndex.value]?.["originUrl"] ?? "",
   {
-    width: props.imgList[currentIndex.value]["width"],
-    height: props.imgList[currentIndex.value]["height"],
+    width: props.previewList[currentIndex.value]?.["width"] ?? 0,
+    height: props.previewList[currentIndex.value]?.["height"] ?? 0,
   }
 );
 
@@ -87,14 +85,14 @@ const { stopEffect, styleColor, setsrcpipe } = returnThemmColor(
 function switchImage(direction: "prev" | "next") {
   if (direction === "prev" && currentIndex.value !== 0) {
     currentIndex.value -= 1
-  } else if (direction === "next" && currentIndex.value !== props.imgList.length - 1) {
+  } else if (direction === "next" && currentIndex.value !== props.previewList.length - 1) {
     currentIndex.value += 1
   }
 
 }
 
 watch(currentIndex, (value) => {
-  setsrcpipe.value = props.imgList[value]?.["originUrl"] ?? ""
+  setsrcpipe.value = props.previewList[value]?.["originUrl"] ?? ""
 })
 
 const imageInfo = computed(() => {
@@ -105,7 +103,7 @@ const imageInfo = computed(() => {
 });
 
 const isIfBtn = computed(() => {
-  const len = props.imgList.length
+  const len = props.previewList.length
   const index = Number(unref(currentIndex.value))
   const ifarr: [boolean, boolean] = [false, false]
 
@@ -133,7 +131,7 @@ onMounted(() => {
 
 
 onUnmounted(() => {
-  stopEffect()
+  stopEffect?.()
 })
 
 </script>
