@@ -31,8 +31,8 @@
 <script setup lang="ts">
 import { computed, defineEmit } from "@vue/runtime-core";
 
-import { musicResultDetail } from "../../../../../../utils/musicDetail";
-import { onLinke } from "../../../hooks/onLinke";
+import { musicResultDetail } from "../../../../../utils/musicDetail";
+import { onLinke } from "../../hooks/onLinke";
 
 import mainContentImageList from "./mainContentImageList.vue";
 import recursionMainContent from "./recursionMainContent.vue";
@@ -66,7 +66,8 @@ function transferFn(...res: any) {
 function onEmitPreviewInfo(e: PointerEvent) {
   const index = (e.target as HTMLElement).getAttribute("key-index");
 
-  ctxEmit("emitPics", [props.event.pics, index]);
+
+  ctxEmit("emitPics", [JSON.parse(JSON.stringify(props.event.pics)), index]);
 }
 </script>
 <style scoped lang="scss">

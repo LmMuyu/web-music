@@ -1,15 +1,24 @@
 import { App, createApp } from "@vue/runtime-dom";
-import { isRef, ref, Ref, unref } from "vue";
+import { isRef, ref, Ref, unref, watch } from "vue";
+
 import PreviewPicture from "./PreviewPicture.vue";
+
+import type { globalRefType } from "../../type";
 
 export default class preview {
   mounttag: HTMLElement;
-  app: App<Element>;
+  app: Ref<App<Element> | null> = ref(null);
   options: any;
   previewList: Ref<any[]>;
+  listViewPipe: (data: globalRefType<any>) => void;
 
   private runCreateApp(index: number, options: any) {
-    this.app = createApp(PreviewPicture, {
+    const stop = watch(this.app, (value) => {
+      this.listViewPipe = value.config.globalProperties.listViewPipe;
+      stop();
+    });
+
+    this.app.value = createApp(PreviewPicture, {
       index,
       options,
       previewList: this.previewList.value,
@@ -18,7 +27,7 @@ export default class preview {
   }
 
   mount(imgList: Ref<any[]> | any[], index: number, options?: any) {
-    if (!!this.app) {
+    if (!!this.app.value) {
       this.addNode(imgList);
       return;
     }
@@ -28,7 +37,7 @@ export default class preview {
 
     this.findNode();
     this.runCreateApp(index, options);
-    this.app.mount(this.mounttag);
+    this.app.value.mount(this.mounttag);
   }
 
   unmount(iscomp: boolean) {
@@ -37,7 +46,9 @@ export default class preview {
       return;
     }
 
-    this.app.unmount();
+    console.log("unmount---", iscomp);
+
+    this.app.value.unmount();
     this.mounttag.parentNode.removeChild(this.mounttag);
     this.mounttag = null;
     this.app = null;
@@ -53,18 +64,13 @@ export default class preview {
     const list = unref(imageList);
     if (!list.length) return;
 
-    this.imageListPipe(list);
+    this.listViewPipe(list);
+
     document.querySelector("body").appendChild(this.mounttag);
   }
 
   private removeNode() {
     this.previewList.value.length = 0;
     this.mounttag.parentNode.removeChild(this.mounttag);
-  }
-
-  private imageListPipe(imgList: any[]) {
-    this.previewList.value.length = 0;
-    this.previewList.value = imgList;
-    console.log(this.previewList.value);
   }
 }

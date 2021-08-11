@@ -15,17 +15,19 @@ import { getCurrentInstance, nextTick, onDeactivated, onUnmounted, watch } from 
 import { reactive, ref } from "@vue/reactivity";
 import { useStore } from "vuex";
 
-import { getSubScriptDynamic } from "../../../../../api/subscription";
-import { useRefNegate } from "../../../../../utils/useRefNegate";
-import preview from "../../../../../components/previewpicture";
+import { getSubScriptDynamic } from "../../../../api/subscription";
+import { useRefNegate } from "../../../../utils/useRefNegate";
+import preview from "../../../../components/previewpicture";
 
-import mainContent from "./components/mainContent.vue";
+import mainContent from "./layout/mainContent.vue";
 import { ElAvatar } from "element-plus";
 
-const store = useStore();
-// const instance = getCurrentInstance()
-// console.log(instance);
+import type { Emitter } from "mitt"
 
+const store = useStore();
+const instance = getCurrentInstance()
+
+const mitt: Emitter = instance.appContext.config.globalProperties["mittBus"]
 
 const { countRef, negate } = useRefNegate(false);
 const previewImg = new preview();
@@ -61,6 +63,8 @@ async function getFriend(id: number) {
   }
 }
 
+mitt.on("preview", onClick)
+
 function onScroll(e: Event) {
   console.log(e);
 }
@@ -77,6 +81,8 @@ const stopScroll = watch(events, () => {
 
 
 function onClick(picInfo: any[]) {
+  console.log("onClick---", picInfo);
+
   previewImg.mount(picInfo[0], picInfo[1]);
 }
 

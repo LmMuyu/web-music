@@ -18,7 +18,11 @@
     >
       <DirectionIndicator :isIfBtnArr="isIfBtn" @switchPicture="switchImage" />
       <div :style="imageInfo" class="z-10">
-        <img class="object-cover" :src="previewList[currentIndex]?.['originUrl'] ?? ''" />
+        <img
+          class="object-cover"
+          :style="{ width: imageInfo.maxWidth, height: imageInfo.maxHeight }"
+          :src="listview[currentIndex]?.['originUrl'] ?? ''"
+        />
       </div>
     </main>
     <footer style="height: 10%" class="w-full" ref="footer">
@@ -29,6 +33,7 @@
 <script setup lang="ts">
 import {
   computed,
+  getCurrentInstance,
   nextTick,
   onMounted,
   onUnmounted,
@@ -44,6 +49,9 @@ import DirectionIndicator from "./components/DirectionIndicator.vue";
 import PreviewFooter from "./components/Footer.vue";
 
 import type { PropType } from "vue";
+import type { globalRefType } from "../../type";
+
+getCurrentInstance().appContext.config.globalProperties.listViewPipe = listViewPipe
 
 const props = defineProps({
   previewList: {
@@ -64,6 +72,8 @@ const props = defineProps({
 });
 
 const currentIndex = ref(parseInt(props.index));
+const listview = ref(props.previewList);
+
 const footer = ref<HTMLElement | null>(null);
 const main = ref<HTMLElement | null>(null);
 
@@ -73,26 +83,34 @@ const imageMaxInfo = reactive({
 });
 
 const { stopEffect, styleColor, setsrcpipe } = returnThemmColor(
-  props.previewList[currentIndex.value]?.["originUrl"] ?? "",
+  listview.value[currentIndex.value]?.["originUrl"] ?? "",
   {
-    width: props.previewList[currentIndex.value]?.["width"] ?? 0,
-    height: props.previewList[currentIndex.value]?.["height"] ?? 0,
+    width: listview.value[currentIndex.value]?.["width"] ?? 0,
+    height: listview.value[currentIndex.value]?.["height"] ?? 0,
   }
 );
 
 
 
+function listViewPipe(data: globalRefType<any>) {
+  listview.value = []//清除数组
+
+  const newData = unref(data)
+  listview.value.push(...newData)
+}
+
 function switchImage(direction: "prev" | "next") {
   if (direction === "prev" && currentIndex.value !== 0) {
     currentIndex.value -= 1
-  } else if (direction === "next" && currentIndex.value !== props.previewList.length - 1) {
+  } else if (direction === "next" && currentIndex.value !== listview.value.length - 1) {
     currentIndex.value += 1
   }
 
 }
 
+//索引变动时，图片也要变动
 watch(currentIndex, (value) => {
-  setsrcpipe.value = props.previewList[value]?.["originUrl"] ?? ""
+  setsrcpipe.value = listview.value[value]?.["originUrl"] ?? ""
 })
 
 const imageInfo = computed(() => {
@@ -103,7 +121,7 @@ const imageInfo = computed(() => {
 });
 
 const isIfBtn = computed(() => {
-  const len = props.previewList.length
+  const len = listview.value.length
   const index = Number(unref(currentIndex.value))
   const ifarr: [boolean, boolean] = [false, false]
 

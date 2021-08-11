@@ -7,9 +7,9 @@
 </template>
 <script setup lang="ts">
 import { computed, defineProps, nextTick, ref } from "vue";
+import axios from "axios";
 
 import type { PropType } from "vue";
-import axios from "axios";
 
 const props = defineProps({
   pics: {

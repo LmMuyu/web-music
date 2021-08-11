@@ -12,7 +12,7 @@
 <script setup lang="ts">
 import { defineProps } from "vue";
 
-import { eventType } from "../../../hooks/eventType";
+import { eventType } from "../../hooks/eventType";
 
 const props = defineProps({
   userinfo: {

@@ -24,18 +24,18 @@
   </section>
 </template>
 <script setup lang="ts">
-import { computed, defineEmit } from "@vue/runtime-core";
+import { computed, defineEmit, getCurrentInstance } from "@vue/runtime-core";
 
-import { musicResultDetail } from "../../../../../../utils/musicDetail";
-import { eventType } from "../../../hooks/eventType";
-import { onLinke } from "../../../hooks/onLinke";
+import { musicResultDetail } from "../../../../../utils/musicDetail";
+import { eventType } from "../../hooks/eventType";
+import { onLinke } from "../../hooks/onLinke";
 
 import mainContentImageList from "./mainContentImageList.vue";
 import mainContentFooter from "./mainContentFooter.vue";
 import mainContentSong from "./mainContentSong.vue";
 import mainContentText from "./mainContentText.vue";
 
-const ctxEmit = defineEmit(["emitPics"])
+import type { Emitter } from "mitt";
 
 const props = defineProps({
   event: {
@@ -43,6 +43,12 @@ const props = defineProps({
     default: () => { },
   },
 });
+
+const instance = getCurrentInstance()
+
+const mitt: Emitter = instance.appContext.config.globalProperties["mittBus"]
+
+
 
 const eventJson = computed(() => {
   const json = JSON.parse(props.event.json);
@@ -67,7 +73,7 @@ function transferFn(...res: any) {
 function onEmitPreviewInfo(e: PointerEvent) {
   const index = (e.target as HTMLElement).getAttribute("key-index");
 
-  ctxEmit("emitPics", [props.event.pics, index]);
+  mitt.emit("preview", [JSON.parse(JSON.stringify(props.event.pics)), index])
 }
 
 </script>

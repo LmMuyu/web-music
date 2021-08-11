@@ -1,3 +1,5 @@
+import type { Ref } from "vue";
+
 export interface dayAttribute {
   $D: number;
   $H: number;
@@ -12,3 +14,5 @@ export interface dayAttribute {
   $x: Object;
   $y: number;
 }
+
+export type globalRefType<T> = Ref<T[]> | T[] | T;

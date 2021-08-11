@@ -4,7 +4,11 @@ let initlogin = false;
 
 export async function loginStateus() {
   if (!initlogin) {
-    await request({ url: "/login/status" });
-    initlogin = true;
+    try {
+      initlogin = true;
+      await request({ url: "/login/status" });
+    } catch (err) {
+      console.log(err);
+    }
   }
 }

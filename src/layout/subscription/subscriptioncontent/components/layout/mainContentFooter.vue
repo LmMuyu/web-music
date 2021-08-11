@@ -33,7 +33,7 @@
 import { computed, defineEmit, ref, shallowRef } from "vue";
 import { useStore } from "vuex";
 
-import type { State } from "../../../../../../store/type";
+import type { State } from "../../../../../store/type";
 
 const ctxEmit = defineEmit(["linke"]);
 
