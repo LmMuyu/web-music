@@ -38,8 +38,9 @@ export const BCBus = (InfoCard: BCBUSOptions) => {
 
     InfoCard.userInfo = setInfoData.userinfoData;
     setUserInfo(setInfoData);
-
-    // state.commit("setUserInfo", userinfoData);
+     
+    
+    
     negate();
   }
 

@@ -1,3 +1,4 @@
+import { useStore } from "vuex";
 import request from "../../utils/request";
 
 export function getSubScriptDynamic(lasttime: number = -1) {
@@ -25,4 +26,15 @@ export async function postLinke(
   });
 
   successFn(res);
+}
+
+export function getUserDetail() {
+  const state = useStore().state;
+
+  return request({
+    url: "/user/detail",
+    params: {
+      uid: state.userInfo.userID,
+    },
+  });
 }

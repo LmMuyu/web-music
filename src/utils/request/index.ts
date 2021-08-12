@@ -66,12 +66,6 @@ export default function request(config: AxiosRequestConfig) {
               );
 
               return response;
-            case 301:
-              store.commit("setLoginStateus", 301);
-              promptbox({
-                title: "请先登录!",
-              });
-              return 301;
             default:
               return Promise.reject(config);
           }

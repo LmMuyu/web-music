@@ -1,3 +1,4 @@
+import type { RouteLocationNormalized } from "vue-router";
 import type { MusicDetailOption } from "../../utils/musicDetail";
 
 export interface State {
@@ -5,6 +6,7 @@ export interface State {
   userInfo: null | UserInfo;
   musicInfo: null | MusicDetailOption;
   loginState: number;
+  activeTagFn: (to: RouteLocationNormalized) => void | null;
 }
 
 export interface TokenJsonStr {

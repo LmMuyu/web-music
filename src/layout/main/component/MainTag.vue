@@ -8,14 +8,16 @@
         @mouseenter="moveActive(index)"
         @mouseleave="leaveActive(index)"
         @click="
-          clickActive(index);
-          toPath(tag.path);
+        clickActive(index);
+        toPath(tag.path);
         "
       >
         <i class="iconfont" :class="[tag.icon]" :style="activeStyle(index)"></i>
-        <a class="text-2xl px-5 text_color" :style="activeStyle(index)">{{
-          tag.title
-        }}</a>
+        <a class="text-2xl px-5 text_color" :style="activeStyle(index)">
+          {{
+            tag.title
+          }}
+        </a>
       </li>
     </ul>
   </nav>
@@ -24,16 +26,25 @@
 import { useRouter } from "vue-router";
 
 import { currentIndex, moveIndex, AsideTags } from "../hooks/data";
+import { useStore } from "vuex";
+
 import { activeIndex } from "../../../utils/activeIndex";
 
-const router = useRouter();
+import type { RouteLocationNormalized } from "vue-router"
 
+const router = useRouter();
+const store = useStore()
 const toPath = (path: string) => router.push({ path });
 
-router.beforeEach((to) => {
+const activeTag = (to: any) => {
   currentIndex.value =
-    AsideTags.value.findIndex((value) => value.path === to.path) ?? 0;
-});
+    AsideTags.value.findIndex((value) => value.path === to.path) ?? 0
+}
+
+
+// store.commit("runActiveTagFn", [activeTag])
+
+router.beforeEach((to) => activeTag(to));
 
 const { activeStyle, clickActive, moveActive, leaveActive } = new activeIndex(
   currentIndex,

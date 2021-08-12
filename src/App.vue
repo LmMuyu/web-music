@@ -4,7 +4,7 @@
       <keep-alive v-if="route.meta.KeepAlive ?? true">
         <component :is="Component" />
       </keep-alive>
-      
+
       <component :is="Component" v-else />
     </router-view>
   </Main>
@@ -16,10 +16,13 @@ import { useStore } from "vuex";
 import { ref } from "vue";
 
 import { loginStateus } from "./api/app/login";
+import loginApp from "./view/login/login";
+
 
 import Main from "./layout/main/Main.vue";
 
 import type { State, UserInfo } from "./store/type";
+import type { RouteLocationNormalized } from "vue-router"
 
 type linkType =
   | "info"
@@ -41,17 +44,21 @@ const linkType = ref<linkType>("info");
 
 const pathList = ["/message", "/subscription"];
 
-async function redirectPath(path: string) {
+async function redirectPath(to: RouteLocationNormalized, path: string) {
   await loginStateus();
   const loginstateus = (store.state as State).loginState;
 
-  if (loginstateus === 301 && pathList.includes(path)) {
+  if (loginstateus === 301 && pathList.includes(path) && path !== "/index") {
+    console.info("未登录,登录状态为:" + loginstateus);
+
+    loginApp()//未登录时,调用登录框
     router.replace({ path: "/index" });
+    // store.commit("runActiveTagFn", [null, { path: "/index" }])
   }
 }
 
 router.beforeEach((to, from) => {
-  redirectPath(to.path);
+  redirectPath(to, to.path);
 
   const meta = to.meta;
 

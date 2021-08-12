@@ -9,7 +9,7 @@ let mount = false;
 //初始化组件
 const Applogin = () => createApp(Login, { cancel: cancelLogin });
 
- function cancelLogin() {
+function cancelLogin() {
   mount = false;
   loginMethods.hidden();
 }
@@ -31,7 +31,7 @@ const loginMethods = {
   },
 };
 
-export default function loginApp(el: string) {
+export default function loginApp(el?: string) {
   el = el || "#login";
   if (mount) return; //登录对话框在挂在中
 

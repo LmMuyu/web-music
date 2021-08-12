@@ -1,29 +1,14 @@
 <template>
   <div
-    class="
-      login_model
-      shadow
-      bg-white
-      flex flex-col
-      fixed
-      left-2/4
-      top-2/4
-      transform
-      -translate-x-2/4 -translate-y-2/4
-      z-50
-    "
+    class="login_model shadow bg-white flex flex-col fixed left-2/4 top-2/4 transform -translate-x-2/4 -translate-y-2/4"
+    style="z-index:10"
   >
     <header class="py-3 flex" style="height: 12.499%; background: #74b9ff">
       <div style="width: 50%" class="flex items-center">
-        <p class="transform translate-x-2 text-white font-bold text-lg">
-          {{ headerTitle }}
-        </p>
+        <p class="transform translate-x-2 text-white font-bold text-lg">{{ headerTitle }}</p>
       </div>
       <div style="width: 50%" class="icon flex items-center justify-end">
-        <i
-          class="iconfont icondel transform -translate-x-2"
-          @click="cancel"
-        ></i>
+        <i class="iconfont icondel transform -translate-x-2" @click="cancel"></i>
       </div>
     </header>
     <keep-alive>

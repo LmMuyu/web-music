@@ -46,8 +46,6 @@ export default class preview {
       return;
     }
 
-    console.log("unmount---", iscomp);
-
     this.app.value.unmount();
     this.mounttag.parentNode.removeChild(this.mounttag);
     this.mounttag = null;
@@ -65,7 +63,6 @@ export default class preview {
     if (!list.length) return;
 
     this.listViewPipe(list);
-
     document.querySelector("body").appendChild(this.mounttag);
   }
 

@@ -1,6 +1,6 @@
 <template>
   <el-container>
-    <el-main class="">
+    <el-main class>
       <div class="flex items-center flex-col mx-28">
         <el-input
           placeholder="请输入手机号"
@@ -9,27 +9,16 @@
           @blur="lwPhone(formData)"
         >
           <template v-slot:prepend>
-            <select
-              class="outline-none border-none w-36 input_select"
-              v-model="formData.countries"
-            >
+            <select class="outline-none border-none w-36 input_select" v-model="formData.countries">
               <option
                 v-for="item in country"
                 :key="item.code"
                 :value="'+' + item.code"
-              >
-                {{ `+${item.code}--${item.zh}` }}
-              </option>
+              >{{ `+${item.code}--${item.zh}` }}</option>
             </select>
           </template>
         </el-input>
-        <el-input
-          show-password
-          placeholder="请输入密码"
-          v-model="formData.password"
-          class="py-1"
-        >
-        </el-input>
+        <el-input show-password placeholder="请输入密码" v-model="formData.password" class="py-1"></el-input>
         <div class="py-3 flex justify-between w-52">
           <span class="flex items-center">
             <input type="checkbox" v-model="automaticLogin" />
@@ -54,13 +43,7 @@
     </el-main>
     <el-footer
       height="48px"
-      class="
-        absolute
-        left-0
-        right-0
-        bottom-0
-        border-t-2 border-solid border-gray-300
-      "
+      class="absolute left-0 right-0 bottom-0 border-t-2 border-solid border-gray-300"
     >
       <OtherLoginCellPhoneFooter />
     </el-footer>
@@ -99,7 +82,7 @@ const formData = reactive({
 
 const automaticLogin = ref(false);
 
-const cancelComp = inject<Function>("cancelComp") || (() => {});
+const cancelComp = inject<Function>("cancelComp") || (() => { });
 
 const country = computed(() => {
   const countriesCode = toRaw(store.state.countriesCode)!;
@@ -137,10 +120,9 @@ function phoneLogin() {
       tokenJsonStr: createTokenJsonStr(userData),
     };
 
-    // store.dispatch("getUserInfo", [userInfo, cancelComp as () => void]);
     const BC = new BroadcastChannel("login");
     BC.postMessage(userInfo);
-    
+
     BC.onmessage = function () {
       if (!cancelComp) throw new Error("cencelComp for Null");
       cancelComp(); //销毁登录框
