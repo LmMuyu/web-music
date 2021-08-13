@@ -19,8 +19,10 @@
 import { ref } from "@vue/reactivity";
 import { useRouter } from "vue-router";
 
-import IndexAsideTags from "./component/MainAsideTags.vue";
 import { useMinWh } from "./hooks/useMinWH";
+
+
+import IndexAsideTags from "./component/MainAsideTags.vue";
 
 const showTags = ref(true);
 

@@ -28,3 +28,13 @@ export async function cellphone(formData: FormData) {
     data: formData,
   });
 }
+
+
+export function getBannerImg(){
+  return request({ 
+    url:"/banner",
+    params:{
+      type:"pc"
+    }
+  })
+}

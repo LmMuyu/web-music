@@ -6,7 +6,7 @@ interface Container {
 }
 
 export interface META {
-  showTag?: boolean;
+  showTags?: boolean;
   defaultView?: [string, string?];
   mainContentOptions?: {
     left?: Container;

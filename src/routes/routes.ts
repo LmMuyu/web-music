@@ -97,6 +97,14 @@ const routes: (RouteRecordRaw & {
     name: "Activity",
     component: () => import("../view/activity/Activity.vue"),
   },
+  {
+    path: "/login",
+    name: "Login",
+    meta: {
+      showTags: false,
+    },
+    component: () => import("../view/login/Login.vue"),
+  },
 ];
 
 export default routes;

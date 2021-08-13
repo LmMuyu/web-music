@@ -1,9 +1,10 @@
 <template>
-  <div class="w-full">
+  <router-link class="w-full" to="/login" target="_blank">
     <el-button class="flex items-center" type="primary" round>登录</el-button>
-  </div>
+  </router-link>
 </template>
 <script setup lang="ts">
 import { ElButton } from "element-plus";
 </script>
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+</style>

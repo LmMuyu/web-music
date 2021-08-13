@@ -1,13 +1,11 @@
 <template>
   <header style="height: 10%">44444</header>
-  <main class="h-3/4"><MainTag /></main>
+  <main class="h-3/4">
+    <MainTag />
+  </main>
   <footer class="flex items-center relative" style="height: 15%">
     <MainAsideCard v-if="InfoCard.countRef" :infoData="InfoCard.userInfo" />
-    <MainLoginButton
-      class="flex justify-center outline"
-      v-else
-      @click="loginApp('#login')"
-    />
+    <MainLoginButton class="flex justify-center outline" v-else />
   </footer>
 </template>
 <script setup lang="ts">
@@ -16,7 +14,6 @@ import { useStore } from "vuex";
 
 import { useRefNegate } from "../../../utils/useRefNegate";
 import { BCBus } from "../hooks/useBroadcastChannel";
-import loginApp from "../../../view/login/login";
 
 import MainLoginButton from "./MainLoginButton.vue";
 import MainAsideCard from "./MainAsideCard.vue";
@@ -57,4 +54,5 @@ onMounted(() => {
   });
 });
 </script>
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+</style>

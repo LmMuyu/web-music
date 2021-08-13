@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <div
     class="login_model shadow bg-white flex flex-col fixed left-2/4 top-2/4 transform -translate-x-2/4 -translate-y-2/4"
     style="z-index:10"
@@ -135,4 +135,14 @@ onBeforeUnmount(() => {
   -ms-user-select: none; /*IE10*/
   user-select: none;
 }
+</style> -->
+
+
+<template>
+  <LoginMain />
+</template>
+<script setup lang='ts'>
+import LoginMain from "../../layout/login/LoginMain.vue"
+</script>
+<style scoped lang='scss'>
 </style>
