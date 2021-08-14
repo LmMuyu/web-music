@@ -2,7 +2,7 @@
   <div
     class="flex items-center p-2 w-full cursor-pointer borderslode"
     ref="features"
-    @mouseenter="[currentIndex(index), negate()]"
+    @mouseenter="onMouseEnter(index)"
     @mouseleave="negate"
     :style="style"
   >
@@ -14,9 +14,7 @@
           index + 1 <= 3 ? 'text-red-600 text-2xl' : 'text_color text-xl',
         ]"
         class="text px-2"
-      >
-        {{ index + 1 }}
-      </h4>
+      >{{ index + 1 }}</h4>
       <router-link
         :to="{ path: '/playlist', query: { id: renderItem.id } }"
         tag="a"
@@ -24,9 +22,7 @@
       >
         <div class="w-full flex py-4 items-center">
           <span class="music_name ml-3 flex">
-            <p class="text_color">
-              {{ renderItem?.ar[0]?.name }} - {{ renderItem?.al?.name }}
-            </p>
+            <p class="text_color">{{ renderItem?.ar[0]?.name }} - {{ renderItem?.al?.name }}</p>
             <p v-html="aliasName(renderItem?.alia || [])"></p>
           </span>
         </div>
@@ -43,7 +39,7 @@ import {
   ref,
   computed,
   watch,
-  defineEmit,
+  defineEmits,
 } from "@vue/runtime-core";
 
 import { useRefNegate } from "../../../../utils/useRefNegate";
@@ -53,12 +49,12 @@ import { ElCheckbox } from "element-plus";
 
 import type { PropType, Ref } from "vue";
 
-const ctxEmit = defineEmit(["change"]);
+const ctxEmit = defineEmits(["change"]);
 
 const props = defineProps({
   renderItem: {
     type: Object,
-    default: () => {},
+    default: () => { },
   },
   index: {
     type: Number,
@@ -90,6 +86,11 @@ const { negate, countRef: featuresModule } = useRefNegate(false);
 
 function currentIndex(index: number) {
   curIndex.value = index;
+}
+
+function onMouseEnter(index: number) {
+  currentIndex(index);
+  negate()
 }
 
 watch(select, (value) => ctxEmit("change", value));

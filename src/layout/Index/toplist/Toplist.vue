@@ -7,13 +7,13 @@
 <script setup lang="ts">
 import { defineProps } from "@vue/runtime-core";
 
-import { mainShowData, listTitle, mainMapData } from "./hooks/data";
 import { allToplist, getlistDetailData } from "./hooks/request";
+import { mainShowData, listTitle } from "./hooks/data";
 import { currentID } from "./components/hooks/data";
 import { setContentData } from "./hooks/methods";
 
-import ToplistMainHeader from "./components/ToplistMainHeader.vue";
 import ToplistMainContent from "./components/ToplistMainContent.vue";
+import ToplistMainHeader from "./components/ToplistMainHeader.vue";
 
 import type { ListTitle as typeListTitle } from "./types/dataType";
 
@@ -38,25 +38,6 @@ allToplist()
     const mainData = await getlistDetailData(item.id);
     setContentData(mainData);
   });
-
-// function documentScroll() {
-//   const documentScrollTop = document.documentElement.scrollTop;
-
-//   elementScrollTop.value = documentScrollTop;
-// }
-
-// function setTranY(Yvalue: number) {
-//   return `translate(0,${Yvalue}px) translateZ(0)`;
-// }
-
-// const setTransformY = computed(() => setTranY(elementScrollTop.value));
-
-// onMounted(() => {
-//   nextTick().then(() => {
-//     rowTop.value = rowRoot.value?.offsetTop || 0;
-//     setTransition(rowRoot.value!, 1, props.seelp);
-//   });
-// });
 </script>
 <style lang="scss" scoped>
 .border {

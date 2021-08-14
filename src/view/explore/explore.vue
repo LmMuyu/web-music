@@ -1,9 +1,9 @@
 <template>
-  <mainContent></mainContent>
+  <MainContent></MainContent>
 </template>
 <script setup lang="ts">
 import { runLoadView } from "../../components/maincontent/hooks/component";
-import mainContent from "../../components/maincontent/mainContent.vue";
+import MainContent from "../../components/maincontent/MainContent.vue";
 
 runLoadView(["ExploreContent", "ExploreRight"]);
 </script>

@@ -5,7 +5,7 @@
         <el-avatar :src="event.user.avatarUrl"></el-avatar>
       </div>
       <div style="width: 90%">
-        <mainContent @emitPics="onClick" :event="event" />
+        <MainContent @emitPics="onClick" :event="event" />
       </div>
     </section>
   </div>
@@ -19,7 +19,7 @@ import { getSubScriptDynamic } from "../../../../api/subscription";
 import { useRefNegate } from "../../../../utils/useRefNegate";
 import preview from "../../../../components/previewpicture";
 
-import mainContent from "./layout/mainContent.vue";
+import MainContent from "./layout/MainContent.vue";
 import { ElAvatar } from "element-plus";
 
 import type { Emitter } from "mitt"

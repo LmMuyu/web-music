@@ -20,12 +20,12 @@
   </div>
 </template>
 <script setup lang="ts">
-import { defineEmit } from "@vue/runtime-core";
+import { defineEmits } from "@vue/runtime-core";
 
 import type { PropType } from "vue"
 
 
-const ctxEmit = defineEmit(["switchPicture"])
+const ctxEmit = defineEmits(["switchPicture"])
 
 const props = defineProps({
   isIfBtnArr: {

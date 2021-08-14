@@ -31,12 +31,12 @@ import {
   nextTick,
   defineProps,
   computed,
-  defineEmit,
+  defineEmits,
   watch,
   shallowRef,
 } from "vue";
 
-const ctxEmit = defineEmit(["update:modelValue", "mousemove", "click"]);
+const ctxEmit = defineEmits(["update:modelValue", "mousemove", "click"]);
 
 const props = defineProps({
   modelValue: Number,

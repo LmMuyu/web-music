@@ -4,7 +4,7 @@
       <el-checkbox v-model="isselect">全选</el-checkbox>
     </div>
     <div class="overflow-y-auto h-full" v-if="countRef">
-      <VirtualList
+      <!-- <VirtualList
         v-if="openVirtuallist"
         :renderData="renderListData"
         keyindex="indexOnly"
@@ -22,8 +22,8 @@
             @change="onChange"
           />
         </template>
-      </VirtualList>
-      <div v-else v-for="(renderItem, index) in renderListData" :key="renderItem.index">
+      </VirtualList> -->
+      <!-- <div v-else v-for="(renderItem, index) in renderListData" :key="renderItem.index">
         <ToplistMainItem
           :renderItem="renderItem"
           :index="renderItem.index"
@@ -33,7 +33,7 @@
           @mouseenter="moveActive(index)"
           :style="{ ...activeStyle(index), padding: '0px' }"
         />
-      </div>
+      </div> -->
     </div>
   </main>
 </template>

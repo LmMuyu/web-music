@@ -29,7 +29,7 @@
   </section>
 </template>
 <script setup lang="ts">
-import { computed, defineEmit } from "@vue/runtime-core";
+import { computed, defineEmits } from "@vue/runtime-core";
 
 import { musicResultDetail } from "../../../../../utils/musicDetail";
 import { onLinke } from "../../hooks/onLinke";
@@ -41,7 +41,7 @@ import mainContentFooter from "./mainContentFooter.vue";
 import mainContentSong from "./mainContentSong.vue";
 import mainContentText from "./mainContentText.vue";
 
-const ctxEmit = defineEmit(["emitPics"]);
+const ctxEmit = defineEmits(["emitPics"]);
 
 const props = defineProps({
   event: {

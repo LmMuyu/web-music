@@ -31,7 +31,7 @@ import {
   onMounted,
   ref,
   nextTick,
-  defineEmit,
+  defineEmits,
   watch,
 } from "vue";
 
@@ -50,7 +50,7 @@ import {
 
 import type { PropType } from "vue";
 
-const ctxEmit = defineEmit(["emitRequest"]);
+const ctxEmit = defineEmits(["emitRequest"]);
 
 const modelValue = ref("ddddd");
 

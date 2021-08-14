@@ -83,6 +83,7 @@ const routes: (RouteRecordRaw & {
   {
     path: "/user",
     name: "User",
+    redirect: "/user/home",
     children: [
       {
         path: "home",

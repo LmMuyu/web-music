@@ -1,14 +1,15 @@
 <template>
-  <mainContent>
+  <MainContent>
     <nav class="w-full h-full">
-      <navTag @loadComps="runLoadView" />
+      <IndexNavTag @loadComps="runLoadView" />
     </nav>
-  </mainContent>
+  </MainContent>
 </template>
 <script setup lang="ts">
 import { runLoadView } from "../../components/maincontent/hooks/component";
 
-import navTag from "../../layout/Index/navTag/navTag.vue";
-import mainContent from "../../components/maincontent/mainContent.vue";
+import MainContent from "../../components/maincontent/MainContent.vue"
+import IndexNavTag from "../../layout/Index/navTag/navTag.vue";
 </script>
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+</style>

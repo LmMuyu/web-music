@@ -24,7 +24,7 @@
   </section>
 </template>
 <script setup lang="ts">
-import { computed, defineEmit, getCurrentInstance } from "@vue/runtime-core";
+import { computed, defineEmits, getCurrentInstance } from "@vue/runtime-core";
 
 import { musicResultDetail } from "../../../../../utils/musicDetail";
 import { eventType } from "../../hooks/eventType";

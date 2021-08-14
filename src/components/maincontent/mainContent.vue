@@ -1,10 +1,7 @@
 <template>
   <div class="flex h-full">
     <el-container v-if="shieldContainer(left?.main)" class="w-2/3">
-      <el-header
-        v-if="shieldContainer(left?.header)"
-        class="h-1/6 flex items-center"
-      >
+      <el-header v-if="shieldContainer(left?.header)" class="h-1/6 flex items-center">
         <slot></slot>
       </el-header>
       <el-main

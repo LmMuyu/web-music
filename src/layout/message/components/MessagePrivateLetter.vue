@@ -66,7 +66,7 @@
 import {
   computed,
   defineProps,
-  defineEmit,
+  defineEmits,
   ref,
   onMounted,
   nextTick,
@@ -80,7 +80,7 @@ import { ElAvatar } from "element-plus";
 import type { PropType } from "vue";
 import type { dayAttribute } from "../../../type";
 
-const ctxEmit = defineEmit(["viewmsg"]);
+const ctxEmit = defineEmits(["viewmsg"]);
 
 const props = defineProps({
   privateLetterList: {

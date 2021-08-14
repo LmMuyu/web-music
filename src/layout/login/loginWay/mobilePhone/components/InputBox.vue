@@ -4,13 +4,14 @@
       <div class="icon px-4">
         <i class="iconfont" :class="iconfont"></i>
       </div>
-      <input :type="type" class="w-full input" :placeholder="placeholder" />
+      <input :type="type" v-model="text" class="w-full input" :placeholder="placeholder" />
     </div>
   </div>
 </template>
 <script setup lang='ts'>
-
 import { customRef } from "@vue/reactivity";
+
+import type { Ref } from "vue"
 
 const props = defineProps({
   type: {
@@ -28,19 +29,27 @@ const props = defineProps({
 })
 
 
-const text = (value) => customRef((track, trigger) => {
-  return {
-    get(getvalue) {
-      track()
-      return value
-    },
-    set(newvalue: any) {
-      value = newvalue
-      trigger()
-      return newvalue
+const text = (function (value: number | string, delay = 150) {
+  let timeout
+
+  return customRef((track, tigger) => {
+    return {
+      get() {
+        track()
+        return value
+      },
+      set(newValue) {
+        clearTimeout(timeout)
+
+        timeout = setTimeout(() => {
+          console.log(newValue);
+          timeout = null
+          tigger()
+        }, delay)
+      }
     }
-  }
-})
+  })
+})("444") as Ref<string>
 
 </script>
 <style scoped lang='scss'>

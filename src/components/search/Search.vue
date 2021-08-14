@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import { defineEmit, defineProps, customRef, computed } from "vue";
+import { defineEmits, defineProps, customRef, computed } from "vue";
 
 import { keyupEnter } from "./api/onSearch";
 
@@ -65,7 +65,7 @@ const props = defineProps({
   },
 });
 
-const ctxEmit = defineEmit(["change", "focus", "blur", "update:modelValue"]);
+const ctxEmit = defineEmits(["change", "focus", "blur", "update:modelValue"]);
 let searchValue = "";
 
 function onFocus() {

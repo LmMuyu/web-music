@@ -35,7 +35,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, defineProps, watch, defineEmit } from "vue";
+import { ref, defineProps, watch, defineEmits } from "vue";
 import { onBeforeRouteLeave } from "vue-router";
 
 //@ts-ignore
@@ -71,7 +71,7 @@ const props = defineProps({
   },
 });
 
-const emitCtx = defineEmit(["currPlayTime"]);
+const emitCtx = defineEmits(["currPlayTime"]);
 
 const currentTime = ref(0);
 const sliderMax = ref(0);

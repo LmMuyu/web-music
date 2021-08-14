@@ -1,7 +1,7 @@
 <template>
-  <mainContent />
+  <MainContent />
 </template>
 <script setup lang="ts">
-import mainContent from "../../components/maincontent/mainContent.vue";
+import MainContent from "../../components/maincontent/MainContent.vue";
 </script>
 <style scoped lang="scss"></style>

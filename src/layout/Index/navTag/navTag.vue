@@ -4,32 +4,30 @@
       class="flex items-center h-full relative"
       v-for="(tagItem, index) in contentTags"
       :key="tagItem._id"
-      @click="
-        [
-          clickActive(index),
-          ctxEmit('loadComps', [tagItem.comname, tagItem.comchildren]),
-        ]
-      "
+      @click="switchView(index, tagItem)"
       @mousemove="moveActive(index)"
       @mouseleave="leaveActive(index)"
     >
-      <span class="cursor-pointer" :style="activeStyle(index)">
-        {{ tagItem.tagname }}
-      </span>
+      <span class="cursor-pointer" :style="activeStyle(index)">{{ tagItem.tagname }}</span>
       <span :class="{ border_bottom: curIndex === index }"></span>
     </li>
   </ul>
 </template>
 <script setup lang="ts">
-import { defineEmit, ref } from "@vue/runtime-core";
+import { defineEmits, ref } from "@vue/runtime-core";
 
 import { contentTags } from "../../../components/maincontent/hooks/data";
 import { activeIndex } from "../../../utils/activeIndex";
 
-const ctxEmit = defineEmit(["loadComps"]);
+const ctxEmit = defineEmits(["loadComps"]);
 
 const curIndex = ref(0);
 const moveIndex = ref(0);
+
+function switchView(index: number, tagItem: any) {
+  clickActive(index);
+  ctxEmit('loadComps', [tagItem.comname, tagItem.comchildren])
+}
 
 const { activeStyle, clickActive, moveActive, leaveActive } = new activeIndex(
   curIndex,
@@ -45,3 +43,4 @@ const { activeStyle, clickActive, moveActive, leaveActive } = new activeIndex(
   border: 1px solid #74b9ff;
 }
 </style>
+

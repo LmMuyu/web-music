@@ -30,12 +30,12 @@
   </section>
 </template>
 <script setup lang="ts">
-import { computed, defineEmit, ref, shallowRef } from "vue";
+import { computed, defineEmits, ref, shallowRef } from "vue";
 import { useStore } from "vuex";
 
 import type { State } from "../../../../../store/type";
 
-const ctxEmit = defineEmit(["linke"]);
+const ctxEmit = defineEmits(["linke"]);
 
 const props = defineProps({
   likedCount: {
