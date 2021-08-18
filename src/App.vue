@@ -65,6 +65,10 @@ router.beforeEach((to, from) => {
   if (meta.hasOwnProperty("showTag")) {
     showTag.value = meta.showTag as boolean;
   }
+
+  if (to.path === "/login" && store.getters.getStatus === 200) {
+    router.push("/index")
+  }
 });
 
 store.watch(

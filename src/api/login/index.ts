@@ -29,12 +29,19 @@ export async function cellphone(formData: FormData) {
   });
 }
 
+export function loginCellphone(formData: FormData) {
+  return request({
+    method: "POST",
+    url: "/login/cellphone",
+    data: formData,
+  });
+}
 
-export function getBannerImg(){
-  return request({ 
-    url:"/banner",
-    params:{
-      type:"pc"
-    }
-  })
+export function getBannerImg() {
+  return request({
+    url: "/banner",
+    params: {
+      type: "pc",
+    },
+  });
 }

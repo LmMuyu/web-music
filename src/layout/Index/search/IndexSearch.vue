@@ -9,7 +9,7 @@ import {
 import { returnResData } from "./hooks/methods";
 import { onSearch } from "../../../components/search/api/onSearch";
 
-import { MainContent } from "./hooks/data";
+import { mainContent } from "./hooks/data";
 import Search from "../../../components/search/Search.vue";
 import IndexSearchReslut from "./components/IndexSearchReslut.vue";
 
@@ -70,7 +70,7 @@ export default defineComponent({
               inputClass="w-full h-1/2 py-0 px-0 "
             />
           </div>
-          <div class="h-full" ref={MainContent}></div>
+          <div class="h-full" ref={mainContent}></div>
         </div>
       </div>
     );

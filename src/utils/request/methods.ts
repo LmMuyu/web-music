@@ -85,11 +85,11 @@ export function loginStateus(url: string, httpRes: Record<string, any>) {
   if (url === "/login/status") {
     Promise.resolve(httpRes.data).then(({ data }) => {
       if (data.account === null && data.profile === null) {
-        store.commit("setLoginStateus", 301);
+        store.commit("setLoginStatus", 301);
         removeLocalStoreageKey();
       } else {
         store.commit("setLocalStorage");
-        store.commit("setLoginStateus", 200);
+        store.commit("setLoginStatus", 200);
       }
     });
   }

@@ -3,7 +3,7 @@ import type { MusicDetailOption } from "../../utils/musicDetail";
 
 export interface State {
   countriesCode: null | Array<Record<string, any>>;
-  userInfo: null | UserInfo;
+  userInfo: null | Object;
   musicInfo: null | MusicDetailOption;
   loginState: number;
   activeTagFn: (to: RouteLocationNormalized) => void | null;

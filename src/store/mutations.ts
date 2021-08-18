@@ -17,7 +17,12 @@ export default {
     state.userInfo = findLoginInfo();
   },
 
-  setLoginStateus(state: State, loginState: number) {
+  setUserInfo(state: State, data: any) {
+    state.userInfo = data;
+  },
+
+  //更新登录状态
+  setLoginStatus(state: State, loginState: number) {
     state.loginState = loginState;
   },
 

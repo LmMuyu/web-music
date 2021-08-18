@@ -18,28 +18,36 @@ import { BCBus } from "../hooks/useBroadcastChannel";
 import MainLoginButton from "./MainLoginButton.vue";
 import MainAsideCard from "./MainAsideCard.vue";
 import MainTag from "./MainTag.vue";
+import { useWatchLocal } from "../hooks/useWatchLocal";
 
 const store = useStore();
 
 const { countRef, negate } = useRefNegate(false);
 
-const InfoCard = reactive({
-  userInfo: {},
-  countRef,
-  negate,
-});
-
-BCBus(InfoCard); //接受登录后的用户信息
+const InfoCard = BCBus(countRef, negate); //接受登录后的用户信息
 
 store.watch(
   () => store.state.userInfo,
   (value) => {
-    if (!value) return;
-    InfoCard.userInfo = value.userinfoData;
+    if (!value) {
+      if (store.getters.getStatus === 200) {
+        InfoCard.userInfo = {}
+        store.commit("setLoginStatus", 301)
+
+        negate()
+      }
+
+      return
+    };
+
+
+    InfoCard.userInfo = value.userInfo;
     negate();
   },
   { immediate: true }
 );
+
+useWatchLocal() //侦听localstoreage
 
 onMounted(() => {
   nextTick().then(() => {

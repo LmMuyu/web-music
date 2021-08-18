@@ -1,13 +1,15 @@
 <template>
-  <ElRow class="w-full mr-8 cursor-pointer absolute left-0 bottom-0">
+  <ElRow class="w-full mr-8 mt-4 cursor-pointer">
     <ElCol :span="8" class="flex items-center">
-      <ElAvatar :src="infoData?.avatarUrl" :size="42"> </ElAvatar>
+      <ElAvatar :src="infoData?.avatarUrl" :size="42"></ElAvatar>
     </ElCol>
     <ElCol :span="8">
       <div class="flex flex-col items-start ml-2">
-        <span class="w-1/2 font-bold text-lg" style="color: #636e72">{{
+        <span class="w-1/2 font-bold text-lg" style="color: #636e72">
+          {{
           infoData?.nickname
-        }}</span>
+          }}
+        </span>
         <span class="w-1/2"></span>
       </div>
     </ElCol>
