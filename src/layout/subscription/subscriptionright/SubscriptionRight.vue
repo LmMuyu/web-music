@@ -9,9 +9,9 @@ import type { State } from "../../../store/type";
 // const state: State = useStore().state
 // const userInfo = state.userInfo
 
-getUserDetail().then((res) => {
-  console.log(res);
-})
+// getUserDetail().then((res) => {
+//   console.log(res);
+// })
 
 // console.log(userInfo);
 </script>

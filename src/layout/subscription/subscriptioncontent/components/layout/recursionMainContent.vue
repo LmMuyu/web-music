@@ -30,10 +30,10 @@ import { musicResultDetail } from "../../../../../utils/musicDetail";
 import { eventType } from "../../hooks/eventType";
 import { onLinke } from "../../hooks/onLinke";
 
-import mainContentImageList from "./mainContentImageList.vue";
-import mainContentFooter from "./mainContentFooter.vue";
-import mainContentSong from "./mainContentSong.vue";
-import mainContentText from "./mainContentText.vue";
+import mainContentImageList from "./MainContentImageList.vue";
+import mainContentFooter from "./MainContentFooter.vue";
+import mainContentSong from "./MainContentSong.vue";
+import mainContentText from "./MainContentText.vue";
 
 import type { Emitter } from "mitt";
 

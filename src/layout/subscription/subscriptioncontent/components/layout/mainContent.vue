@@ -1,27 +1,27 @@
 <template>
   <section>
     <header>
-      <mainContentHeader :type="event.type" :userinfo="event.user" />
+      <MainContentHeader :type="event.type" :userinfo="event.user" />
     </header>
     <main class="py-6">
-      <mainContentText
+      <MainContentText
         :msg="eventJson.msg ?? ''"
         :actId="event.extJsonInfo.actId"
         :actIds="event.extJsonInfo.actIds ?? []"
       />
-      <mainContentSong v-if="!!musicDetail" :music-detail="musicDetail" />
-      <mainContentImageList
+      <MainContentSong v-if="!!musicDetail" :music-detail="musicDetail" />
+      <MainContentImageList
         :pics="event.pics ?? []"
         :isMarginTop="!!musicDetail"
         @click.capture="onEmitPreviewInfo"
       />
     </main>
     <main v-if="!!eventJson.event">
-      <recursionMainContent :event="eventJson.event" />
+      <RecursionMainContent :event="eventJson.event" />
     </main>
     <footer>
-      <mainContentFooter
-        :likedCount="event.info.likedCount"
+      <MainContentFooter
+        :info="footerInfo"
         :latestLikedUsers="event.info.commentThread.latestLikedUsers ?? []"
         @linke="transferFn"
       />
@@ -34,12 +34,12 @@ import { computed, defineEmits } from "@vue/runtime-core";
 import { musicResultDetail } from "../../../../../utils/musicDetail";
 import { onLinke } from "../../hooks/onLinke";
 
-import mainContentImageList from "./mainContentImageList.vue";
-import recursionMainContent from "./recursionMainContent.vue";
-import mainContentHeader from "./mainContentHeader.vue";
-import mainContentFooter from "./mainContentFooter.vue";
-import mainContentSong from "./mainContentSong.vue";
-import mainContentText from "./mainContentText.vue";
+import MainContentImageList from "./MainContentImageList.vue";
+import RecursionMainContent from "./RecursionMainContent.vue";
+import MainContentHeader from "./MainContentHeader.vue";
+import MainContentFooter from "./MainContentFooter.vue";
+import MainContentSong from "./MainContentSong.vue";
+import MainContentText from "./MainContentText.vue";
 
 const ctxEmit = defineEmits(["emitPics"]);
 
@@ -52,10 +52,29 @@ const props = defineProps({
 
 const eventJson = computed(() => {
   const json = JSON.parse(props.event.json);
-  // console.log(json);
-
   return json;
 });
+
+const isNum = (num: number) => num === 0 ? "" : num
+
+const footerInfo = computed(() => {
+  return [
+    {
+      event: {
+        emit: true,
+        emit_name: "linke"
+      },
+      icon: ['icondianzan1', 'iconzan'],
+      count: isNum(props.event.info.likedCount)//点赞
+    },
+    {
+      count: isNum(props.event.info.commentCount),//评论
+    },
+    {
+      count: isNum(props.event.insiteForwardCount),//转发
+    }
+  ]
+})
 
 const musicDetail = musicResultDetail(eventJson.value["song"] ?? {});
 
@@ -72,3 +91,6 @@ function onEmitPreviewInfo(e: PointerEvent) {
 </script>
 <style scoped lang="scss">
 </style>
+
+
+

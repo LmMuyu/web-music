@@ -81,8 +81,6 @@ const stopScroll = watch(events, () => {
 
 
 function onClick(picInfo: any[]) {
-  console.log("onClick---", picInfo);
-
   previewImg.mount(picInfo[0], picInfo[1]);
 }
 
