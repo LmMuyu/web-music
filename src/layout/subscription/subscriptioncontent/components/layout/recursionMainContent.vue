@@ -1,21 +1,21 @@
 <template>
   <section style="background-color: #f5f6fa" class="px-6 pt-4 w-full h-full">
     <main>
-      <mainContentText
+      <MainContentText
         :msg="addNewEventJson.msg"
         :actId="event.extJsonInfo.actId"
         :actIds="event.extJsonInfo.actIds ?? []"
       />
-      <mainContentSong v-if="!!musicDetail" :music-detail="musicDetail" />
-      <mainContentImageList
+      <MainContentSong v-if="!!musicDetail" :music-detail="musicDetail" />
+      <MainContentImageList
         :pics="event.pics ?? []"
         :isMarginTop="!!musicDetail"
         @click.capture="onEmitPreviewInfo"
       />
     </main>
     <footer>
-      <mainContentFooter
-        :likedCount="event.info.likedCount"
+      <MainContentFooter
+        :info="footerInfo"
         :recursion="true"
         :latestLikedUsers="event.info.commentThread.latestLikedUsers ?? []"
         @linke="transferFn"
@@ -24,16 +24,17 @@
   </section>
 </template>
 <script setup lang="ts">
-import { computed, defineEmits, getCurrentInstance } from "@vue/runtime-core";
+import { computed, getCurrentInstance, unref } from "@vue/runtime-core";
 
 import { musicResultDetail } from "../../../../../utils/musicDetail";
 import { eventType } from "../../hooks/eventType";
+import { computed_footerInfo } from "../methods";
 import { onLinke } from "../../hooks/onLinke";
 
-import mainContentImageList from "./MainContentImageList.vue";
-import mainContentFooter from "./MainContentFooter.vue";
-import mainContentSong from "./MainContentSong.vue";
-import mainContentText from "./MainContentText.vue";
+import MainContentImageList from "./MainContentImageList.vue";
+import MainContentFooter from "./MainContentFooter.vue";
+import MainContentSong from "./MainContentSong.vue";
+import MainContentText from "./MainContentText.vue";
 
 import type { Emitter } from "mitt";
 
@@ -48,13 +49,12 @@ const instance = getCurrentInstance()
 
 const mitt: Emitter = instance.appContext.config.globalProperties["mittBus"]
 
-
-
 const eventJson = computed(() => {
   const json = JSON.parse(props.event.json);
-
   return json;
 });
+
+const footerInfo = unref(computed_footerInfo)(props)
 
 const addNewEventJson = computed(() => {
   return {

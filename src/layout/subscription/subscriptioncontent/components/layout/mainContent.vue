@@ -23,15 +23,16 @@
       <MainContentFooter
         :info="footerInfo"
         :latestLikedUsers="event.info.commentThread.latestLikedUsers ?? []"
-        @linke="transferFn"
+        @linke="linke"
       />
     </footer>
   </section>
 </template>
 <script setup lang="ts">
-import { computed, defineEmits } from "@vue/runtime-core";
+import { computed, defineEmits, unref } from "@vue/runtime-core";
 
 import { musicResultDetail } from "../../../../../utils/musicDetail";
+import { computed_footerInfo } from "../methods";
 import { onLinke } from "../../hooks/onLinke";
 
 import MainContentImageList from "./MainContentImageList.vue";
@@ -40,6 +41,7 @@ import MainContentHeader from "./MainContentHeader.vue";
 import MainContentFooter from "./MainContentFooter.vue";
 import MainContentSong from "./MainContentSong.vue";
 import MainContentText from "./MainContentText.vue";
+import { ElMenuItem } from "element-plus";
 
 const ctxEmit = defineEmits(["emitPics"]);
 
@@ -55,36 +57,19 @@ const eventJson = computed(() => {
   return json;
 });
 
-const isNum = (num: number) => num === 0 ? "" : num
 
-const footerInfo = computed(() => {
-  return [
-    {
-      event: {
-        emit: true,
-        emit_name: "linke"
-      },
-      icon: ['icondianzan1', 'iconzan'],
-      count: isNum(props.event.info.likedCount)//点赞
-    },
-    {
-      count: isNum(props.event.info.commentCount),//评论
-    },
-    {
-      count: isNum(props.event.insiteForwardCount),//转发
-    }
-  ]
-})
+const footerInfo = unref(computed_footerInfo)(props)
 
 const musicDetail = musicResultDetail(eventJson.value["song"] ?? {});
 
-function transferFn(...res: any) {
-  onLinke(props.event, res[0], res[1] ? 0 : 1);
-}
+function linke(...emits: any) {
+  console.log(emits[0]);
+
+  // onLinke(props.event, emits[0], emits[1] ? 0 : 1)
+};
 
 function onEmitPreviewInfo(e: PointerEvent) {
   const index = (e.target as HTMLElement).getAttribute("key-index");
-
 
   ctxEmit("emitPics", [JSON.parse(JSON.stringify(props.event.pics)), index]);
 }

@@ -1,14 +1,16 @@
 <script lang="tsx">
-import { computed, defineComponent, defineEmits, ref, shallowRef, unref, } from "vue";
+import { computed, defineComponent, ref, shallowRef, unref } from "vue";
 import { useStore } from "vuex";
 
 import type { State } from "../../../../../store/type";
 import type { PropType } from "vue"
+import { linkeEvent } from "../methods";
 
 type Options = {
+  name: string
+  count: number
   event?: Record<any, any>,
   icon?: string[] | string
-  count: number | string
 }
 
 export default defineComponent({
@@ -31,35 +33,46 @@ export default defineComponent({
     const store = useStore();
     const state = store.state as State;
     const isLatestLinke = shallowRef(false);
-    const linkedCounts = ref(props.info[0].count);
+    const linkedCounts = ref(props.info.find(v => v.name === "linke").count);
+    const eventMap = new Map()
 
-    const onCount =
-      (res: any) => {
-        // const islinke = JSON.parse(res.config.data)["t"];
+    eventMap.set("linke", linkeEvent(linkedCounts, isLatestLinke))
 
-        // if (islinke === 1 && res.data.code === 200) {
-        //   linkedCounts.value += 1;
-        //   isLatestLinke.value = true;
-        // } else {
-        //   linkedCounts.value -= 1;
+    const switchText = (name: string) => {
+      let text = ""
 
-        //   isLatestLinke.value = false;
-        // }
+      switch (name) {
+        case "comment":
+          text = "评论"
+          break
+        case "forward":
+          text = "转发"
+          break
+        default:
+          text = ""
+          break
       }
+
+      return text
+    }
 
 
     const infoBtn = (options: Options) => {
       const linke = (icons: string | string[]) => Array.isArray(icons) ? isLinke ? `iconfont ${icons[0]}` : `iconfont ${icons[1]}` : icons
-      const returnEmit = (event: Record<any, any>) => ctxEmit(event.emit_name, onCount, event.emit_name === "linke" ? isLatestLinke.value : "")
 
-      return <span class="flex justify-center items-center px-4 cursor-pointer icons"
-        onClick={!!options.event.emit && (() => returnEmit(options.event))} >
-        <i class={linke(options.icon)}></i>
-        <p
-          style="color: #b2bec3"
-          class="text-sm"
-        >{unref(options.count) === 0 || unref(!options.count) ? "" : `(${unref(options.count)})`}</p>
-      </span >
+      const returnEmit = (event: Record<any, any>) =>
+        ctxEmit(event.emit_name, eventMap.get(event.emit_name), event.emit_name === "linke" && isLatestLinke.value)
+
+      return (
+        <span class="flex justify-center items-center px-4 cursor-pointer icons"
+          onClick={!!options?.event?.emit && (() => returnEmit(options.event))} >
+          <i class={linke(options.icon)}></i>
+          <p
+            style="color: #b2bec3"
+            class="text-sm"
+          > {switchText(options.name)}{unref(options.count) === 0 ? "" : `(${unref(options.count)})`}</p>
+        </span >
+      )
     }
 
 
@@ -97,19 +110,20 @@ export default defineComponent({
     });
 
     isLatestLinke.value = isLinke.value;
+
+
     return () => {
-      const setClass = (str_class: string) => "flex justify-end w-1/2 h-full" + " " + str_class
+      const setClass = (str_class: string) => "flex" + " " + str_class
 
       return (
-        <section class="footer_heigth flex w-full h-full">
-          <div class="w-1/2 h-full">
+        <section class="footer_heigth flex justify-end w-full h-full" >
+          <div class="flex items-center h-full">
             <div class={props.recursion ? setClass('items-end text-sm pb-2') : setClass('items-center')}>
               {props.info.map((options) => infoBtn(options))}
             </div >
           </div>
         </section>
       )
-
     }
   },
 });

@@ -12,8 +12,8 @@ export function getSubScriptDynamic(lasttime: number = -1) {
 
 export async function postLinke(
   threadId: string,
-  t: 0 | 1,
-  successFn: Function
+  successFn: Function,
+  t: 0 | 1
 ) {
   const res = await request({
     method: "post",
