@@ -24,14 +24,20 @@
         :info="footerInfo"
         :latestLikedUsers="event.info.commentThread.latestLikedUsers ?? []"
         @linke="linke"
+        @comment="comment"
       />
+      <article>
+        <MainWriteBox />
+        <MainComment :comments="commentList" />
+      </article>
     </footer>
   </section>
 </template>
 <script setup lang="ts">
-import { computed, defineEmits, unref } from "@vue/runtime-core";
+import { computed, defineEmits, ref, unref } from "@vue/runtime-core";
 
 import { musicResultDetail } from "../../../../../utils/musicDetail";
+import { getComment } from "../../../../../api/subscription";
 import { computed_footerInfo } from "../methods";
 import { onLinke } from "../../hooks/onLinke";
 
@@ -41,7 +47,8 @@ import MainContentHeader from "./MainContentHeader.vue";
 import MainContentFooter from "./MainContentFooter.vue";
 import MainContentSong from "./MainContentSong.vue";
 import MainContentText from "./MainContentText.vue";
-import { ElMenuItem } from "element-plus";
+import MainWriteBox from "./MainWriteBox.vue"
+import MainComment from "./MainComments"
 
 const ctxEmit = defineEmits(["emitPics"]);
 
@@ -52,30 +59,35 @@ const props = defineProps({
   },
 });
 
-const eventJson = computed(() => {
-  const json = JSON.parse(props.event.json);
-  return json;
-});
-
-
 const footerInfo = unref(computed_footerInfo)(props)
-
-const musicDetail = musicResultDetail(eventJson.value["song"] ?? {});
+const commentList = ref([])
 
 function linke(...emits: any) {
-  console.log(emits[0]);
-
-  // onLinke(props.event, emits[0], emits[1] ? 0 : 1)
+  onLinke(props.event, emits[0], emits[1] ? 0 : 1)
 };
+
+async function comment() {
+  const result = await getComment(props.event.info.threadId)
+  commentList.value = result.data.comments
+}
 
 function onEmitPreviewInfo(e: PointerEvent) {
   const index = (e.target as HTMLElement).getAttribute("key-index");
 
   ctxEmit("emitPics", [JSON.parse(JSON.stringify(props.event.pics)), index]);
 }
+
+
+const eventJson = computed(() => {
+  const json = JSON.parse(props.event.json);
+  return json;
+});
+
+const musicDetail = musicResultDetail(eventJson.value["song"] ?? {});
 </script>
 <style scoped lang="scss">
 </style>
+
 
 
 

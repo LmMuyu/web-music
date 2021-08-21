@@ -25,7 +25,7 @@ export async function postLinke(
     },
   });
 
-  successFn(res);
+  successFn && successFn(res);
 }
 
 export function getUserDetail() {
@@ -35,6 +35,16 @@ export function getUserDetail() {
     url: "/user/detail",
     params: {
       uid: state.userInfo.userID,
+    },
+  });
+}
+
+export function getComment(threadId: string) {
+  return request({
+    method: "get",
+    url: "/comment/event",
+    params: {
+      threadId,
     },
   });
 }

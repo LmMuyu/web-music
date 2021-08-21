@@ -2,9 +2,11 @@
 import { computed, defineComponent, ref, shallowRef, unref } from "vue";
 import { useStore } from "vuex";
 
-import type { State } from "../../../../../store/type";
-import type { PropType } from "vue"
+
 import { linkeEvent } from "../methods";
+
+import type { State } from "../../../../../store/type";
+import type { PropType, Ref } from "vue"
 
 type Options = {
   name: string
@@ -19,6 +21,10 @@ export default defineComponent({
       type: Array as PropType<Array<Options>>,
       default: () => []
     },
+    time: {
+      type: Number,
+      default: 0
+    },
     latestLikedUsers: {
       type: Array,
       default: () => [],
@@ -28,7 +34,7 @@ export default defineComponent({
       default: false,
     },
   },
-  emits: ["linke"],
+  emits: ["linke", "comment"],
   setup(props, { emit: ctxEmit }) {
     const store = useStore();
     const state = store.state as State;
@@ -57,16 +63,18 @@ export default defineComponent({
     }
 
 
-    const infoBtn = (options: Options) => {
-      const linke = (icons: string | string[]) => Array.isArray(icons) ? isLinke ? `iconfont ${icons[0]}` : `iconfont ${icons[1]}` : icons
+    const returnEmit = (event: Record<any, any>, el: Ref<HTMLElement | null>) =>
+      ctxEmit(event.emit_name, eventMap.get(event.emit_name), event.emit_name === "linke" && isLatestLinke.value, el)
 
-      const returnEmit = (event: Record<any, any>) =>
-        ctxEmit(event.emit_name, eventMap.get(event.emit_name), event.emit_name === "linke" && isLatestLinke.value)
+    const infoBtn = (options: Options) => {
+      const rootEl = ref<HTMLElement | null>(null)
+
+      const icon = (icons: string | string[]) => Array.isArray(icons) ? isLinke ? icons[0] : icons[1] : icons
 
       return (
-        <span class="flex justify-center items-center px-4 cursor-pointer icons"
-          onClick={!!options?.event?.emit && (() => returnEmit(options.event))} >
-          <i class={linke(options.icon)}></i>
+        <span ref={rootEl} class="flex justify-center items-center px-4 cursor-pointer icons"
+          onClick={!!options?.event?.emit && (() => returnEmit(options.event, rootEl))} >
+          <i class={`iconfont ${icon(options.icon)}`}></i>
           <p
             style="color: #b2bec3"
             class="text-sm"
@@ -80,10 +88,10 @@ export default defineComponent({
     const isLinke = computed(() => {
       if (isLatestLinke.value) return true;
 
-      const len = props.latestLikedUsers.length;
+      const len = props?.latestLikedUsers.length;
       const userid = state.userInfo.userID;
 
-      if (len === 0) return false;
+      if (len === 0 || len === undefined) return false;
 
       if (len === 1) {
         const isEqual = props.latestLikedUsers[0]["s"] === userid;
@@ -117,7 +125,10 @@ export default defineComponent({
 
       return (
         <section class="footer_heigth flex justify-end w-full h-full" >
-          <div class="flex items-center h-full">
+          <div class="flex items-center w-1/2 h-full">
+            <p>{props.time}</p>
+          </div>
+          <div class="flex items-center justify-end w-1/2 h-full">
             <div class={props.recursion ? setClass('items-end text-sm pb-2') : setClass('items-center')}>
               {props.info.map((options) => infoBtn(options))}
             </div >
