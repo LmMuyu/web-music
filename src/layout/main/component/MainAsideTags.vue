@@ -9,16 +9,17 @@
   </footer>
 </template>
 <script setup lang="ts">
-import { nextTick, onMounted, reactive } from "@vue/runtime-core";
+import { nextTick, onMounted } from "@vue/runtime-core";
 import { useStore } from "vuex";
 
 import { useRefNegate } from "../../../utils/useRefNegate";
+import { useWatchLocal } from "../hooks/useWatchLocal";
 import { BCBus } from "../hooks/useBroadcastChannel";
+
 
 import MainLoginButton from "./MainLoginButton.vue";
 import MainAsideCard from "./MainAsideCard.vue";
 import MainTag from "./MainTag.vue";
-import { useWatchLocal } from "../hooks/useWatchLocal";
 
 const store = useStore();
 
@@ -61,6 +62,6 @@ onMounted(() => {
     }
   });
 });
-</script>
+                                                                                                                                                                                                                                        </script>
 <style scoped lang="scss">
 </style>

@@ -13,16 +13,17 @@
 <script setup lang="ts">
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
-import { ref } from "vue";
+import { Ref, ref } from "vue";
 
 import { loginStateus } from "./api/app/login";
-import loginApp from "./view/login/login";
 
 
 import Main from "./layout/main/Main.vue";
 
 import type { State, UserInfo } from "./store/type";
 import type { RouteLocationNormalized } from "vue-router"
+import { promptbox } from "./components/promptBox";
+import { useLocalStorage } from "./utils/useLocalStorage";
 
 type linkType =
   | "info"
@@ -38,27 +39,28 @@ const router = useRouter();
 
 store.dispatch("countriesCode");
 
-const userInfo = ref<UserInfo | null>(null);
 const showTag = ref(false);
 const linkType = ref<linkType>("info");
+const userInfo = ref<UserInfo | null>(null);
 
-const pathList = ["/message", "/subscription"];
 
-async function redirectPath(to: RouteLocationNormalized, path: string) {
+
+async function redirectPath(to: RouteLocationNormalized) {
+  const pathList = ["/message", "/subscription"];
+
   await loginStateus();
   const loginstateus = (store.state as State).loginState;
 
-  if (loginstateus === 301 && pathList.includes(path) && path !== "/index") {
+  if (loginstateus === 301 && pathList.includes(to.path) && to.path !== "/index") {
     console.info("未登录,登录状态为:" + loginstateus);
 
-    loginApp()//未登录时,调用登录框
-    router.replace({ path: "/index" });
-    // store.commit("runActiveTagFn", [null, { path: "/index" }])
+    promptbox({ mountNode: "body", title: '请先登录!' })
+    router.replace({ path: "/" });
   }
 }
 
 router.beforeEach((to, from) => {
-  redirectPath(to, to.path);
+  redirectPath(to);
 
   const meta = to.meta;
 
@@ -90,10 +92,6 @@ store.watch(
 
 .text_in {
   line-height: inherit;
-}
-
-.grid_ul > li {
-  width: v-bind(gridWidth);
 }
 
 .rounded {

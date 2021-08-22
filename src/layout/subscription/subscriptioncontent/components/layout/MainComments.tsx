@@ -31,43 +31,49 @@ export default defineComponent({
       );
     };
 
-    const commentItem = (
-      id: number,
-      text: string,
-      content: string,
-      at: boolean = false,
-      beReplied?: Array<Object>
-    ) => {
+    const commentText = (id: number, text: string, content: string) => {
       return (
-        <span class="flex items-center">
+        <span class="flex">
           <p>{routerlink(id, text)}</p>
-          <p>{" " + content}</p>
-          {/* <div>{at && commentItem(id, text, content)}</div> */}
+          <p>{content}</p>
         </span>
       );
     };
 
-    const comentItem = (comment: any) => {
+    const commentItem = (comment: any, childcomment: boolean = false) => {
       const userInfo = {
         nickname: comment.user.nickname as string,
         userId: comment.user.userId as number,
         avatarUrl: comment.user.avatarUrl as string,
       };
 
-      const at: boolean = comment.beReplied.length >= 1;
-      const text: string = at ? "@" + userInfo.nickname : userInfo.nickname;
-      const content: string = comment.content;
+      const text: string = childcomment
+        ? "@" + userInfo.nickname
+        : userInfo.nickname;
 
+      const beReplied: Array<Object> = comment.beReplied ?? [];
+
+      const content: string = comment.content;
       const footerInfo = unref(comment_footerInfo)(comment);
 
       return (
-        <div class="flex">
-          <div class="w-1/6">
+        <div
+          class="flex"
+          style={{ backgroundColor: childcomment ? "#b2bec3" : "#fff" }}
+        >
+          <div v-show={!childcomment} class={!childcomment && "w-1/6"}>
             <ElAvatar src={userInfo.avatarUrl}></ElAvatar>
           </div>
-          <div class="flex flex-col justify-between  w-5/6">
-            {commentItem(userInfo.userId, text, content, at, comment.beReplied)}
-            <MainContentFooter info={footerInfo} />
+          <div
+            class={
+              "flex flex-col justify-between" + " " + !childcomment
+                ? "w-5/6"
+                : "w-full"
+            }
+          >
+            {commentText(userInfo.userId, text, content)}
+            <div> {beReplied.every((v) => commentItem(v, true))} </div>
+            <MainContentFooter info={footerInfo} v-show={!childcomment} />
           </div>
         </div>
       );
@@ -78,7 +84,7 @@ export default defineComponent({
         <div>
           <span>最新评论</span>
         </div>
-        <div class="py-4">{props.comments.map((v: any) => comentItem(v))}</div>
+        <div class="py-4">{props.comments.map((v: any) => commentItem(v))}</div>
       </section>
     );
   },

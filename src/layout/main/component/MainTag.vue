@@ -26,14 +26,10 @@
 import { useRouter } from "vue-router";
 
 import { currentIndex, moveIndex, AsideTags } from "../hooks/data";
-import { useStore } from "vuex";
 
 import { activeIndex } from "../../../utils/activeIndex";
 
-import type { RouteLocationNormalized } from "vue-router"
-
 const router = useRouter();
-const store = useStore()
 const toPath = (path: string) => router.push({ path });
 
 const activeTag = (to: any) => {
@@ -42,9 +38,12 @@ const activeTag = (to: any) => {
 }
 
 
-// store.commit("runActiveTagFn", [activeTag])
-
 router.beforeEach((to) => activeTag(to));
+// router.afterEach((to) => {
+
+//   console.log(to);
+//   console.log(router.currentRoute.value);
+// })
 
 const { activeStyle, clickActive, moveActive, leaveActive } = new activeIndex(
   currentIndex,

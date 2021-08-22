@@ -12,3 +12,10 @@ export async function loginStateus() {
     }
   }
 }
+
+export function logout() {
+  return request({
+    method: "post",
+    url: "/logout",
+  });
+}

@@ -2,7 +2,14 @@
   <div v-if="countRef" ref="section">
     <section class="flex pt-5 border_style" v-for="event in events" :key="event.id">
       <div style="width: 10%">
-        <el-avatar :src="event.user.avatarUrl"></el-avatar>
+        <router-link
+          :to="{
+            path: '/user/home',
+            query: event.user.userId
+          }"
+        >
+          <el-avatar :src="event.user.avatarUrl"></el-avatar>
+        </router-link>
       </div>
       <div style="width: 90%">
         <MainContent @emitPics="onClick" :event="event" />

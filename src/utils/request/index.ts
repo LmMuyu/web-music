@@ -2,7 +2,6 @@ import axios from "axios";
 
 import { promptbox } from "../../components/promptBox";
 import { loginStateus, setCookie } from "./methods";
-import store from "../../store";
 
 import type { AxiosRequestConfig, Canceler, CancelTokenStatic } from "axios";
 

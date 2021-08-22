@@ -7,6 +7,7 @@ import { linkeEvent } from "../methods";
 
 import type { State } from "../../../../../store/type";
 import type { PropType, Ref } from "vue"
+import { diffTime } from "../../hooks/diffTime";
 
 type Options = {
   name: string
@@ -21,7 +22,7 @@ export default defineComponent({
       type: Array as PropType<Array<Options>>,
       default: () => []
     },
-    time: {
+    showTime: {
       type: Number,
       default: 0
     },
@@ -126,7 +127,7 @@ export default defineComponent({
       return (
         <section class="footer_heigth flex justify-end w-full h-full" >
           <div class="flex items-center w-1/2 h-full">
-            <p>{props.time}</p>
+            <p >{props.showTime > 0 && diffTime(props.showTime, Date.now())}</p>
           </div>
           <div class="flex items-center justify-end w-1/2 h-full">
             <div class={props.recursion ? setClass('items-end text-sm pb-2') : setClass('items-center')}>

@@ -1,7 +1,7 @@
 <template>
   <section>
     <header>
-      <MainContentHeader :type="event.type" :userinfo="event.user" />
+      <MainContentHeader :type="event.type" :userinfo="event.user" :show-time="event.showTime" />
     </header>
     <main class="py-6">
       <MainContentText

@@ -1,5 +1,7 @@
 import Cookie from "js-cookie";
 
+import { useLocalStorage } from "../useLocalStorage";
+import { logout } from "../../api/app/login";
 import store from "../../store";
 
 import type { CookieAttributes } from "js-cookie";
@@ -72,11 +74,14 @@ function splitCookie(cookie: string, cookieObj: cookieOptions) {
 }
 
 const removeLocalStoreageKey = () => {
-  const info = localStorage.getItem("userInfo");
-  const token = localStorage.getItem("token");
+  const info = useLocalStorage("userInfo");
+  const token = useLocalStorage("token");
 
-  if (info && token) {
+  if (info) {
     localStorage.removeItem("userInfo");
+  }
+
+  if (token) {
     localStorage.removeItem("token");
   }
 };
@@ -84,12 +89,19 @@ const removeLocalStoreageKey = () => {
 export function loginStateus(url: string, httpRes: Record<string, any>) {
   if (url === "/login/status") {
     Promise.resolve(httpRes.data).then(({ data }) => {
-      if (data.account === null && data.profile === null) {
-        store.commit("setLoginStatus", 301);
-        removeLocalStoreageKey();
-      } else {
+      const local = useLocalStorage("userInfo");
+
+      if (data.account !== null && data.profile !== null && !local.value) {
         store.commit("setLocalStorage");
         store.commit("setLoginStatus", 200);
+      } else {
+        store.commit("setLoginStatus", 301);
+        // removeLocalStoreageKey();
+
+        if (data.account !== null && data.profile !== null) {
+          logout(); //退出登录
+        }
+        console.log(Cookie.get());
       }
     });
   }
