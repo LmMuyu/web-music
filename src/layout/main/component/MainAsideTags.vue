@@ -31,16 +31,8 @@ store.watch(
   () => store.state.userInfo,
   (value) => {
     if (!value) {
-      if (store.getters.getStatus === 200) {
-        InfoCard.userInfo = {}
-        store.commit("setLoginStatus", 301)
-
-        negate()
-      }
-
       return
     };
-
 
     InfoCard.userInfo = value.userInfo;
     negate();
@@ -62,6 +54,6 @@ onMounted(() => {
     }
   });
 });
-                                                                                                                                                                                                                                        </script>
+</script>
 <style scoped lang="scss">
 </style>

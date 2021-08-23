@@ -6,7 +6,7 @@ export async function loginStateus() {
   if (!initlogin) {
     try {
       initlogin = true;
-      await request({ url: "/login/status" });
+      return await request({ url: "/login/status" });
     } catch (err) {
       console.log(err);
     }

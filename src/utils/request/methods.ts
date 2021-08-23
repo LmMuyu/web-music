@@ -94,14 +94,17 @@ export function loginStateus(url: string, httpRes: Record<string, any>) {
       if (data.account !== null && data.profile !== null && !local.value) {
         store.commit("setLocalStorage");
         store.commit("setLoginStatus", 200);
+        // console.log(200);
       } else {
         store.commit("setLoginStatus", 301);
+        // console.log(301);
         // removeLocalStoreageKey();
 
-        if (data.account !== null && data.profile !== null) {
-          logout(); //退出登录
-        }
-        console.log(Cookie.get());
+        // if (data.account !== null && data.profile !== null) {
+        //   logout(); //退出登录
+        // }
+
+        // console.log(Cookie.get());
       }
     });
   }

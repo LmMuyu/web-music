@@ -13,17 +13,15 @@
 <script setup lang="ts">
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
-import { Ref, ref } from "vue";
+import { ref } from "vue";
 
 import { loginStateus } from "./api/app/login";
-
+import { promptbox } from "./components/promptBox";
 
 import Main from "./layout/main/Main.vue";
 
 import type { State, UserInfo } from "./store/type";
 import type { RouteLocationNormalized } from "vue-router"
-import { promptbox } from "./components/promptBox";
-import { useLocalStorage } from "./utils/useLocalStorage";
 
 type linkType =
   | "info"
@@ -37,13 +35,12 @@ type linkType =
 const store = useStore();
 const router = useRouter();
 
-store.dispatch("countriesCode");
 
 const showTag = ref(false);
 const linkType = ref<linkType>("info");
 const userInfo = ref<UserInfo | null>(null);
 
-
+store.dispatch("countriesCode")
 
 async function redirectPath(to: RouteLocationNormalized) {
   const pathList = ["/message", "/subscription"];

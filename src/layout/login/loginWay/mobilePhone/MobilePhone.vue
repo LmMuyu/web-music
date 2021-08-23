@@ -107,7 +107,9 @@ async function registerChecking() {
 
 function setUserInfo(info: any) {
   const BC = new BroadcastChannel("login");
-
+  // store.commit("login/setUserInfo", {
+  //   name: "买买买"
+  // })
   const userInfo = {
     token: info.token,
     account: info.account,
