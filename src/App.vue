@@ -46,13 +46,11 @@ async function redirectPath(to: RouteLocationNormalized) {
   const pathList = ["/message", "/subscription"];
 
   await loginStateus();
-  const loginstateus = (store.state as State).loginState;
+  const islogin: boolean = store.dispatch["login/getIslogin"]
 
-  if (loginstateus === 301 && pathList.includes(to.path) && to.path !== "/index") {
-    console.info("未登录,登录状态为:" + loginstateus);
-
+  if (islogin && pathList.includes(to.path) && to.path !== "/index") {
     promptbox({ mountNode: "body", title: '请先登录!' })
-    router.replace({ path: "/" });
+    router.replace({ path: "/index" });
   }
 }
 

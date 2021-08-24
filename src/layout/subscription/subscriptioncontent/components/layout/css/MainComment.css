@@ -5,3 +5,7 @@
 .decoration:hover {
   text-decoration: underline;
 }
+
+.bottom_border {
+  border-bottom: 1px solid #b2bec3;
+}

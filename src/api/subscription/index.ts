@@ -5,6 +5,7 @@ export function getSubScriptDynamic(lasttime: number = -1) {
   return request({
     url: "/event",
     params: {
+      lasttime,
       pagesize: 5,
     },
   });

@@ -1,9 +1,21 @@
-import axios from "axios";
+import axios, { AxiosInstance } from "axios";
 
 import { promptbox } from "../../components/promptBox";
-import { loginStateus, setCookie } from "./methods";
+import { loginStateus, setCookie, tryAgainRequest } from "./methods";
 
 import type { AxiosRequestConfig, Canceler, CancelTokenStatic } from "axios";
+
+interface CONFIG_DEFAULT {
+  defaults?: {
+    retry?: number;
+    retrydelay?: number;
+  };
+}
+
+function setConfig(instance: AxiosInstance & CONFIG_DEFAULT) {
+  instance.defaults.retry = 3;
+  instance.defaults.retrydelay = 500;
+}
 
 export default function request(config: AxiosRequestConfig) {
   let requestHttpToken: CancelTokenStatic | undefined;
@@ -16,7 +28,7 @@ export default function request(config: AxiosRequestConfig) {
   const instance = axios.create({
     baseURL: "https://netease-cloud-music-api-chi-ashy.vercel.app",
     method: "GET",
-    timeout: 5000,
+    timeout: 10000,
     headers: {},
     withCredentials: true,
     ...(isGet
@@ -29,6 +41,8 @@ export default function request(config: AxiosRequestConfig) {
         }
       : {}),
   });
+
+  isGet && setConfig(instance);
 
   instance.interceptors.request.use(
     (config) => {
@@ -50,26 +64,14 @@ export default function request(config: AxiosRequestConfig) {
 
       return httpRes;
     },
-    (config) => {
-      if (config.response) {
-        const response = config.response;
+    async (config) => {
+      const ret: { config?: any; isretry?: boolean } = await tryAgainRequest(
+        config
+      );
 
-        if (response.status) {
-          switch (response.status) {
-            case 404:
-              Promise.reject().catch(
-                () =>
-                  promptbox({
-                    title: response.data.message,
-                  }) && response
-              );
+      if (ret.isretry) return instance(ret.config);
 
-              return response;
-            default:
-              return Promise.reject(config);
-          }
-        }
-      }
+      return Promise.reject(config);
     }
   );
 

@@ -90,7 +90,7 @@ export default defineComponent({
       if (isLatestLinke.value) return true;
 
       const len = props?.latestLikedUsers.length;
-      const userid = state.userInfo.userID;
+      const userid = store.getters["login/getUserInfo"]["userID"];
 
       if (len === 0 || len === undefined) return false;
 

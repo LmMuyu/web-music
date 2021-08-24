@@ -60,6 +60,7 @@ class login {
   private createGetters() {
     return {
       getUserInfo: (state: STATETYPE) => state.userinfo,
+      getIslogin: (state: STATETYPE) => state.islogin,
       watchStop: (state: STATETYPE) => state.watchStop,
     };
   }
@@ -71,9 +72,9 @@ class login {
       return watchEffect(() => {
         const value = store.userinfo;
         const keyList = Object.keys(value);
-        const b = keyList.every((v) => list.indexOf(v) > -1);
+        const n = keyList.every((v) => list.indexOf(v) > -1);
 
-        if (keyList.length > 0 && !b) {
+        if (keyList.length > 0 && !n) {
           list = keyList;
 
           store.mitt.emit("login", {

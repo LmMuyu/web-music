@@ -1,15 +1,21 @@
 import Cookie from "js-cookie";
 
 import { useLocalStorage } from "../useLocalStorage";
-import { logout } from "../../api/app/login";
 import store from "../../store";
 
 import type { CookieAttributes } from "js-cookie";
+import { AxiosInstance, AxiosRequestConfig } from "axios";
 
 interface cookieOptions {
   name: string;
   value: string;
   options: CookieAttributes;
+}
+
+interface CONFIG_DEFAULT {
+  retry?: number;
+  retrydelay?: number;
+  _retryCount?: number;
 }
 
 export function setCookie(cookie: string) {
@@ -101,4 +107,37 @@ export function loginStateus(url: string, httpRes: Record<string, any>) {
       }
     });
   }
+}
+
+export function tryAgainRequest(err: any) {
+  const config: CONFIG_DEFAULT = err.config;
+  console.log(config);
+
+  if (!config.retry || !config)
+    return {
+      config,
+      isretry: false,
+    };
+
+  config._retryCount = config._retryCount || 0;
+
+  if (config._retryCount >= config.retry) {
+    return {
+      config,
+      isretry: false,
+    };
+  }
+
+  config._retryCount += 1;
+
+  const before = new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({
+        config,
+        isretry: true,
+      });
+    }, config.retrydelay || 1);
+  });
+
+  return before;
 }

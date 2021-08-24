@@ -20,7 +20,6 @@
 <script setup lang="ts">
 import { getCurrentInstance, nextTick, onDeactivated, onUnmounted, watch } from "@vue/runtime-core";
 import { reactive, ref } from "@vue/reactivity";
-import { useStore } from "vuex";
 
 import { getSubScriptDynamic } from "../../../../api/subscription";
 import { useRefNegate } from "../../../../utils/useRefNegate";
@@ -31,7 +30,6 @@ import { ElAvatar } from "element-plus";
 
 import type { Emitter } from "mitt"
 
-const store = useStore();
 const instance = getCurrentInstance()
 
 const mitt: Emitter = instance.appContext.config.globalProperties["mittBus"]
@@ -48,23 +46,21 @@ const scrollInfo = reactive({
   scrollHeight: 0,
 });
 
-
-store.commit("login/onMittEvent", (value: any) => {
-  getFriend(value.id);
-  negate();
-})
-
-async function getFriend(id: number) {
+async function getFriend() {
   try {
-    const res = await getSubScriptDynamic(id);
+    const res = await getSubScriptDynamic();
 
     lasttime = res.data.lasttime;
     events.value = res.data.event;
+
+    negate()
   } catch (err) {
     //导航到404页面
     console.log(err);
   }
 }
+
+getFriend();
 
 mitt.on("preview", onClick)
 
@@ -74,10 +70,10 @@ function onScroll(e: Event) {
 
 const stopScroll = watch(events, () => {
   nextTick().then(() => {
-    // console.dir(section.value);
-    scrollInfo.scrollHeight = section.value.scrollHeight;
+    // // console.dir(section.value);
+    // scrollInfo.scrollHeight = section.value.scrollHeight;
 
-    section.value.addEventListener("scroll", onScroll, false);
+    // section.value.addEventListener("scroll", onScroll, false);
   });
 });
 

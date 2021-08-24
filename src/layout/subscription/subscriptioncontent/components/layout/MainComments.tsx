@@ -41,6 +41,8 @@ export default defineComponent({
     };
 
     const commentItem = (comment: any, childcomment: boolean = false) => {
+      console.log(childcomment);
+      
       const userInfo = {
         nickname: comment.user.nickname as string,
         userId: comment.user.userId as number,
@@ -58,7 +60,7 @@ export default defineComponent({
 
       return (
         <div
-          class="flex"
+          class="flex pt-4 bottom_border"
           style={{ backgroundColor: childcomment ? "#b2bec3" : "#fff" }}
         >
           <div v-show={!childcomment} class={!childcomment && "w-1/6"}>
