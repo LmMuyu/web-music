@@ -2,15 +2,16 @@ import { useStore } from "vuex";
 import { reactive } from "vue";
 
 import { useLocalStorage } from "../../../utils/useLocalStorage";
+import { useRefNegate } from "../../../utils/useRefNegate";
 
 import type { UserInfo } from "../../../store/type";
 import type { Ref } from "vue";
 
 //登录后跨页面通信
-export const BCBus = (countRef: Ref<boolean>, negate: () => boolean) => {
+export const BCBus = () => {
   let store = useStore();
-  if (store.getters.getStatus === 200) return;
 
+  const { countRef, negate } = useRefNegate(false);
   const InfoCard = reactive({
     userInfo: {},
     countRef,
@@ -23,6 +24,9 @@ export const BCBus = (countRef: Ref<boolean>, negate: () => boolean) => {
     const info = ev.data;
 
     setLocalStorage(info.token, info); //写入local storage
+    store.commit("login/switchStatus", true);
+    store.commit("login/setUserInfo", info);
+
     BC.postMessage(""); //通知登录页面可以跳转到主页面了
   };
 
@@ -39,5 +43,5 @@ function setLocalStorage(token: number, commitInfo: UserInfo) {
   const strCommitInfo = JSON.stringify(commitInfo);
 
   useLocalStorage("token", String(token));
-  useLocalStorage("userInfo", strCommitInfo);
+  useLocalStorage("userinfo", strCommitInfo);
 }

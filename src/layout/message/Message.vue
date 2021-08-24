@@ -109,24 +109,22 @@ const findViewMsg = (useroptions: Record<string, any>) => {
   }
 };
 
-const watchStep = store.watch(
-  () => store.state.userInfo,
-  async (value) => {
-    try {
-      if (!value) return;
-      const list = await getPrivateLetter();
-      privateLetter.main = list.data.msgs;
 
-      const privateMesList = await getUserMessageList(list);
-      privateLetter.storeMsg = privateMesList;
-    } catch (err) {
-      console.log(err);
-    }
-  },
-  {
-    immediate: true,
+store.commit("login/onMittEvent", async (value: any) => {
+  try {
+    const list = await getPrivateLetter();
+    console.log(list);
+
+    privateLetter.main = list.data.msgs;
+
+    const privateMesList = await getUserMessageList(list);
+    privateLetter.storeMsg = privateMesList;
+
+  } catch (err) {
+    console.log(err);
   }
-);
+})
+
 
 onMounted(() => {
   nextTick().then(() => {
@@ -141,8 +139,6 @@ onMounted(() => {
       );
     }
   });
-
-  watchStep();
 });
 </script>
 <style scoped lang="scss">

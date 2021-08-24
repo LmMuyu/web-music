@@ -48,15 +48,11 @@ const scrollInfo = reactive({
   scrollHeight: 0,
 });
 
-store.watch(
-  () => store.state.userInfo,
-  (value) => {
-    if (!value) return;
-    getFriend(value.id);
-    negate();
-  },
-  { immediate: true }
-);
+
+store.commit("login/onMittEvent", (value: any) => {
+  getFriend(value.id);
+  negate();
+})
 
 async function getFriend(id: number) {
   try {

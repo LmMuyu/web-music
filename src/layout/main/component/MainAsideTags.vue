@@ -12,7 +12,6 @@
 import { nextTick, onMounted } from "@vue/runtime-core";
 import { useStore } from "vuex";
 
-import { useRefNegate } from "../../../utils/useRefNegate";
 import { useWatchLocal } from "../hooks/useWatchLocal";
 import { BCBus } from "../hooks/useBroadcastChannel";
 
@@ -23,22 +22,12 @@ import MainTag from "./MainTag.vue";
 
 const store = useStore();
 
-const { countRef, negate } = useRefNegate(false);
+const InfoCard = BCBus(); //接受登录后的用户信息
 
-const InfoCard = BCBus(countRef, negate); //接受登录后的用户信息
-
-store.watch(
-  () => store.state.userInfo,
-  (value) => {
-    if (!value) {
-      return
-    };
-
-    InfoCard.userInfo = value.userInfo;
-    negate();
-  },
-  { immediate: true }
-);
+store.commit("login/onMittEvent", (value: any) => {
+  InfoCard.userInfo = value.value.userInfo;
+  InfoCard.negate()
+})
 
 useWatchLocal() //侦听localstoreage
 
@@ -49,7 +38,7 @@ onMounted(() => {
     if (btn) {
       btn.style.outline = "none";
       btn.classList.add(...["justify-center", "w-1/2"]);
-    } else if (!countRef.value) {
+    } else if (!InfoCard.countRef) {
       console.error("ErrorType:'btn' for null");
     }
   });

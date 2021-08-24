@@ -92,19 +92,12 @@ export function loginStateus(url: string, httpRes: Record<string, any>) {
       const local = useLocalStorage("userInfo");
 
       if (data.account !== null && data.profile !== null && !local.value) {
-        store.commit("setLocalStorage");
-        store.commit("setLoginStatus", 200);
-        // console.log(200);
+        store.commit("login/switchStatus", true);
+        store.commit("login/findInfo");
+        console.log(true);
       } else {
-        store.commit("setLoginStatus", 301);
-        // console.log(301);
-        // removeLocalStoreageKey();
-
-        // if (data.account !== null && data.profile !== null) {
-        //   logout(); //退出登录
-        // }
-
-        // console.log(Cookie.get());
+        store.commit("login/switchStatus", false);
+        console.log(false);
       }
     });
   }

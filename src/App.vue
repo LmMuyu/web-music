@@ -70,12 +70,10 @@ router.beforeEach((to, from) => {
   }
 });
 
-store.watch(
-  () => store.state.userInfo,
-  (value: UserInfo | null) => {
-    userInfo.value = value;
-  }
-);
+
+store.commit("login/onMittEvent", (value: any) => {
+  userInfo.value = value.value as UserInfo;
+})
 </script>
 
 <style lang="scss">

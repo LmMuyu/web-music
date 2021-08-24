@@ -135,7 +135,7 @@ export async function recordData(record: string, recordData: Ref<Object>) {
 }
 
 export async function recordStorage(recordInfoData: Ref<Object>) {
-  const localData = await useStorage("userInfo", "", "local", {
+  const localData = await useStorage("userinfo", "", "local", {
     isGet: true,
   });
 
