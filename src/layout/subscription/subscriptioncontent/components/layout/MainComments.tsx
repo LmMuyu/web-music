@@ -41,8 +41,6 @@ export default defineComponent({
     };
 
     const commentItem = (comment: any, childcomment: boolean = false) => {
-      console.log(childcomment);
-      
       const userInfo = {
         nickname: comment.user.nickname as string,
         userId: comment.user.userId as number,
@@ -60,22 +58,21 @@ export default defineComponent({
 
       return (
         <div
-          class="flex pt-4 bottom_border"
-          style={{ backgroundColor: childcomment ? "#b2bec3" : "#fff" }}
+          class={!childcomment ? "flex pt-4 bottom_border" : "flex p-2"}
+          style={{ backgroundColor: childcomment ? "#f5f6fa" : "#fff" }}
         >
-          <div v-show={!childcomment} class={!childcomment && "w-1/6"}>
-            <ElAvatar src={userInfo.avatarUrl}></ElAvatar>
-          </div>
+          {!childcomment && (
+            <div style="width:10%">
+              <ElAvatar src={userInfo.avatarUrl}></ElAvatar>
+            </div>
+          )}
           <div
-            class={
-              "flex flex-col justify-between" + " " + !childcomment
-                ? "w-5/6"
-                : "w-full"
-            }
+            class="flex flex-col justify-between"
+            style={{ width: !childcomment ? "90%" : "100%" }}
           >
             {commentText(userInfo.userId, text, content)}
-            <div> {beReplied.every((v) => commentItem(v, true))} </div>
-            <MainContentFooter info={footerInfo} v-show={!childcomment} />
+            <div>{beReplied.map((v) => commentItem(v, true))}</div>
+            {!childcomment && <MainContentFooter info={footerInfo} />}
           </div>
         </div>
       );

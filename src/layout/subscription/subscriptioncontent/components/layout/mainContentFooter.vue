@@ -38,7 +38,6 @@ export default defineComponent({
   emits: ["linke", "comment"],
   setup(props, { emit: ctxEmit }) {
     const store = useStore();
-    const state = store.state as State;
     const isLatestLinke = shallowRef(false);
     const linkedCounts = ref(props.info.find(v => v.name === "linke").count);
     const eventMap = new Map()
@@ -79,7 +78,7 @@ export default defineComponent({
           <p
             style="color: #b2bec3"
             class="text-sm"
-          > {switchText(options.name)}{unref(options.count) === 0 ? "" : `(${unref(options.count)})`}</p>
+          >{!options.icon && switchText(options.name)}{unref(options.count) === 0 ? "" : `${unref(options.count)}`}</p>
         </span >
       )
     }

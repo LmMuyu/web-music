@@ -1,5 +1,5 @@
 <template>
-  <section style="background-color: #f5f6fa" class="px-6 pt-4 w-full h-full">
+  <section>
     <main>
       <MainContentText
         :msg="addNewEventJson.msg"
