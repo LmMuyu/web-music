@@ -46,8 +46,9 @@ export default class preview {
       return;
     }
 
+    if (this.app.value === null) return;
+
     this.app.value.unmount();
-    this.mounttag.parentNode.removeChild(this.mounttag);
     this.mounttag = null;
     this.app = null;
     return true;

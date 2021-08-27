@@ -1,8 +1,8 @@
 import { createAsComponent } from "../utils/createAsComponent";
 
-import { RouteRecordRaw } from "vue-router";
+import type { RouteRecordRaw } from "vue-router";
 import type { META } from "./type/type";
-import router from ".";
+import { addProps } from "./methods";
 
 const routes: (RouteRecordRaw & {
   meta?: META;
@@ -84,12 +84,23 @@ const routes: (RouteRecordRaw & {
   {
     path: "/user",
     name: "User",
-    redirect: "/user/home",
     children: [
       {
         path: "home",
         name: "Home",
-        component: () => import("../view/user/children/Home.vue"),
+        meta: {
+          defaultView: ["Home"],
+          mainContentOptions: {
+            left: {
+              header: false,
+              footer: false,
+            },
+            right: {
+              main: false,
+            },
+          },
+        },
+        component: () => import("../view/user/children/ChildHome.vue"),
       },
     ],
     component: () => import("../view/user/User.vue"),

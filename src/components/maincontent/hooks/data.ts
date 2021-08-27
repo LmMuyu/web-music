@@ -86,4 +86,10 @@ importCompsList
       loadComp: false,
     },
     position: "right",
+  })
+  .set("Home", {
+    options: {
+      loadComp: false,
+    },
+    position: "main",
   });

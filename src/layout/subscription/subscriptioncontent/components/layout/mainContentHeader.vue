@@ -3,12 +3,15 @@
     <div class="flex items-center">
       <p class="hover">
         <router-link
-          style="color:#74b9ff"
+          style="color: #74b9ff"
           :to="{
             path: '/user/home',
-            query: userinfo.userId
+            query: {
+              uid: userinfo.userId,
+            },
           }"
-        >{{ userinfo.nickname }}</router-link>
+          >{{ userinfo.nickname }}</router-link
+        >
       </p>
       <p class="text-sm mx-2" style="color: #b2bec3">{{ eventType(type) }}</p>
     </div>
@@ -23,15 +26,14 @@ import { defineProps } from "vue";
 import { diffTime } from "../../hooks/diffTime";
 import { eventType } from "../../hooks/eventType";
 
-
 const props = defineProps({
   userinfo: {
     type: Object,
-    default: () => { },
+    default: () => {},
   },
   showTime: {
     type: Number,
-    required: true
+    required: true,
   },
   type: {
     type: Number,
@@ -48,4 +50,3 @@ const props = defineProps({
   text-decoration: underline;
 }
 </style>
-

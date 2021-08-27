@@ -4,7 +4,6 @@
       <keep-alive v-if="route.meta.KeepAlive ?? true">
         <component :is="Component" />
       </keep-alive>
-
       <component :is="Component" v-else />
     </router-view>
   </Main>
@@ -21,7 +20,7 @@ import { promptbox } from "./components/promptBox";
 import Main from "./layout/main/Main.vue";
 
 import type { State, UserInfo } from "./store/type";
-import type { RouteLocationNormalized } from "vue-router"
+import type { RouteLocationNormalized } from "vue-router";
 
 type linkType =
   | "info"
@@ -35,21 +34,20 @@ type linkType =
 const store = useStore();
 const router = useRouter();
 
-
 const showTag = ref(false);
 const linkType = ref<linkType>("info");
 const userInfo = ref<UserInfo | null>(null);
 
-store.dispatch("countriesCode")
+store.dispatch("countriesCode");
 
 async function redirectPath(to: RouteLocationNormalized) {
   const pathList = ["/message", "/subscription"];
 
   await loginStateus();
-  const islogin: boolean = store.dispatch["login/getIslogin"]
+  const islogin: boolean = store.dispatch["login/getIslogin"];
 
   if (islogin && pathList.includes(to.path) && to.path !== "/index") {
-    promptbox({ mountNode: "body", title: '请先登录!' })
+    promptbox({ mountNode: "body", title: "请先登录!" });
     router.replace({ path: "/index" });
   }
 }
@@ -64,14 +62,13 @@ router.beforeEach((to, from) => {
   }
 
   if (to.path === "/login" && store.getters.getStatus === 200) {
-    router.push("/index")
+    router.push("/index");
   }
 });
 
-
 store.commit("login/onMittEvent", (value: any) => {
   userInfo.value = value.value as UserInfo;
-})
+});
 </script>
 
 <style lang="scss">

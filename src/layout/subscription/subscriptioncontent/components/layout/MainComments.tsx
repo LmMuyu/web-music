@@ -23,7 +23,9 @@ export default defineComponent({
           class="decoration whitespace-nowrap"
           to={{
             path: "/user/home",
-            query: id,
+            query: {
+              uid: id,
+            },
           }}
         >
           {text + ":"}
