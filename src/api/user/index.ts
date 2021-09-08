@@ -32,3 +32,14 @@ export async function allSettldRequest(uid: string) {
 
   console.log(allres);
 }
+
+export function getUserAudio(uid: number) {
+  console.log(uid);
+  
+  return request({
+    url: "/user/audio",
+    params: {
+      uid,
+    },
+  });
+}

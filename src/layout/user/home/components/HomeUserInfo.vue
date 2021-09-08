@@ -8,26 +8,40 @@
       />
     </div>
     <div class="flex flex-col w-full ml-6">
-      <div>
-        <p>{{ profile.nickname }}</p>
+      <div class="flex items-center icon">
+        <p class="font-bold text-2xl cursor-default">
+          {{ profile.nickname ?? "" }}
+        </p>
+        <i
+          class="iconfont px-4"
+          :class="profile.gender === 1 ? 'iconxingbienan' : 'iconxingbienv-01'"
+        ></i>
+        <p class="text-sm align-middle" style="color: #505052">
+          {{ profile.followTime }}
+        </p>
       </div>
-      <div class="border_bottom flex py-6">
-        <div class="w-1/2">aldwadawd</div>
+      <div class="border_bottom flex py-2">
+        <div class="w-1/2 flex items-center flex-wrap">
+          <p
+            class="px-4"
+            style="color: #353b48"
+            v-for="(desc, index) in profile.allAuthTypes"
+            :key="index"
+          >
+            {{ desc.desc }}
+          </p>
+        </div>
         <div class="flex items-center justify-end w-1/2">
           <span
             v-for="(model, index) in models"
             :key="index"
-            class="px-6 py-2 mx-6 cursor-pointer border_round rounded-lg"
+            class="px-4 py-2 mx-4 cursor-pointer border_round rounded-lg"
             @click="model.click"
-            @mouseenter="
-              (model?.isfollows?.countRef ?? false) && model.isfollows.negate
-            "
-            @mouseleave="
-              (model?.isfollows?.countRef ?? false) && model.isfollows.negate
-            "
+            @mouseenter="model.isfollows ? model.isfollows.negate : () => {}"
+            @mouseleave="model.isfollows ? model.isfollows.negate : () => {}"
           >
-            <p v-if="!model.hovername ?? false">
-              {{ model.isfollows.countRef ? model.hovername : model.name }}
+            <p v-if="model.isfollows?.countRef ?? false">
+              {{ model.hovername }}
             </p>
             <p v-else>{{ model.name }}</p>
           </span>
@@ -68,10 +82,12 @@
 
 <script setup lang="ts">
 import { ref } from "@vue/reactivity";
-
-import { ElAvatar, ElImage } from "element-plus";
+import { watchEffect } from "@vue/runtime-core";
 
 import { useRefNegate } from "../../../../utils/useRefNegate";
+import { useWindowTitle } from "../../../../utils/useWindowTitle";
+
+import { ElAvatar, ElImage } from "element-plus";
 
 const props = defineProps({
   profile: {
@@ -79,6 +95,24 @@ const props = defineProps({
     default: () => ({}),
   },
 });
+
+const genderColor = ["#1497DB", "#FF6C8F"];
+const selectColor = ref("");
+
+const stop = watchEffect(() => {
+  console.log("watchEffect");
+  console.log(props.profile.userId);
+
+  if (props.profile.gender === 1) {
+    selectColor.value = genderColor[0];
+  } else {
+    selectColor.value = genderColor[1];
+  }
+});
+
+stop();
+
+useWindowTitle(props.profile.nickname);
 
 const infolist = ref([
   {
@@ -112,8 +146,9 @@ const models = [
   },
   {
     name: "关注",
-    hovername: "取消关注",
-    isfollows: useRefNegate(false),
+    ...(props.profile.followed
+      ? { hovername: "取消关注", isfollows: useRefNegate(false) }
+      : {}),
     click(e: Event) {
       console.log(e);
     },
@@ -121,6 +156,10 @@ const models = [
 ];
 </script>
 <style scoped lang="scss">
+.icon {
+  @include Iconfont(v-bind(selectColor), 20);
+}
+
 .border_bottom {
   border-bottom: 1px solid #f5f5f5;
 }
