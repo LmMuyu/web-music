@@ -13,19 +13,6 @@ export default {
     store.musicInfo = musicInfo;
   },
 
-  setLocalStorage(state: State) {
-    state.userInfo = findLoginInfo();
-  },
-
-  setUserInfo(state: State, data: any) {
-    state.userInfo = data;
-  },
-
-  //更新登录状态
-  setLoginStatus(state: State, loginState: number) {
-    state.loginState = loginState;
-  },
-
   runActiveTagFn<T extends RouteLocationNormalized>(
     state: State,
     parmas: [((to: T) => void)?, T?]

@@ -11,9 +11,7 @@ const store = createStore<State>({
   state() {
     return {
       countriesCode: null,
-      userInfo: null,
       musicInfo: null,
-      loginState: 301,
       activeTagFn: null,
     };
   },

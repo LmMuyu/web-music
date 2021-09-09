@@ -80,11 +80,11 @@ function splitCookie(cookie: string, cookieObj: cookieOptions) {
 }
 
 const removeLocalStoreageKey = () => {
-  const info = useLocalStorage("userInfo");
+  const info = useLocalStorage("userinfo");
   const token = useLocalStorage("token");
 
   if (info) {
-    localStorage.removeItem("userInfo");
+    localStorage.removeItem("userinfo");
   }
 
   if (token) {
@@ -95,14 +95,15 @@ const removeLocalStoreageKey = () => {
 export function loginStateus(url: string, httpRes: Record<string, any>) {
   if (url === "/login/status") {
     Promise.resolve(httpRes.data).then(({ data }) => {
-      const local = useLocalStorage("userInfo");
+      console.log(data);
 
-      if (data.account !== null && data.profile !== null && !local.value) {
+      if (data.account !== null && data.profile !== null) {
         store.commit("login/switchStatus", true);
         store.commit("login/findInfo");
         console.log(true);
       } else {
         store.commit("login/switchStatus", false);
+        removeLocalStoreageKey();
         console.log(false);
       }
     });

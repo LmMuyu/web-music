@@ -6,13 +6,13 @@
   </ElContainer>
 </template>
 <script setup lang="ts">
+import { ref } from "@vue/reactivity";
 import { useRoute } from "vue-router";
 
 import { getUserDetail } from "../../../api/user";
 
 import HomeUserInfo from "./components/HomeUserInfo.vue";
 import { ElContainer, ElMain } from "element-plus";
-import { ref } from "@vue/reactivity";
 
 const route = useRoute();
 const uid = route.query.uid as string;

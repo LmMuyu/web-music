@@ -70,6 +70,8 @@ class login {
 
     return function () {
       return watchEffect(() => {
+        console.log("login/watchEffect");
+
         const value = store.userinfo;
         const keyList = Object.keys(value);
         const n = keyList.every((v) => list.indexOf(v) > -1);

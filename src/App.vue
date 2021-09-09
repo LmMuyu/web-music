@@ -12,14 +12,14 @@
 <script setup lang="ts">
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
-import { ref } from "vue";
+import { provide, ref } from "vue";
 
 import { loginStateus } from "./api/app/login";
 import { promptbox } from "./components/promptBox";
 
 import Main from "./layout/main/Main.vue";
 
-import type { State, UserInfo } from "./store/type";
+import type { UserInfo } from "./store/type";
 import type { RouteLocationNormalized } from "vue-router";
 
 type linkType =
@@ -38,13 +38,13 @@ const showTag = ref(false);
 const linkType = ref<linkType>("info");
 const userInfo = ref<UserInfo | null>(null);
 
+const pathList = ["/message", "/subscription"];
+
 store.dispatch("countriesCode");
+provide("pathlist", pathList);
 
-async function redirectPath(to: RouteLocationNormalized) {
-  const pathList = ["/message", "/subscription"];
-
+async function redirectPath(to: RouteLocationNormalized, islogin: boolean) {
   await loginStateus();
-  const islogin: boolean = store.dispatch["login/getIslogin"];
 
   if (islogin && pathList.includes(to.path) && to.path !== "/index") {
     promptbox({ mountNode: "body", title: "请先登录!" });
@@ -53,7 +53,9 @@ async function redirectPath(to: RouteLocationNormalized) {
 }
 
 router.beforeEach((to, from) => {
-  redirectPath(to);
+  const islogin: boolean = store.dispatch["login/getIslogin"];
+
+  redirectPath(to, islogin);
 
   const meta = to.meta;
 
@@ -61,7 +63,7 @@ router.beforeEach((to, from) => {
     showTag.value = meta.showTag as boolean;
   }
 
-  if (to.path === "/login" && store.getters.getStatus === 200) {
+  if (to.path === "/login" && islogin) {
     router.push("/index");
   }
 });
