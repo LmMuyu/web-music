@@ -4,10 +4,10 @@
   </ElCol>
   <ElCol :span="8">
     <div class="flex flex-col items-start ml-2">
-      <span class="w-1/2 font-bold text-lg" style="color: #636e72">
+      <span class="font-bold text-lg" style="color: #636e72">
         {{ infoData?.nickname }}
       </span>
-      <span class="w-1/2"></span>
+      <span></span>
     </div>
   </ElCol>
 </template>

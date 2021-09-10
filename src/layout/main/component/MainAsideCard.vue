@@ -13,9 +13,9 @@ import {
   defineProps,
   shallowRef,
 } from "@vue/runtime-core";
-import { ElAvatar, ElCol, ElRow } from "element-plus";
-import MainInfoCard from "./MainInfoCard.vue";
 
+import { ElCol, ElRow } from "element-plus";
+import MainInfoCard from "./MainInfoCard.vue";
 const MainModel = defineAsyncComponent(() => import("./MainModel.vue"));
 
 const props = defineProps({
@@ -24,6 +24,7 @@ const props = defineProps({
     default: () => ({}),
   },
 });
+
 let modelComp = shallowRef(MainModel);
 
 function openLoginModel() {

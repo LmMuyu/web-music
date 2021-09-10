@@ -1,10 +1,13 @@
 <template>
   <transition name="model">
-    <section class="w-full p-4 rounded-md absolute -top-full left-0 right-0">
+    <section
+      style="background-color: #74b9ff"
+      class="w-full p-4 rounded-md absolute -top-full left-0 right-0"
+    >
       <el-row class="py-2">
         <MainInfoCard :infoData="infoData" />
       </el-row>
-      <div class="whitespace-nowrap py-4" style="background-color: #74b9ff">
+      <div class="whitespace-nowrap py-2">
         <p class="text-center">退出登录</p>
       </div>
     </section>
