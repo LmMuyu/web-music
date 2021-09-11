@@ -1,7 +1,7 @@
 <template>
   <section class="flex flex-col justify-center items-center w-full h-full">
-    <main class="flex flex-col justify-center items-center w-full">
-      <div class="py-2 w-3/5">
+    <main class="flex flex-col justify-center items-center w-3/5">
+      <div class="py-2 w-full">
         <InputBox
           ref="phone"
           placeholder="手机号"
@@ -10,7 +10,7 @@
           v-model="inputLoginInfo.phone"
         />
       </div>
-      <div class="py-2 w-3/5">
+      <div class="py-2 w-full">
         <InputBox
           ref="pass"
           iconfont="iconmima"
@@ -19,14 +19,11 @@
           v-model="inputLoginInfo.password"
         />
       </div>
-      <div class="py-2 w-full flex items-center justify-between">
-        <el-button
-          class="rounded-lg translatex"
-          type="primary"
-          @click="loginBtn"
+      <div class="py-2 w-full flex items-center">
+        <el-button class="rounded-lg w-5/12" type="primary" @click="loginBtn"
           >登录</el-button
         >
-        <span class="_translatex">
+        <span class="flex-1 text-right">
           <a href="javscript:;;" class>忘记密码?</a>
         </span>
       </div>
@@ -135,12 +132,4 @@ function setUserInfo(info: any) {
   };
 }
 </script>
-<style scoped lang="scss">
-.translatex {
-  transform: translate(140%);
-}
-
-._translatex {
-  transform: translate(-140%);
-}
-</style>
+<style scoped lang="scss"></style>

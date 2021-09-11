@@ -1,16 +1,13 @@
-import { watchEffect, WatchStopHandle } from "@vue/runtime-dom";
+import { Ref } from "@vue/runtime-dom";
 
 interface StateOptions {
   x: number;
   y: number;
-  mainheight: number;
-  mainwidth: number;
-  cardheight: number;
-  cardwidth: number;
-  watchStop: WatchStopHandle;
+  width: number;
+  modelComp: Ref<any>;
 }
 
-class maincard {
+class maintags {
   public state!: StateOptions;
   public mutations: any;
   public getters: any;
@@ -27,14 +24,10 @@ class maincard {
     const state: StateOptions = {
       x: 0,
       y: 0,
-      cardheight: 0,
-      cardwidth: 0,
-      mainheight: 0,
-      mainwidth: 0,
-      watchStop: null,
+      width: 0,
+      modelComp: null,
     };
 
-    state.watchStop = this.createWatchEffect(state)();
     return state;
   }
 
@@ -43,11 +36,12 @@ class maincard {
       setPosInfo(state: StateOptions, posdata: any) {
         for (const key in posdata) {
           if (Object.prototype.hasOwnProperty.call(state, key)) {
-            console.log(key);
-
             state[key] = posdata[key];
           }
         }
+      },
+      clearModelComp(state: StateOptions) {
+        state.modelComp = null;
       },
     };
   }
@@ -57,15 +51,6 @@ class maincard {
       getPosInfo: (state: StateOptions) => state,
     };
   }
-
-  private createWatchEffect(state: StateOptions) {
-    return () =>
-      watchEffect(() => {
-        const mainheight = state.mainheight;
-
-        console.log(mainheight);
-      });
-  }
 }
 
-export default maincard;
+export default maintags;

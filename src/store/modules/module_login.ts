@@ -67,6 +67,7 @@ class login {
 
   private watchUserInfo(store: STATETYPE) {
     let list = [];
+    let init = false;
 
     return function () {
       return watchEffect(() => {
@@ -75,6 +76,7 @@ class login {
         const value = store.userinfo;
         const keyList = Object.keys(value);
         const n = keyList.every((v) => list.indexOf(v) > -1);
+        console.log(n);
 
         if (keyList.length > 0 && !n) {
           list = keyList;
@@ -84,7 +86,15 @@ class login {
             islogin: store.islogin,
             watchStop: store.watchStop,
           });
+        } else if (init) {
+          store.mitt.emit("login", {
+            value: {},
+            islogin: store.islogin,
+            watchStop: store.watchStop,
+          });
         }
+
+        init = true;
       });
     };
   }

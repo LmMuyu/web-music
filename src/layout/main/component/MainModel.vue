@@ -1,44 +1,96 @@
 <template>
-  <transition name="model">
-    <section
-      style="background-color: #74b9ff"
-      class="w-full p-4 rounded-md absolute -top-full left-0 right-0"
-    >
-      <el-row class="py-2">
-        <MainInfoCard :infoData="infoData" />
-      </el-row>
-      <div class="whitespace-nowrap py-2">
-        <p class="text-center">退出登录</p>
-      </div>
-    </section>
-  </transition>
+  <section
+    ref="model"
+    style="background-color: #4bcffa"
+    class="rounded-md z-10 absolute opacity shadow"
+    :style="nodeinfo"
+  >
+    <el-row class="p-4">
+      <MainInfoCard :infoData="infoData" />
+    </el-row>
+    <div class="whitespace-nowrap p-4 bordert">
+      <button class="outline border-none" @click="logout">退出登录</button>
+    </div>
+
+    <svg width="12" height="8" class="absolute -bottom-2 left">
+      <polygon
+        points="0,0 12,0 6,8"
+        style="stroke: #4bcffa; stroke-width: 1px; fill: #4bcffa"
+      ></polygon>
+    </svg>
+  </section>
 </template>
 <script setup lang="ts">
-import { useAttrs } from "@vue/runtime-core";
+import {
+  nextTick,
+  onMounted,
+  reactive,
+  ref,
+  useAttrs,
+} from "@vue/runtime-core";
 
 import MainInfoCard from "./MainInfoCard.vue";
 import { ElRow } from "element-plus";
+import { useStore } from "vuex";
+
+import { logout } from "../../../api/app/login";
 
 const attrs = useAttrs();
+const store = useStore();
 
 const infoData = attrs["infoData"];
+const model = ref(null);
+
+const node = store.getters["maintags/getPosInfo"];
+const nodeinfo = reactive({
+  left: "",
+  top: "",
+  width: "",
+});
+
+onMounted(() => {
+  nextTick(() => {
+    nodeinfo.left = node.x + "px";
+
+    const height = model.value.clientHeight;
+
+    let y = parseInt(node.y);
+    y = y - height;
+
+    nodeinfo.top = y + "px";
+    nodeinfo.width = node.width + "px";
+  });
+});
 </script>
 <style scoped lang="scss">
-.model-enter-active {
-  transition: all 0.5s;
-}
-
-.model-leave-active {
-  transition: all 0.5s;
-}
-
-.model-enter-from,
-.model-levae-to {
+.opacity {
   opacity: 0;
+  animation: opac 0.3s ease-in-out forwards;
 }
 
-.model-center-to,
-.model-levae-from {
-  opacity: 1;
+@keyframes opac {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.shadow {
+  box-shadow: 0 0 8px 0px #dfe4ea;
+}
+
+.outline {
+  outline: none;
+}
+
+.bordert {
+  border-top: 1px solid #6eb0f1;
+}
+
+.left {
+  left: calc(50% - 12px);
 }
 </style>

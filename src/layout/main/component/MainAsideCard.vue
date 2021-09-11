@@ -15,6 +15,7 @@ import {
 } from "@vue/runtime-core";
 
 import { ElCol, ElRow } from "element-plus";
+import { useStore } from "vuex";
 import MainInfoCard from "./MainInfoCard.vue";
 const MainModel = defineAsyncComponent(() => import("./MainModel.vue"));
 
@@ -25,10 +26,19 @@ const props = defineProps({
   },
 });
 
-let modelComp = shallowRef(MainModel);
+const store = useStore();
+
+let modelComp = shallowRef();
+store.commit("maintags/setPosInfo", {
+  modelComp,
+});
 
 function openLoginModel() {
-  modelComp.value = MainModel;
+  if (modelComp.value) {
+    modelComp.value = null;
+  } else {
+    modelComp.value = MainModel;
+  }
 }
 </script>
 

@@ -1,10 +1,10 @@
 <template>
-  <section ref="asidetags" class="h-full">
+  <section ref="asidetags" class="pl-14 h-full">
     <header style="height: 10%">44444</header>
     <main class="h-3/4">
       <MainTag />
     </main>
-    <footer ref="footer" class="flex items-center relative" style="height: 15%">
+    <footer ref="footer" class="flex items-center" style="height: 15%">
       <MainAsideCard v-if="InfoCard.countRef" :infoData="InfoCard.userInfo" />
       <MainLoginButton class="flex justify-center outline" v-else />
     </footer>
@@ -28,11 +28,19 @@ const asidetags = ref(null);
 const footer = ref(null);
 
 store.commit("login/onMittEvent", (value: any) => {
-  InfoCard.userInfo = value.value.userInfo;
+  console.log(value);
+
+  InfoCard.userInfo = value?.value?.userInfo ?? nullUserInfo();
   InfoCard.negate();
 });
 
 useWatchLocal(); //侦听localstoreage
+
+function nullUserInfo() {
+  store.commit("maintags/clearModelComp");
+
+  return {};
+}
 
 onMounted(() => {
   nextTick().then(() => {
@@ -47,14 +55,16 @@ onMounted(() => {
   });
 
   nextTick(() => {
-    store.commit("maintags/setPosInfo", {
-      mainheight: asidetags.value.offsetHeight,
-      mainwidth: asidetags.value.offsetWidth,
-    });
+    const mainheight = asidetags.value.clientHeight;
+    const mainwidth = asidetags.value.clientWidth;
 
-    store.commit("maintags/stePosInfo", {
-      cradheight: footer.value.$el.offsetHeight,
-      cradwidth: footer.value.$el.offsetWidth,
+    const cardheight = footer.value.clientHeight;
+    const cardwidth = footer.value.clientWidth;
+
+    store.commit("maintags/setPosInfo", {
+      x: mainwidth - cardwidth - 8,
+      y: mainheight - cardheight,
+      width: cardwidth + 16,
     });
   });
 });

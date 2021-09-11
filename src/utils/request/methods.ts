@@ -93,6 +93,8 @@ const removeLocalStoreageKey = () => {
 };
 
 export function loginStateus(url: string, httpRes: Record<string, any>) {
+  console.log(url);
+
   if (url === "/login/status") {
     Promise.resolve(httpRes.data).then(({ data }) => {
       console.log(data);
@@ -107,6 +109,10 @@ export function loginStateus(url: string, httpRes: Record<string, any>) {
         console.log(false);
       }
     });
+  } else if (url === "/logout") {
+    removeLocalStoreageKey();
+    store.commit("login/switchStatus", false);
+    store.commit("login/setUserInfo", {});
   }
 }
 
