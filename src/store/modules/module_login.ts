@@ -76,7 +76,6 @@ class login {
         const value = store.userinfo;
         const keyList = Object.keys(value);
         const n = keyList.every((v) => list.indexOf(v) > -1);
-        console.log(n);
 
         if (keyList.length > 0 && !n) {
           list = keyList;

@@ -1,9 +1,11 @@
+import type { Ref } from "@vue/runtime-dom";
 import type { RouteLocationNormalized } from "vue-router";
 import type { MusicDetailOption } from "../../utils/musicDetail";
 
 export interface State {
   countriesCode: null | Array<Record<string, any>>;
   musicInfo: null | MusicDetailOption;
+  golbalmark: Ref<boolean>;
   activeTagFn: (to: RouteLocationNormalized) => void | null;
 }
 

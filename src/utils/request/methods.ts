@@ -4,7 +4,7 @@ import { useLocalStorage } from "../useLocalStorage";
 import store from "../../store";
 
 import type { CookieAttributes } from "js-cookie";
-import { AxiosInstance, AxiosRequestConfig } from "axios";
+import { nextTick } from "@vue/runtime-dom";
 
 interface cookieOptions {
   name: string;
@@ -93,12 +93,10 @@ const removeLocalStoreageKey = () => {
 };
 
 export function loginStateus(url: string, httpRes: Record<string, any>) {
-  console.log(url);
-
   if (url === "/login/status") {
-    Promise.resolve(httpRes.data).then(({ data }) => {
-      console.log(data);
+    let timer;
 
+    Promise.resolve(httpRes.data).then(({ data }) => {
       if (data.account !== null && data.profile !== null) {
         store.commit("login/switchStatus", true);
         store.commit("login/findInfo");
@@ -109,6 +107,17 @@ export function loginStateus(url: string, httpRes: Record<string, any>) {
         console.log(false);
       }
     });
+
+    timer = setTimeout(() => {
+      nextTick().then(() => {
+        store.commit("switchGolbalMark");
+
+        Promise.resolve().then(() => {
+          clearTimeout(timer);
+          timer = null;
+        });
+      });
+    }, 1500);
   } else if (url === "/logout") {
     removeLocalStoreageKey();
     store.commit("login/switchStatus", false);

@@ -35,7 +35,7 @@ import { computed, defineProps, onMounted, ref } from "@vue/runtime-core";
 
 import { resultOptions } from "../../../../utils/musicDetail";
 import { musicDetail } from "../../../../utils/musicDetail";
-import { MainContent, titleMap } from "../hooks/data";
+import { mainContent, titleMap } from "../hooks/data";
 import { mainContentHeight } from "../hooks/methods";
 
 const props = defineProps({
@@ -72,7 +72,7 @@ const renderName = computed(() => {
 const column = computed(() => props.musicList.length);
 
 onMounted(() => {
-  mainContentHeight(MainContent, column, eachColH);
+  mainContentHeight(mainContent, column, eachColH);
 });
 </script>
 <style scoped lang="scss"></style>

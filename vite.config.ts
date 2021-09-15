@@ -48,10 +48,10 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
           {
             libraryName: "element-plus",
             resolveStyle(name) {
-              return `element-plus/lib/theme-chalk/${name}.css`;
+              return `element-plus/theme-chalk/${name}.css`;
             },
             resolveComponent(name) {
-              return `element-plus/lib/${name}`;
+              return `element-plus/lib/components/${name}`;
             },
           },
         ],

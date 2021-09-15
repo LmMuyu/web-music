@@ -1,3 +1,4 @@
+import { ref } from "@vue/runtime-dom";
 import { createStore } from "vuex";
 
 import actions from "./actions";
@@ -13,6 +14,7 @@ const store = createStore<State>({
       countriesCode: null,
       musicInfo: null,
       activeTagFn: null,
+      golbalmark: ref(true),
     };
   },
   getters,

@@ -11,7 +11,9 @@
       :style="{ minWidth: minwidth + 'px' }"
     >
       <slot></slot>
-      <div class="golbalmark"></div>
+      <div class="golbalmark" v-if="golbalmark">
+        <Circle />
+      </div>
     </div>
   </div>
 </template>
@@ -19,10 +21,14 @@
 <script setup lang="ts">
 import { ref } from "@vue/reactivity";
 import { useRouter } from "vue-router";
+import { mapGetters, useStore } from "vuex";
 
 import { useMinWh } from "./hooks/useMinWH";
 
 import IndexAsideTags from "./component/MainAsideTags.vue";
+import Circle from "./component/MainCircle.vue";
+
+const store = useStore();
 
 const showTags = ref(true);
 
@@ -32,6 +38,14 @@ useRouter().beforeEach((to) => {
 });
 
 const { minwidth, minheight } = useMinWh();
+
+const golbalmark = store.getters["getGolbalMark"];
+
+const getterslist = {
+  ...mapGetters(["getGolbalMark"]),
+};
+
+console.log(getterslist.getGolbalMark());
 </script>
 
 <style scoped lang="scss">

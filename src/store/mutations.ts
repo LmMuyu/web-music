@@ -1,5 +1,3 @@
-import { findLoginInfo } from "./methods";
-
 import type { State } from "./type";
 import type { MusicDetailOption } from "../utils/musicDetail";
 import type { RouteLocationNormalized } from "vue-router";
@@ -23,5 +21,9 @@ export default {
     }
 
     state.activeTagFn = (parmas[0] && parmas[0]) || (() => {});
+  },
+
+  switchGolbalMark(state: State) {
+    state.golbalmark.value = false;
   },
 };
