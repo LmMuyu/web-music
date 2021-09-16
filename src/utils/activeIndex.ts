@@ -26,10 +26,12 @@ export class activeIndex {
   private currentIndex: Ref<keyof any>;
   private moveIndex: Ref<keyof any>;
   private initSetStyle!: boolean;
-  clickActive: (curIndex: keyof any) => void;
-  leaveActive: (curIndex: keyof any) => void;
-  moveActive: (curIndex: keyof any) => void;
-  activeStyle: ComputedRef<(index: keyof any) => { [x: string]: string }>;
+  public clickActive: (curIndex: keyof any) => void;
+  public leaveActive: (curIndex: keyof any) => void;
+  public moveActive: (curIndex: keyof any) => void;
+  public activeStyle: ComputedRef<
+    (index: keyof any) => { [x: string]: string }
+  >;
 
   constructor(
     currentIndex?: Ref<keyof any> | null,

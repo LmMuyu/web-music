@@ -1,6 +1,7 @@
 import type { State } from "./type";
 import type { MusicDetailOption } from "../utils/musicDetail";
 import type { RouteLocationNormalized } from "vue-router";
+import type { WildcardHandler } from "mitt";
 
 export default {
   countriesCode(state: State, commit: any) {
@@ -23,7 +24,7 @@ export default {
     state.activeTagFn = (parmas[0] && parmas[0]) || (() => {});
   },
 
-  switchGolbalMark(state: State) {
-    state.golbalmark.value = false;
+  switchGolbalMark(state: State | { circleRef: boolean }) {
+    state.circleRef = false;
   },
 };

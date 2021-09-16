@@ -1,34 +1,27 @@
 <template>
-  <div
-    class="flex items-center justify-center"
-    :class="isrootClass && rootClass"
-  >
-    <div :class="!isrootClass && rootClass">
-      <span class="icon_text bg-white py-1 px-1 rounded-l-lg" v-if="isIcon">
-        <i class="iconfont iconsousuo"></i>
-      </span>
-      <input
-        :type="type"
-        :disabled="disabled"
-        :placeholder="placeholder"
-        @focus="onFocus"
-        @blur="onBlur"
-        @keydown.enter="keyupEnter"
-        v-model="text"
-        style="background-color: #f5f7f9"
-        :class="[{ 'rounded-r-lg': isIcon }, setClass]"
-      />
-    </div>
+  <div class="w-3/4 flex items-center justify-center pr-4 border">
+    <span class="icon_text h-full bg-white px-4" v-if="isIcon">
+      <i class="iconfont iconsousuo"></i>
+    </span>
+    <input
+      :type="type"
+      :disabled="disabled"
+      :placeholder="placeholder"
+      @focus="onFocus"
+      @blur="onBlur"
+      @keydown.enter="keyupEnter"
+      v-model="text"
+      class="text-black w-full p-2 border-none outline-none"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { defineEmits, defineProps, customRef, computed } from "vue";
+import { defineEmits, defineProps, customRef } from "vue";
 
 import { keyupEnter } from "./api/onSearch";
 
 import type { PropType } from "vue";
-import { isType } from "../../utils/methods";
 
 const props = defineProps({
   type: {
@@ -110,76 +103,6 @@ const changeModel = (value?: any, delay: number = 300) => {
 };
 
 const text = changeModel();
-
-const setClass = computed(() => {
-  if (props.inputClass) {
-    const borderList = ["dotted", "dashed", "double", "solid"];
-
-    const setClassList = [
-      "text-black",
-      "w-48",
-      "py-2",
-      "px-2",
-      "border-none",
-      "outline-none",
-    ];
-    const classList: string[] =
-      props.inputClass instanceof Array
-        ? props.inputClass
-        : props.inputClass.split(" ");
-
-    let replacePos: null | number = null;
-
-    const newClassList = classList.map((value: string) => {
-      const index = value.indexOf("-");
-
-      if (value.startsWith("border") && index > -1) {
-        const styletype = value.slice(index + 1);
-        const isStyle = borderList.indexOf(styletype) > -1;
-
-        if (isStyle) {
-          const i = replacePos || setClassList.indexOf("border-none");
-          setClassList[i] = value;
-          replacePos = i;
-        }
-      } else if (!setClassList.includes(value)) {
-        return value;
-      }
-    });
-
-    return [...newClassList, ...setClassList];
-  }
-
-  return [];
-});
-
-function putClass(classList: string[], inputClass: string) {
-  inputClass.split(" ").forEach((v) => {
-    const str = v.substring(0, 2);
-
-    if (str === "w-" || str === "h-") {
-      const index = classList.findIndex(
-        (calssv) => calssv.substring(0, 2) === str
-      );
-
-      index >= 0 ? classList.splice(index, 1, v) : classList.push(v);
-    } else {
-      classList.push(v);
-    }
-  });
-
-  return classList;
-}
-
-const rootClass = computed(() => {
-  const classList = ["flex", "justify-center", "items-center", "h-full"];
-
-  return typeof props.class === "string"
-    ? putClass(classList, props.class)
-    : Array.isArray(props.class)
-    ? putClass(classList, props.class!.join(" "))
-    : "";
-});
 </script>
 
 <style scoped lang="scss">
@@ -187,5 +110,23 @@ const rootClass = computed(() => {
 
 .icon_text {
   transform: translateX(1px);
+}
+
+.border {
+  position: relative;
+}
+
+.border::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  border: 1px solid #f5f5f5;
+  border-radius: 10px;
+  transform-origin: 0 0;
+  transform: scale(0.5);
+  width: 200%;
+  height: 200%;
+  box-sizing: border-box;
 }
 </style>

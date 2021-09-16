@@ -1,17 +1,29 @@
 <template>
-  <div class="bg_image">
-    <Banner :bannerData="bannerLsit" />
-    <article ref="discoverContent" class="w-full h-full">
+  <div class="flex flex-col">
+    <div style="height: 15%">
+      <Banner :bannerData="bannerLsit" />
+    </div>
+    <div style="height: 20%">
       <DiscoverHot :categoryname="hotList" />
+    </div>
+    <div style="height: 20%">
       <DiscoverPlaylist :playlist="playList" />
-      <div class="mt-15"></div>
+    </div>
+    <div style="height: 20%">
       <DiscoverMusic />
+    </div>
+    <div style="height: 25%">
       <DiscoverMv />
-    </article>
+    </div>
   </div>
 </template>
 <script setup lang="ts">
 import { defineAsyncComponent, defineProps, ref } from "vue";
+
+import DiscoverPlaylist from "../components/DiscoverPlaylist.vue";
+import Banner from "../../../../components/banner/Banner.vue";
+import DiscoverHot from "../components/DiscoverHot.vue";
+import { ElRow, ElCol } from "element-plus";
 
 const DiscoverBillboard = defineAsyncComponent(
   () => import("../components/DiscoverBillboard.vue")
@@ -24,10 +36,6 @@ const DiscoverMv = defineAsyncComponent(
 const DiscoverMusic = defineAsyncComponent(
   () => import("../components/DiscoverMusic.vue")
 );
-
-import DiscoverPlaylist from "../components/DiscoverPlaylist.vue";
-import Banner from "../../../../components/banner/Banner.vue";
-import DiscoverHot from "../components/DiscoverHot.vue";
 
 import type { PropType } from "vue";
 import type { PlayListOptions } from "../type";
@@ -46,15 +54,8 @@ const props = defineProps({
     default: () => [],
   },
 });
-
-const discoverContent = ref<HTMLElement | null>(null);
 </script>
 <style lang="scss" scoped>
-.bg_image {
-  background-size: 6000px;
-  background-position: center center;
-}
-
 .div_translate {
   padding-left: 16px;
   padding-right: 16px;

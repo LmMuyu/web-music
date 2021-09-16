@@ -7,12 +7,8 @@
         :key="index"
         :style="activeStyle(index)"
         @click="
-          [
-            clickActive(index),
-            (function () {
-              curSlicePos = index;
-            })(),
-          ]
+          clickActive(index);
+          setCurPos(index);
         "
         @mouseleave="leaveActive(index)"
         @mouseenter="moveActive(index)"
@@ -22,16 +18,17 @@
       </li>
     </ul>
   </div>
-  <ToplistMainContent
+  <!-- <ToplistMainContent
     :open-virtuallist="false"
     :is-checkbox="false"
     :listData="sliceList"
     :close-loading="true"
     :select-all="false"
     :is-rank="false"
-  />
+  /> -->
 </template>
 <script setup lang="ts">
+import { computed } from "@vue/runtime-core";
 import { ref } from "@vue/reactivity";
 
 import { discoverMusic } from "../api/data";
@@ -39,11 +36,12 @@ import { activeIndex } from "../../../../utils/activeIndex";
 import { getPlaylist } from "../api/methods";
 
 import ToplistMainContent from "../../toplist/components/ToplistMainContent.vue";
-import { computed } from "@vue/runtime-core";
+
+const list = ref<any[]>([]);
+const curSlicePos = ref(0);
 
 const { activeStyle, clickActive, leaveActive, moveActive } = new activeIndex();
 
-const list = ref<any[]>([]);
 getPlaylist(10).then(
   (res) => (list.value = res.map((v) => v.data.albums.map(forMap)))
 );
@@ -54,7 +52,10 @@ const forMap = (artistsValue: any) => ({
   al: { name: artistsValue.name },
 });
 
-const curSlicePos = ref(0);
+function setCurPos(index: number) {
+  curSlicePos.value = index;
+}
+
 const sliceList = computed(() => list.value[curSlicePos.value]);
 </script>
 <style scoped lang="scss">

@@ -31,7 +31,7 @@ export function getArtists() {
   return request({
     url: "/top/artists",
     params: {
-      limit: 20,
+      limit: 10,
     },
   });
 }

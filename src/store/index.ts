@@ -1,5 +1,5 @@
-import { ref } from "@vue/runtime-dom";
 import { createStore } from "vuex";
+import { ref } from "@vue/runtime-dom";
 
 import actions from "./actions";
 import getters from "./getters";
@@ -14,7 +14,7 @@ const store = createStore<State>({
       countriesCode: null,
       musicInfo: null,
       activeTagFn: null,
-      golbalmark: ref(true),
+      circleRef: ref(true),
     };
   },
   getters,

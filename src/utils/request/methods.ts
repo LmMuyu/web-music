@@ -94,8 +94,6 @@ const removeLocalStoreageKey = () => {
 
 export function loginStateus(url: string, httpRes: Record<string, any>) {
   if (url === "/login/status") {
-    let timer;
-
     Promise.resolve(httpRes.data).then(({ data }) => {
       if (data.account !== null && data.profile !== null) {
         store.commit("login/switchStatus", true);
@@ -107,17 +105,6 @@ export function loginStateus(url: string, httpRes: Record<string, any>) {
         console.log(false);
       }
     });
-
-    timer = setTimeout(() => {
-      nextTick().then(() => {
-        store.commit("switchGolbalMark");
-
-        Promise.resolve().then(() => {
-          clearTimeout(timer);
-          timer = null;
-        });
-      });
-    }, 1500);
   } else if (url === "/logout") {
     removeLocalStoreageKey();
     store.commit("login/switchStatus", false);
@@ -127,7 +114,6 @@ export function loginStateus(url: string, httpRes: Record<string, any>) {
 
 export function tryAgainRequest(err: any) {
   const config: CONFIG_DEFAULT = err.config;
-  console.log(config);
 
   if (!config.retry || !config)
     return {

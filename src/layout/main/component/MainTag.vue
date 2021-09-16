@@ -1,48 +1,89 @@
-<template>
-  <nav>
-    <router-link
-      class="flex items-center cursor-pointer py-4 icons"
-      v-for="(tag, index) in AsideTags"
-      :key="tag.index"
-      @mouseenter="moveActive(index)"
-      @mouseleave="leaveActive(index)"
-      @click="clickActive(index)"
-      :to="tag.path"
-      :target="!!tag.target ? tag.target : '_self'"
-    >
-      <i class="iconfont" :class="[tag.icon]" :style="activeStyle(index)"></i>
-      <a class="text-2xl px-5 text_color" :style="activeStyle(index)">
-        {{ tag.title }}
-      </a>
-    </router-link>
-  </nav>
-</template>
-<script setup lang="ts">
-import { inject, ref } from "@vue/runtime-core";
+<script lang="tsx">
+import { inject } from "@vue/runtime-core";
+import { defineComponent, unref } from "vue";
 import { useRouter } from "vue-router";
 
-import { currentIndex, moveIndex, revisePath } from "../hooks/data";
-
+import { currentIndex, moveIndex, revisePath, AsideTags } from "../hooks/data";
 import { activeIndex } from "../../../utils/activeIndex";
 
-const router = useRouter();
-const toPath = (path: string) => router.push({ path });
+export default defineComponent({
+  setup() {
+    const router = useRouter();
+    const pathList = inject("pathlist") as string[];
 
-const pathList = inject("pathlist") as string[];
+    const toPath = (path: string) => {
+      router.push({ path });
+    };
 
-const AsideTags = ref(revisePath(pathList));
+    const activeTag = (to: any) => {
+      currentIndex.value =
+        AsideTags.findIndex((value) => value.path === to.path) ?? 0;
+    };
 
-const activeTag = (to: any) => {
-  currentIndex.value =
-    AsideTags.value.findIndex((value) => value.path === to.path) ?? 0;
-};
+    router.beforeEach((to) => activeTag(to));
 
-router.beforeEach((to) => activeTag(to));
+    const { activeStyle, clickActive, moveActive, leaveActive } =
+      new activeIndex(currentIndex, moveIndex);
 
-const { activeStyle, clickActive, moveActive, leaveActive } = new activeIndex(
-  currentIndex,
-  moveIndex
-);
+    const link = (tag: any, index: number) => {
+      const path = revisePath(tag.path, pathList);
+      const classkey = "flex items-center cursor-pointer py-4 icons";
+
+      const iconorname = (title: string, icon: string, index: number) => {
+        return (
+          <>
+            <i
+              class={"iconfont" + " " + icon}
+              style={unref(activeStyle)(index)}
+            ></i>
+            <p
+              class="text-2xl px-5 text_color"
+              style={unref(activeStyle)(index)}
+            >
+              {title}
+            </p>
+          </>
+        );
+      };
+
+      if (path === "/login") {
+        return (
+          <router-link
+            class={classkey}
+            key={tag.index}
+            onMouseenter={() => moveActive(index)}
+            onMouseleave={() => leaveActive(index)}
+            onClick={() => clickActive(index)}
+            to={path}
+            target="_blank"
+          >
+            {iconorname(tag.title, tag.icon, index)}
+          </router-link>
+        );
+      } else {
+        return (
+          <router-link
+            class={classkey}
+            key={tag.index}
+            onMouseenter={() => moveActive(index)}
+            onMouseleave={() => leaveActive(index)}
+            onClick={() => {
+              clickActive(index);
+              toPath(path);
+            }}
+            to=""
+          >
+            {iconorname(tag.title, tag.icon, index)}
+          </router-link>
+        );
+      }
+    };
+
+    const liPathList = AsideTags.map((tag, index) => link(tag, index));
+
+    return () => <nav>{liPathList}</nav>;
+  },
+});
 </script>
 <style scoped lang="scss">
 .icons {

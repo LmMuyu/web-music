@@ -96,11 +96,6 @@ const marginClass = computed(() => {
 });
 </script>
 <style scoped lang="scss">
-.root_image_item {
-  width: 144px;
-  height: 144px;
-}
-
 .cneter {
   margin: 0 auto;
 

@@ -1,75 +1,73 @@
 <template>
-  <section
-    class="w-full h-full text-center relative"
-    @mouseenter="onMouseenter(index)"
-    @mouseleave="onMouseleave"
-  >
+  <section class="w-full h-full text-center relative">
     <div class="relative">
-      <img
-        :src="
-          (play?.creator?.backgroundUrl || play?.creator?.coverImgUrl) +
-          '?param=144y90'
-        "
-        :alt="play.alg_sq_featured"
-        class="w-full h-full"
-      />
-
+      <img :src="play.coverImgUrl + '?param=144y90'" class="w-full h-full" />
       <router-link
         :to="{ path: '/playlist', query: { id: play.id } }"
         class="absolute top-0 bottom-0 left-0 right-0 z-50"
         target="_blank"
       ></router-link>
-
-      <DiscoverPlayCount
-        :play-count="play.playCount"
-        :count-ref="countRef"
-        :cur-index="curIndex"
-        :index="index"
-      />
     </div>
-    <p class="whitespace-pre-wrap text-left cursor-pointer fotn_title">{{ play.name }}</p>
+    <p>{{ putPlayCount(play.playCount) }}</p>
+    <p class="text-left cursor-pointer fotn_title">
+      {{ play.name }}
+    </p>
   </section>
 </template>
-<script setup lang='ts'>
-import { defineProps } from "vue"
+<script setup lang="ts">
+import { computed, defineProps } from "vue";
 
-import DiscoverPlayCount from "./DiscoverPlayCount.vue"
-
-import type { PropType, Ref } from "vue"
-import type { PlayListOptions } from "../type"
+import type { PropType } from "vue";
 
 const props = defineProps({
   play: {
-    type: Object as PropType<PlayListOptions>,
-    required: true
+    type: Object,
+    required: true,
   },
   countRef: {
     type: Boolean,
-    required: true
+    required: true,
   },
   curIndex: {
     type: Number,
-    required: true
+    required: true,
   },
   index: {
     type: Number,
-    required: true
+    required: true,
   },
   onMouseenter: {
     type: Function as PropType<(index: number) => void>,
-    required: true
+    required: true,
   },
   negate: {
     type: Function,
-    required: true
-  }
-})
+    required: true,
+  },
+});
 
-const onMouseleave = () => props.negate()
+const putPlayCount = computed(() => {
+  return function (count: number) {
+    const playstr = String(count);
+    const playlen = playstr.length;
 
+    if (playlen >= 4) return count;
+    const switchNum = playlen > 4 ? 0 : playlen > 8 ? 1 : 2;
 
+    switch (switchNum) {
+      case 0:
+        const sliceSite = playlen - 4;
+        return playstr.slice(0, sliceSite) + "万";
+      case 1:
+        const slicenum = playlen - 8;
+        return playstr.slice(0, slicenum) + "万";
+      default:
+        return;
+    }
+  };
+});
 </script>
-<style scoped lang='scss'>
+<style scoped lang="scss">
 .fotn_title {
   display: -webkit-box;
   -webkit-box-orient: vertical;

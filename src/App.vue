@@ -37,14 +37,28 @@ const router = useRouter();
 const showTag = ref(false);
 const linkType = ref<linkType>("info");
 const userInfo = ref<UserInfo | null>(null);
+const circleRef = ref(true);
 
 const pathList = ["/message", "/subscription"];
 
 store.dispatch("countriesCode");
 provide("pathlist", pathList);
+provide("circleRef", circleRef);
+
+function updateCircleRef() {
+  let timer = setTimeout(() => {
+    circleRef.value = false;
+
+    Promise.resolve().then(() => {
+      clearTimeout(timer);
+      timer = null;
+    });
+  }, 1500);
+}
 
 async function redirectPath(to: RouteLocationNormalized, islogin: boolean) {
   await loginStateus();
+  Promise.resolve().then(() => updateCircleRef());
 
   if (islogin && pathList.includes(to.path) && to.path !== "/index") {
     promptbox({ mountNode: "body", title: "请先登录!" });
