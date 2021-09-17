@@ -1,7 +1,7 @@
 <template>
   <section
     ref="model"
-    style="background-color: #4bcffa"
+    style="background-color: #99ccff"
     class="rounded-md z-10 absolute opacity shadow"
     :style="nodeinfo"
   >
@@ -15,7 +15,7 @@
     <svg width="12" height="8" class="absolute -bottom-2 left">
       <polygon
         points="0,0 12,0 6,8"
-        style="stroke: #4bcffa; stroke-width: 1px; fill: #4bcffa"
+        style="stroke: #99ccff; stroke-width: 1px; fill: #99ccff"
       ></polygon>
     </svg>
   </section>
@@ -59,13 +59,24 @@ onMounted(() => {
 
     nodeinfo.top = y + "px";
     nodeinfo.width = node.width + "px";
+
+    nextTick(() => {
+      const rect = model.value.getBoundingClientRect();
+
+      store.commit("maintags/setPosInfo", {
+        mx: rect.left,
+        my: rect.top,
+        maxX: rect.right,
+        maxY: rect.bottom,
+      });
+    });
   });
 });
 </script>
 <style scoped lang="scss">
 .opacity {
   opacity: 0;
-  animation: opac 0.3s ease-in-out forwards;
+  animation: opac 0.2s ease-in-out forwards;
 }
 
 @keyframes opac {
@@ -87,7 +98,7 @@ onMounted(() => {
 }
 
 .bordert {
-  border-top: 1px solid #6eb0f1;
+  border-top: 1px solid #b3d5f8;
 }
 
 .left {

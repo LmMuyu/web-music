@@ -67,11 +67,8 @@ export default defineComponent({
             key={tag.index}
             onMouseenter={() => moveActive(index)}
             onMouseleave={() => leaveActive(index)}
-            onClick={() => {
-              clickActive(index);
-              toPath(path);
-            }}
-            to=""
+            onClick={() => clickActive(index)}
+            to="path"
           >
             {iconorname(tag.title, tag.icon, index)}
           </router-link>

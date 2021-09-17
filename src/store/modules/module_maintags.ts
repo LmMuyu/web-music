@@ -1,9 +1,13 @@
-import { Ref } from "@vue/runtime-dom";
+import { isRef, Ref } from "vue";
 
 interface StateOptions {
   x: number;
   y: number;
+  mx: number;
+  my: number;
   width: number;
+  maxX: number;
+  maxY: number;
   modelComp: Ref<any>;
 }
 
@@ -24,7 +28,11 @@ class maintags {
     const state: StateOptions = {
       x: 0,
       y: 0,
+      mx: 0,
+      my: 0,
       width: 0,
+      maxX: 0,
+      maxY: 0,
       modelComp: null,
     };
 
@@ -40,8 +48,14 @@ class maintags {
           }
         }
       },
-      clearModelComp(state: StateOptions) {
-        state.modelComp = null;
+      setModelComp(state: StateOptions, data?: Ref<any>) {
+        const isref = isRef(state);
+
+        if (isref) {
+          state.modelComp.value = null;
+        } else {
+          state.modelComp = data;
+        }
       },
     };
   }

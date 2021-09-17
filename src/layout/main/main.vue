@@ -11,7 +11,7 @@
       :style="{ minWidth: minwidth + 'px' }"
     >
       <slot></slot>
-      <div class="golbalmark" v-if="true">
+      <div class="golbalmark" style="z-index: 10" v-if="circleRef">
         <Circle />
       </div>
     </div>
@@ -54,7 +54,6 @@ const { minwidth, minheight } = useMinWh();
   top: 0;
   right: 0;
   bottom: 0;
-  z-index: 10;
   background-color: #fff;
 }
 </style>

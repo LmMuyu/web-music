@@ -1,4 +1,5 @@
 import request from "../../utils/request";
+import store from "../../store";
 
 let initlogin = false;
 
@@ -13,9 +14,11 @@ export async function loginStateus() {
   }
 }
 
-export function logout() {
-  return request({
-    method: "post",
-    url: "/logout",
-  });
+export async function logout() {
+  // await request({
+  //   method: "post",
+  //   url: "/logout",
+  // });
+
+  store.commit("maintags/setModelComp");
 }

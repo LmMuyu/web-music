@@ -28,8 +28,6 @@ const asidetags = ref(null);
 const footer = ref(null);
 
 store.commit("login/onMittEvent", (value: any) => {
-  console.log(value);
-
   InfoCard.userInfo = value?.value?.userInfo ?? nullUserInfo();
   InfoCard.negate();
 });
@@ -37,8 +35,6 @@ store.commit("login/onMittEvent", (value: any) => {
 useWatchLocal(); //侦听localstoreage
 
 function nullUserInfo() {
-  store.commit("maintags/clearModelComp");
-
   return {};
 }
 
