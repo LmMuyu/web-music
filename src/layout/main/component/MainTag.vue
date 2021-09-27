@@ -1,86 +1,57 @@
-<script lang="tsx">
-import { inject } from "@vue/runtime-core";
-import { defineComponent, unref } from "vue";
+<template>
+  <nav>
+    <span
+      v-for="(tagNav, index) in AsideTags"
+      :key="index"
+      class="flex items-center cursor-pointer py-4 icons"
+      @mouseenter="moveActive(index)"
+      @mouseleave="leaveActive(index)"
+      @click="toPath(tagNav.path, index)"
+    >
+      <i class="iconfont" :class="tagNav.icon" :style="activeStyle(index)"></i>
+      <p class="text-2xl px-5 text_color" :style="activeStyle(index)">
+        {{ tagNav.title }}
+      </p>
+    </span>
+  </nav>
+</template>
+
+<script setup lang="ts">
+import { inject } from "vue";
+import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 
-import { currentIndex, moveIndex, revisePath, AsideTags } from "../hooks/data";
+import { currentIndex, moveIndex, AsideTags } from "../hooks/data";
 import { activeIndex } from "../../../utils/activeIndex";
 
-export default defineComponent({
-  setup() {
-    const router = useRouter();
-    const pathList = inject("pathlist") as string[];
+const router = useRouter();
+const store = useStore();
 
-    const toPath = (path: string) => {
-      router.push({ path });
-    };
+const pathlist = inject("pathlist") as string[];
 
-    const activeTag = (to: any) => {
-      currentIndex.value =
-        AsideTags.findIndex((value) => value.path === to.path) ?? 0;
-    };
+const toPath = (path: string, index: number) => {
+  const islogin = store.getters;
 
-    router.beforeEach((to) => activeTag(to));
+  if (!islogin && pathlist.indexOf(path) > -1) {
+    router.push({ path: "/login" });
+    return;
+  }
 
-    const { activeStyle, clickActive, moveActive, leaveActive } =
-      new activeIndex(currentIndex, moveIndex);
+  clickActive(index);
+  router.push({ path });
+};
 
-    const link = (tag: any, index: number) => {
-      const path = revisePath(tag.path, pathList);
-      const classkey = "flex items-center cursor-pointer py-4 icons";
+const activeTag = (to: any) => {
+  currentIndex.value =
+    AsideTags.findIndex((value) => value.path === to.path) ?? 0;
+};
 
-      const iconorname = (title: string, icon: string, index: number) => {
-        return (
-          <>
-            <i
-              class={"iconfont" + " " + icon}
-              style={unref(activeStyle)(index)}
-            ></i>
-            <p
-              class="text-2xl px-5 text_color"
-              style={unref(activeStyle)(index)}
-            >
-              {title}
-            </p>
-          </>
-        );
-      };
+router.beforeEach((to) => activeTag(to));
 
-      if (path === "/login") {
-        return (
-          <router-link
-            class={classkey}
-            key={tag.index}
-            onMouseenter={() => moveActive(index)}
-            onMouseleave={() => leaveActive(index)}
-            onClick={() => clickActive(index)}
-            to={path}
-            target="_blank"
-          >
-            {iconorname(tag.title, tag.icon, index)}
-          </router-link>
-        );
-      } else {
-        return (
-          <router-link
-            class={classkey}
-            key={tag.index}
-            onMouseenter={() => moveActive(index)}
-            onMouseleave={() => leaveActive(index)}
-            onClick={() => clickActive(index)}
-            to="path"
-          >
-            {iconorname(tag.title, tag.icon, index)}
-          </router-link>
-        );
-      }
-    };
-
-    const liPathList = AsideTags.map((tag, index) => link(tag, index));
-
-    return () => <nav>{liPathList}</nav>;
-  },
-});
+const { activeStyle, clickActive, moveActive, leaveActive } = new activeIndex(
+  currentIndex,
+  moveIndex
+);
 </script>
 <style scoped lang="scss">
 .icons {

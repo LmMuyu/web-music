@@ -49,3 +49,12 @@ export function getComment(threadId: string) {
     },
   });
 }
+
+export function getTopic() {
+  return request({
+    url: "/hot/topic",
+    params: {
+      limit: 5,
+    },
+  });
+}

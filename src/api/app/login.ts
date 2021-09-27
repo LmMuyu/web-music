@@ -15,10 +15,8 @@ export async function loginStateus() {
 }
 
 export async function logout() {
-  // await request({
-  //   method: "post",
-  //   url: "/logout",
-  // });
-
-  store.commit("maintags/setModelComp");
+  return request({
+    method: "post",
+    url: "/logout",
+  });
 }

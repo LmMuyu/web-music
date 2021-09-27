@@ -1,19 +1,17 @@
-<template>788888</template>
+<template>
+  <section>
+    <header class="h-1/5">
+      <SubscrionUserInfo />
+    </header>
+    <main>
+      <SubscrionTopic />
+    </main>
+  </section>
+</template>
 <script setup lang="ts">
 import { useStore } from "vuex";
 
-import { getUserDetail } from "../../../api/subscription";
-
-import type { State } from "../../../store/type";
-
-// const state: State = useStore().state
-// const userInfo = state.userInfo
-
-// getUserDetail().then((res) => {
-//   console.log(res);
-// })
-
-// console.log(userInfo);
+import SubscrionUserInfo from "./components/SubscrionUserInfo.vue";
+import SubscrionTopic from "./components/SubscrionTopic.vue";
 </script>
-<style scoped lang="scss">
-</style>
+<style scoped lang="scss"></style>

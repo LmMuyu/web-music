@@ -1,5 +1,10 @@
 <template>
-  <component ref="model" :infoData="infoData" :is="modelComp" />
+  <component
+    ref="model"
+    :infoData="infoData"
+    :is="modelComp"
+    @logout="updateModelStatus"
+  />
   <ElRow class="w-full mr-8 mt-4 cursor-pointer">
     <MainInfoCard :infoData="infoData" />
     <ElCol :span="8" class="flex items-center justify-end icons">
@@ -34,47 +39,45 @@ const props = defineProps({
 
 const store = useStore();
 
-let modelComp = shallowRef();
+const modelComp = shallowRef();
 const model = ref<HTMLElement | null>(null);
 
-function reomveModel() {
+function updateModelStatus() {
   if (modelComp.value) {
     modelComp.value = null;
+    window.removeEventListener("mousedown", modelCompEvent, false); //卸载事件
   } else {
     modelComp.value = MainModel;
-    store.commit("maintags/setModelComp", modelComp);
+    window.addEventListener("mousedown", modelCompEvent, false);
   }
 }
 
 function openLoginModel() {
-  reomveModel();
+  updateModelStatus();
+}
 
-  function modelCompEvent(e: MouseEvent) {
-    const target = e.target as HTMLElement;
-    const bute = target.getAttribute("openModel");
+function modelCompEvent(e: MouseEvent) {
+  const target = e.target as HTMLElement;
+  const bute = target.getAttribute("openModel");
 
-    if (!!bute) return;
+  if (!!bute) return;
 
-    const x = e.clientX;
-    const y = e.clientY;
+  const x = e.clientX;
+  const y = e.clientY;
 
-    const logoutModelInfo = store.getters["maintags/getPosInfo"];
+  const logoutModelInfo = store.getters["maintags/getPosInfo"];
 
-    if (
-      !(
-        logoutModelInfo.mx <= x &&
-        x <= logoutModelInfo.maxX &&
-        logoutModelInfo.my <= y &&
-        y <= logoutModelInfo.maxY
-      )
-    ) {
-      window.removeEventListener("mousedown", modelCompEvent, false);
-      reomveModel();
-      return;
-    }
+  if (
+    !(
+      logoutModelInfo.mx <= x &&
+      x <= logoutModelInfo.maxX &&
+      logoutModelInfo.my <= y &&
+      y <= logoutModelInfo.maxY
+    )
+  ) {
+    updateModelStatus();
+    return;
   }
-
-  window.window.addEventListener("mousedown", modelCompEvent, false);
 }
 
 onMounted(() => {});

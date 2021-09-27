@@ -1,4 +1,4 @@
-import { isRef, Ref } from "vue";
+import { isRef, Ref, shallowRef } from "vue";
 
 interface StateOptions {
   x: number;
@@ -49,12 +49,13 @@ class maintags {
         }
       },
       setModelComp(state: StateOptions, data?: Ref<any>) {
-        const isref = isRef(state);
+        const isref = isRef(state.modelComp);
+        console.log(isref);
 
         if (isref) {
           state.modelComp.value = null;
         } else {
-          state.modelComp = data;
+          state.modelComp.value = data;
         }
       },
     };
@@ -63,6 +64,7 @@ class maintags {
   private crateGetters() {
     return {
       getPosInfo: (state: StateOptions) => state,
+      getModelComp: (state: StateOptions) => state.modelComp,
     };
   }
 }

@@ -9,7 +9,9 @@
       <MainInfoCard :infoData="infoData" />
     </el-row>
     <div class="whitespace-nowrap p-4 bordert">
-      <button class="outline border-none" @click="logout">退出登录</button>
+      <button class="outline border-none" @click="updateLogout">
+        退出登录
+      </button>
     </div>
 
     <svg width="12" height="8" class="absolute -bottom-2 left">
@@ -36,6 +38,7 @@ import { useStore } from "vuex";
 import { logout } from "../../../api/app/login";
 
 const attrs = useAttrs();
+const ctxEmit = defineEmits(["logout"]);
 const store = useStore();
 
 const infoData = attrs["infoData"];
@@ -47,6 +50,11 @@ const nodeinfo = reactive({
   top: "",
   width: "",
 });
+
+async function updateLogout() {
+  await logout();
+  ctxEmit("logout");
+}
 
 onMounted(() => {
   nextTick(() => {
@@ -76,7 +84,7 @@ onMounted(() => {
 <style scoped lang="scss">
 .opacity {
   opacity: 0;
-  animation: opac 0.2s ease-in-out forwards;
+  animation: opac 0.2s cubic-bezier(0.06, 0.68, 1, 0.89) forwards;
 }
 
 @keyframes opac {

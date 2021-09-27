@@ -82,6 +82,10 @@ router.beforeEach((to, from) => {
   }
 });
 
+// router.beforeResolve((to) => {
+
+// });
+
 store.commit("login/onMittEvent", (value: any) => {
   userInfo.value = value.value as UserInfo;
 });
@@ -105,7 +109,7 @@ store.commit("login/onMittEvent", (value: any) => {
 }
 
 #app {
-  font-family: "Arial", "Microsoft YaHei", "黑体", "宋体", sans-serif;
+  font-family: "微软雅黑", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

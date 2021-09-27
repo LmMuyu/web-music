@@ -1,5 +1,4 @@
 import { ref } from "@vue/reactivity";
-import store from "../../../store";
 
 export const AsideTags = [
   {
@@ -39,25 +38,6 @@ export const AsideTags = [
     path: "/index",
   },
 ];
-
-export function revisePath(topath: string, pathList: string[]) {
-  let path = "";
-  const islogin = store.getters["login/getIslogin"];
-
-  if (!islogin) {
-    const inpath = pathList.indexOf(topath) > -1;
-
-    if (inpath) {
-      path = "/login";
-    } else {
-      path = topath;
-    }
-  } else {
-    path = topath;
-  }
-
-  return path;
-}
 
 export const currentIndex = ref(0);
 
