@@ -3,7 +3,7 @@
     <header class="h-1/5">
       <SubscrionUserInfo />
     </header>
-    <main>
+    <main class="h-full">
       <SubscrionTopic />
     </main>
   </section>
