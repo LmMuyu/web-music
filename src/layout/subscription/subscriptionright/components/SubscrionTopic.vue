@@ -17,7 +17,7 @@
           ></el-image>
         </div>
         <div class="flex flex-col px-4">
-          <p href="javascript:void(0)">#{{ topicItme.title }}#</p>
+          <p>#{{ topicItme.title }}#</p>
           <p style="color: #dfe6e9">{{ topicItme.participateCount }}人参与</p>
         </div>
       </div>
@@ -33,11 +33,10 @@ import { ElImage } from "element-plus";
 
 const nav = ref<HTMLElement | null>(null);
 
-const renderTopic = [];
+const renderTopic = ref([]);
 
 getTopic().then((topic) => {
-  renderTopic.push(...topic.data.hot);
-  console.log(renderTopic);
+  renderTopic.value.push(...topic.data.hot);
 });
 </script>
 <style scoped lang="scss"></style>

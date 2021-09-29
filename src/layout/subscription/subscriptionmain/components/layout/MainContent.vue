@@ -103,7 +103,7 @@ export default defineComponent({
               actId={props.event.extJsonInfo.actId}
               actIds={props.event.extJsonInfo.actIds ?? []}
             />
-            <MainContentSong v-show="!!musicDetail" musicDetail={musicDetail} />
+            {!!musicDetail && <MainContentSong musicDetail={musicDetail} />}
             <MainContentImageList
               pics={props.event.pics ?? []}
               isMarginTop={!!musicDetail}

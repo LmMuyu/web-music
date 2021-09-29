@@ -10,7 +10,7 @@
       :class="[showTags ? 'w-4/5' : 'w-full']"
       :style="{ minWidth: minwidth + 'px' }"
     >
-      <slot></slot>
+      <MainContainer></MainContainer>
       <div class="golbalmark" style="z-index: 10" v-if="circleRef">
         <Circle />
       </div>
@@ -25,6 +25,7 @@ import { inject } from "vue";
 
 import { useMinWh } from "./hooks/useMinWH";
 
+import MainContainer from "../../components/maincontent/MainContainer.vue";
 import IndexAsideTags from "./component/MainAsideTags.vue";
 import Circle from "./component/MainCircle.vue";
 

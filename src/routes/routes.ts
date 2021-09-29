@@ -50,12 +50,12 @@ const routes: (RouteRecordRaw & {
     name: "Message",
     meta: {
       defaultView: ["Message"],
-      mainContentOptions: {
+      setting: {
         left: {
           header: false,
         },
         right: {
-          main: false,
+          subject: false,
         },
       },
     },
@@ -67,8 +67,7 @@ const routes: (RouteRecordRaw & {
     path: "/subscription",
     name: "Subscription",
     meta: {
-      defaultView: ["SubscriptionContent", "SubscriptionRight"],
-      mainContentOptions: {
+      setting: {
         left: {
           header: false,
           footer: false,
@@ -78,7 +77,14 @@ const routes: (RouteRecordRaw & {
         },
       },
     },
-    component: () => import("../view/subscription/Subscription.vue"),
+    components: {
+      section: () =>
+        import("../layout/subscription/subscriptionmain/SubscriptionMain.vue"),
+      article: () =>
+        import(
+          "../layout/subscription/subscriptionright/SubscriptionRight.vue"
+        ),
+    },
   },
   {
     path: "/user",
@@ -89,13 +95,13 @@ const routes: (RouteRecordRaw & {
         name: "Home",
         meta: {
           defaultView: ["Home"],
-          mainContentOptions: {
+          setting: {
             left: {
               header: false,
               footer: false,
             },
             right: {
-              main: false,
+              subject: false,
             },
           },
         },

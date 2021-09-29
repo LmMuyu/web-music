@@ -6,14 +6,16 @@
       :key="event.id"
     >
       <div style="width: 10%">
-        <router-link
-          :to="{
-            path: '/user/home',
-            query: { uid: event.user.userId },
-          }"
-        >
-          <el-avatar :src="event.user.avatarUrl"></el-avatar>
-        </router-link>
+        <el-avatar
+          class="cursor-pointer"
+          :src="event.user.avatarUrl"
+          @click="
+            router.push({
+              path: '/user/home',
+              query: { uid: event.user.userId },
+            })
+          "
+        ></el-avatar>
       </div>
       <div style="width: 90%">
         <MainContent @emitPics="unMountPrveImage" :event="event" />
@@ -32,6 +34,7 @@ import {
   watch,
 } from "@vue/runtime-core";
 import { reactive, ref } from "@vue/reactivity";
+import { useRouter } from "vue-router";
 
 import { getSubScriptDynamic } from "../../../../api/subscription";
 import { useRefNegate } from "../../../../utils/useRefNegate";
@@ -43,7 +46,7 @@ import { ElAvatar } from "element-plus";
 import type { Emitter } from "mitt";
 
 const instance = getCurrentInstance();
-
+const router = useRouter();
 const mitt: Emitter = instance.appContext.config.globalProperties["mittBus"];
 
 const { countRef, negate } = useRefNegate(false);
@@ -65,8 +68,7 @@ async function friend() {
     lasttime = res.data.lasttime;
     events.value = res.data.event;
 
-    negate();
-    eventOrEvent();
+    watchEvent();
   } catch (err) {
     //导航到404页面
     console.log(err);
@@ -81,11 +83,16 @@ function viewScroll(e: Event) {
   console.log(e);
 }
 
-function eventOrEvent() {
-  // nextTick().then(() => {
-  //   scrollInfo.scrollHeight = section.value.scrollHeight;
-  //   section.value.addEventListener("scroll", viewScroll, false);
-  // });
+function watchEvent() {
+  watch(countRef, () => {
+    nextTick().then(() => {
+      console.log(section.value.scrollHeight);
+      // scrollInfo.scrollHeight =;
+      section.value.addEventListener("scroll", viewScroll, false);
+    });
+  });
+
+  negate();
 }
 
 function unMountPrveImage(picInfo: any[]) {

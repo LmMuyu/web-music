@@ -1,5 +1,5 @@
 interface Container {
-  main?: boolean;
+  subject?: boolean;
   header?: boolean;
   center?: boolean;
   footer?: boolean;
@@ -8,7 +8,7 @@ interface Container {
 export interface META {
   showTags?: boolean;
   defaultView?: [string, string?];
-  mainContentOptions?: {
+  setting?: {
     left?: Container;
     right?: Container;
   };

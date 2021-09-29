@@ -9,8 +9,6 @@
   </section>
 </template>
 <script setup lang="ts">
-import { useStore } from "vuex";
-
 import SubscrionUserInfo from "./components/SubscrionUserInfo.vue";
 import SubscrionTopic from "./components/SubscrionTopic.vue";
 </script>
