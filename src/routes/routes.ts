@@ -71,9 +71,11 @@ const routes: (RouteRecordRaw & {
         left: {
           header: false,
           footer: false,
+          width: 7.5,
         },
         right: {
           header: false,
+          width: 2.5,
         },
       },
     },

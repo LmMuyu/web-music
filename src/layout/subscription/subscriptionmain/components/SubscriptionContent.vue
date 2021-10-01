@@ -1,5 +1,9 @@
 <template>
-  <div v-if="countRef" ref="section">
+  <div
+    v-if="countRef"
+    ref="section"
+    class="overflow-y-scroll relative scroll_bar h_calc"
+  >
     <section
       class="flex pt-5 border_style"
       v-for="event in events"
@@ -39,6 +43,7 @@ import { useRouter } from "vue-router";
 import { getSubScriptDynamic } from "../../../../api/subscription";
 import { useRefNegate } from "../../../../utils/useRefNegate";
 import preview from "../../../../components/previewpicture";
+import { throttle } from "../../../../utils/throttle";
 
 import MainContent from "./layout/MainContent.vue";
 import { ElAvatar } from "element-plus";
@@ -61,14 +66,16 @@ const scrollInfo = reactive({
   scrollHeight: 0,
 });
 
-async function friend() {
+let initwatch = false;
+
+async function friend(lasttime: number = -1) {
   try {
-    const res = await getSubScriptDynamic();
+    const res = await getSubScriptDynamic(lasttime);
 
     lasttime = res.data.lasttime;
-    events.value = res.data.event;
+    events.value.push(...res.data.event);
 
-    watchEvent();
+    !initwatch && watchEvent();
   } catch (err) {
     //导航到404页面
     console.log(err);
@@ -79,16 +86,34 @@ friend();
 
 mitt.on("preview", unMountPrveImage);
 
+let requestmidd = false;
+
 function viewScroll(e: Event) {
-  console.log(e);
+  const target = e.target as HTMLElement;
+  const scrollTop = target.scrollTop;
+
+  const percentage =
+    Number((scrollTop / scrollInfo.scrollHeight).toFixed(2)) * 100;
+
+  if (percentage >= 90 && !requestmidd) {
+    requestmidd = true;
+
+    friend(lasttime);
+  }
 }
 
 function watchEvent() {
-  watch(countRef, () => {
+  console.log("watchEvent");
+
+  initwatch = true;
+  const stop = watch(countRef, () => {
     nextTick().then(() => {
-      console.log(section.value.scrollHeight);
-      // scrollInfo.scrollHeight =;
-      section.value.addEventListener("scroll", viewScroll, false);
+      scrollInfo.scrollHeight = section.value.scrollHeight;
+
+      const loadingScroll = throttle(viewScroll, 100);
+      section.value.addEventListener("scroll", loadingScroll, false);
+
+      stop();
     });
   });
 
@@ -126,5 +151,18 @@ onUnmounted(() => {
     width: 100%;
     background-color: #dfe6e9;
   }
+}
+
+.h_calc {
+  height: calc(100% - 40px);
+}
+.scroll_bar {
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.scroll_botton {
+  transition: all 0.3s cubic-bezier(0.075, 0.82, 0.165, 1);
 }
 </style>

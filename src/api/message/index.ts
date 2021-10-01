@@ -1,3 +1,4 @@
+import { Method } from "axios";
 import { async_pool } from "../../utils/asyncPool";
 import request from "../../utils/request";
 
@@ -11,8 +12,19 @@ export function getUserMessage(uid: number, limit: number) {
   });
 }
 
-export async function getPrivateLetter() {
-  const privateletterList = await request({ url: "/msg/private" });
+export async function getPrivateLetter(method: Method, limit: number = 30) {
+  method = method.toLocaleUpperCase() as Method;
+  const privateletterList = await request({
+    method,
+    url: "/msg/private",
+    ...(method === "HEAD"
+      ? {}
+      : {
+          params: {
+            limit,
+          },
+        }),
+  });
 
   return privateletterList;
 }

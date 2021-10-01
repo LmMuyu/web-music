@@ -1,8 +1,9 @@
-interface Container {
+export interface Container {
   subject?: boolean;
   header?: boolean;
   center?: boolean;
   footer?: boolean;
+  width?: number;
 }
 
 export interface META {

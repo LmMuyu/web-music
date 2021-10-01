@@ -1,7 +1,7 @@
 <template>
-  <div class="flex items-center w-full header_h">
+  <div class="flex w-full header_h">
     <div class="w-1/2 text-2xl">
-      <p>动态</p>
+      <p>订阅动态</p>
     </div>
     <div class="w-1/2">
       <div class="flex justify-center items-center rounded-full px-4 iconjia">
