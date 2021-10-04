@@ -1,4 +1,4 @@
-import { isRef, Ref, shallowRef } from "vue";
+import { isRef, Ref } from "vue";
 
 interface StateOptions {
   x: number;

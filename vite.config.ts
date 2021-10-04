@@ -1,5 +1,4 @@
 import { CSSOptions, loadEnv } from "vite";
-//https://github.com/vuejs/jsx-next/blob/dev/packages/babel-plugin-jsx/README-zh_CN.md
 import styleImport from "vite-plugin-style-import";
 import rollupOptions from "./vite/rollupOptions";
 import vueJsx from "@vitejs/plugin-vue-jsx";

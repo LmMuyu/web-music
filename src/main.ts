@@ -6,7 +6,8 @@ import { createApp } from "vue";
 import hover from "./directives/hover";
 import lazy from "./directives/lazy-loading";
 
-import "tailwindcss/tailwind.css";
+
+
 import "element-plus/theme-chalk/el-icon.css";
 
 const app = createApp(App);

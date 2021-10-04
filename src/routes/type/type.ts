@@ -13,6 +13,7 @@ export interface META {
     left?: Container;
     right?: Container;
   };
+  fetchCount?:number
 }
 
 export interface Route {

@@ -69,8 +69,6 @@ router.beforeResolve((to) => {
 
     settConInfo[pos] = { ...posinfo[pos], width };
   });
-
-  console.log(settConInfo);
 });
 
 const returnresdata = (any: any) => {

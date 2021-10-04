@@ -22,7 +22,6 @@ const postcssOption = {
       autoprefixer: false,
       "postcss-zindex": false,
     },
-    tailwindcss: {},
   },
 };
 

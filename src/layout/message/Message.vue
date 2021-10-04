@@ -1,24 +1,6 @@
-<template>
+<!-- <template>
   <ElRow class="flex h-full overflow-hidden relative border_radius">
-    <ElCol :span="7" class="solide_border">
-      <el-container class="h-full container">
-        <el-header class="flex items-center justify-center">
-          <Search
-            class="border border-gray-300 border-solid rounded-md"
-            :isroot-class="false"
-            :disabled="false"
-            :returnresdata="returnresdata"
-          />
-        </el-header>
-        <el-main ref="msgmain" class="h-full relative main_padding">
-          <MessagePrivateLetter
-            v-if="countRef"
-            @viewmsg="findViewMsg"
-            :privateLetterList="privateLetter.main"
-          />
-        </el-main>
-      </el-container>
-    </ElCol>
+    <ElCol :span="7" class="solide_border"> </ElCol>
     <ElCol class="w-full h-full absolute right-0 top-0" :span="17">
       <MessageChatBox
         @emitRequest="onEmitRequest"
@@ -39,42 +21,32 @@ import {
   getUserMessageList,
   getUserMessage,
 } from "../../api/message";
-import { createLoading } from "../../components/loading/app";
 import { promptbox } from "../../components/promptBox";
 import LRU from "../../utils/LRUCache";
 
-import { ElRow, ElCol, ElHeader, ElMain, ElContainer } from "element-plus";
-import MessagePrivateLetter from "./components/MessagePrivateLetter.vue";
 import MessageBackground from "./components/MessageBackground.vue";
 import MessageChatBox from "./components/MessageChatBox.vue";
-import Search from "../../components/search/Search.vue";
 
 const store = useStore();
 const LRUcatch = new LRU();
 
 const msgmain = ref<any | null>(null);
-const { countRef, isMountApp, mountApp, negate, unmountApp } =
-  new createLoading();
-
-const returnresdata = (data: any) => {
-  console.log(data);
-};
 
 const privateLetter = reactive({
   main: [],
-  viewMsg: [],
+  chatMsgs: [],
   storeMsg: [],
 });
 
 const onEmitRequest = async (id: number) => {
-  const viewmsg = privateLetter.viewMsg;
+  const chatMsgs = privateLetter.chatMsgs;
   const storemsg = privateLetter.storeMsg;
 
-  if (viewmsg[0].id === id) {
-    const result = await getUserMessage(id, viewmsg[1].length + 5);
+  if (chatMsgs[0].id === id) {
+    const result = await getUserMessage(id, chatMsgs[1].length + 5);
 
-    privateLetter.viewMsg[1].push(
-      ...result.data.msgs.slice(viewmsg.length + 1)
+    privateLetter.chatMsgs[1].push(
+      ...result.data.msgs.slice(chatMsgs.length + 1)
     );
 
     LRUcatch.put(id, result);
@@ -85,7 +57,7 @@ const findViewMsg = (useroptions: Record<string, any>) => {
   const res = LRUcatch.get(useroptions.id);
 
   if (res !== -1) {
-    privateLetter.viewMsg.push(useroptions, res.data.msgs);
+    privateLetter.chatMsgs.push(useroptions, res.data.msgs);
     return;
   }
 
@@ -102,29 +74,14 @@ const findViewMsg = (useroptions: Record<string, any>) => {
 
     LRUcatch.put(useroptions.id, msgObj);
 
-    console.log(LRUcatch.viewAllCache());
+    // console.log(LRUcatch.viewAllCache());
 
-    privateLetter.viewMsg.length = 0;
-    privateLetter.viewMsg.push(useroptions, msgObj.data.msgs);
+    privateLetter.chatMsgs.length = 0;
+    privateLetter.chatMsgs.push(useroptions, msgObj.data.msgs);
   }
 };
 
-
-store.commit("login/onMittEvent", async (value: any) => {
-  try {
-    const list = await getPrivateLetter();
-    console.log(list);
-
-    privateLetter.main = list.data.msgs;
-
-    const privateMesList = await getUserMessageList(list);
-    privateLetter.storeMsg = privateMesList;
-
-  } catch (err) {
-    console.log(err);
-  }
-})
-
+store.commit("login/onMittEvent", async (value: any) => {});
 
 onMounted(() => {
   nextTick().then(() => {
@@ -158,4 +115,4 @@ onMounted(() => {
     padding-left: 0 !important;
   }
 }
-</style>
+</style> -->

@@ -1,5 +1,8 @@
 <template>
-  <div class="flex justify-start py-2" :class="isfromuser && 'flex-row-reverse'">
+  <div
+    class="flex justify-start py-2"
+    :class="isfromuser && 'flex-row-reverse'"
+  >
     <div>
       <el-avatar :size="32" :src="messageInfo.fromUser.avatarUrl"></el-avatar>
     </div>
@@ -9,7 +12,9 @@
         style="word-wrap: break-word"
         class="text-sm text-left p-3 rounded-md"
         :style="{ backgroundColor: isfromuser ? '#dcf3fe' : '#F2F6FA' }"
-      >{{ putmsg(messageInfo.msg) }}</p>
+      >
+        {{ putmsg(messageInfo.msg) }}
+      </p>
     </div>
   </div>
 </template>

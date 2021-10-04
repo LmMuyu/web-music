@@ -1,7 +1,9 @@
-import { createAsComponent } from "../utils/createAsComponent";
+import store from "../store";
 
 import type { RouteRecordRaw } from "vue-router";
 import type { META } from "./type/type";
+
+// name=section name=article
 
 const routes: (RouteRecordRaw & {
   meta?: META;
@@ -48,20 +50,37 @@ const routes: (RouteRecordRaw & {
   {
     path: "/message",
     name: "Message",
+    beforeEnter(to) {
+      const path = to.path;
+      const count = to.meta.fetchCount as number;
+
+      if (path === "/message" && count === 0) {
+        console.log("/message");
+
+        store.dispatch("message/fetchPrivateMsg", () => {
+          to.meta.fetchCount = count + 1;
+        });
+      }
+    },
     meta: {
-      defaultView: ["Message"],
       setting: {
         left: {
           header: false,
+          width: 3,
         },
         right: {
-          subject: false,
+          header: false,
+          width: 7,
         },
       },
+      fetchCount: 0,
     },
-    component: createAsComponent(() => import("../view/message/Message.vue"), {
-      loadComp: true,
-    }),
+    components: {
+      section: () =>
+        import("../layout/message/privatemsgpeople/PrivateMsgPeople.vue"),
+      article: () =>
+        import("../layout/message/privatemsgcontent/PrivateMsgContent.vue"),
+    },
   },
   {
     path: "/subscription",

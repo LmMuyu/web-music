@@ -75,12 +75,12 @@ import dayjs from "dayjs";
 
 import { useSlidingTrack } from "../../../utils/useSlidingTrack";
 
-import { ElAvatar } from "element-plus";
+ ;
 
 import type { PropType } from "vue";
 import type { dayAttribute } from "../../../type";
 
-const ctxEmit = defineEmits(["viewmsg"]);
+const ctxEmit = defineEmits(["retNicknameInfo"]);
 
 const props = defineProps({
   privateLetterList: {
@@ -100,7 +100,7 @@ const { initTrackPos, transitionOffset, getSliderTrack } = useSlidingTrack(
 );
 
 const onFindID = (id: number, avatarUrl: string, nickname: string) =>
-  ctxEmit("viewmsg", { id, avatarUrl, nickname });
+  ctxEmit("retNicknameInfo", { id, avatarUrl, nickname });
 
 const returnDateList = (dateAttribute: dayAttribute) => [
   dateAttribute.$y,

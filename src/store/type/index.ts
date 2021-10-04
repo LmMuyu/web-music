@@ -25,3 +25,4 @@ export interface UserInfo {
   tokenJsonStr: TokenJsonStr;
   userinfoData?: Record<string, any>;
 }
+

@@ -64,7 +64,6 @@ class LRUCache {
       if (this.map.size >= this.cap) {
         this.map.delete(this.tail?.key);
         this.remove(this.tail!);
-        // console.log(this.head);
         this.map.set(key, node);
         this.appendHead(node);
       } else {

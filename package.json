@@ -16,7 +16,7 @@
     "cssnano": "^5.0.6",
     "cssnano-preset-advanced": "^5.1.3",
     "dayjs": "^1.10.4",
-    "element-plus": "^1.1.0-beta.9",
+    "element-plus": "1.1.0-beta.19",
     "fastdom": "^1.0.10",
     "js-cookie": "^2.2.1",
     "mitt": "^2.1.0",
@@ -27,8 +27,7 @@
     "postcss-px-to-viewport": "^1.1.1",
     "postcss-url": "^10.1.3",
     "postcss-write-svg": "^3.0.1",
-    "tailwindcss": "^2.0.4",
-    "vite": "^2.4.4",
+    "vite": "2.6.2",
     "vue": "3.2.2",
     "vue-router": "4",
     "vuex": "^4.0.0"
