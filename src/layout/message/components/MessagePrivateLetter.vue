@@ -13,39 +13,42 @@
     </div>
     <li
       class="flex w-full py-3 px-6 cursor-pointer"
-      v-for="mess in privateLetterList"
-      :key="mess.fromUser.userId"
+      v-for="(letter, index) in privateLetterList"
+      :key="letter.fromUser.userId"
       @click.stop="
-        transitionOffset($event),
-          onFindID(
-            mess.fromUser.userId,
-            mess.fromUser.avatarUrl,
-            mess.fromUser.nickname
+        transitionOffset(
+          $event,
+          toPath.bind(null, index, letter.fromUser.userId)
+        ),
+          findId(
+            letter.fromUser.userId,
+            letter.fromUser.avatarUrl,
+            letter.fromUser.nickname
           )
       "
     >
       <div style="width: 20%" class="flex items-center">
-        <ElAvatar :src="mess.fromUser.avatarUrl" />
+        <ElAvatar :src="letter.fromUser.avatarUrl" />
       </div>
       <div style="width: 80%" class="flex flex-col justify-between">
         <div class="w-full flex items-center justify-between">
           <span class="text-sm" style="color: #2f4154">
-            {{ mess.fromUser.nickname }}
+            {{ letter.fromUser.nickname }}
           </span>
           <span class="text-xs whitespace-nowrap">
-            {{ diffTime(mess.lastMsgTime) }}
+            {{ diffTime(letter.lastMsgTime) }}
           </span>
         </div>
         <div class="w-full flex justify-between">
           <span
-            :style="{ color: mess.newMsgCount > 0 ? '#556574' : '#a6aeb6' }"
+            :style="{ color: letter.newMsgCount > 0 ? '#556574' : '#a6aeb6' }"
             style="width: 90%"
             class="text-xs truncate text"
-            >{{ lastMsg(mess.lastMsg) }}</span
+            >{{ lastMsg(letter.lastMsg) }}</span
           >
           <div style="width: 10%">
             <span
-              v-if="mess.newMsgCount > 0"
+              v-if="letter.newMsgCount > 0"
               class="
                 flex
                 justify-center
@@ -54,7 +57,7 @@
                 float-right
                 bg_color
               "
-              >{{ mess.newMsgCount }}</span
+              >{{ letter.newMsgCount }}</span
             >
           </div>
         </div>
@@ -72,13 +75,14 @@ import {
   nextTick,
 } from "vue";
 import dayjs from "dayjs";
+import { useRouter } from "vue-router";
 
 import { useSlidingTrack } from "../../../utils/useSlidingTrack";
 
- ;
-
 import type { PropType } from "vue";
 import type { dayAttribute } from "../../../type";
+
+import { ElAvatar } from "element-plus";
 
 const ctxEmit = defineEmits(["retNicknameInfo"]);
 
@@ -88,6 +92,8 @@ const props = defineProps({
     default: () => [],
   },
 });
+
+const router = useRouter();
 
 const track_slider = ref<HTMLElement | null>(null);
 const ulList = ref<HTMLElement | null>(null);
@@ -99,8 +105,18 @@ const { initTrackPos, transitionOffset, getSliderTrack } = useSlidingTrack(
   }
 );
 
-const onFindID = (id: number, avatarUrl: string, nickname: string) =>
+const findId = (id: number, avatarUrl: string, nickname: string) =>
   ctxEmit("retNicknameInfo", { id, avatarUrl, nickname });
+
+function toPath(index: number, uid: number) {
+  router.push({
+    path: "/message",
+    query: {
+      curindex: index,
+      uid,
+    },
+  });
+}
 
 const returnDateList = (dateAttribute: dayAttribute) => [
   dateAttribute.$y,

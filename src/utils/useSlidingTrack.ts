@@ -20,17 +20,21 @@ export function useSlidingTrack(track: Track, options: trackOptions) {
   let _track: Track = track;
   const elPos = {};
 
-  const setStyle = (el: HTMLElement, { x, y, scale }) => {
-    if (!(el instanceof HTMLElement)) return;
+  const changeTransform = (el: HTMLElement, { x, y, scale }) => {
+    return new Promise((resolve) => {
+      if (!(el instanceof HTMLElement)) return resolve(true);
 
-    el.style.left = x + "px";
-    el.style.top = y + "px";
-    el.style.transform =
-      direction === "vertical"
-        ? `scale(${1},${scale})`
-        : `scale(${scale},${1})`;
+      el.style.left = x + "px";
+      el.style.top = y + "px";
+      el.style.transform =
+        direction === "vertical"
+          ? `scale(${1},${scale})`
+          : `scale(${scale},${1})`;
 
-    // setViewPort(y);
+      // setViewPort(y);
+
+      resolve(true);
+    });
   };
 
   const computedScale = (el, width, height) => {
@@ -51,7 +55,7 @@ export function useSlidingTrack(track: Track, options: trackOptions) {
     return scale;
   };
 
-  const transitionOffset = (e) => {
+  const transitionOffset = async (e, backing?: Function) => {
     !initCompIndex && initElIndex(ElChildren);
 
     let tarel = isEl(e) ? e : e.target;
@@ -80,19 +84,22 @@ export function useSlidingTrack(track: Track, options: trackOptions) {
         };
       }
 
-      const dir = direction === "vertical";
-
-      setStyle(scroll_track, {
-        scale,
-        x: dir ? 0 : x,
-        y: dir ? y : 0,
-      });
-
+      //初始化无需过渡动画
       if (initTran) {
         initTransition(scroll_track);
       } else {
+        //初始化完成，下次启动过渡动画
         initTran = true;
       }
+
+      const wayto = direction === "vertical";
+      await changeTransform(scroll_track, {
+        scale,
+        x: wayto ? 0 : x,
+        y: wayto ? y : 0,
+      });
+
+      backing && backing.call(null); //回调函数
     }
   };
 
@@ -160,8 +167,6 @@ export function useSlidingTrack(track: Track, options: trackOptions) {
     el.style.transitionDuration = "0.5s";
     el.style.transitionTimingFunction = "ease-out";
     el.style.transformOrigin = "center";
-
-    initTran = true;
   }
 
   function initElIndex(children: any[]) {
@@ -172,6 +177,7 @@ export function useSlidingTrack(track: Track, options: trackOptions) {
   function getCorrespondElement(el: HTMLElement) {
     let target = el;
 
+    //@ts-ignore
     while (!target.comp_index && target !== null) {
       target = target.parentElement;
     }

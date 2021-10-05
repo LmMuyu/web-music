@@ -1,17 +1,20 @@
 <template>
-  <div class="w-3/4 flex items-center justify-center pr-4 border">
-    <span class="icon_text h-full bg-white px-4" v-if="isIcon">
+  <div
+    class="w-full flex items-center justify-center py-2 pr-4 rounded-sm border"
+  >
+    <span class="icon_text bg-white px-4 ip_icon" v-if="isIcon">
       <i class="iconfont iconsousuo"></i>
     </span>
     <input
       :type="type"
-      :disabled="disabled"
       :placeholder="placeholder"
+      :disabled="disabled"
       @focus="onFocus"
       @blur="onBlur"
       @keydown.enter="keyupEnter"
       v-model="text"
-      class="text-black w-full p-2 border-none outline-none"
+      class="text-black w-full h-full border-none outline-none"
+      style="z-index: 9"
     />
   </div>
 </template>
@@ -30,11 +33,7 @@ const props = defineProps({
   },
   placeholder: {
     type: String,
-    default: "",
-  },
-  returnresdata: {
-    type: Function,
-    required: true,
+    default: "xx",
   },
   disabled: {
     type: Boolean,
@@ -63,7 +62,7 @@ let searchValue = "";
 
 function onFocus() {
   if (searchValue === "") return;
-  ctxEmit("focus", searchValue || props.placeholder || "", props.returnresdata);
+  ctxEmit("focus", searchValue || props.placeholder || "");
 }
 
 function onBlur() {
@@ -71,7 +70,7 @@ function onBlur() {
 }
 
 const changeModel = (value?: any, delay: number = 300) => {
-  let timeout: NodeJS.Timeout | null = null;
+  let timeout: number | null = null;
 
   return customRef((track, trigger) => {
     return {
@@ -93,7 +92,7 @@ const changeModel = (value?: any, delay: number = 300) => {
         timeout = setTimeout(() => {
           if (newVlaue != "") {
             searchValue = newVlaue;
-            ctxEmit("change", newVlaue, props.returnresdata);
+            ctxEmit("change", newVlaue);
           }
           timeout = null;
         }, delay);
@@ -106,8 +105,9 @@ const text = changeModel();
 </script>
 
 <style scoped lang="scss">
-@include Iconfont(rgb(204, 204, 204, 1));
-
+.ip_icon {
+  @include Iconfont(rgb(204, 204, 204, 1), 18);
+}
 .icon_text {
   transform: translateX(1px);
 }

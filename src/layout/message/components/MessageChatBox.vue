@@ -1,18 +1,23 @@
 <template>
   <el-container class="h-full">
     <el-header class="flex items-center solide_border">
-      <el-avatar :size="32" :src="viewMsg[0].avatarUrl"></el-avatar>
-      <span class="ml-4">{{ viewMsg[0].nickname }}</span>
+      <el-avatar
+        :size="32"
+        :src="privateLetter.propleInfo.avatarUrl"
+      ></el-avatar>
+      <span class="ml-4">{{ privateLetter.propleInfo.nickname }}</span>
     </el-header>
     <el-container class="relative">
       <el-container class="absolute top-0 bottom-0 w-full h-full">
         <el-main class="overflow-x-hidden" ref="mesMain" @scroll="onScroll">
-          <MessageChatBoxItem
-            v-for="mes in mesList"
-            :key="mes.id"
-            :message-info="mes"
-            :isfromuser="viewMsg[0].id !== mes.fromUser.userId"
-          />
+          <div v-if="privateLetter.totals.length > 0">
+            <MessageChatBoxItem
+              v-for="mes in letterList"
+              :key="mes.id"
+              :message-info="mes"
+              :isfromuser="privateLetter.propleInfo.uid !== mes.fromUser.userId"
+            />
+          </div>
         </el-main>
         <el-footer
           :height="`${size}px`"
@@ -49,6 +54,7 @@ import {
 } from "element-plus";
 
 import type { PropType } from "vue";
+import type { PRIVATEPROPLEL_AND_ETTER } from "../type";
 
 const ctxEmit = defineEmits(["emitRequest"]);
 
@@ -59,16 +65,16 @@ watch(modelValue, (value) => {
 });
 
 const props = defineProps({
-  viewMsg: {
-    type: Array as PropType<any[]>,
-    default: () => [],
+  privateLetter: {
+    type: Object as PropType<PRIVATEPROPLEL_AND_ETTER>,
+    required: true,
   },
 });
 
 const mesMain = ref<any | null>(null);
 
-const mesList = computed<any>(() =>
-  props.viewMsg[1]
+const letterList = computed<any>(() =>
+  props.privateLetter.totals
     .map((v, i) => ({
       keyindex: i,
       ...v,
@@ -77,7 +83,7 @@ const mesList = computed<any>(() =>
 );
 
 const ebounceFn = debounce(
-  () => ctxEmit("emitRequest", props.viewMsg[0].id),
+  () => ctxEmit("emitRequest", props.privateLetter.propleInfo.uid),
   100
 );
 
@@ -92,7 +98,6 @@ const onScroll = (e: Event) => {
 function setMainScrollTop() {
   if (mesMain.value) {
     const el = mesMain.value.$el;
-
     const scrollHeight = el.scrollHeight;
 
     if (scrollHeight) {
@@ -102,7 +107,7 @@ function setMainScrollTop() {
 }
 
 watch(
-  () => props.viewMsg,
+  () => props.privateLetter,
   () => setMainScrollTop()
 );
 

@@ -66,11 +66,11 @@ const routes: (RouteRecordRaw & {
       setting: {
         left: {
           header: false,
-          width: 3,
+          width: 2.5,
         },
         right: {
           header: false,
-          width: 7,
+          width: 8.5,
         },
       },
       fetchCount: 0,
