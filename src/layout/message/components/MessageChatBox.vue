@@ -1,32 +1,32 @@
 <template>
   <el-container class="h-full">
-    <el-header class="flex items-center solide_border">
-      <el-avatar
-        :size="32"
-        :src="privateLetter.propleInfo.avatarUrl"
-      ></el-avatar>
-      <span class="ml-4">{{ privateLetter.propleInfo.nickname }}</span>
+    <el-header class="flex solide_border">
+      <div>
+        <el-avatar
+          :size="42"
+          :src="privateLetter.propleInfo.avatarUrl"
+        ></el-avatar>
+      </div>
+      <span class="ml-4">
+        <p>{{ privateLetter.propleInfo.nickname }}</p>
+      </span>
     </el-header>
-    <el-container class="relative">
-      <el-container class="absolute top-0 bottom-0 w-full h-full">
-        <el-main class="overflow-x-hidden" ref="mesMain" @scroll="onScroll">
-          <div v-if="privateLetter.totals.length > 0">
-            <MessageChatBoxItem
-              v-for="mes in letterList"
-              :key="mes.id"
-              :message-info="mes"
-              :isfromuser="privateLetter.propleInfo.uid !== mes.fromUser.userId"
-            />
-          </div>
-        </el-main>
-        <el-footer
-          :height="`${size}px`"
-          class="flex items-cneter solide_border_top"
-        >
-          <MessageFoolterWriteBox v-model:vlaue="modelValue" />
-        </el-footer>
-      </el-container>
-    </el-container>
+    <el-main class="overflow-x-hidden" ref="mesMain" @scroll="onScroll">
+      <div v-if="privateLetter.totals.length > 0">
+        <MessageChatBoxItem
+          v-for="mes in letterList"
+          :key="mes.id"
+          :message-info="mes"
+          :isfromuser="privateLetter.propleInfo.uid !== mes.fromUser.userId"
+        />
+      </div>
+    </el-main>
+    <el-footer
+      :height="`${size}px`"
+      class="flex items-cneter solide_border_top"
+    >
+      <MessageFoolterWriteBox v-model:vlaue="modelValue" />
+    </el-footer>
   </el-container>
 </template>
 <script setup lang="ts">

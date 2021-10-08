@@ -33,6 +33,8 @@ const props = defineProps({
   },
 });
 
+console.log(props.messageInfo);
+
 const putmsg = computed(() => {
   return function (str: string) {
     return JSON.parse(str)["msg"];

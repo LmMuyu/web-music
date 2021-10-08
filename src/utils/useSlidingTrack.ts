@@ -59,6 +59,7 @@ export function useSlidingTrack(track: Track, options: trackOptions) {
     !initCompIndex && initElIndex(ElChildren);
 
     let tarel = isEl(e) ? e : e.target;
+
     tarel = getCorrespondElement(tarel);
 
     if (pre === tarel) return;

@@ -15,30 +15,34 @@ const routes: (RouteRecordRaw & {
   {
     path: "/index",
     name: "Index",
-    meta: {
-      defaultView: ["Discover", "DiscoverBar"],
+    redirect: "/index/recommend",
+    meta: {},
+    children: [
+      {
+        path: "recommend",
+        name: "Recommend",
+        component: () => import("../layout/Index/discover/Recommend.vue"),
+      },
+      {
+        path: "playlist",
+        name: "Playerlist",
+        meta: {
+          showTags: false,
+          keepAlive: false,
+        },
+        component: () => import("../view/playlist/PlayList.vue"),
+      },
+      {
+        path: "toplist",
+        name: "Toplist",
+        component: () => import("../layout/Index/toplist/Toplist.vue"),
+      },
+    ],
+    components: {
+      section: () => import("../layout/Index/index/Index.vue"),
     },
-    component: () => import("../view/index/Index.vue"),
   },
-  {
-    path: "/playlist",
-    name: "playerlist",
-    meta: {
-      showTags: false,
-      keepAlive: false,
-    },
-    component: () => import("../view/playlist/PlayList.vue"),
-  },
-  {
-    path: "/toplist",
-    name: "Toplist",
-    component: () => import("../layout/Index/toplist/Toplist.vue"),
-  },
-  {
-    path: "/discover",
-    name: "Discover",
-    component: () => import("../layout/Index/discover/Discover.vue"),
-  },
+
   {
     path: "/explore",
     name: "Explore",
@@ -66,11 +70,11 @@ const routes: (RouteRecordRaw & {
       setting: {
         left: {
           header: false,
-          width: 2.5,
+          width: 3,
         },
         right: {
           header: false,
-          width: 8.5,
+          width: 7,
         },
       },
       fetchCount: 0,

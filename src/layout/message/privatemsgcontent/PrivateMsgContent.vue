@@ -1,5 +1,5 @@
 <template>
-  <div v-if="chatContentBox">
+  <div v-if="chatContentBox" class="h-full">
     <MessageChatBox :privateLetter="privateLetter" />
   </div>
   <!-- <MessageBackground v-else /> -->
@@ -54,6 +54,9 @@ watch(
   (query) => {
     findLetterContent(query);
     chatContentBox.value = true;
+  },
+  {
+    immediate: true,
   }
 );
 </script>

@@ -109,7 +109,7 @@ store.commit("login/onMittEvent", (value: any) => {
 }
 
 #app {
-  font-family: "微软雅黑", sans-serif;
+  font-family: "Bahnschrift", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

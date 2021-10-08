@@ -73,9 +73,10 @@ import {
   ref,
   onMounted,
   nextTick,
+  watch,
 } from "vue";
 import dayjs from "dayjs";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 import { useSlidingTrack } from "../../../utils/useSlidingTrack";
 
@@ -94,6 +95,7 @@ const props = defineProps({
 });
 
 const router = useRouter();
+const route = useRoute();
 
 const track_slider = ref<HTMLElement | null>(null);
 const ulList = ref<HTMLElement | null>(null);
@@ -166,7 +168,7 @@ onMounted(() => {
   nextTick(async () => {
     if (ulList.value && track_slider.value) {
       getSliderTrack(track_slider.value);
-      initTrackPos(ulList.value, 3);
+      initTrackPos(ulList.value, Number(route.query?.curindex) ?? 0);
     }
   });
 });

@@ -8,7 +8,9 @@
       @mousemove="moveActive(index)"
       @mouseleave="leaveActive(index)"
     >
-      <span class="cursor-pointer" :style="activeStyle(index)">{{ tagItem.tagname }}</span>
+      <span class="cursor-pointer" :style="activeStyle(index)">{{
+        tagItem.tagname
+      }}</span>
       <span :class="{ border_bottom: curIndex === index }"></span>
     </li>
   </ul>
@@ -26,7 +28,7 @@ const moveIndex = ref(0);
 
 function switchView(index: number, tagItem: any) {
   clickActive(index);
-  ctxEmit('loadComps', [tagItem.comname, tagItem.comchildren])
+  ctxEmit("loadComps", [tagItem.comname, tagItem.comchildren]);
 }
 
 const { activeStyle, clickActive, moveActive, leaveActive } = new activeIndex(
@@ -43,4 +45,3 @@ const { activeStyle, clickActive, moveActive, leaveActive } = new activeIndex(
   border: 1px solid #74b9ff;
 }
 </style>
-
