@@ -1,10 +1,10 @@
 <template>
   <main ref="rootcontent" class="h-full">
-    <div class="py-6" v-if="isCheckbox && countRef">
+    <div v-if="isCheckbox && countRef">
       <el-checkbox v-model="isselect">全选</el-checkbox>
     </div>
     <div class="overflow-y-auto h-full" v-if="countRef">
-      <!-- <VirtualList
+      <VirtualList
         v-if="openVirtuallist"
         :renderData="renderListData"
         keyindex="indexOnly"
@@ -22,18 +22,7 @@
             @change="onChange"
           />
         </template>
-      </VirtualList> -->
-      <!-- <div v-else v-for="(renderItem, index) in renderListData" :key="renderItem.index">
-        <ToplistMainItem
-          :renderItem="renderItem"
-          :index="renderItem.index"
-          :isRank="isRank"
-          :isCheckbox="false"
-          @mouseleave="leaveActive(index)"
-          @mouseenter="moveActive(index)"
-          :style="{ ...activeStyle(index), padding: '0px' }"
-        />
-      </div> -->
+      </VirtualList>
     </div>
   </main>
 </template>

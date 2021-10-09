@@ -2,8 +2,8 @@
   <el-row class="w-full dashed" style="height: 57px">
     <el-col :span="12" class="flex items-center">
       <div class="flex items-end">
-        <span class="text-2xl">网易云{{ listData?.[0]?.name }}</span>
-        <span class="ml-5 text-lg text-gray-500 h-full">{{ dateFormat }}</span>
+        <span class="text-lg">网易云{{ listData?.[0]?.name }}</span>
+        <span class="ml-5 text-sm text-gray-500 h-full">{{ dateFormat }}</span>
       </div>
     </el-col>
     <el-col :span="5" class="flex items-center">

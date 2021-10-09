@@ -45,9 +45,17 @@
   </el-container>
 </template>
 <script setup lang="ts">
-import { ref, computed, unref, watch, nextTick, onUnmounted } from "vue";
+import {
+  ref,
+  computed,
+  unref,
+  watch,
+  nextTick,
+  onUnmounted,
+  watchEffect,
+} from "vue";
 import { useRoute } from "vue-router";
-
+import { useStore } from "vuex";
 import {
   getMusicDetail,
   getMusicUrl,
@@ -78,7 +86,10 @@ interface MusicInfo {
 
 type checkOptions = { message: string; success: boolean };
 
-const musicId = useRoute().query.id as string;
+const route = useRoute();
+const store = useStore();
+
+const musicId = route.query.id as string;
 const musicInfo = ref<MusicInfo | null>(null);
 const musicDetailInfo = ref({});
 const main = ref<HTMLElement | null>(null);
@@ -89,7 +100,6 @@ const checkOption = ref<checkOptions>({
 });
 
 const record = ref({});
-
 const bgimageUrl = ref("");
 
 watch(bgimageUrl, (src) =>
@@ -105,12 +115,16 @@ const singer = computed(
     ""
 );
 
-// console.log(musicInfo.value?.name + "-" + singer.value);
+const routeEffect = watchEffect(() => {
+  const istags = route.meta;
+  console.log(istags);
+
+  routeEffect();
+});
 
 const title = useWindowTitle();
 
 let preNode: Element | null = null;
-
 function isPlayer() {
   checkOption.value.success ||
     (checkOption.value = {
@@ -121,7 +135,6 @@ function isPlayer() {
 
 function currPlayTime(time: string) {
   if (Number(time) < 1) Ability();
-
   isPlayer();
 
   const playTime = parseInt(time);

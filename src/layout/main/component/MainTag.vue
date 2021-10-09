@@ -9,7 +9,7 @@
       @click="toPath(tagNav.path, index)"
     >
       <i class="iconfont" :class="tagNav.icon" :style="activeStyle(index)"></i>
-      <p class="text-2xl px-5 text_color" :style="activeStyle(index)">
+      <p class="text-lg px-5 text_color" :style="activeStyle(index)">
         {{ tagNav.title }}
       </p>
     </span>
@@ -42,8 +42,9 @@ const toPath = (path: string, index: number) => {
 };
 
 const activeTag = (to: any) => {
-  currentIndex.value =
-    AsideTags.findIndex((value) => value.path === to.path) ?? 0;
+  currentIndex.value = AsideTags.findIndex(
+    (value) => to.path.indexOf(value.path) > -1
+  );
 };
 
 router.beforeEach((to) => activeTag(to));

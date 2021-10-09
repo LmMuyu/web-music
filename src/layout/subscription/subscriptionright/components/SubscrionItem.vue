@@ -8,8 +8,10 @@
       ></el-image>
     </div>
     <div class="flex flex-col px-4">
-      <p>{{ itme.title ? `#${itme.title}#` : itme.nickname }}</p>
-      <p style="color: #dfe6e9" class="w-56 truncate">
+      <p style="white-space: nowrap">
+        {{ itme.title ? `#${itme.title}#` : itme.nickname }}
+      </p>
+      <p style="color: #dfe6e9" class="w-32 truncate text-sm">
         {{
           itme.participateCount ? itme.participateCount + "人参与" : itme.msg
         }}

@@ -8,10 +8,10 @@
         <p class="text-lg">看到卡</p>
       </span>
     </div>
-    <div class="flex py-6">
-      <p class="px-4 text-lg">动态：20</p>
-      <p class="px-4 text-lg">关注：20</p>
-      <p class="px-4 text-lg">订阅：20</p>
+    <div class="flex py-6" style="white-space: nowrap">
+      <p class="px-4 text-sm">动态：20</p>
+      <p class="px-4 text-sm">关注：20</p>
+      <p class="px-4 text-sm">订阅：20</p>
     </div>
   </div>
 </template>

@@ -2,7 +2,9 @@
   <section>
     <div v-if="newMsgCount > 0" class="flex justify-between items-center pb-4">
       <p>新信息</p>
-      <p>更多</p>
+      <p>
+        <router-link to="/message"> 更多</router-link>
+      </p>
     </div>
     <div>
       <SubscrionItem :renderList="msgList" />
@@ -25,8 +27,6 @@ let timer = null;
 
 function getMsg(method: Method = "GET") {
   getPrivateLetter(method, 5).then((privatemeg) => {
-    console.log(privatemeg);
-
     msgList.value = privatemeg.data["msgs"].map((v) => {
       return {
         sharePicUrl: v.fromUser.avatarUrl,

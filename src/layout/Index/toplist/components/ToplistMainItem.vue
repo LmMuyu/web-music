@@ -8,13 +8,6 @@
   >
     <div class="flex items-center w-full">
       <el-checkbox v-if="isCheckbox" v-model="select"></el-checkbox>
-      <h4
-        v-if="isRank"
-        :class="[
-          index + 1 <= 3 ? 'text-red-600 text-2xl' : 'text_color text-xl',
-        ]"
-        class="text px-2"
-      >{{ index + 1 }}</h4>
       <router-link
         :to="{ path: '/playlist', query: { id: renderItem.id } }"
         tag="a"
@@ -22,7 +15,9 @@
       >
         <div class="w-full flex py-4 items-center">
           <span class="music_name ml-3 flex">
-            <p class="text_color">{{ renderItem?.ar[0]?.name }} - {{ renderItem?.al?.name }}</p>
+            <p class="text_color text-sm">
+              {{ renderItem?.ar[0]?.name }} - {{ renderItem?.al?.name }}
+            </p>
             <p v-html="aliasName(renderItem?.alia || [])"></p>
           </span>
         </div>
@@ -54,7 +49,7 @@ const ctxEmit = defineEmits(["change"]);
 const props = defineProps({
   renderItem: {
     type: Object,
-    default: () => { },
+    default: () => {},
   },
   index: {
     type: Number,
@@ -90,7 +85,7 @@ function currentIndex(index: number) {
 
 function onMouseEnter(index: number) {
   currentIndex(index);
-  negate()
+  negate();
 }
 
 watch(select, (value) => ctxEmit("change", value));

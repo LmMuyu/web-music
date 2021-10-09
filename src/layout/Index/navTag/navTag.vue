@@ -1,7 +1,7 @@
 <template>
-  <ul class="flex items-center justify-between h-full">
+  <ul class="flex items-center justify-center h-full">
     <li
-      class="flex items-center h-full relative"
+      class="flex items-center h-full px-4 relative"
       v-for="(tagItem, index) in contentTags"
       :key="tagItem._id"
       @click="switchView(index, tagItem)"
@@ -18,8 +18,8 @@
 <script setup lang="ts">
 import { defineEmits, ref } from "@vue/runtime-core";
 
-import { contentTags } from "../../../components/maincontent/hooks/data";
 import { activeIndex } from "../../../utils/activeIndex";
+import { contentTags } from "./hooks/data";
 
 const ctxEmit = defineEmits(["loadComps"]);
 

@@ -1,19 +1,17 @@
 <template>
   <el-container>
-    <el-header>
+    <el-header height="40px">
       <NavTag @loadComps="loadComps" />
     </el-header>
     <el-main> <router-view></router-view> </el-main>
   </el-container>
 </template>
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, watch } from "vue";
 
 import { ElContainer, ElHeader, ElMain } from "element-plus";
 import NavTag from "../navTag/NavTag.vue";
-import { useRouter } from "vue-router";
-
-const componentId = ref();
+import { useRoute, useRouter } from "vue-router";
 
 const router = useRouter();
 

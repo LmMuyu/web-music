@@ -24,15 +24,6 @@ const routes: (RouteRecordRaw & {
         component: () => import("../layout/Index/discover/Recommend.vue"),
       },
       {
-        path: "playlist",
-        name: "Playerlist",
-        meta: {
-          showTags: false,
-          keepAlive: false,
-        },
-        component: () => import("../view/playlist/PlayList.vue"),
-      },
-      {
         path: "toplist",
         name: "Toplist",
         component: () => import("../layout/Index/toplist/Toplist.vue"),
@@ -42,7 +33,15 @@ const routes: (RouteRecordRaw & {
       section: () => import("../layout/Index/index/Index.vue"),
     },
   },
-
+  {
+    path: "/playlist",
+    name: "Playerlist",
+    meta: {
+      isShowTags: false,
+      keepAlive: false,
+    },
+    component: () => import("../view/playlist/PlayList.vue"),
+  },
   {
     path: "/explore",
     name: "Explore",
@@ -111,30 +110,30 @@ const routes: (RouteRecordRaw & {
         ),
     },
   },
-  {
-    path: "/user",
-    name: "User",
-    children: [
-      {
-        path: "home",
-        name: "Home",
-        meta: {
-          defaultView: ["Home"],
-          setting: {
-            left: {
-              header: false,
-              footer: false,
-            },
-            right: {
-              subject: false,
-            },
-          },
-        },
-        component: () => import("../view/user/children/ChildHome.vue"),
-      },
-    ],
-    component: () => import("../view/user/User.vue"),
-  },
+  // {
+  //   path: "/user",
+  //   name: "User",
+  //   children: [
+  //     {
+  //       path: "home",
+  //       name: "Home",
+  //       meta: {
+  //         defaultView: ["Home"],
+  //         setting: {
+  //           left: {
+  //             header: false,
+  //             footer: false,
+  //           },
+  //           right: {
+  //             subject: false,
+  //           },
+  //         },
+  //       },
+  //       component: () => import("../view/user/children/ChildHome.vue"),
+  //     },
+  //   ],
+  //   component: () => import("../view/user/User.vue"),
+  // },
   {
     path: "/activity",
     name: "Activity",

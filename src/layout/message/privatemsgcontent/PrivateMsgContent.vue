@@ -52,8 +52,10 @@ function findLetterContent(query: LocationQuery) {
 watch(
   () => route.query,
   (query) => {
-    findLetterContent(query);
-    chatContentBox.value = true;
+    if (route.path.indexOf("/message")) {
+      findLetterContent(query);
+      chatContentBox.value = true;
+    }
   },
   {
     immediate: true,
