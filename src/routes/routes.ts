@@ -30,7 +30,7 @@ const routes: (RouteRecordRaw & {
       },
     ],
     components: {
-      section: () => import("../layout/Index/index/Index.vue"),
+      default: () => import("../layout/Index/index/Index.vue"),
     },
   },
   {
@@ -110,30 +110,32 @@ const routes: (RouteRecordRaw & {
         ),
     },
   },
-  // {
-  //   path: "/user",
-  //   name: "User",
-  //   children: [
-  //     {
-  //       path: "home",
-  //       name: "Home",
-  //       meta: {
-  //         defaultView: ["Home"],
-  //         setting: {
-  //           left: {
-  //             header: false,
-  //             footer: false,
-  //           },
-  //           right: {
-  //             subject: false,
-  //           },
-  //         },
-  //       },
-  //       component: () => import("../view/user/children/ChildHome.vue"),
-  //     },
-  //   ],
-  //   component: () => import("../view/user/User.vue"),
-  // },
+  {
+    path: "/user",
+    name: "User",
+    redirect: "/user/home",
+    meta: {
+      setting: {
+        left: {
+          header: false,
+          footer: false,
+        },
+        right: {
+          subject: false,
+        },
+      },
+    },
+    children: [
+      {
+        path: "home",
+        name: "Home",
+        component: () => import("../layout/user/home/Home.vue"),
+      },
+    ],
+    components: {
+      default: () => import("../layout/user/User.vue"),
+    },
+  },
   {
     path: "/activity",
     name: "Activity",

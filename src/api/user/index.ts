@@ -34,10 +34,17 @@ export async function allSettldRequest(uid: string) {
 }
 
 export function getUserAudio(uid: number) {
-  console.log(uid);
-  
   return request({
     url: "/user/audio",
+    params: {
+      uid,
+    },
+  });
+}
+
+export function obtainUserPlayList(uid: number) {
+  return request({
+    url: "/user/playlist",
     params: {
       uid,
     },

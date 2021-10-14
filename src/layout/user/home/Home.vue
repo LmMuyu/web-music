@@ -1,23 +1,25 @@
 <template>
-  <ElContainer>
+  <ElContainer class="h-full flex flexdir">
     <ElMain>
-      <HomeUserInfo :profile="userinfo.profile" />
+      <HomeUserInfo
+        v-if="Object.keys(userinfo).length > 0"
+        :profile="userinfo.profile"
+      />
     </ElMain>
+    <ElMain> </ElMain>
   </ElContainer>
 </template>
 <script setup lang="ts">
 import { ref } from "@vue/reactivity";
 import { useRoute } from "vue-router";
 
-import { getUserDetail } from "../../../api/user";
+import { obtainUserPlayList, getUserDetail } from "../../../api/user";
 
 import HomeUserInfo from "./components/HomeUserInfo.vue";
 import { ElContainer, ElMain } from "element-plus";
 
 const route = useRoute();
 const uid = route.query.uid as string;
-
-console.log(123);
 
 const userinfo = ref<any>({});
 
@@ -28,5 +30,13 @@ getUserDetail(uid)
   .catch((err) => {
     console.log(err);
   });
+
+obtainUserPlayList(uid).then((sub) => {
+  console.log(sub);
+});
 </script>
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.flexdir {
+  flex-direction: column !important;
+}
+</style>

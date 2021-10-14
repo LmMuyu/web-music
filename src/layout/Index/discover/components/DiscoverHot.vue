@@ -7,17 +7,25 @@
       <span class="cursor-default font_size">热门推荐</span>
     </div>
     <div :style="{ width: setWidth(1) }">
-      <ul class="list-none flex items-center h-full w-80">
+      <ul class="list-none flex items-center h-full">
+        <p>类别：</p>
         <li
           v-for="(tag, index) in hotName"
           :key="`tag_${tag.id}`"
-          class="flex justify-between px-2 text-gray-500"
-          style="width: 20%"
+          class="text-sm text-gray-500"
+          :class="{
+            'px-4': index >= 1,
+            'pr-4': index == 0,
+          }"
+          :style="{
+            color: curindex === index ? '#74b9ff' : '',
+          }"
+          @mouseenter="curindex = index"
+          @mouseleave="curindex = index"
         >
-          <a href="javascript:void(0)">{{ tag.name }}</a>
-          <span v-if="index + 1 != hotName.length" class="text-gray-500"
-            >|</span
-          >
+          <router-link :to="`/index/recommend?hotname=${tag.name}`">{{
+            tag.name
+          }}</router-link>
         </li>
       </ul>
     </div>
@@ -43,7 +51,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, defineProps } from "vue";
+import { computed, defineProps, ref } from "vue";
 
 const props = defineProps({
   categoryname: {
@@ -51,6 +59,8 @@ const props = defineProps({
     required: true,
   },
 });
+
+const curindex = ref(0);
 
 const sizeSpan = [4, 14, 6];
 const size = 4.166;
@@ -82,5 +92,9 @@ const setWidth = computed(() => {
 
 .font_size {
   font-size: 21px;
+}
+
+.text_shadow {
+  box-shadow: 0 10px 40px -10px rgba(0, 64, 128, 0.2);
 }
 </style>

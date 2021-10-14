@@ -1,7 +1,8 @@
 <template>
   <div class="flex items-center relative py-3 border_bar">
-    <div class="font_size">推荐歌曲</div>
+    <div class="font_size" style="width: 16.666%">推荐歌曲</div>
     <ul class="flex items-center">
+      <p>类别：</p>
       <li
         v-for="(tagItem, index) in discoverMusic"
         :key="index"
@@ -12,7 +13,7 @@
         "
         @mouseleave="leaveActive(index)"
         @mouseenter="moveActive(index)"
-        class="px-6 cursor-pointer"
+        class="text-sm px-6 cursor-pointer"
       >
         {{ tagItem.tagName }}
       </li>

@@ -1,9 +1,9 @@
 <template>
-  <div class="flex items-center relative py-3 border_bar" data-v-b3371f40="">
+  <div class="flex items-center relative py-3 border_bar">
     <div style="font-size: 21px">推荐MV</div>
   </div>
   <div class="mt-8">
-    <ul class="list-none flex items-center justify-between flex-wrap">
+    <ul class="list-none grid">
       <li v-for="(MvItem, index) in renderData" :key="MvItem.id">
         <div
           class="relative"
@@ -71,5 +71,11 @@ onMounted(() => {
     height: 2px;
     background-color: #74b9ff;
   }
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-gap: 10px;
 }
 </style>

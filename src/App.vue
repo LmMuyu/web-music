@@ -1,12 +1,5 @@
 <template>
-  <Main>
-    <router-view v-slot="{ Component, route }">
-      <keep-alive v-if="route.meta.KeepAlive ?? true">
-        <component :is="Component" />
-      </keep-alive>
-      <component :is="Component" v-else />
-    </router-view>
-  </Main>
+  <HtmlMain />
 </template>
 
 <script setup lang="ts">
@@ -17,7 +10,7 @@ import { provide, ref } from "vue";
 import { loginStateus } from "./api/app/login";
 import { promptbox } from "./components/promptBox";
 
-import Main from "./layout/main/Main.vue";
+import HtmlMain from "./layout/main/Main.vue";
 
 import type { UserInfo } from "./store/type";
 import type { RouteLocationNormalized } from "vue-router";

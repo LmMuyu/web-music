@@ -5,13 +5,14 @@
     class="overflow-y-scroll relative scroll_bar h_calc"
   >
     <section
-      class="flex pt-5 border_style"
+      class="flex pt-4 border_style"
       v-for="event in events"
       :key="event.id"
     >
-      <div style="width: 10%">
+      <div style="width: 10%" class="flex justify-center">
         <el-avatar
           class="cursor-pointer"
+          size="medium"
           :src="event.user.avatarUrl"
           @click="
             router.push({
