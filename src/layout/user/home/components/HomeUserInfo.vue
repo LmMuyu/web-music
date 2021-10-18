@@ -42,7 +42,15 @@
           class="flex items-center"
         >
           <span class="flex flex-col items-center justify-center">
-            <p>{{ profile[info.key] }}</p>
+            <p>
+              {{
+                profile[info.key] + info.key === "followeds"
+                  ? profile[info.key] > 99999
+                    ? "+"
+                    : ""
+                  : ""
+              }}
+            </p>
             <p class="text-sm">{{ info.name }}</p>
           </span>
           <span

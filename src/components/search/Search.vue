@@ -1,6 +1,16 @@
 <template>
   <div
-    class="w-full flex items-center justify-center py-2 pr-4 rounded-sm border"
+    class="
+      w-full
+      flex
+      items-center
+      justify-center
+      py-2
+      pr-4
+      text-sm
+      rounded-sm
+      border
+    "
   >
     <span class="icon_text bg-white px-4 ip_icon" v-if="isIcon">
       <i class="iconfont iconsousuo"></i>
@@ -25,6 +35,8 @@ import { defineEmits, defineProps, customRef } from "vue";
 import { keyupEnter } from "./api/onSearch";
 
 import type { PropType } from "vue";
+
+const ctxEmit = defineEmits(["change", "focus", "blur", "update:modelValue"]);
 
 const props = defineProps({
   type: {
@@ -57,7 +69,6 @@ const props = defineProps({
   },
 });
 
-const ctxEmit = defineEmits(["change", "focus", "blur", "update:modelValue"]);
 let searchValue = "";
 
 function onFocus() {
@@ -106,14 +117,16 @@ const text = changeModel();
 
 <style scoped lang="scss">
 .ip_icon {
-  @include Iconfont(rgb(204, 204, 204, 1), 18);
+  @include Iconfont(#c9c9c9, 21);
 }
 .icon_text {
-  transform: translateX(1px);
+  transform: translate(-2px, 2px);
 }
 
 .border {
   position: relative;
+  box-shadow: 0 3px 8px 0 rgba(0, 0, 0, 0.03);
+  border: #fff;
 }
 
 .border::before {

@@ -17,25 +17,28 @@
   </el-container>
 </template>
 <script setup lang="ts">
-// @retNicknameInfo="findViewMsg"
-import { computed, watchEffect } from "vue";
 import { useRoute } from "vue-router";
+import { computed, watchEffect } from "vue";
 import { useStore } from "vuex";
 
-import { createLoading } from "../../../components/loading/app";
+import Trid from "../hook/trid";
 
 import MessagePrivateLetter from "../components/MessagePrivateLetter.vue";
 import PeopleSearch from "../../../components/search/Search.vue";
-
 import { ElHeader, ElContainer, ElMain } from "element-plus";
 
 const route = useRoute();
 const store = useStore();
-
-// const { countRef, isMountApp, mountApp, negate, unmountApp } =
-//   new createLoading();
+const trid = new Trid();
 
 const letterList = computed(() => store.getters["message/retLetterList"]);
+
+watchEffect(() => {
+  letterList.value.map((people) => {
+    const nickname = people.fromUser.nickname;
+    trid.insert(nickname);
+  });
+});
 </script>
 <style scoped lang="scss">
 .container {

@@ -42,7 +42,7 @@ export function getUserAudio(uid: number) {
   });
 }
 
-export function obtainUserPlayList(uid: number) {
+export function obtainUserPlayList(uid: string) {
   return request({
     url: "/user/playlist",
     params: {

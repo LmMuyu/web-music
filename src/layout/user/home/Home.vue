@@ -1,12 +1,13 @@
 <template>
-  <ElContainer class="h-full flex flexdir">
+  <ElContainer class="h-full">
     <ElMain>
-      <HomeUserInfo
-        v-if="Object.keys(userinfo).length > 0"
-        :profile="userinfo.profile"
-      />
+      <div v-if="Object.keys(userinfo).length > 0">
+        <HomeUserInfo :profile="userinfo.profile" />
+      </div>
+      <div v-if="songlist.length > 0">
+        <HomeSongList :songlist="songlist" />
+      </div>
     </ElMain>
-    <ElMain> </ElMain>
   </ElContainer>
 </template>
 <script setup lang="ts">
@@ -16,12 +17,14 @@ import { useRoute } from "vue-router";
 import { obtainUserPlayList, getUserDetail } from "../../../api/user";
 
 import HomeUserInfo from "./components/HomeUserInfo.vue";
+import HomeSongList from "./components/HomeSongList.vue";
 import { ElContainer, ElMain } from "element-plus";
 
 const route = useRoute();
 const uid = route.query.uid as string;
 
 const userinfo = ref<any>({});
+const songlist = ref<any[]>([]);
 
 getUserDetail(uid)
   .then((detail) => {
@@ -32,7 +35,9 @@ getUserDetail(uid)
   });
 
 obtainUserPlayList(uid).then((sub) => {
-  console.log(sub);
+  if (sub.data.playlist.length > 0) {
+    songlist.value.push(...sub.data.playlist);
+  }
 });
 </script>
 <style scoped lang="scss">

@@ -36,7 +36,6 @@ import {
   defineProps,
   nextTick,
   onMounted,
-  onUnmounted,
   onUpdated,
   reactive,
   ref,
@@ -86,6 +85,7 @@ const bar_track = ref<HTMLElement | null>(null);
 const estimateList = ref<EstimateType[]>([]);
 const rootClientHeight = ref(0);
 const startOffset = ref(0);
+let catchData = 0;
 
 estimateList.value = getEachEstimateInfo(props.height, props.renderData);
 
@@ -134,23 +134,33 @@ const aftterCount = computed(() => {
   return Math.min(props.renderData.length - slicePos.end, props.aftterBuffer);
 });
 
+function catchInitData() {
+  catchData = startOffset.value;
+}
+
 function onScroll() {
   const scrollTop = totalList.value?.scrollTop;
 
   if (scrollTop) {
     slicePos.start = searchStartIndex(scrollTop);
     slicePos.end = slicePos.start + visbleCount.value;
-
     setStartOffset();
   }
 }
 
 function setStartOffset() {
   if (slicePos.start >= 1) {
-    startOffset.value = estimateList.value[slicePos.start - 1].bottom || 0;
+    startOffset.value =
+      estimateList.value[
+        slicePos.start - beforCount.value > props.beforBuffer
+          ? props.beforBuffer + 1
+          : 1
+      ].bottom || 0;
   } else {
     startOffset.value = 0;
   }
+
+  catchInitData();
 }
 
 function setBarTrack() {
@@ -159,12 +169,6 @@ function setBarTrack() {
   const height = estimateList.value[estimateList.value.length - 1].bottom;
   bar_track.value.style.height = height + "px";
 }
-
-const watchDomInfo = (value: HTMLElement | null) => {
-  if (!value) return;
-};
-
-const stopDomInfo = watch(totalList, watchDomInfo);
 
 function searchStartIndex(scrollTop: number = 0) {
   return binarySearch(scrollTop, estimateList.value);
@@ -196,7 +200,11 @@ function binarySearch(value: number, position: EstimateType[]) {
 }
 
 function updateItemsSize() {
-  if (listItem.value && listItem.value.children.length) {
+  if (
+    listItem.value &&
+    listItem.value.children.length &&
+    catchData !== startOffset.value
+  ) {
     const listDom = Array.from(listItem.value.children);
 
     listDom.forEach((node) => {
@@ -222,6 +230,8 @@ function updateItemsSize() {
 }
 
 onMounted(() => {
+  catchInitData();
+
   nextTick().then(() => {
     rootClientHeight.value = totalList.value?.clientHeight || 0;
     slicePos.start = 0;
@@ -230,14 +240,8 @@ onMounted(() => {
 });
 
 onUpdated(() => {
-  nextTick(() => {
-    updateItemsSize();
-    setBarTrack();
-  });
-});
-
-onUnmounted(() => {
-  stopDomInfo();
+  updateItemsSize();
+  setBarTrack();
 });
 </script>
 <style scoped lang="scss">

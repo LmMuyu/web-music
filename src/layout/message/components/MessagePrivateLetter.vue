@@ -73,7 +73,6 @@ import {
   ref,
   onMounted,
   nextTick,
-  watch,
 } from "vue";
 import dayjs from "dayjs";
 import { useRoute, useRouter } from "vue-router";
@@ -165,10 +164,10 @@ const diffTime = computed(() => {
 });
 
 onMounted(() => {
-  nextTick(async () => {
+  nextTick().then(async () => {
     if (ulList.value && track_slider.value) {
       getSliderTrack(track_slider.value);
-      initTrackPos(ulList.value, Number(route.query?.curindex) ?? 0);
+      initTrackPos(ulList.value, (route.query?.curindex as any) || 1);
     }
   });
 });

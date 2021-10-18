@@ -140,13 +140,14 @@ export function useSlidingTrack(track: Track, options: trackOptions) {
     }
   }
 
-  function initTrackPos(elTag, defaultPos = 0) {
+  function initTrackPos(elTag, defaultPos = 1) {
     if (initPos) return;
     let target = elTag;
 
     if (target instanceof HTMLElement) {
       root = target;
       ElChildren = Array.from(target.children);
+
       transitionOffset(target.children[defaultPos]);
       return;
     }
