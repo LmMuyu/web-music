@@ -1,5 +1,5 @@
 <template>
-  <ul class="flex items-center justify-center h-full">
+  <ul class="flex items-center h-full" :class="jCenter(justifyCenter)">
     <li
       class="flex items-center h-full px-4 relative"
       v-for="(tagItem, index) in contentTags"
@@ -22,6 +22,23 @@ import { activeIndex } from "../../../utils/activeIndex";
 import { contentTags } from "./hooks/data";
 
 const ctxEmit = defineEmits(["loadComps"]);
+
+const props = defineProps({
+  justifyCenter: {
+    type: String,
+    default: "start",
+  },
+});
+
+function jCenter(pos: string) {
+  const jpos = {
+    start: "justify-start",
+    center: "justify-center",
+    end: "justify-end",
+  };
+
+  return jpos[pos];
+}
 
 const curIndex = ref(0);
 const moveIndex = ref(0);

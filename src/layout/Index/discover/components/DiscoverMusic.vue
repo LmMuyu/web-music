@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-center relative py-3 border_bar">
+  <div class="flex items-center relative py-3">
     <div class="font_size" style="width: 16.666%">推荐歌曲</div>
     <ul class="flex items-center">
       <p>类别：</p>
@@ -8,25 +8,15 @@
         :key="index"
         :style="activeStyle(index)"
         @click="
-          clickActive(index);
-          setCurPos(index);
+  clickActive(index);
+setCurPos(index);
         "
         @mouseleave="leaveActive(index)"
         @mouseenter="moveActive(index)"
         class="text-sm px-6 cursor-pointer"
-      >
-        {{ tagItem.tagName }}
-      </li>
+      >{{ tagItem.tagName }}</li>
     </ul>
   </div>
-  <!-- <ToplistMainContent
-    :open-virtuallist="false"
-    :is-checkbox="false"
-    :listData="sliceList"
-    :close-loading="true"
-    :select-all="false"
-    :is-rank="false"
-  /> -->
 </template>
 <script setup lang="ts">
 import { computed } from "@vue/runtime-core";
@@ -60,18 +50,6 @@ function setCurPos(index: number) {
 const sliceList = computed(() => list.value[curSlicePos.value]);
 </script>
 <style scoped lang="scss">
-.border_bar {
-  ::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    height: 2px;
-    background-color: #74b9ff;
-  }
-}
-
 .font_size {
   font-size: 21px;
 }

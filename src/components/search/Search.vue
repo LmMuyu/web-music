@@ -1,18 +1,6 @@
 <template>
-  <div
-    class="
-      w-full
-      flex
-      items-center
-      justify-center
-      py-2
-      pr-4
-      text-sm
-      rounded-sm
-      border
-    "
-  >
-    <span class="icon_text bg-white px-4 ip_icon" v-if="isIcon">
+  <div class="w-full flex items-center justify-center pr-4 py-2 text-sm rounded-sm div_border">
+    <span class="bg-white px-4 ip_icon" v-if="isIcon">
       <i class="iconfont iconsousuo"></i>
     </span>
     <input
@@ -117,29 +105,37 @@ const text = changeModel();
 
 <style scoped lang="scss">
 .ip_icon {
-  @include Iconfont(#c9c9c9, 21);
-}
-.icon_text {
+  @include Iconfont(#c9c9c9, 24);
   transform: translate(-2px, 2px);
 }
 
-.border {
+.div_border {
   position: relative;
-  box-shadow: 0 3px 8px 0 rgba(0, 0, 0, 0.03);
   border: #fff;
-}
 
-.border::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0;
-  border: 1px solid #f5f5f5;
-  border-radius: 10px;
-  transform-origin: 0 0;
-  transform: scale(0.5);
-  width: 200%;
-  height: 200%;
-  box-sizing: border-box;
+  &::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    border: 1px solid #f5f5f5;
+    border-radius: 10px;
+    transform-origin: 0 0;
+    transform: scale(0.5);
+    width: 200%;
+    height: 200%;
+    box-sizing: border-box;
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    box-shadow: 0 3px 8px 0 rgba(0, 0, 0, 0.03);
+  }
 }
 </style>

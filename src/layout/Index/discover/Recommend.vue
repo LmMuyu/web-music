@@ -1,30 +1,28 @@
 <template>
-  <component
-    :bannerLsit="bannerLsit"
-    :hotList="hotList"
-    :playList="playList"
-    :is="componentName"
-  ></component>
+  <div class="flex flex-col">
+    <Banner :bannerData="bannerLsit" />
+    <RecHot :categoryname="hotList" :playlist="playList" />
+    <RecMusic />
+    <RecMv />
+  </div>
 </template>
 
 <script setup lang="ts">
-import { defineAsyncComponent } from "@vue/runtime-dom";
-import { ref, shallowRef } from "@vue/reactivity";
-
-const DiscoverIndex = defineAsyncComponent(
-  () => import("./layout/DiscoverIndex.vue")
-);
-
+import { ref } from "@vue/reactivity";
 import axios from "axios";
+
 import { getPlayList } from "../../../api/discover/getPlaylist";
 import { getHot } from "../../../api/discover/getHot";
 import { getBanner } from "../../../api/index/index";
 
+import Banner from "../../../components/banner/Banner.vue";
+import RecMusic from "./components/DiscoverMusic.vue";
+import RecMv from "./components/DiscoverMv.vue";
+import RecHot from "./components/RecHot.vue";
+
 const bannerLsit = ref([]);
 const hotList = ref([]);
 const playList = ref([]);
-
-let componentName = shallowRef(DiscoverIndex);
 
 async function getBannerData() {
   try {
@@ -43,7 +41,7 @@ async function getBannerData() {
       fucpalyList({
         url: "/top/playlist",
         params: {
-          limit: 8,
+          limit: 18,
         },
       }),
     ]);
@@ -59,4 +57,15 @@ async function getBannerData() {
 getBannerData();
 </script>
 
-<style scoped></style>
+<style lang="scss" scoped>
+.div_translate {
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+.aside_right {
+  width: 2px;
+  height: inherit;
+  background: #b2bec3;
+}
+</style>
