@@ -27,3 +27,19 @@
     }
   }
 }
+
+@mixin Text_Color {
+  color: #318fb5;
+}
+
+@mixin Background {
+  color: #318fb5;
+}
+
+@mixin Decoration_Hover {
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

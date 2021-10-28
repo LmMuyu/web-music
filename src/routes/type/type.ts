@@ -13,7 +13,8 @@ export interface META {
     left?: Container;
     right?: Container;
   };
-  fetchCount?:number
+  fetchCount?: number;
+  padding?: "none" | string | number | Record<string, string>;
 }
 
 export interface Route {

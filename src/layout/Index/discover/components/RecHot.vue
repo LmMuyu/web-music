@@ -1,7 +1,7 @@
 <template>
   <div class="flex py-3">
     <div class="flex items-center translate-x-4 font_size" style="flex: 1">
-      <span class="cursor-default">热门推荐</span>
+      <span class="cursor-default" v-html="useHeaderTile('热门推荐')"></span>
     </div>
     <div style="flex: 2">
       <ul class="list-none flex items-center h-full">
@@ -35,6 +35,8 @@
 
 <script setup lang="ts">
 import { computed, defineProps, provide, ref, watch } from "vue";
+
+import useHeaderTile from "../hooks/useHeaderTile";
 
 import RecPlaylist from "./RecPlaylist.vue";
 

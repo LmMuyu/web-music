@@ -1,46 +1,22 @@
 <template>
-  <el-container style="height: 100vh">
-    <el-main class="h-full w-full relative padd">
-      <div class="bgcolor"></div>
-      <div ref="main" class="h-full w-full bg_image"></div>
+  <el-container :style="backgDropImage" class="h-full relative section_container">
+    <el-main class="backdrop padd">
       <PlayListMain
         :singerName="singer"
         :musicInfo="musicDetailInfo"
         :musicName="unref(musicInfo)?.name"
       ></PlayListMain>
     </el-main>
-    <el-footer class="flex items-center relative padd">
-      <div class="absolute right-5 -top-3">
-        <svg
-          width="16"
-          height="10"
-          class="cursor-pointer"
-          style="fill: none; stroke: black; stroke-width: 2"
-        >
-          <polyline points="0 10,8 0,16 10"></polyline>
-        </svg>
-      </div>
-
-      <el-row class="bg-blue-400 w-full h-full">
-        <el-col :span="20">
-          <Audio
-            :src="audiosrc"
-            :musicName="unref(musicInfo)?.name"
-            :musicImage="unref(musicInfo)?.picUrl"
-            background="#ff7675"
-            @currPlayTime="currPlayTime"
-            :playStatus="checkOption"
-          ></Audio
-        ></el-col>
-        <el-col :span="4">
-          <div class="flex items-center w-full h-full">
-            <i
-              class="iconfont iconindent cursor-pointer"
-              @click="openDrawer(record)"
-            ></i>
-          </div>
-        </el-col>
-      </el-row>
+    <el-footer class="flex items-center padd">
+      <AudioContainer
+        :src="audiosrc"
+        :musicName="unref(musicInfo)?.name"
+        :musicImage="unref(musicInfo)?.picUrl"
+        :nickName="singer"
+        background="#ff7675"
+        @currPlayTime="currPlayTime"
+        :playStatus="checkOption"
+      ></AudioContainer>
     </el-footer>
   </el-container>
 </template>
@@ -72,9 +48,9 @@ import {
   recordStorage,
 } from "./hooks/methods";
 
-import { ElContainer, ElMain, ElFooter, ElRow, ElCol } from "element-plus";
+import { ElContainer, ElMain, ElFooter } from "element-plus";
+import AudioContainer from "../../components/player/Audio.vue";
 import PlayListMain from "./components/PlayListMain.vue";
-import Audio from "../../components/player/Audio.vue";
 
 interface MusicInfo {
   id: number;
@@ -102,12 +78,6 @@ const checkOption = ref<checkOptions>({
 const record = ref({});
 const bgimageUrl = ref("");
 
-watch(bgimageUrl, (src) =>
-  nextTick(
-    () => main.value && (main.value.style.backgroundImage = `url(${src})`)
-  )
-);
-
 const singer = computed(
   () =>
     (musicInfo.value &&
@@ -117,9 +87,7 @@ const singer = computed(
 
 const routeEffect = watchEffect(() => {
   const istags = route.meta;
-  console.log(istags);
-
-  routeEffect();
+  Promise.resolve().then(() => routeEffect())
 });
 
 const title = useWindowTitle();
@@ -178,6 +146,21 @@ function newError(mess: string) {
   throw new Error(mess);
 }
 
+const backgDropImage = computed(() => {
+  const backgImg = {
+    backgroundImage: `url(${unref(bgimageUrl)})`,
+    backgroundRepeat: "no-repeat",
+    backgroundSize: "cover",
+
+  }
+  return {
+    ...backgImg,
+    backdropFilter: "blur(20) saturate(180%)",
+    ZIndex: -1,
+
+  }
+})
+
 getMusicDetail(musicId)
   .then(({ data }) => {
     const songs = data.songs;
@@ -224,6 +207,9 @@ onUnmounted(() => {
 </script>
 
 <style scoped lang="scss">
+.backdrop {
+}
+
 @include Iconfont(#2c3e50, 24);
 
 @mixin position {
@@ -238,13 +224,7 @@ onUnmounted(() => {
   padding: 0 !important;
 }
 
-.bg_image {
-  @include position();
-  background-repeat: no-repeat;
-  background-size: cover;
-  filter: blur(90px);
-  opacity: 0.8;
-  z-index: -1;
+.section_container {
 }
 .bgcolor {
   @include position();

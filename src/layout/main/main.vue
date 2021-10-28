@@ -1,13 +1,13 @@
 <template>
   <div class="flex h-full">
-    <div v-if="showTags" class="float-left w-1/5 h-full right_border">
+    <div v-if="isShowTags" class="float-left w-1/5 h-full right_border">
       <div class="h-full" :style="{ minHeight: minheight + 'px' }">
         <IndexAsideTags />
       </div>
     </div>
     <div
       class="overflow-hidden h-full relative"
-      :class="[showTags ? 'w-4/5' : 'w-full']"
+      :class="[isShowTags ? 'w-4/5' : 'w-full']"
       :style="{ minWidth: minwidth + 'px' }"
     >
       <MainContainer></MainContainer>
@@ -29,12 +29,12 @@ import MainContainer from "../../components/maincontent/MainContainer.vue";
 import IndexAsideTags from "./component/MainAsideTags.vue";
 import Circle from "./component/MainCircle.vue";
 
-const showTags = ref(true);
+const isShowTags = ref(true);
 const circleRef = inject("circleRef");
 
 useRouter().beforeEach((to) => {
-  const isShow = to.meta.showTags as boolean | undefined;
-  showTags.value = typeof isShow === "undefined" ? true : isShow;
+  const isShow = to.meta.isShowTags as boolean | undefined;
+  isShowTags.value = typeof isShow === "undefined" ? true : isShow;
 });
 
 const { minwidth, minheight } = useMinWh();

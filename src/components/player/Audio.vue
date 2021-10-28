@@ -1,35 +1,22 @@
 <template>
-  <div class="flex items-center h-full">
-    <AudioAndVideoControls
-      :playStatus="playStatus"
-      @play="onPlay"
-    ></AudioAndVideoControls>
-    <div class="px-2">
-      <img
-        class="object-contain"
-        :src="musicImage + '?param=45y45'"
-        :alt="musicName"
-      />
-    </div>
-    <div class="flex flex-col flex-1 mx-4">
-      <div class="flex justify-between">
-        <p class="py-2 text-gray-700">{{ musicName }}</p>
-        <div class="flex items-center">
-          <div class="px-1">
-            <CalculationTime :time="currentTime"></CalculationTime>
-          </div>
-          <span class="px-1">/</span>
-          <span class="px-1">
-            <CalculationTime :time="sliderMax"></CalculationTime>
-          </span>
+  <div class="flex items-center relative h-full w-full">
+    <div class="flex h-full w-full">
+      <div class="flex flex-1 px-2">
+        <div>
+          <img class="object-cover" :src="musicImage + '?param=60y60'" :alt="musicName" />
         </div>
+        <span class="flex justify-center flex-col ml-4 text-gray-700">
+          <span class="flex-1 decoration">{{ musicName }}</span>
+          <span class="text-sm flex-1 decoration">{{ nickName }}</span>
+        </span>
       </div>
-      <div class="py-2">
-        <Slider
-          v-model="currentTime"
-          :max="sliderMax"
-          :background="background"
-        ></Slider>
+      <div class="flex flex-col mx-4" style="flex:3">
+        <div>
+          <AudioAndVideoControls :playStatus="playStatus" @play="playMusic"></AudioAndVideoControls>
+        </div>
+        <PlayMusicTime :starttime="100" :maxtime="380" class="w-full">
+          <PlaySlider />
+        </PlayMusicTime>
       </div>
     </div>
   </div>
@@ -39,8 +26,8 @@ import { ref, defineProps, watch, defineEmits } from "vue";
 import { onBeforeRouteLeave } from "vue-router";
 
 //@ts-ignore
-import Slider from "../../components/slider/Slider.vue";
-import CalculationTime from "./components/CalculationTime.vue";
+import PlaySlider from "../../components/slider/Slider.vue";
+import PlayMusicTime from "./components/PlayMusicTime.vue"
 import AudioAndVideoControls from "./components/AudioAndVideoControls.vue";
 
 import { promptbox } from "../../components/promptBox";
@@ -57,6 +44,10 @@ const props = defineProps({
     type: String,
     default: "",
   },
+  nickName: {
+    type: String,
+    default: "",
+  },
   musicName: {
     type: String,
     default: "",
@@ -67,18 +58,18 @@ const props = defineProps({
   },
   playStatus: {
     type: Object as PropType<{ message: string; success: boolean }>,
-    default: () => {},
+    default: () => { },
   },
 });
 
 const emitCtx = defineEmits(["currPlayTime"]);
 
 const currentTime = ref(0);
-const sliderMax = ref(0);
+const maxTime = ref(0);
 const musicStatus = ref(true);
 let Audio: null | HTMLAudioElement = null;
 
-const onPlay = () => audioPlay();
+const playMusic = () => audioPlay();
 
 function audioPlay(status: Ref<boolean> = ref(false)) {
   musicStatus.value = status.value;
@@ -94,7 +85,7 @@ async function duration(Audio: HTMLAudioElement) {
   try {
     await Audio.play();
     const duration = Audio.duration;
-    sliderMax.value = duration;
+    maxTime.value = duration;
 
     Audio.pause();
     return duration;
@@ -157,4 +148,13 @@ onBeforeRouteLeave(() => {
   Audio = null;
 });
 </script>
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.decoration {
+  text-decoration: none !important;
+
+  &:hover {
+    text-decoration: underline !important;
+  }
+}
+</style>
+

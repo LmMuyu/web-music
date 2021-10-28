@@ -11,7 +11,7 @@ export default defineComponent({
   props: {
     playStatus: {
       type: Object,
-      default: () => {},
+      default: () => { },
     },
   },
   setup(props, { emit }) {

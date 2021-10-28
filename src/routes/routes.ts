@@ -39,8 +39,11 @@ const routes: (RouteRecordRaw & {
     meta: {
       isShowTags: false,
       keepAlive: false,
+      padding: "none",
     },
-    component: () => import("../view/playlist/PlayList.vue"),
+    components: {
+      default: () => import("../layout/playlist/PlayList.vue"),
+    },
   },
   {
     path: "/explore",
@@ -79,10 +82,8 @@ const routes: (RouteRecordRaw & {
       fetchCount: 0,
     },
     components: {
-      section: () =>
-        import("../layout/message/privatemsgpeople/PrivateMsgPeople.vue"),
-      article: () =>
-        import("../layout/message/privatemsgcontent/PrivateMsgContent.vue"),
+      section: () => import("../layout/message/privatemsgpeople/PrivateMsgPeople.vue"),
+      article: () => import("../layout/message/privatemsgcontent/PrivateMsgContent.vue"),
     },
   },
   {
@@ -102,12 +103,8 @@ const routes: (RouteRecordRaw & {
       },
     },
     components: {
-      section: () =>
-        import("../layout/subscription/subscriptionmain/SubscriptionMain.vue"),
-      article: () =>
-        import(
-          "../layout/subscription/subscriptionright/SubscriptionRight.vue"
-        ),
+      section: () => import("../layout/subscription/subscriptionmain/SubscriptionMain.vue"),
+      article: () => import("../layout/subscription/subscriptionright/SubscriptionRight.vue"),
     },
   },
   {
@@ -145,7 +142,7 @@ const routes: (RouteRecordRaw & {
     path: "/login",
     name: "Login",
     meta: {
-      showTags: false,
+      isShowTags: false,
     },
     component: () => import("../view/login/Login.vue"),
   },

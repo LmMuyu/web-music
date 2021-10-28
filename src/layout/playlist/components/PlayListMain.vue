@@ -1,23 +1,20 @@
 <template>
-  <ElRow class="w-full h-full">
-    <ElCol :span="2"></ElCol>
-    <ElCol :span="10"></ElCol>
-    <ElCol :span="10">
-      <div class="py-8">
-        <div class="text-3xl text-white">{{ musicName }}</div>
-        <div class="flex py-3">
-          <span class="flex items-center text-lg">
-            <p style="color: #f1f2f6">歌手:</p>
-            <a style="color: #1f2937" class="ml-3 cursor-pointer hover">
-              {{ singerName }}
-            </a>
-          </span>
-        </div>
+  <section class="flex h-full">
+    <div></div>
+    <div class="px-4">
+      <div class="flex py-3">
+        <span class="flex items-center justify-center text-xl hover">
+          <p class="headercolor">歌手:</p>
+          <p
+            style="color: #1f2937"
+            class="text-xl ml-3 cursor-pointer singer-color"
+          >{{ singerName }}</p>
+        </span>
       </div>
-      <div class="relative bg_image">
+      <div class="relative lycs_music">
         <div
-          :style="{ top: scrollBarTop + 'px' }"
-          class="w-3 h-10 bg-black absolute right-0 rounded-lg"
+          class="w-1 h-8 bg-black absolute right-0"
+          :style="{ top: scrollBarTop + ' px' }"
           ref="slider"
         ></div>
         <div
@@ -26,38 +23,33 @@
           ref="lyricNode"
           @scroll="lyricScroll"
         >
-          <div
-            class="pointer-events-auto relative"
-            :style="{
-              transform: `translate(0,${-distance}px) translateZ(0)`,
-            }"
-          >
+          <div class="pointer-events-auto relative" :style="musicTextContainerStyle">
             <p
-              class="py-3 text-lg text-left cursor-default text_color"
+              class="py-3 text-sm text-left cursor-default text_color"
               v-for="(musicItem, index) in musicItemList.values()"
               :key="musicItem.playTime"
               :_id="musicItem.playTime"
-              :id="index"
-            >
-              {{ musicItem.lyc }}
-            </p>
+              :keyid="index"
+            >{{ musicItem.lyc }}</p>
           </div>
         </div>
       </div>
-    </ElCol>
-    <ElCol :span="2"></ElCol>
-  </ElRow>
+    </div>
+  </section>
 </template>
 <script setup lang="ts">
 import { useRoute } from "vue-router";
 import {
   computed,
-  defineProps,
   nextTick,
   ref,
   watch,
   shallowRef,
 } from "@vue/runtime-core";
+import { unref } from "vue";
+import fastdom from "fastdom";
+
+
 
 import { getLyrics } from "../../../api/playList";
 import { conversionItem, lyricScroll } from "../hooks/methods";
@@ -68,10 +60,7 @@ import {
   clientHeight,
 } from "../hooks/data";
 
-import { ElRow, ElCol } from "element-plus";
-
 import type { MatchItem } from "../type";
-import fastdom from "fastdom";
 
 const props = defineProps({
   musicInfo: {
@@ -91,6 +80,12 @@ const props = defineProps({
 const music = useRoute().query.id as string;
 const lyricNode = ref<null | HTMLElement>(null);
 const slider = ref<null | HTMLElement>(null);
+
+const musicTextContainerStyle = computed(() => {
+  return {
+    transform: `translate(0,${-unref(distance)}px) translateZ(0)`
+  }
+})
 
 const point = computed(() => {
   return lyricNodeRect.offsetHeight / lyricNodeRect.scrollHeight;
@@ -119,6 +114,7 @@ function lycSplice(iterator: IterableIterator<RegExpMatchArray>) {
 
   while (value) {
     const matchItem: { groups: MatchItem } = iterator.next().value;
+
     if (!matchItem) {
       value = false;
       break;
@@ -134,6 +130,7 @@ function lycSplice(iterator: IterableIterator<RegExpMatchArray>) {
 getLyrics(music).then(({ data }) => {
   const lyrics = data.lrc.lyric as string;
   const lrcReg = /\[(?<playTime>.+)\]\s?(?<lyc>.+)/g;
+  console.log(lrcReg);
 
   const iterator = lyrics.matchAll(lrcReg);
 
@@ -152,7 +149,7 @@ function childrenMapNode(stopWatch: Function) {
   for (let i = 0; i < len; i++) {
     const el = childrenList![i];
     const id = +el.getAttribute("_id")!;
-    const indexId = +el.getAttribute("id")!;
+    const indexId = +el.getAttribute("keyid")!;
     const musicItem = musicItemList.value.get(id)!;
 
     fastdom.measure(() => {
@@ -178,28 +175,43 @@ const stopWatch = watch(musicItemList.value, () => {
   });
 });
 </script>
+
+
 <style scoped lang="scss">
+$fontColor: #303841;
+
+section {
+  & > div:nth-child(1) {
+    flex: 2;
+  }
+
+  & > div:nth-child(2) {
+    flex: 1;
+  }
+}
+
+.lycs_music {
+  & > div:nth-child(1) {
+    @include Background;
+  }
+}
+
 .sliderTrack::-webkit-scrollbar {
   display: none;
 }
-.hover:hover::after {
-  opacity: 1;
-}
-
 .hover {
-  position: relative;
+  @include Decoration_Hover;
 
-  &::after {
-    @include absolute();
-    content: "";
-    display: block;
-    width: inherit;
-    border-bottom: 1px solid #fff;
-    opacity: 0;
+  & > p:nth-child(2) {
+    @include Text_Color;
   }
 }
 
 .text_color {
   color: #1f2937;
+}
+
+.headercolor {
+  color: $fontColor;
 }
 </style>

@@ -1,12 +1,12 @@
 <template>
   <div
-    class="slider_track rounded-md h-3 relative flex items-center"
+    class="slider_track relative flex items-center cursor-pointer h-2 w-full"
     ref="first_track"
     @click="clickCurrent"
     id="slider"
   >
     <div
-      class="rounded-md h-full pointer-events-none flex items-center"
+      class="h-full cursor-pointer pointer-events-none flex items-center"
       :style="{
         width: currentPosition + 'px',
         backgroundColor: background,
@@ -14,11 +14,10 @@
       ref="top_track"
     >
       <span
-        class="absolute pointer-events-auto cursor-pointer transform -translate-x-1"
-        :class="tooltipStyleClass"
-        :style="{ left: currentPosition + 'px' }"
-        id="tooltip"
+        class="w-3 h-3 absolute pointer-events-auto transform -translate-x-1 rounded-md"
+        :style="{ left: currentPosition + 'px', backgroundColor: '#318FB5' }"
         @mousedown="startdown"
+        id="tooltip"
         ref="tooltip"
       ></span>
     </div>
@@ -29,9 +28,7 @@ import {
   ref,
   onMounted,
   nextTick,
-  defineProps,
   computed,
-  defineEmits,
   watch,
   shallowRef,
 } from "vue";
@@ -48,13 +45,9 @@ const props = defineProps({
     type: Number,
     default: 100,
   },
-  tooltipStyleClass: {
-    type: Array,
-    default: () => ["w-4", "h-4", "border_rad", "bg-black"],
-  },
   background: {
     type: String,
-    default: "red",
+    default: "#8fc2ff",
   },
 });
 
@@ -248,10 +241,12 @@ onMounted(() => {
 <style scoped>
 .slider_track {
   transform: translateX(-50%, -50%);
-  border: 1px solid rgb(107, 225, 255);
+  border: 1px solid #8fc2ff;
 }
 
 .border_rad {
   border-radius: 100%;
+  width: 6.28px;
+  height: 6.28px;
 }
 </style>
