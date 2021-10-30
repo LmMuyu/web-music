@@ -1,7 +1,7 @@
 <template>
-  <section class="flex h-full">
+  <section ref="sectionNode" class="flex h-full">
     <div></div>
-    <div class="px-4">
+    <div class="p-4">
       <div class="flex py-3">
         <span class="flex items-center justify-center text-xl hover">
           <p class="headercolor">歌手:</p>
@@ -12,26 +12,19 @@
         </span>
       </div>
       <div class="relative lycs_music">
+        <div ref="sliderNode" class="absolute top-0 right-0 bottom-0 w-1 h-full">
+          <span
+            class="absolute left-0 w-1 h-8 bg-black transition"
+            :style="{ top: scrollBarTop + 'px' }"
+          ></span>
+        </div>
         <div
-          class="w-1 h-8 bg-black absolute right-0"
-          :style="{ top: scrollBarTop + ' px' }"
-          ref="slider"
-        ></div>
-        <div
+          class="flex flex-col overflow-y-scroll relative sliderTrack"
           style="height: 30rem"
-          class="overflow-y-scroll flex relative sliderTrack"
+          @scroll="lyricThrottle"
           ref="lyricNode"
-          @scroll="lyricScroll"
         >
-          <div class="pointer-events-auto relative" :style="musicTextContainerStyle">
-            <p
-              class="py-3 text-sm text-left cursor-default text_color"
-              v-for="(musicItem, index) in musicItemList.values()"
-              :key="musicItem.playTime"
-              :_id="musicItem.playTime"
-              :keyid="index"
-            >{{ musicItem.lyc }}</p>
-          </div>
+          <PlayLycs :musicItemList="[...musicItemList.values()]" />
         </div>
       </div>
     </div>
@@ -39,28 +32,18 @@
 </template>
 <script setup lang="ts">
 import { useRoute } from "vue-router";
-import {
-  computed,
-  nextTick,
-  ref,
-  watch,
-  shallowRef,
-} from "@vue/runtime-core";
-import { unref } from "vue";
+import { computed, nextTick, ref, shallowRef } from "@vue/runtime-core";
 import fastdom from "fastdom";
 
-
-
 import { getLyrics } from "../../../api/playList";
-import { conversionItem, lyricScroll } from "../hooks/methods";
-import {
-  musicItemList,
-  distance,
-  lyricNodeRect,
-  clientHeight,
-} from "../hooks/data";
+import { conversionItem, lyricThrottle } from "../hooks/methods";
+import { musicItemList, lyricNodeRect, clientHeight } from "../hooks/data";
+
+import PlayLycs from "./PLayLycs.vue";
 
 import type { MatchItem } from "../type";
+import { onMounted } from "vue";
+import { useType } from "../../../hooks";
 
 const props = defineProps({
   musicInfo: {
@@ -79,45 +62,35 @@ const props = defineProps({
 
 const music = useRoute().query.id as string;
 const lyricNode = ref<null | HTMLElement>(null);
-const slider = ref<null | HTMLElement>(null);
+const sliderNode = ref<null | HTMLElement>(null);
+const sectionNode = ref<null | HTMLElement>(null);
 
-const musicTextContainerStyle = computed(() => {
-  return {
-    transform: `translate(0,${-unref(distance)}px) translateZ(0)`
-  }
+const trackSliderMaxH = ref(0)
+
+const sliderItemH = computed(() => {
+  return trackSliderMaxH.value / 100
 })
 
-const point = computed(() => {
-  return lyricNodeRect.offsetHeight / lyricNodeRect.scrollHeight;
-});
 
-const offsetDiff = computed(
-  () => (slider.value?.offsetHeight || 0) / lyricNodeRect.scrollHeight
-);
-
-const pointDistance = computed(() => {
-  const distanceVal = distance.value * 2;
-
-  return distanceVal > lyricNodeRect.scrollHeight
-    ? lyricNodeRect.scrollHeight
-    : distanceVal;
-});
+const newTop = computed(() => {
+  return lyricNodeRect.scrollShiHeight / lyricNodeRect.scrollHeight
+})
 
 const scrollBarTop = computed(() => {
-  return (
-    point.value * pointDistance.value - offsetDiff.value * pointDistance.value
-  );
+
+
+  const y = Math.floor((newTop.value) * 100) * sliderItemH.value;
+  if (useType(y) === "Null") return 0
+  console.log(y);
+
+  return y
 });
 
 function lycSplice(iterator: IterableIterator<RegExpMatchArray>) {
-  let value = true;
-
-  while (value) {
+  while (true) {
     const matchItem: { groups: MatchItem } = iterator.next().value;
-
     if (!matchItem) {
-      value = false;
-      break;
+      return;
     }
 
     matchItem.groups.lyc = matchItem.groups.lyc.replace(/(\[.+\])?/, "");
@@ -130,52 +103,71 @@ function lycSplice(iterator: IterableIterator<RegExpMatchArray>) {
 getLyrics(music).then(({ data }) => {
   const lyrics = data.lrc.lyric as string;
   const lrcReg = /\[(?<playTime>.+)\]\s?(?<lyc>.+)/g;
-  console.log(lrcReg);
 
   const iterator = lyrics.matchAll(lrcReg);
-
   lycSplice(iterator);
 });
 
-function childrenMapNode(stopWatch: Function) {
-  stopWatch();
+function setScrollHeight(height: number) {
+  lyricNodeRect.scrollHeight = height - lyricNodeRect.offsetHeight;
+}
 
-  const childrenList = lyricNode.value?.children[0].children;
+async function childrenMapNode(childrenList: HTMLElement[]) {
   const len = childrenList ? childrenList.length : 0;
   clientHeight.value = (lyricNode.value && lyricNode.value.clientHeight) || 0;
 
-  let height = 0;
-
-  for (let i = 0; i < len; i++) {
-    const el = childrenList![i];
-    const id = +el.getAttribute("_id")!;
-    const indexId = +el.getAttribute("keyid")!;
-    const musicItem = musicItemList.value.get(id)!;
-
-    fastdom.measure(() => {
-      height += el.clientHeight;
-      musicItem.top = height;
+  function getClientHeight(el: HTMLElement): Promise<number> {
+    return new Promise((resolve) => {
+      fastdom.measure(() => {
+        const height = el.clientHeight;
+        resolve(height);
+      });
     });
+  }
+
+  let height = 0;
+  for (let i = 0; i < len; i++) {
+    const el = childrenList![i] as HTMLElement;
+
+    const nodeid = +el.getAttribute("node_id")!;
+    const indexId = +el.getAttribute("keyid")!;
+    const musicItem = musicItemList.value.get(nodeid)!;
+
+    height += await getClientHeight(el);
 
     musicItem.node = shallowRef(el);
     musicItem.indexId = indexId;
+    musicItem.top = height;
+
+    musicItemList.value.set(nodeid, musicItem);
   }
+
+  setScrollHeight(height);
 }
 
-const stopWatch = watch(musicItemList.value, () => {
+onMounted(() => {
   nextTick().then(() => {
-    const node = lyricNode.value!;
+    lyricNodeRect.offsetHeight = lyricNode.value.offsetHeight;
+    trackSliderMaxH.value = sliderNode.value.clientHeight
 
-    setTimeout(() => {
-      lyricNodeRect.offsetHeight = node.offsetHeight;
-      lyricNodeRect.scrollHeight = node.scrollHeight - node.offsetHeight;
 
-      childrenMapNode(stopWatch);
+    function disconnect() {
+      mutation.disconnect();
+    }
+
+    const mutation = new MutationObserver((mutation) => {
+      const node = mutation[0];
+      const childrem = Array.from(node.target.childNodes).filter(
+        (lycspan) => lycspan.nodeName === "SPAN"
+      ) as HTMLElement[];
+      childrenMapNode(childrem);
+      disconnect();
     });
+
+    mutation.observe(lyricNode.value, { attributes: true, childList: true, subtree: true });
   });
 });
 </script>
-
 
 <style scoped lang="scss">
 $fontColor: #303841;
@@ -213,5 +205,9 @@ section {
 
 .headercolor {
   color: $fontColor;
+}
+
+.transition {
+  transition: all 0.2s linear;
 }
 </style>

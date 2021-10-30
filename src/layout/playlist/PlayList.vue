@@ -1,5 +1,5 @@
 <template>
-  <el-container :style="backgDropImage" class="h-full relative section_container">
+  <el-container class="h-full relative section_container">
     <el-main class="backdrop padd">
       <PlayListMain
         :singerName="singer"
@@ -7,7 +7,7 @@
         :musicName="unref(musicInfo)?.name"
       ></PlayListMain>
     </el-main>
-    <el-footer class="flex items-center padd">
+    <el-footer style="z-index:1" class="flex items-center bg-white padd">
       <AudioContainer
         :src="audiosrc"
         :musicName="unref(musicInfo)?.name"
@@ -25,13 +25,10 @@ import {
   ref,
   computed,
   unref,
-  watch,
-  nextTick,
   onUnmounted,
   watchEffect,
 } from "vue";
 import { useRoute } from "vue-router";
-import { useStore } from "vuex";
 import {
   getMusicDetail,
   getMusicUrl,
@@ -63,12 +60,10 @@ interface MusicInfo {
 type checkOptions = { message: string; success: boolean };
 
 const route = useRoute();
-const store = useStore();
 
 const musicId = route.query.id as string;
 const musicInfo = ref<MusicInfo | null>(null);
 const musicDetailInfo = ref({});
-const main = ref<HTMLElement | null>(null);
 const audiosrc = ref("");
 const checkOption = ref<checkOptions>({
   message: "ok",
@@ -107,23 +102,23 @@ function currPlayTime(time: string) {
 
   const playTime = parseInt(time);
   const musicItem = musicItemList.value.get(playTime)!;
-  const currNode = musicItem && unref(musicItem.node)!;
+  // const currNode = musicItem && unref(musicItem.node)!;
 
-  if (currNode === void 0 || currNode === preNode) return;
+  // if (currNode === void 0 || currNode === preNode) return;
   title.value = musicItem.lyc;
 
-  if (!preNode) preNode = currNode;
+  // if (!preNode) preNode = currNode;
 
-  if (currNode !== preNode) {
-    lycHighlightPos(musicItem.top, musicItemList, musicItem.indexId); //获取歌词高亮后
-  }
+  // if (currNode !== preNode) {
+  lycHighlightPos(musicItem.top, musicItemList, musicItem.indexId); //获取歌词高亮后
+  // }
 
-  if (currNode !== preNode) {
-    addClass(preNode, "remove");
-    preNode = null;
-  }
+  // if (currNode !== preNode) {
+  //   addClass(preNode, "remove");
+  //   preNode = null;
+  // }
 
-  addClass(currNode, "add");
+  // addClass(currNode, "add");
 }
 
 function addClass(node: Element, mode: "remove" | "add") {
@@ -151,13 +146,10 @@ const backgDropImage = computed(() => {
     backgroundImage: `url(${unref(bgimageUrl)})`,
     backgroundRepeat: "no-repeat",
     backgroundSize: "cover",
-
   }
   return {
     ...backgImg,
-    backdropFilter: "blur(20) saturate(180%)",
     ZIndex: -1,
-
   }
 })
 
@@ -176,12 +168,9 @@ getMusicDetail(musicId)
   .then(async () => {
     const res = await whetherMusic(musicId);
     checkOption.value = res.data;
-
     return musicId;
   })
-  .then(async (id: string | undefined) => {
-    if (!id) return newError("src" + ":" + "null");
-
+  .then(async (id: string) => {
     const { data } = await getMusicUrl(id);
     const src = data.data[0].url;
 
@@ -207,9 +196,6 @@ onUnmounted(() => {
 </script>
 
 <style scoped lang="scss">
-.backdrop {
-}
-
 @include Iconfont(#2c3e50, 24);
 
 @mixin position {
@@ -224,8 +210,10 @@ onUnmounted(() => {
   padding: 0 !important;
 }
 
-.section_container {
+.filter {
+  filter: blur(20px);
 }
+
 .bgcolor {
   @include position();
   background-color: #2d3436;

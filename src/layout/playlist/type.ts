@@ -6,6 +6,7 @@ export interface MatchItem {
   indexId: number;
   playTime: number;
   node?: Ref<Element> | null;
+  originTime: string;
 }
 
 export type MatchItemList = Ref<Map<number, MatchItem>>;

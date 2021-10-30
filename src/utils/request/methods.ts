@@ -98,11 +98,11 @@ export function loginStateus(url: string, httpRes: Record<string, any>) {
       if (data.account !== null && data.profile !== null) {
         store.commit("login/switchStatus", true);
         store.commit("login/findInfo");
-        console.log(true);
+        // console.log(true);
       } else {
         store.commit("login/switchStatus", false);
         removeLocalStoreageKey();
-        console.log(false);
+        // console.log(false);
       }
     });
   } else if (url === "/logout") {

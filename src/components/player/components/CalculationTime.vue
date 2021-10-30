@@ -1,6 +1,8 @@
 <script lang="tsx">
 import { defineComponent } from "vue";
 
+import countTime from "../hook/useCountTime"
+
 export default defineComponent({
   props: {
     time: {
@@ -9,14 +11,7 @@ export default defineComponent({
     },
   },
   setup(props) {
-    function countTime(time: number) {
-      const minute = Math.floor(time >= 60 ? time / 60 : 0);
-      const second = Math.floor(time >= 60 ? time % 60 : time);
-
-      const DateList = [minute, second].map(String).map((time) => time.padStart(2, "0"));
-
-      return DateList;
-    }
+   
 
     function CalculationTime(duration: number) {
       const [minute, second] = countTime(duration);

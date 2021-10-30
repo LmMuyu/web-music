@@ -1,6 +1,6 @@
 <template>
   <div class="flex items-center relative h-full w-full">
-    <div class="flex h-full w-full">
+    <div class="flex items-center h-full w-full">
       <div class="flex flex-1 px-2">
         <div>
           <img class="object-cover" :src="musicImage + '?param=60y60'" :alt="musicName" />
@@ -10,7 +10,7 @@
           <span class="text-sm flex-1 decoration">{{ nickName }}</span>
         </span>
       </div>
-      <div class="flex flex-col mx-4" style="flex:3">
+      <div class="flex flex-col mx-4" style="flex: 3">
         <div>
           <AudioAndVideoControls :playStatus="playStatus" @play="playMusic"></AudioAndVideoControls>
         </div>
@@ -26,14 +26,15 @@ import { ref, defineProps, watch, defineEmits } from "vue";
 import { onBeforeRouteLeave } from "vue-router";
 
 //@ts-ignore
-import PlaySlider from "../../components/slider/Slider.vue";
-import PlayMusicTime from "./components/PlayMusicTime.vue"
 import AudioAndVideoControls from "./components/AudioAndVideoControls.vue";
+import PlaySlider from "../../components/slider/Slider.vue";
+import PlayMusicTime from "./components/PlayMusicTime.vue";
 
 import { promptbox } from "../../components/promptBox";
 import { status } from "./hook/data";
 
 import type { Ref, PropType } from "vue";
+import { getMvUrl } from "../../api/explore";
 
 const props = defineProps({
   src: {
@@ -71,9 +72,32 @@ let Audio: null | HTMLAudioElement = null;
 
 const playMusic = () => audioPlay();
 
+function clearTimer(timer: [number]) {
+  clearTimeout(timer[0]);
+  timer[0] = null;
+  return true;
+}
+
+function getDuration(Audio: HTMLAudioElement): Promise<{ times: [number]; duration: number }> {
+  return new Promise(async (resolve, reject) => {
+    const times: [number] = [0];
+
+    try {
+      await Audio.play();
+
+      times[0] = setTimeout(() => {
+        const duration = Audio.duration;
+        Audio.pause();
+        resolve({ times, duration });
+      }, 1000);
+    } catch (err) {
+      reject("ErrorType:音频加载失败!");
+    }
+  });
+}
+
 function audioPlay(status: Ref<boolean> = ref(false)) {
   musicStatus.value = status.value;
-
   status.value ? Audio?.pause() : Audio?.play();
 }
 
@@ -81,37 +105,32 @@ function timeupdate(Audio: HTMLAudioElement) {
   currentTime.value = Audio.currentTime;
 }
 
-async function duration(Audio: HTMLAudioElement) {
-  try {
-    await Audio.play();
-    const duration = Audio.duration;
-    maxTime.value = duration;
-
-    Audio.pause();
-    return duration;
-  } catch (err) {
-    console.log("音频加载失败!");
-  }
-}
-
 async function createAudio(url: string) {
   if (!url) return;
-
   Audio = document.createElement("audio");
-
-  const that = Audio;
   Audio.src = url;
-  await duration(Audio); //获取时长
 
+  const newAudio = Audio;
+  try {
+    const { times, duration } = await getDuration(Audio); //获取时长
+    console.log(duration);
+
+    clearTimer(times);
+    maxTime.value = duration;
+  } catch (err) {
+    console.error(err);
+    return;
+  }
   audioPlay(ref(false)); //第一次播放
 
-  Audio.addEventListener("timeupdate", timeupdate.bind(that, Audio));
+  Audio.addEventListener("timeupdate", timeupdate.bind(newAudio, Audio), false);
   Audio.addEventListener("error", () => {
     promptbox({
       mountNode: "#promptbox",
       title: "播放失败",
     });
   });
+
   Audio.addEventListener("ended", () => {
     status.value = false;
   });
@@ -136,7 +155,6 @@ watch(currentTime, (curTime) => {
 
     Audio && (Audio.currentTime = curTime);
     audioPlay(ref(false));
-
     Audio?.play();
   }
 
@@ -157,4 +175,3 @@ onBeforeRouteLeave(() => {
   }
 }
 </style>
-

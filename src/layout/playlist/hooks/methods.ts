@@ -1,10 +1,4 @@
-import {
-  distance,
-  gainValue,
-  lyricNodeRect,
-  clientHeight,
-  index,
-} from "./data";
+import { distance, gainValue, lyricNodeRect, clientHeight, index } from "./data";
 import { promptbox } from "../../../components/promptBox";
 import { reactive, Ref } from "@vue/reactivity";
 import { userRecord } from "../../../api/playList";
@@ -12,9 +6,12 @@ import { userRecord } from "../../../api/playList";
 import type { UserInfo } from "../../../store/type";
 import type { MatchItem, MatchItemList } from "../type";
 import { useStorage } from "../../../utils/useStorage";
+import { throttle } from "../../../utils/throttle";
 
 export function conversionItem(matchItem: MatchItem): MatchItem {
-  const timeArr = String(matchItem.playTime).split(":");
+  const str = String(matchItem.playTime);
+
+  const timeArr = str.split(":");
   const playTime = Number(timeArr[0]) * 60 + parseInt(timeArr[1]);
 
   return {
@@ -23,6 +20,7 @@ export function conversionItem(matchItem: MatchItem): MatchItem {
     node: null,
     indexId: 0,
     lyc: matchItem.lyc,
+    originTime: str.slice(0, str.indexOf(".")),
   };
 }
 
@@ -34,40 +32,30 @@ const height = reactive({
 });
 
 export function _setScrollHeight(scrollH: number) {
-  lyricNodeRect.scrollHeight = scrollH;
+  lyricNodeRect.scrollShiHeight = scrollH;
 }
 
-function _mover(newY: number) {
-  distance.value = newY;
-  position.y = newY;
-}
+export const lyricThrottle = throttle(lyricScroll, 16.6);
 
 export function lyricScroll(event: Event) {
   const el = event.target as HTMLElement;
   const disty = el.scrollTop;
 
   const delety = disty - point.y;
-
   if (delety > 0 && disty < point.y) {
     return;
   }
 
   point.y = disty;
 
-  const newY = point.y + delety;
+  const newY = ((point.y + delety) / 2) * 0.01;
+  newMovePos(newY);
+  _setScrollHeight(disty);
+}
 
-  _mover(newY);
-
-  //@ts-ignore
-  if (!el.mark) {
-    height.offsetHeight = el.offsetHeight;
-    height.scrollHeight = el.scrollHeight;
-  }
-
-  const scrollH = height.scrollHeight - height.offsetHeight;
-  //@ts-ignore
-  el.mark || (el.mark = Symbol());
-  _setScrollHeight(scrollH);
+function newMovePos(newY: number) {
+  distance.value = newY;
+  position.y = newY;
 }
 
 function Gain(ctx: AudioContext, gainvalue: Ref<number>): Promise<GainNode> {
@@ -103,11 +91,7 @@ export async function createAudioContext(buffer: ArrayBuffer) {
 
 let list: MatchItem[] = [];
 
-export function lycHighlightPos(
-  top: number,
-  itemlist: MatchItemList,
-  curNodePos: number
-) {
+export function lycHighlightPos(top: number, itemlist: MatchItemList, curNodePos: number) {
   const mid = clientHeight.value >>> 1;
   const lists = !!list.length ? list : (list = [...itemlist.value.values()]);
 
