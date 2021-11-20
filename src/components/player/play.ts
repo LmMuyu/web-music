@@ -6,12 +6,13 @@ export default class play {
   private src: string;
   private volume: number;
   private isduration: boolean;
+  private currIndex: number;
+  private playing: boolean;
   format: string[];
   autoplay: boolean;
   duration: number;
   lyrics: string[];
   playlist: any[];
-  playing: boolean;
   playid: number | string;
 
   constructor() {
@@ -25,6 +26,7 @@ export default class play {
     this.autoplay = true;
     this.lyrics = [];
     this.playing = false;
+    this.currIndex = 0;
 
     Object.defineProperty(this, "howl", {
       enumerable: false,
@@ -44,6 +46,11 @@ export default class play {
       html5: true,
     });
 
+    if (autoplay) {
+      this.play();
+      this.setLocalMusicData();
+    }
+
     this.howl.once("end", () => {});
     this.howl.once("play", () => {
       this.duration = this.paly_duration;
@@ -51,6 +58,7 @@ export default class play {
   }
 
   async _init() {
+    this.setActionHandler();
     this.createHowler();
   }
 
@@ -92,9 +100,43 @@ export default class play {
     }, 1000);
   }
 
+  next() {
+    if (!!this.playlist[++this.currIndex] || (this.currIndex = 0)) {
+      const play_id = this.playlist[this.currIndex + 1];
+      this.setSrc(play_id);
+    }
+  }
+
+  pre() {
+    if (!!this.playlist[--this.currIndex] || (this.currIndex = this.playlist.length - 1)) {
+      const play_id = this.playlist[this.currIndex];
+      this.setSrc(play_id);
+    }
+  }
+
   async setSrc(id: number) {
     this.src = `/music/song/media/outer/url?id=${id}`;
     await this._init();
+  }
+
+  writeMediaMeta() {}
+
+  setLocalMusicData() {
+    localStorage.setItem("duration", String(this.duration));
+  }
+
+  setActionHandler() {
+    navigator.mediaSession.setActionHandler("seekbackward", (dateils) => {
+      console.log(dateils);
+    });
+
+    navigator.mediaSession.setActionHandler("seekforward", (dateils) => {
+      console.log(dateils);
+    });
+
+    navigator.mediaSession.setActionHandler("seekto", (dateils) => {
+      console.log(dateils);
+    });
   }
 
   get paly_duration() {

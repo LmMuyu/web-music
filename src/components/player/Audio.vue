@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-center relative h-full w-full">
+  <div class="flex items-center relative h-full w-full audio_shadow">
     <div class="flex items-center h-full w-full">
       <!-- <div class="flex flex-1 px-2">
         <div>
@@ -12,10 +12,15 @@
       </div>-->
       <div class="flex flex-col mx-4" style="flex: 3">
         <div>
-          <AudioAndVideoControls @play="controlsMethods.play" @pause="controlsMethods._pause"></AudioAndVideoControls>
+          <AudioAndVideoControls
+            @next="controlsMethods.next"
+            @pre="controlsMethods.pre"
+            @play="controlsMethods.play"
+            @pause="controlsMethods._pause"
+          ></AudioAndVideoControls>
         </div>
         <PlayMusicTime :starttime="starttime" :maxtime="maxtime" class="w-full">
-          <PlaySlider />
+          <PlaySlider v-model="starttime" :max="maxtime" />
         </PlayMusicTime>
       </div>
     </div>
@@ -24,7 +29,7 @@
 <script setup lang="ts">
 import { useRoute } from "vue-router"
 import { onMounted } from "vue-demi";
-import { reactive, ref, customRef } from "vue";
+import { nextTick, reactive, ref } from "vue";
 
 //@ts-ignore
 import AudioAndVideoControls from "./components/AudioAndVideoControls.vue";
@@ -32,7 +37,7 @@ import PlaySlider from "../../components/slider/Slider.vue";
 import PlayMusicTime from "./components/PlayMusicTime.vue";
 
 import Howl from "./play"
-
+import { isType } from "../../utils/methods";
 
 const maxtime = ref(0)
 const starttime = ref(0)
@@ -52,6 +57,14 @@ const playHowl = new Proxy(musicHowler, {
       if (key === "playid") {
         await target.setSrc(value)
         replaceMethods(controlsMethods, target)
+
+        nextTick(() => {
+          target.play()
+        })
+      }
+
+      if (key === "duration" && isType(key) !== "Null") {
+        maxtime.value = value
       }
     })()
     return true
@@ -79,7 +92,7 @@ function handler<T extends Function>(): ProxyHandler<any> {
 }
 
 function replaceMethods(methods: Record<string, Function>, howler: Howl) {
-  ["play", "_pause"].map(mdsname => {
+  ["play", "_pause", "next", "pre"].map(mdsname => {
     const newBindFn: Function = howler[mdsname].bind(howler)
     const proxyFn = new Proxy(newBindFn, handler())
     methods[mdsname] = proxyFn
@@ -90,25 +103,9 @@ function replaceMethods(methods: Record<string, Function>, howler: Howl) {
 
 const id = useRoute().query.id as unknown as number
 
-function duration(howl: Howl) {
-  maxtime.value = howl.duration
-}
-
-// const curCustomRef = (function () {
-//   return customRef((track, trigger) => {
-//     return {
-//       set(value) {
-
-//       },
-//       get() {
-//         return ""
-//       }
-//     }
-//   })
-// })()
-
 onMounted(() => {
   playHowl.playid = id
+  maxtime.value = parseFloat(localStorage.getItem("duration"))
 })
 
 </script>
@@ -119,5 +116,11 @@ onMounted(() => {
   &:hover {
     text-decoration: underline !important;
   }
+}
+
+.audio_shadow {
+  -webkit-box-shadow: 0px -1px 3px 0px rgba(245, 245, 245, 1);
+  -moz-box-shadow: 0px -1px 3px 0px rgba(245, 245, 245, 1);
+  box-shadow: 0px -1px 3px 0px rgba(245, 245, 245, 1);
 }
 </style>

@@ -7,6 +7,9 @@ import hover from "./directives/hover";
 import lazy from "./directives/lazy-loading";
 import "element-plus/theme-chalk/el-icon.css";
 import "element-plus/dist/index.css";
+import startPace from "./lib/pacejs";
+
+startPace();
 
 const app = createApp(App);
 app.directive(hover.name, hover);

@@ -22,6 +22,12 @@ const props = defineProps({
   },
 });
 
+
+
+function commitStateListIds(data: NodeAttribute[]) {
+  console.log(data);
+}
+
 const mainConatinerData = ref<NodeAttribute[]>([])
 
 toplistData()
@@ -31,7 +37,11 @@ toplistData()
   })
   .then(async (cards: any[]) => {
     mainConatinerData.value = await getlistDetailData(cards.map((c) => c.id))
-  });
+
+    return mainConatinerData.value
+  }).then(containerData => {
+
+  })
 </script>
 <style lang="scss" scoped>
 .border {

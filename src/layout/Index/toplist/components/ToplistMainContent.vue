@@ -26,7 +26,6 @@ import CardRow from "../../../../components/card/CardRow.vue";
 import ToplistMainHeader from "./ToplistMainHeader.vue"
 
 import type { PropType } from "@vue/runtime-core";
-import type { NodeAttribute } from "../../../../utils/LRUCache"
 
 const props = defineProps({
   listData: {

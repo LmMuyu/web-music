@@ -1,7 +1,6 @@
 import type { State } from "./type";
 import type { MusicDetailOption } from "../utils/musicDetail";
 import type { RouteLocationNormalized } from "vue-router";
-import type { WildcardHandler } from "mitt";
 
 export default {
   countriesCode(state: State, commit: any) {

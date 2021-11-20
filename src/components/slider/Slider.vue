@@ -1,6 +1,6 @@
 <template>
   <div
-    class="slider_track relative flex items-center cursor-pointer px-2 w-full"
+    class="slider_track relative flex items-center cursor-pointer w-full"
     ref="first_track"
     @click="clickCurrent"
     id="slider"
