@@ -6,5 +6,5 @@ export interface ListItem {
   shareCount: number;
   commentCount: number;
   tracks: Record<string, any>[];
-  trackUpdateTime: TrackUpdateTimeObj;
+  trackUpdateTime: string;
 }

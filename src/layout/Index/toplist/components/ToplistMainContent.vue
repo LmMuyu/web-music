@@ -1,55 +1,36 @@
 <template>
-  <main ref="rootcontent" class="h-full">
-    <div v-if="isCheckbox && countRef">
-      <el-checkbox v-model="isselect">全选</el-checkbox>
-    </div>
-    <div class="overflow-y-auto h-full" v-if="countRef">
-      <VirtualList
-        v-if="openVirtuallist"
-        :renderData="renderListData"
-        keyindex="indexOnly"
-        :height="61"
-      >
-        <template v-slot="{ scopeData: { renderItem, index, keyindex } }">
-          <ToplistMainItem
-            :index="index"
-            :isRank="isRank"
-            :keyindex="keyindex"
-            :renderItem="renderItem"
-            @mouseleave="leaveActive(index)"
-            @mouseenter="moveActive(index)"
-            :style="activeStyle(index)"
-            @change="onChange"
-          />
-        </template>
-      </VirtualList>
-    </div>
-  </main>
+  <el-container v-for="(card, index) in listData" :key="index">
+    <el-main>
+      <el-header>
+        <ToplistMainHeader :headerInfo="headerInfo(card)" />
+      </el-header>
+      <el-container>
+        <el-main>
+          <card-row :playlist="card.tracks.splice(0, 20)"></card-row>
+        </el-main>
+      </el-container>
+    </el-main>
+  </el-container>
 </template>
 <script setup lang="ts">
 import {
-  computed,
   defineProps,
-  onMounted,
-  nextTick,
   ref,
-  watch,
-  onUnmounted,
 } from "@vue/runtime-core";
 
 import { createLoading } from "../../../../components/loading/app";
-import { activeIndex } from "../../../../utils/activeIndex";
 import { getMittBus } from "../../../../utils/mittBus";
 
-import VirtualList from "../../../../components/virtuallist/VirtualList.vue";
-import ToplistMainItem from "./ToplistMainItem.vue";
-import { ElCheckbox } from "element-plus";
+import { ElContainer, ElMain, ElHeader } from "element-plus";
+import CardRow from "../../../../components/card/CardRow.vue";
+import ToplistMainHeader from "./ToplistMainHeader.vue"
 
 import type { PropType } from "@vue/runtime-core";
+import type { NodeAttribute } from "../../../../utils/LRUCache"
 
 const props = defineProps({
   listData: {
-    type: Array as PropType<Record<string, any>[]>,
+    type: Array as PropType<any[]>,
     default: () => [],
   },
   selectAll: {
@@ -74,100 +55,41 @@ const props = defineProps({
   },
 });
 
-const { countRef, negate, mountApp, unmountApp, isMountApp } =
-  new createLoading();
+const { countRef, negate, mountApp, unmountApp, isMountApp } = new createLoading();
 const mittBus = getMittBus();
 
-const features = ref(null);
-const hoverList: any[] = [];
 const rootcontent = ref<HTMLElement | null>(null);
-
-let select: "children" | "" = "";
-const isselect = ref(true);
-
-watch(isselect, (value) => {
-  if (select === "children") {
-    console.log(select);
-
-    select = "";
-    return;
-  }
-
-  renderListData.value.map((s) => (s.select.value = value));
-});
-
-const putSelect = (value: boolean) => {
-  select = "children";
-  if (value === false) {
-    isselect.value = value;
-    return;
-  }
-
-  const res = renderListData.value.every((v) => v.select.value);
-
-  if (res) {
-    isselect.value = true;
-  }
-};
-
-const renderListData = computed(() => {
-  return props.listData.map((listItem, index) => ({
-    index,
-    ...listItem,
-    select: ref(true),
-    indexOnly: index,
-  }));
-});
-
-watch(
-  () => renderListData.value,
-  () => {
-    isMountApp() && unmountApp(negate);
-  }
-);
-
-const { leaveActive, moveActive, activeStyle } = new activeIndex(null, null, {
-  initColor: "#fff",
-  style: "background",
-  enterColor: "#c0dbf7",
-  initSetStyle: false,
-});
 
 const busMap = mittBus.all;
 
-if (!busMap.has("markvrituallist")) {
-  mittBus.on("markvrituallist", () => {
-    countRef.value = false;
+function headerInfo(card: any) {
+  console.log(card);
 
-    if (!isMountApp() && rootcontent.value) {
-      console.log(isMountApp());
-      mountApp(rootcontent.value);
-    }
-  });
+  return {
+    id: card.id,
+    name: card.name,
+    shareCount: card.shareCount,
+    commentCount: card.commentCount,
+    trackUpdateTime: card.trackUpdateTime,
+  }
 }
 
-const onChange = () => putSelect(isselect.value);
+// if (!busMap.has("markvrituallist")) {
+//   mittBus.on("markvrituallist", () => {
+//     countRef.value = false;
 
-onMounted(() => {
-  nextTick().then(() => {
-    hoverList.push({
-      el: features.value,
-      styles: {
-        nackgroundColor: "#0984e3",
-      },
-    });
-
-    if (rootcontent.value) {
-      mountApp(rootcontent.value);
-    }
-  });
-});
-
-onUnmounted(() => {
-  isMountApp() && unmountApp(negate);
-});
+//     if (!isMountApp() && rootcontent.value) {
+//       console.log(isMountApp());
+//       mountApp(rootcontent.value);
+//     }
+//   });
+// }
 </script>
 <style scoped lang="scss">
+.borderslode {
+  border-bottom: 1px solid;
+}
+
 .borderslode {
   border-bottom: 1px solid #ecf0f1;
 }

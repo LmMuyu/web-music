@@ -1,100 +1,90 @@
-interface NodeAttribute {
+export interface NodeAttribute {
   key: any;
   value: any;
-  prev: null | NodeAttribute;
-  next: null | NodeAttribute;
+  expires: number;
 }
 
 class LRUCache {
   private cap: number;
-  private map: Map<any, NodeAttribute>;
-  private head: null | NodeAttribute;
-  private tail: null | NodeAttribute;
+  private catchlist: NodeAttribute[];
+  private expires: number;
 
-  constructor(cap = 3) {
+  constructor(cap = 3, expires: number = 3600) {
     this.cap = cap;
-    this.map = new Map();
-
-    this.head = null;
-    this.tail = null;
+    this.catchlist = [];
+    this.expires = expires * 1000;
   }
 
-  private Node(key: any, value: any): NodeAttribute {
+  private Node(key: any, value: any, expires?: number): NodeAttribute {
+    let exp = !expires ? this.expires : expires;
+
     return {
       key,
       value,
-      prev: null,
-      next: null,
+      expires: Date.now() + exp,
     };
   }
 
-  private appendHead(node: NodeAttribute) {
-    if (!this.head) {
-      this.head = this.tail = node;
-    } else {
-      node.next = this.head;
-      this.head.prev = node;
-      this.head = node;
-    }
+  private append(node: NodeAttribute) {
+    this.catchlist.push(node);
   }
 
-  get(key: any): -1 | any {
-    const node = this.map.get(key);
-
-    if (!node) {
-      return -1;
-    } else {
-      const res = node.value;
-      this.remove(node);
-      this.appendHead(node);
-      return res;
-    }
+  private find(key: any, isindex: boolean = false) {
+    const findMethods = isindex ? "findIndex" : "find";
+    return this.catchlist[findMethods]((catchdata) => catchdata.key == key);
   }
 
-  put(key: any, value: any) {
-    const nodeMap: NodeAttribute | undefined = this.map.get(key);
+  get(key: any): NodeAttribute | null {
+    const conNode = this.find(key);
 
-    if (nodeMap) {
-      nodeMap.value = value;
-      this.remove(nodeMap);
-      this.appendHead(nodeMap);
+    if (!conNode) {
+      return null;
     } else {
-      const node = this.Node(key, value);
-
-      if (this.map.size >= this.cap) {
-        this.map.delete(this.tail?.key);
-        this.remove(this.tail!);
-        this.map.set(key, node);
-        this.appendHead(node);
-      } else {
-        this.map.set(key, node);
-        this.appendHead(node);
+      //判断缓存数据是否过期
+      if (typeof conNode !== "number" && this.ifExpires(conNode.expires)) {
+        return null;
       }
+
+      const index = this.find(key, true) as number;
+      const node = this.remove(index);
+      this.append(node);
+      return node;
     }
   }
 
-  private remove(node: NodeAttribute) {
-    if (this.head == this.tail) {
-      this.head = this.tail = null;
+  put(key: any, value: any, expries?: number) {
+    const node = this.get(key);
+
+    if (node !== null) {
+      const index = this.find(key, true) as number;
+      this.remove(index);
+      this.append(node);
     } else {
-      if (node == this.head) {
-        this.head = this.head.next;
-        node.next = null;
-      } else if (node == this.tail) {
-        this.tail = this.tail.prev;
-        node.prev = null;
-      } else {
-        node.prev!.next = node.next;
-        node.next!.prev = node.prev;
-        node.next = node.prev = null;
+      const node = this.Node(key, value, expries);
+
+      if (this.catchlist.length >= this.cap) {
+        this.remove(0);
       }
+
+      this.append(node);
     }
+
+    return node;
+  }
+
+  private remove(index: number): NodeAttribute {
+    const node = this.catchlist.splice(index, 1);
+    return node[0];
+  }
+
+  private ifExpires(time: number) {
+    return Date.now() > time;
   }
 
   viewAllCache() {
     return {
-      doublyLinkedList: this.head,
-      map: this.map.entries(),
+      size: this.catchlist.length,
+      catchList: this.catchlist,
     };
   }
 }

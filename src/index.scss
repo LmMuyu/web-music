@@ -10,12 +10,12 @@
   }
 }
 
-@mixin absolute {
+@mixin absolute($t: 0, $r: 0, $b: 0, $l: 0) {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  top: $t +#{px};
+  left: $l +#{px};
+  right: $r +#{px};
+  bottom: $b +#{px};
 }
 
 @mixin hover_dec($enter_color: "#74b9ff") {

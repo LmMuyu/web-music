@@ -1,50 +1,65 @@
-import dayDate from "dayjs";
+import dayjs from "dayjs";
 
-import LRU from "../../../../utils/LRUCache";
-import { toplistData, listDetail } from "../../../../api/toplist";
+import LRU, { NodeAttribute } from "../../../../utils/LRUCache";
+import { listDetail } from "../../../../api/toplist";
+import { isType } from "../../../../utils/methods";
 
-import type { ListItem, TrackUpdateTimeObj } from "../types/requestType";
-import type { ListTitle } from "../types/dataType";
+import type { ListItem } from "../types/requestType";
 
-const LRUCache = new LRU();
+const LRUCache = new LRU(4);
 
-export async function allToplist() {
-  const { data } = await toplistData();
-  let listTitle: ListTitle = {
-    cloud: {
-      title: "",
-      childrenData: [...data.list.slice(0, 4)],
-    },
-    global: {
-      title: "",
-      childrenData: [...data.list.slice(4)],
-    },
-  };
+export async function getlistDetailData(ids: number[]): Promise<NodeAttribute[]> {
+  const lists = ids.map((key) => LRUCache.get(key));
+  ids = ids.filter((key, index) => lists[index] === null);
 
-  return listTitle;
-}
+  if (ids.length === 0) return lists;
 
-export async function getlistDetailData(id: number) {
-  const res = LRUCache.get(id);
-  if (res !== -1) return [res];
+  const listCard = await async_pool(ids, listDetail);
 
-  const result = await listDetail(id);
-  const playlist: ListItem & { trackUpdateTime: number } = result.data.playlist;
+  const listCards = [...lists, ...listCard]
+    .filter((catchdata) => !(isType(catchdata) === "Null"))
+    .map((data) => {
+      const playlist = data.data.playlist;
 
-  const listItem: ListItem = {
-    id: playlist.id,
-    name: playlist.name,
-    tracks: playlist.tracks,
-    shareCount: playlist.shareCount,
-    commentCount: playlist.commentCount,
-    trackUpdateTime: transformDate(playlist.trackUpdateTime),
-  };
+      const listItem: ListItem = {
+        id: playlist.id,
+        name: playlist.name,
+        tracks: playlist.tracks,
+        shareCount: playlist.shareCount,
+        commentCount: playlist.commentCount,
+        trackUpdateTime: transformDate(playlist.trackUpdateTime),
+      };
 
-  LRUCache.put(id, listItem);
-  return [listItem];
+      LRUCache.put(listItem.id, listItem);
+      return listItem;
+    }) as unknown as NodeAttribute[];
+
+  console.log(LRUCache.viewAllCache());
+
+  return listCards;
 }
 
 function transformDate(time: number) {
-  const trantime = dayDate(time);
-  return trantime as unknown as TrackUpdateTimeObj;
+  return dayjs(time).format("YYYY-MM-DD hh-mm-ss");
+}
+
+async function async_pool(asynclist: any[], iteratorFn, poolmax = 3) {
+  const ret = [];
+  const executing = [];
+
+  for (const arg of asynclist) {
+    const p = Promise.resolve().then(() => iteratorFn(arg));
+    ret.push(p);
+
+    if (poolmax <= asynclist.length) {
+      const e = p.then((res) => executing.splice(executing.indexOf(res), 1));
+      executing.push(e);
+
+      if (executing.length >= poolmax) {
+        await Promise.race(executing);
+      }
+    }
+  }
+
+  return Promise.all(ret);
 }

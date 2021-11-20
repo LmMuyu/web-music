@@ -20,7 +20,7 @@ const routes: (RouteRecordRaw & {
     children: [
       {
         path: "recommend",
-        name: "Recommend",
+        name: "Discover",
         component: () => import("../layout/Index/discover/Recommend.vue"),
       },
       {

@@ -1,18 +1,24 @@
 <template>
   <section class="flex flex-col w-full h-full relative">
     <div class="text-center clearfix relative">
-      <img :src="playitem.coverImgUrl + '?param=144y90'" class="w-full h-full p-1" />
-      <router-link
-        :to="{ path: '/playlist', query: { id: playitem.id } }"
-        class="absolute top-0 bottom-0 left-0 right-0 z-50"
-        target="_blank"
-      ></router-link>
-      <div class="play_icon flex justify-center items-center">
+      <img
+        :src="(playitem.coverImgUrl || playitem.al.picUrl) + '?param=144y90'"
+        class="w-full h-full p-1"
+      />
+      <div
+        style="z-index: 99;"
+        class="w-full h-full flex justify-center items-center overflow-hidden play_icon"
+      >
+        <router-link
+          :to="{ path: '/playlist', query: { id: playitem.id } }"
+          class="absolute top-0 bottom-0 left-0 right-0 w-full h-full"
+          target="_blank"
+        ></router-link>
         <i class="iconfont iconbofang2"></i>
       </div>
     </div>
     <div class="px-1 hover_opacity">
-      <span class="text_icon flex items-center py-1 text-sm">
+      <span v-if="!!playitem.playCount" class="text_icon flex items-center py-1 text-sm">
         <i class="iconfont iconbofang1"></i>
         <p class="ml-2">{{ fromPlayCount(playitem.playCount) }}</p>
       </span>
@@ -64,6 +70,14 @@ function fromPlayCount(count: number) {
 
 .play_icon {
   @include Iconfont(#ced6e0, 28);
+  @include absolute;
+
+  & > i {
+    -webkit-box-shadow: 0 0 0 80px #f5f6fa60;
+    -moz-box-shadow: 0 0 0 80px #f5f6fa60;
+    box-shadow: 0 0 0 80px #f5f6fa60;
+    background-color: #f5f6fa60;
+  }
 }
 
 section {
@@ -83,7 +97,7 @@ section {
     width: 100%;
     height: 100%;
     opacity: 0;
-    transition: all 0.4s ease-in-out;
+    transition: all 0.3s ease-in-out;
 
     &:hover {
       opacity: 1;

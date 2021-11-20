@@ -12,7 +12,7 @@
         </span>
       </div>
       <div class="relative lycs_music">
-        <div ref="sliderNode" class="absolute top-0 right-0 bottom-0 w-1 h-full">
+        <div ref="trackNode" class="absolute top-0 right-0 bottom-0 w-1 h-full">
           <span
             class="absolute left-0 w-1 h-8 bg-black transition"
             :style="{ top: scrollBarTop + 'px' }"
@@ -62,28 +62,24 @@ const props = defineProps({
 
 const music = useRoute().query.id as string;
 const lyricNode = ref<null | HTMLElement>(null);
-const sliderNode = ref<null | HTMLElement>(null);
+const trackNode = ref<null | HTMLElement>(null);
 const sectionNode = ref<null | HTMLElement>(null);
 
-const trackSliderMaxH = ref(0)
+const trackSliderMaxH = ref(0);
+const sliderH = ref(0)
 
-const sliderItemH = computed(() => {
-  return trackSliderMaxH.value / 100
-})
-
+const trackItemH = computed(() => {
+  return (trackSliderMaxH.value - sliderH.value) / 100;
+});
 
 const newTop = computed(() => {
-  return lyricNodeRect.scrollShiHeight / lyricNodeRect.scrollHeight
-})
+  return lyricNodeRect.scrollShiHeight / lyricNodeRect.scrollHeight;
+});
 
 const scrollBarTop = computed(() => {
-
-
-  const y = Math.floor((newTop.value) * 100) * sliderItemH.value;
-  if (useType(y) === "Null") return 0
-  console.log(y);
-
-  return y
+  const y = Math.floor(newTop.value * 100) * trackItemH.value;
+  if (useType(y) === "Null") return 0;
+  return y;
 });
 
 function lycSplice(iterator: IterableIterator<RegExpMatchArray>) {
@@ -148,7 +144,8 @@ async function childrenMapNode(childrenList: HTMLElement[]) {
 onMounted(() => {
   nextTick().then(() => {
     lyricNodeRect.offsetHeight = lyricNode.value.offsetHeight;
-    trackSliderMaxH.value = sliderNode.value.clientHeight
+    trackSliderMaxH.value = trackNode.value.clientHeight;
+    sliderH.value = (trackNode.value.firstChild as HTMLElement).offsetHeight
 
 
     function disconnect() {

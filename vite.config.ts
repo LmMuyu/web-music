@@ -67,11 +67,13 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
       port: Number(VITE_PORT),
       open: true,
       proxy: {
-        "/mvplay": {
-          target: "http://vodkgeyttp8.vod.126.net",
+        "^/music": {
+          target: "https://music.163.com",
           changeOrigin: true,
           rewrite(path) {
-            return path.replace(/\/mvplay/, "");
+            console.log(path);
+
+            return path.replace(/^\/music/, "");
           },
         },
       },

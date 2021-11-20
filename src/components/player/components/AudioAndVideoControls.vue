@@ -1,41 +1,24 @@
 <script lang="tsx">
-import { defineComponent, watch } from "vue";
-
-import { promptbox } from "../../promptBox";
-import { status } from "../hook/data";
+import { defineComponent, ref } from "vue";
 
 import "../css/controls.scss";
 
 export default defineComponent({
-  emits: ["pre", "play", "next"],
-  props: {
-    playStatus: {
-      type: Object,
-      default: () => { },
-    },
-  },
-  setup(props, { emit }) {
-    watch(
-      () => props.playStatus,
-      (value) => (status.value = value.success)
-    );
+  emits: ["pre", "play", "next", "pause"],
+  setup(props, { emit: ctxEmit }) {
+    const status = ref(false); //true 播放中 false 暂停中
 
     function Pre() {
-      emit("pre");
+      ctxEmit("pre");
     }
 
     function Player() {
-      if (!props.playStatus.success)
-        return promptbox({
-          title: props.playStatus.message,
-        });
-
-      emit("play", status);
       status.value = !status.value;
+      status.value ? ctxEmit("play") : ctxEmit("pause");
     }
 
     function Next() {
-      emit("next");
+      ctxEmit("next");
     }
 
     return () => (
@@ -44,13 +27,15 @@ export default defineComponent({
           onClick={Pre}
           class="px-3 iconfont iconarrow-right-copy cursor-pointer"
         />
-        <span
-          onClick={Player}
-          class={[
-            status.value ? " iconpause" : "iconbofang1",
-            "px-3 iconfont cursor-pointer",
-          ]}
-        />
+        <div>
+          <span
+            onClick={Player}
+            class={[
+              status.value ? " iconpause" : "iconbofang1",
+              "px-3 iconfont cursor-pointer",
+            ]}
+          />
+        </div>
         <span onClick={Next} class="px-3 iconfont iconmore cursor-pointer" />
       </div>
     );

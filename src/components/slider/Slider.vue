@@ -1,20 +1,21 @@
 <template>
   <div
-    class="slider_track relative flex items-center cursor-pointer h-2 w-full"
+    class="slider_track relative flex items-center cursor-pointer px-2 w-full"
     ref="first_track"
     @click="clickCurrent"
     id="slider"
   >
     <div
-      class="h-full cursor-pointer pointer-events-none flex items-center"
+      class="cursor-pointer pointer-events-none flex items-center"
       :style="{
         width: currentPosition + 'px',
         backgroundColor: background,
+        height: 4 + 'px'
       }"
       ref="top_track"
     >
       <span
-        class="w-3 h-3 absolute pointer-events-auto transform -translate-x-1 rounded-md"
+        class="w-2 h-2 absolute pointer-events-auto transform -translate-x-1 rounded-md"
         :style="{ left: currentPosition + 'px', backgroundColor: '#318FB5' }"
         @mousedown="startdown"
         id="tooltip"
@@ -144,6 +145,7 @@ function getMoveEndPos(e: any) {
 }
 
 function setValueOnPos(val: number, bool: boolean) {
+
   if (val > 0 && val < slider_track_width.value) {
     setTransforme(val);
 
@@ -165,6 +167,15 @@ function setTransforme(val: number) {
   currentPosition.value = value;
 }
 
+function ifTrackWidth() {
+  const track = top_track.value as HTMLElement
+  const width = track.getBoundingClientRect().width
+
+  if (currentPosition.value !== width) {
+    track.style.cssText = `${currentPosition.value}px;transition:all 0.5s`
+  }
+}
+
 function asyncValue(val: number) {
   ctxEmit("update:modelValue", val);
 }
@@ -174,9 +185,7 @@ function isDiff(cur: number, val: number) {
 }
 
 function setCurrentValue(val: number, bool: boolean) {
-  // console.log(val);
   if (val < props.min || val > props.max) return false;
-
   if (isDiff(currentValue.value, val)) {
     currentValue.value = val;
   }
@@ -238,10 +247,11 @@ onMounted(() => {
   bindEvents();
 });
 </script>
-<style scoped>
+<style scoped lang="scss">
 .slider_track {
   transform: translateX(-50%, -50%);
   border: 1px solid #8fc2ff;
+  height: 4px;
 }
 
 .border_rad {

@@ -1,21 +1,19 @@
 <template>
   <div class="flex flex-col w-full h-full">
-    <ToplistMainHeader :listData="mainShowData" />
-    <ToplistMainContent :listData="mainShowData[0]?.tracks" />
+    <ToplistMainContent :listData="mainConatinerData" />
   </div>
 </template>
 <script setup lang="ts">
-import { defineProps } from "@vue/runtime-core";
+import { ref } from "vue";
 
-import { allToplist, getlistDetailData } from "./hooks/request";
-import { mainShowData, listTitle } from "./hooks/data";
-import { currentID } from "./components/hooks/data";
-import { setContentData } from "./hooks/methods";
+
 
 import ToplistMainContent from "./components/ToplistMainContent.vue";
-import ToplistMainHeader from "./components/ToplistMainHeader.vue";
 
-import type { ListTitle as typeListTitle } from "./types/dataType";
+import { toplistData } from "../../../api/toplist";
+import { getlistDetailData } from "./hooks/request";
+
+import type { NodeAttribute } from "../../../utils/LRUCache"
 
 const props = defineProps({
   seelp: {
@@ -24,19 +22,15 @@ const props = defineProps({
   },
 });
 
-allToplist()
+const mainConatinerData = ref<NodeAttribute[]>([])
+
+toplistData()
   .then((list) => {
-    (listTitle as typeListTitle).cloud.childrenData = list.cloud.childrenData;
-    (listTitle as typeListTitle).global.childrenData = list.global.childrenData;
-
-    const childItem = list.cloud.childrenData[0];
-    currentID.value = childItem.id;
-
-    return childItem;
+    const cardlist = list.data.list
+    return cardlist.slice(0, 4)
   })
-  .then(async (item) => {
-    const mainData = await getlistDetailData(item.id);
-    setContentData(mainData);
+  .then(async (cards: any[]) => {
+    mainConatinerData.value = await getlistDetailData(cards.map((c) => c.id))
   });
 </script>
 <style lang="scss" scoped>

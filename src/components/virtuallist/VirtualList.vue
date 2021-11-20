@@ -1,10 +1,5 @@
 <template>
-  <div
-    class="relative overflow-y-auto slider_track"
-    style="height: 99%"
-    @scroll="onScroll"
-    ref="totalList"
-  >
+  <div class="relative overflow-y-auto h-full slider_track" @scroll="scrollNode" ref="totalList">
     <div
       class="absolute top-0 right-0 h-8 w-2"
       :style="{ height: listHeight + 'px' }"
@@ -23,9 +18,7 @@
         class="flex items-center h-auto w-auto"
         :_id="renderItem[keyindex]"
       >
-        <slot
-          :scopeData="{ renderItem, index: renderItem[keyindex], keyindex }"
-        ></slot>
+        <slot :scopeData="{ renderItem, index: renderItem[keyindex], keyindex }"></slot>
       </li>
     </ul>
   </div>
@@ -134,17 +127,15 @@ const aftterCount = computed(() => {
   return Math.min(props.renderData.length - slicePos.end, props.aftterBuffer);
 });
 
-function catchInitData() {
-  catchData = startOffset.value;
-}
-
-function onScroll() {
+function scrollNode() {
   const scrollTop = totalList.value?.scrollTop;
 
   if (scrollTop) {
     slicePos.start = searchStartIndex(scrollTop);
     slicePos.end = slicePos.start + visbleCount.value;
+    updateItemsSize()
     setStartOffset();
+    setBarTrack();
   }
 }
 
@@ -159,8 +150,6 @@ function setStartOffset() {
   } else {
     startOffset.value = 0;
   }
-
-  catchInitData();
 }
 
 function setBarTrack() {
@@ -230,22 +219,19 @@ function updateItemsSize() {
 }
 
 onMounted(() => {
-  catchInitData();
-
   nextTick().then(() => {
     rootClientHeight.value = totalList.value?.clientHeight || 0;
     slicePos.start = 0;
     slicePos.end = slicePos.start + visbleCount.value + aftterCount.value;
   });
 });
-
-onUpdated(() => {
-  updateItemsSize();
-  setBarTrack();
-});
-</script>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </script>
 <style scoped lang="scss">
 .slider_track::-webkit-scrollbar {
   display: none;
+}
+
+ul {
+  transition: all 0.1s linear;
 }
 </style>
