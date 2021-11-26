@@ -32,7 +32,7 @@ export class singer {
     this.name = name;
   }
 
-  singerInfo(detailInfo: any) {
+  private singerInfo(detailInfo: any) {
     // console.log(detailInfo);
     const keys = Object.keys(detailInfo);
 
@@ -52,6 +52,8 @@ export class musicDetail {
   picUrl: string;
   singer: Record<string, any>[];
   singerInfo: allType<typeSinger>;
+  isMusicDetail: boolean;
+  nickName: string;
 
   constructor(options: MusicDetailOption) {
     const { id, name, picUrl, ar } = this.runMusicDetail(options);
@@ -61,6 +63,8 @@ export class musicDetail {
     this.picUrl = picUrl;
     this.singer = ar;
     this.singerInfo = this.setSingerInfo(ar);
+    this.nickName = this.singerDomString();
+    this.isMusicDetail = true;
   }
 
   runMusicDetail(options: Record<string, any>) {
@@ -74,9 +78,21 @@ export class musicDetail {
       ? (dataInfo as singerArr).map((info) => new singer(info))
       : new singer(dataInfo);
   }
-}
 
-//resultOptions
+  singerDomString() {
+    const infos = this.singerInfo as singer[];
+
+    function createSpanTag(next: singer) {
+      return `<p class="text_hover cursor-pointer" style="color:#b2bec3" user-id="${next.id}" >${next.name}</p>`;
+    }
+
+    const str = `
+      ${infos.map((next) => createSpanTag(next)).join("/")}
+     `;
+
+    return str;
+  }
+}
 
 function singerOptions(data: any) {
   if (!data) return [];
@@ -129,9 +145,7 @@ export class resultOptions implements MusicDetailOption {
 
     if (url) return url;
 
-    return (
-      options.coverUrl || options.coverImgUrl || options["al"]["picUrl"] || ""
-    );
+    return options.coverUrl || options.coverImgUrl || options["al"]["picUrl"] || "";
   }
 
   getAr(options: any) {
@@ -151,9 +165,14 @@ export class resultOptions implements MusicDetailOption {
   }
 }
 
-export function musicResultDetail(data: Object) {
+export function musicResultDetail(data: Object | musicDetail) {
   if (isType(data) !== "Object" || Object.keys(data).length <= 0) {
     return undefined;
+  }
+
+  //@ts-ignore
+  if (data.isMusicDetail) {
+    return data;
   }
 
   const options = new resultOptions(data);

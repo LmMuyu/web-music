@@ -27,7 +27,7 @@ class login {
   private createState() {
     const store = reactive({
       mitt: mitt(),
-      islogin: false,
+      islogin: !!localStorage.getItem("token") ? true : false,
       userinfo: {},
       watchStop: () => {},
     });

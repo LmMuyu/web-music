@@ -1,5 +1,5 @@
 <template>
-  <div :style="gridStyle()">
+  <div :style="gridStyle()" @click.capture="captureColItem">
     <div v-for="(playitem, index) in playlist" :key="index">
       <PlayColItem :playitem="playitem" />
     </div>
@@ -7,6 +7,8 @@
 </template>
 <script setup lang="ts">
 import PlayColItem from "./CardColItem.vue";
+
+const ctxEmit = defineEmits(["mutationSetName"]);
 
 const props = defineProps({
   playlist: {
@@ -31,6 +33,9 @@ function gridStyle() {
     gridGap: props.gap.map((gap) => gap + "" + "px").join(" "),
   };
 }
+
+function captureColItem(e: Event) {
+  // ctxEmit('mutationSetName')
+}
 </script>
-<style scoped lang="scss">
-</style>
+<style scoped lang="scss"></style>

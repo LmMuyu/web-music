@@ -10,7 +10,7 @@
       :style="{
         width: currentPosition + 'px',
         backgroundColor: background,
-        height: 4 + 'px'
+        height: 4 + 'px',
       }"
       ref="top_track"
     >
@@ -25,14 +25,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import {
-  ref,
-  onMounted,
-  nextTick,
-  computed,
-  watch,
-  shallowRef,
-} from "vue";
+import { ref, onMounted, nextTick, computed, watch, shallowRef } from "vue";
 
 const ctxEmit = defineEmits(["update:modelValue", "mousemove", "click"]);
 
@@ -117,9 +110,7 @@ function clickCurrent(e: Event) {
     ctxEmit("click");
     setValueOnPos(getMoveEndPos(e), false);
 
-    nextTick().then(() =>
-      setTimeout(() => setTransitionTime(0), interdelay * 1000)
-    );
+    nextTick().then(() => setTimeout(() => setTransitionTime(0), interdelay * 1000));
   }
 }
 
@@ -145,7 +136,6 @@ function getMoveEndPos(e: any) {
 }
 
 function setValueOnPos(val: number, bool: boolean) {
-
   if (val > 0 && val < slider_track_width.value) {
     setTransforme(val);
 
@@ -168,11 +158,11 @@ function setTransforme(val: number) {
 }
 
 function ifTrackWidth() {
-  const track = top_track.value as HTMLElement
-  const width = track.getBoundingClientRect().width
+  const track = top_track.value as HTMLElement;
+  const width = track.getBoundingClientRect().width;
 
   if (currentPosition.value !== width) {
-    track.style.cssText = `${currentPosition.value}px;transition:all 0.5s`
+    track.style.cssText = `${currentPosition.value}px;transition:all 0.5s`;
   }
 }
 
@@ -205,21 +195,13 @@ function setPosition(delay?: number | undefined) {
 }
 
 function setTransitionTime(time: number) {
-  (
-    top_track.value as unknown as HTMLElement
-  ).style.transitionDuration = `${time}s`;
+  (top_track.value as unknown as HTMLElement).style.transitionDuration = `${time}s`;
 
-  (
-    top_track.value as unknown as HTMLElement
-  ).style.webkitTransitionDuration = `${time}s`;
+  (top_track.value as unknown as HTMLElement).style.webkitTransitionDuration = `${time}s`;
 
-  (
-    tooltip.value as unknown as HTMLElement
-  ).style.transitionDuration = `${time}s`;
+  (tooltip.value as unknown as HTMLElement).style.transitionDuration = `${time}s`;
 
-  (
-    tooltip.value as unknown as HTMLElement
-  ).style.webkitTransitionDuration = `${time}s`;
+  (tooltip.value as unknown as HTMLElement).style.webkitTransitionDuration = `${time}s`;
 }
 
 function bindEvents() {
@@ -230,16 +212,13 @@ function bindEvents() {
 }
 
 function getSlideRect() {
-  slider_track_width.value = (
-    first_track.value as unknown as HTMLElement
-  ).offsetWidth;
+  slider_track_width.value = (first_track.value as unknown as HTMLElement).offsetWidth;
 
   slider_track_left.value = (
     first_track.value as unknown as HTMLElement
   ).getBoundingClientRect().left;
 
-  tooltip_scrollWidth.value =
-    (tooltip.value as unknown as HTMLElement).scrollWidth / 3 - 2;
+  tooltip_scrollWidth.value = (tooltip.value as unknown as HTMLElement).scrollWidth / 3 - 2;
 }
 
 onMounted(() => {

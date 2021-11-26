@@ -1,4 +1,6 @@
 import { Howl, Howler } from "howler";
+import { getMusicDetail } from "../../api/playList";
+import { musicDetail } from "../../utils/musicDetail";
 
 export default class play {
   private howl: Howl;
@@ -48,12 +50,12 @@ export default class play {
 
     if (autoplay) {
       this.play();
-      this.setLocalMusicData();
     }
 
     this.howl.once("end", () => {});
     this.howl.once("play", () => {
       this.duration = this.paly_duration;
+      this.setLocalMusicDuration(this.duration);
     });
   }
 
@@ -119,10 +121,15 @@ export default class play {
     await this._init();
   }
 
+  splicingSrc(index: number) {
+    const musicInfo = this.playlist[index];
+    this.setSrc(musicInfo.id);
+  }
+
   writeMediaMeta() {}
 
-  setLocalMusicData() {
-    localStorage.setItem("duration", String(this.duration));
+  setLocalMusicDuration(duration) {
+    localStorage.setItem("duration", String(duration));
   }
 
   setActionHandler() {
@@ -139,10 +146,28 @@ export default class play {
     });
   }
 
+  async getMusicDeatils(id: number) {
+    const retData = await getMusicDetail(String(id));
+    const musicDateail = retData.data?.data.songs[0] || retData.data;
+    const musicinfo = new musicDetail(musicDateail);
+
+    this.playlist.unshift(musicinfo);
+    this.splicingSrc(0);
+
+    return {
+      isExistMaps: retData.isExistMaps,
+      musicinfo,
+    };
+  }
+
   get paly_duration() {
     if (this.isduration) return;
     this.isduration = true;
 
     return this.howl.duration();
+  }
+
+  get play_volume() {
+    return this.volume;
   }
 }

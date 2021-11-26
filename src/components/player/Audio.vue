@@ -1,15 +1,19 @@
 <template>
   <div class="flex items-center relative h-full w-full audio_shadow">
     <div class="flex items-center h-full w-full">
-      <!-- <div class="flex flex-1 px-2">
+      <div class="flex flex-1 p-4 px-2">
         <div>
-          <img class="object-cover" :src="musicImage + '?param=60y60'" :alt="musicName" />
+          <img
+            class="object-cover"
+            :src="musicinfo?.picUrl + '?param=48y48'"
+            :alt="musicinfo?.name"
+          />
         </div>
         <span class="flex justify-center flex-col ml-4 text-gray-700">
-          <span class="flex-1 decoration">{{ musicName }}</span>
-          <span class="text-sm flex-1 decoration">{{ nickName }}</span>
+          <span class="flex-1 decoration">{{ musicinfo?.name }}</span>
+          <span class="text-sm flex-1 decoration" v-html="musicinfo?.nickName"></span>
         </span>
-      </div>-->
+      </div>
       <div class="flex flex-col mx-4" style="flex: 3">
         <div>
           <AudioAndVideoControls
@@ -19,95 +23,113 @@
             @pause="controlsMethods._pause"
           ></AudioAndVideoControls>
         </div>
-        <PlayMusicTime :starttime="starttime" :maxtime="maxtime" class="w-full">
-          <PlaySlider v-model="starttime" :max="maxtime" />
-        </PlayMusicTime>
+        <div class="flex justify-center itmes-center">
+          <PlayMusicTime :starttime="starttime" :maxtime="maxtime" class="w-full">
+            <PlaySlider v-model="starttime" :max="maxtime" />
+          </PlayMusicTime>
+          <!-- <div>
+            <el-slider class="transform -translate-y-full" v-model="volume" vertical height="80px">
+            </el-slider>
+          </div> -->
+          <div @click="openRightDrawer">歌曲</div>
+        </div>
       </div>
     </div>
   </div>
 </template>
 <script setup lang="ts">
-import { useRoute } from "vue-router"
+import { useRoute } from "vue-router";
 import { onMounted } from "vue-demi";
-import { nextTick, reactive, ref } from "vue";
+import { useStore } from "vuex";
+import { reactive, ref } from "vue";
+
+import Howl from "./play";
+import { isType } from "../../utils/methods";
+import { musicDetail } from "../../utils/musicDetail";
+import { openDrawer } from "../../layout/playlist/components/PlayListHistory";
 
 //@ts-ignore
 import AudioAndVideoControls from "./components/AudioAndVideoControls.vue";
 import PlaySlider from "../../components/slider/Slider.vue";
 import PlayMusicTime from "./components/PlayMusicTime.vue";
+import { ElSlider } from "element-plus";
 
-import Howl from "./play"
-import { isType } from "../../utils/methods";
-
-const maxtime = ref(0)
-const starttime = ref(0)
+const maxtime = ref(0);
+const starttime = ref(0);
+const volume = ref(0);
+const historyData = ref([]);
 
 const controlsMethods = reactive({
-  pre: () => { },
-  play: () => { },
-  _pause: () => { },
-  next: () => { }
-})
+  pre: () => {},
+  play: () => {},
+  _pause: () => {},
+  next: () => {},
+});
 
-const musicHowler = new Howl()
+const musicHowler = new Howl();
+const store = useStore();
+const musicinfo = ref<musicDetail>();
+
+volume.value = musicHowler.play_volume * 100;
 
 const playHowl = new Proxy(musicHowler, {
   set(target, key, value) {
     (async function () {
       if (key === "playid") {
-        await target.setSrc(value)
-        replaceMethods(controlsMethods, target)
+        const data = await target.getMusicDeatils(value);
+        replaceMethods(controlsMethods, target);
 
-        nextTick(() => {
-          target.play()
-        })
+        musicinfo.value = data.musicinfo;
+        historyData.value.unshift(data.musicinfo);
       }
 
       if (key === "duration" && isType(key) !== "Null") {
-        maxtime.value = value
+        maxtime.value = value;
       }
-    })()
-    return true
-  }
+    })();
+    return true;
+  },
 });
-
 
 function interceptFnApply(Fn: Function) {
   if (Fn.name.indexOf("play") > 0) {
-    // duration(playHowl)
     playHowl._seek(function (curtime) {
       starttime.value = curtime;
-    })
+    });
   }
-
 }
 
 function handler<T extends Function>(): ProxyHandler<any> {
   return {
     apply(target: T, thisarg: any, args: any) {
-      target.call(playHowl)
-      interceptFnApply(target)
-    }
-  }
+      target.call(playHowl);
+      interceptFnApply(target);
+    },
+  };
 }
 
 function replaceMethods(methods: Record<string, Function>, howler: Howl) {
-  ["play", "_pause", "next", "pre"].map(mdsname => {
-    const newBindFn: Function = howler[mdsname].bind(howler)
-    const proxyFn = new Proxy(newBindFn, handler())
-    methods[mdsname] = proxyFn
+  ["play", "_pause", "next", "pre"].map((mdsname) => {
+    const newBindFn: Function = howler[mdsname].bind(howler);
+    const proxyFn = new Proxy(newBindFn, handler());
+    methods[mdsname] = proxyFn;
 
-    return proxyFn
-  })
+    return proxyFn;
+  });
 }
 
-const id = useRoute().query.id as unknown as number
+const openRightDrawer = () => openDrawer(historyData);
+
+const id = useRoute().query.id as unknown as number;
 
 onMounted(() => {
-  playHowl.playid = id
-  maxtime.value = parseFloat(localStorage.getItem("duration"))
-})
+  playHowl.playid = id;
+  maxtime.value = parseFloat(localStorage.getItem("duration"));
+});
 
+defineExpose({
+  musicinfo,
+});
 </script>
 <style scoped lang="scss">
 .decoration {

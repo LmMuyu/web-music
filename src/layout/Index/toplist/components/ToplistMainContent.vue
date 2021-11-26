@@ -6,26 +6,29 @@
       </el-header>
       <el-container>
         <el-main>
-          <card-row :playlist="card.tracks.splice(0, 20)"></card-row>
+          <card-row
+            @mutationSetName="mutation(card)"
+            :playlist="card.tracks.splice(0, 20)"
+          ></card-row>
         </el-main>
       </el-container>
     </el-main>
   </el-container>
 </template>
 <script setup lang="ts">
-import {
-  defineProps,
-  ref,
-} from "@vue/runtime-core";
+import { defineProps, ref } from "@vue/runtime-core";
+import { useStore } from "vuex";
 
 import { createLoading } from "../../../../components/loading/app";
 import { getMittBus } from "../../../../utils/mittBus";
 
 import { ElContainer, ElMain, ElHeader } from "element-plus";
 import CardRow from "../../../../components/card/CardRow.vue";
-import ToplistMainHeader from "./ToplistMainHeader.vue"
+import ToplistMainHeader from "./ToplistMainHeader.vue";
 
 import type { PropType } from "@vue/runtime-core";
+
+const ctxEmit = defineEmits(["retcardname"]);
 
 const props = defineProps({
   listData: {
@@ -54,23 +57,27 @@ const props = defineProps({
   },
 });
 
+const store = useStore();
+
 const { countRef, negate, mountApp, unmountApp, isMountApp } = new createLoading();
 const mittBus = getMittBus();
 
 const rootcontent = ref<HTMLElement | null>(null);
-
 const busMap = mittBus.all;
 
 function headerInfo(card: any) {
-  console.log(card);
-
   return {
     id: card.id,
     name: card.name,
     shareCount: card.shareCount,
     commentCount: card.commentCount,
     trackUpdateTime: card.trackUpdateTime,
-  }
+  };
+}
+
+function mutation(card: any) {
+  store.commit("toplist/setCurrTag", card.name);
+  ctxEmit("retcardname", card);
 }
 
 // if (!busMap.has("markvrituallist")) {

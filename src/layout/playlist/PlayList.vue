@@ -5,18 +5,27 @@
         :singerName="singer"
         :musicInfo="musicDetailInfo"
         :musicName="unref(musicInfo)?.name"
-      ></PlayListMain>-->
+      ></PlayListMain> -->
     </el-main>
-    <el-footer style="z-index:1" class="flex items-center bg-white padd">
-      <Audio></Audio>
+    <el-footer style="z-index: 1" class="flex items-center bg-white padd">
+      <Audio ref="compAudio"></Audio>
     </el-footer>
   </el-container>
 </template>
 <script setup lang="ts">
+import { nextTick, onMounted, ref, unref } from "vue";
 
-import { ElContainer, ElMain, ElFooter } from "element-plus";
 import Audio from "../../components/player/Audio.vue";
 import PlayListMain from "./components/PlayListMain.vue";
+import { ElContainer, ElMain, ElFooter } from "element-plus";
+
+const compAudio = ref<null | HTMLElement>(null);
+
+onMounted(() => {
+  nextTick(() => {
+    Object.keys(compAudio.value).map((key) => console.log(compAudio.value[key]));
+  });
+});
 </script>
 
 <style scoped lang="scss">

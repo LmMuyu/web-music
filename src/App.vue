@@ -15,14 +15,7 @@ import HtmlMain from "./layout/main/Main.vue";
 import type { UserInfo } from "./store/type";
 import type { RouteLocationNormalized } from "vue-router";
 
-type linkType =
-  | "info"
-  | "primary"
-  | "success"
-  | "warning"
-  | "danger"
-  | "default"
-  | undefined;
+type linkType = "info" | "primary" | "success" | "warning" | "danger" | "default" | undefined;
 
 const store = useStore();
 const router = useRouter();
@@ -91,6 +84,10 @@ store.commit("login/onMittEvent", (value: any) => {
 
 .appicon {
   @include Iconfont(#dfe6e9, 14);
+}
+
+.text_hover {
+  @include Decoration_Hover;
 }
 
 .text_in {

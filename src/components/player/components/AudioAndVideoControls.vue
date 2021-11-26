@@ -23,17 +23,11 @@ export default defineComponent({
 
     return () => (
       <div class="flex items-center justify-center  px-10">
-        <span
-          onClick={Pre}
-          class="px-3 iconfont iconarrow-right-copy cursor-pointer"
-        />
+        <span onClick={Pre} class="px-3 iconfont iconarrow-right-copy cursor-pointer" />
         <div>
           <span
             onClick={Player}
-            class={[
-              status.value ? " iconpause" : "iconbofang1",
-              "px-3 iconfont cursor-pointer",
-            ]}
+            class={[status.value ? " iconpause" : "iconbofang1", "px-3 iconfont cursor-pointer"]}
           />
         </div>
         <span onClick={Next} class="px-3 iconfont iconmore cursor-pointer" />

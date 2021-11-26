@@ -34,8 +34,6 @@ export async function getlistDetailData(ids: number[]): Promise<NodeAttribute[]>
       return listItem;
     }) as unknown as NodeAttribute[];
 
-  console.log(LRUCache.viewAllCache());
-
   return listCards;
 }
 

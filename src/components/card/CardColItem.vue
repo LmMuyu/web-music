@@ -6,13 +6,14 @@
         class="w-full h-full p-1"
       />
       <div
-        style="z-index: 99;"
+        style="z-index: 99"
         class="w-full h-full flex justify-center items-center overflow-hidden play_icon"
       >
         <router-link
           :to="{ path: '/playlist', query: { id: playitem.id } }"
           class="absolute top-0 bottom-0 left-0 right-0 w-full h-full"
           target="_blank"
+          :itemid="playitem.id"
         ></router-link>
         <i class="iconfont iconbofang2"></i>
       </div>
@@ -34,19 +35,16 @@ const props = defineProps({
   },
 });
 
-
 function fromPlayCount(count: number) {
-  if (!count) return
+  if (!count) return;
   if (count >= 100000000) {
-    return `${Math.floor((count / 100000000) * 100) / 100}亿`
+    return `${Math.floor((count / 100000000) * 100) / 100}亿`;
   } else if (count >= 100000) {
-    return `${Math.floor((count / 100000) * 100) / 100}万`
+    return `${Math.floor((count / 100000) * 100) / 100}万`;
   } else if (count >= 10000) {
-    return `${Math.floor((count / 10000) * 100) / 100}万`
+    return `${Math.floor((count / 10000) * 100) / 100}万`;
   }
 }
-
-
 </script>
 <style scoped lang="scss">
 .hover_opacity {
