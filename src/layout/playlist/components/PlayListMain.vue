@@ -1,33 +1,46 @@
 <template>
-  <section ref="sectionNode" class="flex h-full">
-    <div></div>
-    <div class="p-4">
-      <div class="flex py-3">
-        <span class="flex items-center justify-center text-xl hover">
-          <p class="headercolor">歌手:</p>
-          <p
-            style="color: #1f2937"
-            class="text-xl ml-3 cursor-pointer singer-color"
-          >{{ singerName }}</p>
-        </span>
-      </div>
-      <div class="relative lycs_music">
-        <div ref="trackNode" class="absolute top-0 right-0 bottom-0 w-1 h-full">
-          <span
-            class="absolute left-0 w-1 h-8 bg-black transition"
-            :style="{ top: scrollBarTop + 'px' }"
-          ></span>
+  <section
+    :style="{
+      backgroundImage: `url('${backgroundurl}')`,
+      backgroundRepeat: 'no-repeat',
+      backgroundOrigin: 'content-box',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+    }"
+    ref="sectionNode"
+    class="flex h-full"
+  >
+    <main class="w-full drop_filter">
+      <div></div>
+      <div class="p-4">
+        <div class="flex py-3">
+          <span class="flex items-center justify-center text-xl hover">
+            <p class="headercolor">歌手:</p>
+            <p
+              style="color: #1f2937"
+              class="text-xl ml-3 cursor-pointer singer-color"
+              v-html="singerName"
+            ></p>
+          </span>
         </div>
-        <div
-          class="flex flex-col overflow-y-scroll relative sliderTrack"
-          style="height: 30rem"
-          @scroll="lyricThrottle"
-          ref="lyricNode"
-        >
-          <PlayLycs :musicItemList="[...musicItemList.values()]" />
+        <div class="relative lycs_music">
+          <div ref="trackNode" class="absolute top-0 right-0 bottom-0 w-1 h-full">
+            <span
+              class="absolute left-0 w-1 h-8 bg-black transition"
+              :style="{ top: scrollBarTop + 'px' }"
+            ></span>
+          </div>
+          <div
+            class="flex flex-col overflow-y-scroll relative sliderTrack"
+            style="height: 30rem"
+            @scroll="lyricThrottle"
+            ref="lyricNode"
+          >
+            <!-- <PlayLycs :musicItemList="[...musicItemList.values()]" /> -->
+          </div>
         </div>
       </div>
-    </div>
+    </main>
   </section>
 </template>
 <script setup lang="ts">
@@ -46,10 +59,6 @@ import { onMounted } from "vue";
 import { useType } from "../../../hooks";
 
 const props = defineProps({
-  musicInfo: {
-    type: Object,
-    required: true,
-  },
   musicName: {
     type: String,
     default: "",
@@ -57,6 +66,10 @@ const props = defineProps({
   singerName: {
     type: String,
     default: "",
+  },
+  backgroundurl: {
+    type: String,
+    required: true,
   },
 });
 
@@ -66,7 +79,7 @@ const trackNode = ref<null | HTMLElement>(null);
 const sectionNode = ref<null | HTMLElement>(null);
 
 const trackSliderMaxH = ref(0);
-const sliderH = ref(0)
+const sliderH = ref(0);
 
 const trackItemH = computed(() => {
   return (trackSliderMaxH.value - sliderH.value) / 100;
@@ -145,8 +158,7 @@ onMounted(() => {
   nextTick().then(() => {
     lyricNodeRect.offsetHeight = lyricNode.value.offsetHeight;
     trackSliderMaxH.value = trackNode.value.clientHeight;
-    sliderH.value = (trackNode.value.firstChild as HTMLElement).offsetHeight
-
+    sliderH.value = (trackNode.value.firstChild as HTMLElement).offsetHeight;
 
     function disconnect() {
       mutation.disconnect();
@@ -176,6 +188,10 @@ section {
 
   & > div:nth-child(2) {
     flex: 1;
+  }
+
+  & > .drop_filter {
+    backdrop-filter: blur(30px) saturate(180%);
   }
 }
 

@@ -1,20 +1,24 @@
 <template>
   <div class="flex items-center relative h-full w-full audio_shadow">
-    <div class="flex items-center h-full w-full">
-      <div class="flex flex-1 p-4 px-2">
-        <div>
+    <div class="flex items-center h-full w-full px-4">
+      <div class="flex" style="flex: 1">
+        <div style="width: 48px; height: 48px">
           <img
             class="object-cover"
             :src="musicinfo?.picUrl + '?param=48y48'"
             :alt="musicinfo?.name"
           />
         </div>
-        <span class="flex justify-center flex-col ml-4 text-gray-700">
-          <span class="flex-1 decoration">{{ musicinfo?.name }}</span>
-          <span class="text-sm flex-1 decoration" v-html="musicinfo?.nickName"></span>
-        </span>
+        <div>
+          <div class="flex justify-center flex-col ml-4 truncate text-gray-700">
+            <span :music-id="id" class="flex-1 cursor-pointer decoration">{{
+              musicinfo?.name
+            }}</span>
+            <span class="text-sm flex-1 decoration" v-html="musicinfo?.nickName"></span>
+          </div>
+        </div>
       </div>
-      <div class="flex flex-col mx-4" style="flex: 3">
+      <div style="flex: 3" class="flex flex-col w-full">
         <div>
           <AudioAndVideoControls
             @next="controlsMethods.next"
@@ -58,6 +62,9 @@ const maxtime = ref(0);
 const starttime = ref(0);
 const volume = ref(0);
 const historyData = ref([]);
+const musicinfoName = ref([]);
+
+const id = useRoute().query.id as unknown as number;
 
 const controlsMethods = reactive({
   pre: () => {},
@@ -119,8 +126,6 @@ function replaceMethods(methods: Record<string, Function>, howler: Howl) {
 }
 
 const openRightDrawer = () => openDrawer(historyData);
-
-const id = useRoute().query.id as unknown as number;
 
 onMounted(() => {
   playHowl.playid = id;

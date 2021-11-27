@@ -83,11 +83,13 @@ export class musicDetail {
     const infos = this.singerInfo as singer[];
 
     function createSpanTag(next: singer) {
-      return `<p class="text_hover cursor-pointer" style="color:#b2bec3" user-id="${next.id}" >${next.name}</p>`;
+      return `<p class="cursor-pointer text_hover" style="color:#b2bec3" user-id="${next.id}" >${next.name}</p>`;
     }
 
     const str = `
+      <span class="flex items-center">
       ${infos.map((next) => createSpanTag(next)).join("/")}
+      </span>
      `;
 
     return str;

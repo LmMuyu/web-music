@@ -1,30 +1,43 @@
 <template>
   <el-container class="h-full relative section_container">
     <el-main class="backdrop padd">
-      <!-- <PlayListMain
-        :singerName="singer"
-        :musicInfo="musicDetailInfo"
-        :musicName="unref(musicInfo)?.name"
-      ></PlayListMain> -->
+      <PlayListMain
+        :singerName="playListMainInfo.nickName"
+        :musicName="playListMainInfo.musicName"
+        :backgroundurl="playListMainInfo.backgroundurl"
+      ></PlayListMain>
     </el-main>
-    <el-footer style="z-index: 1" class="flex items-center bg-white padd">
-      <Audio ref="compAudio"></Audio>
+    <el-footer class="flex items-center bg-white padd">
+      <Audio ref="compAudio" />
     </el-footer>
   </el-container>
 </template>
 <script setup lang="ts">
-import { nextTick, onMounted, ref, unref } from "vue";
+import { onMounted, reactive, ref } from "vue";
 
 import Audio from "../../components/player/Audio.vue";
 import PlayListMain from "./components/PlayListMain.vue";
 import { ElContainer, ElMain, ElFooter } from "element-plus";
 
-const compAudio = ref<null | HTMLElement>(null);
+const compAudio = ref<any>(null);
+const playListMainInfo = reactive({
+  musicName: "",
+  nickName: "",
+  backgroundurl: "",
+});
 
 onMounted(() => {
-  nextTick(() => {
-    Object.keys(compAudio.value).map((key) => console.log(compAudio.value[key]));
-  });
+  let timer = setInterval(() => {
+    const musicdateil = compAudio.value.musicinfo;
+    if (musicdateil !== undefined) {
+      playListMainInfo.musicName = musicdateil.name;
+      playListMainInfo.nickName = musicdateil.nickName;
+      playListMainInfo.backgroundurl = musicdateil.picUrl;
+
+      clearInterval(timer);
+      timer = null;
+    }
+  }, 1000);
 });
 </script>
 
