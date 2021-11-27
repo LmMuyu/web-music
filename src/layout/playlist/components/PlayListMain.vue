@@ -8,26 +8,28 @@
       backgroundPosition: 'center',
     }"
     ref="sectionNode"
-    class="flex h-full"
+    class="flex h-full relative"
   >
-    <main class="w-full drop_filter">
+    <back-mark />
+    <main class="w-full flex drop_filter">
       <div></div>
       <div class="p-4">
         <div class="flex py-3">
           <span class="flex items-center justify-center text-xl hover">
             <p class="headercolor">歌手:</p>
-            <p
+            <span
               style="color: #1f2937"
               class="text-xl ml-3 cursor-pointer singer-color"
               v-html="singerName"
-            ></p>
+            ></span>
           </span>
         </div>
         <div class="relative lycs_music">
           <div ref="trackNode" class="absolute top-0 right-0 bottom-0 w-1 h-full">
             <span
-              class="absolute left-0 w-1 h-8 bg-black transition"
+              class="absolute left-0 w-1 h-8 transition"
               :style="{ top: scrollBarTop + 'px' }"
+              style="background-color: #3a3a59"
             ></span>
           </div>
           <div
@@ -36,7 +38,7 @@
             @scroll="lyricThrottle"
             ref="lyricNode"
           >
-            <!-- <PlayLycs :musicItemList="[...musicItemList.values()]" /> -->
+            <PlayLycs :musicItemList="[...musicItemList.values()]" />
           </div>
         </div>
       </div>
@@ -44,19 +46,20 @@
   </section>
 </template>
 <script setup lang="ts">
+import fastdom from "fastdom";
+import { onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { computed, nextTick, ref, shallowRef } from "@vue/runtime-core";
-import fastdom from "fastdom";
 
+import { useType } from "../../../hooks";
 import { getLyrics } from "../../../api/playList";
 import { conversionItem, lyricThrottle } from "../hooks/methods";
-import { musicItemList, lyricNodeRect, clientHeight } from "../hooks/data";
+import { lyricNodeRect, clientHeight } from "../hooks/data";
 
 import PlayLycs from "./PLayLycs.vue";
+import BackMark from "./BackMark.vue";
 
 import type { MatchItem } from "../type";
-import { onMounted } from "vue";
-import { useType } from "../../../hooks";
 
 const props = defineProps({
   musicName: {
@@ -73,10 +76,11 @@ const props = defineProps({
   },
 });
 
-const music = useRoute().query.id as string;
+const musicid = useRoute().query.id as string;
 const lyricNode = ref<null | HTMLElement>(null);
 const trackNode = ref<null | HTMLElement>(null);
 const sectionNode = ref<null | HTMLElement>(null);
+const musicItemList = ref<Map<number, any>>(new Map());
 
 const trackSliderMaxH = ref(0);
 const sliderH = ref(0);
@@ -109,7 +113,7 @@ function lycSplice(iterator: IterableIterator<RegExpMatchArray>) {
   }
 }
 
-getLyrics(music).then(({ data }) => {
+getLyrics(musicid).then(({ data }) => {
   const lyrics = data.lrc.lyric as string;
   const lrcReg = /\[(?<playTime>.+)\]\s?(?<lyc>.+)/g;
 
@@ -154,6 +158,8 @@ async function childrenMapNode(childrenList: HTMLElement[]) {
   setScrollHeight(height);
 }
 
+const nickname = computed(() => props.singerName.split("/").join("——"));
+
 onMounted(() => {
   nextTick().then(() => {
     lyricNodeRect.offsetHeight = lyricNode.value.offsetHeight;
@@ -182,12 +188,14 @@ onMounted(() => {
 $fontColor: #303841;
 
 section {
-  & > div:nth-child(1) {
-    flex: 2;
-  }
+  & > main {
+    & > div:nth-child(1) {
+      flex: 2;
+    }
 
-  & > div:nth-child(2) {
-    flex: 1;
+    & > div:nth-child(2) {
+      flex: 1;
+    }
   }
 
   & > .drop_filter {
@@ -222,5 +230,8 @@ section {
 
 .transition {
   transition: all 0.2s linear;
+  border-radius: 8px 8px 8px 8px;
+  -moz-border-radius: 8px 8px 8px 8px;
+  -webkit-border-radius: 8px 8px 8px 8px;
 }
 </style>

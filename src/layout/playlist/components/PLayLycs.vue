@@ -9,14 +9,16 @@
     <span
       v-for="(musicItem, index) in musicItemList"
       :key="musicItem.playTime"
-      class="flex items-center"
+      class="flex items-center py-3"
     >
       <p
-        class="py-3 text-sm text-left cursor-pointer text_color"
+        class="text-sm text-left cursor-pointer text_color"
         :lycplaytime="musicItem.originTime"
         :node_id="musicItem.playTime"
         :keyid="index"
-      >{{ musicItem.lyc }}</p>
+      >
+        {{ musicItem.lyc }}
+      </p>
 
       <transition v-if="showTimeIndex == index" name="feide">
         <p class="ml-4">-{{ musicItem.originTime }}</p>
@@ -24,39 +26,38 @@
     </span>
   </div>
 </template>
-<script setup lang='ts'>
-import { computed, unref, ref } from 'vue-demi';
+<script setup lang="ts">
+import { computed, unref, ref } from "vue-demi";
 
-import { distance } from '../hooks/data';
+import { distance } from "../hooks/data";
 
-import type { PropType } from "vue"
-import type { MatchItem } from '../type';
+import type { PropType } from "vue";
+import type { MatchItem } from "../type";
 
 const props = defineProps({
   musicItemList: {
     type: Array as PropType<MatchItem[]>,
-    required: true
-  }
-})
+    required: true,
+  },
+});
 
-const showTimeIndex = ref(null)
-const scrollNode = ref<HTMLElement | null>(null)
+const showTimeIndex = ref(null);
+const scrollNode = ref<HTMLElement | null>(null);
 
 function showCurTimeEvent(e: Event) {
-  const target = e.target as HTMLElement
-  const curIndex = target.getAttribute("keyid")
+  const target = e.target as HTMLElement;
+  const curIndex = target.getAttribute("keyid");
 
-  showTimeIndex.value = curIndex
+  showTimeIndex.value = curIndex;
 }
 
 const musicTextContainerStyle = computed(() => {
   return {
-    transform: `translate(0,${-unref(distance)}px) translateZ(0)`
-  }
-})
-
+    transform: `translate(0,${-unref(distance)}px) translateZ(0)`,
+  };
+});
 </script>
-<style scoped lang='scss'>
+<style scoped lang="scss">
 div {
   transition: all 0.1s linear;
 }
@@ -73,5 +74,9 @@ div {
 .feide-enter-to,
 .feide-leave-from {
   opacity: 1;
+}
+
+.text_color:hover {
+  color: #3a3a59;
 }
 </style>
