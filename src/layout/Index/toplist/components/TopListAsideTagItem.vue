@@ -7,9 +7,7 @@
       :style="activeStyle(childItem.keyIndex)"
       @mouseenter="moveActive(childItem.keyIndex)"
       @mouseleave="leaveActive(childItem.keyIndex)"
-      @click="
-        [childTagItemClick(childItem.id), clickActive(childItem.keyIndex)]
-      "
+      @click="[childTagItemClick(childItem.id), clickActive(childItem.keyIndex)]"
     >
       <div class="w-10 h-10">
         <img :src="childItem.coverImgUrl + '?param=40y40'" />
@@ -27,7 +25,7 @@
 import { defineProps } from "@vue/runtime-core";
 
 import { activeIndex } from "../../../../utils/activeIndex";
-import { getlistDetailData } from "../hooks/request";
+import { getTopListDetailData } from "../hooks/request";
 import { setContentData } from "../hooks/methods";
 import { currentID } from "./hooks/data";
 import { getMittBus } from "../../../../utils/mittBus";
@@ -46,19 +44,14 @@ async function childTagItemClick(currID: number) {
   currentID.value = currID;
 
   mittBus.emit("markvrituallist");
-
-  const mainData = await getlistDetailData(currID);
-  setContentData(mainData);
+  // const mainData = await getTopListDetailData(currID);
+  // setContentData(mainData);
 }
 
-const { activeStyle, clickActive, moveActive, leaveActive } = new activeIndex(
-  null,
-  null,
-  {
-    style: "background",
-    enterColor: "#7cbcfc66",
-    initColor: "#fff",
-  }
-);
+const { activeStyle, clickActive, moveActive, leaveActive } = new activeIndex(null, null, {
+  style: "background",
+  enterColor: "#7cbcfc66",
+  initColor: "#fff",
+});
 </script>
 <style scoped lang="scss"></style>

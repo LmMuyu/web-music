@@ -35,7 +35,14 @@ function gridStyle() {
 }
 
 function captureColItem(e: Event) {
-  // ctxEmit('mutationSetName')
+  const target = e.target as HTMLElement;
+
+  if (target.nodeName === "A" && target.getAttribute("itemid")) {
+    const id = target.getAttribute("itemid");
+    const obj = props.playlist.find((value) => (value as any).id == id);
+
+    ctxEmit("mutationSetName", obj);
+  }
 }
 </script>
 <style scoped lang="scss"></style>

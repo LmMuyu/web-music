@@ -2,8 +2,10 @@
   <el-row class="w-full dashed" style="height: 57px">
     <el-col :span="12" class="flex items-center">
       <div class="flex items-end">
-        <span class="text-lg">网易云{{ headerInfo?.name }}</span>
-        <span class="ml-5 text-sm text-gray-500 h-full">{{ headerInfo?.trackUpdateTime }}</span>
+        <span style="font-size: 20px">网易云{{ headerInfo?.name }}</span>
+        <span class="ml-5 text-sm text-gray-500 h-full"
+          >最后更新时间：{{ headerInfo?.trackUpdateTime }}</span
+        >
       </div>
     </el-col>
     <el-col :span="5" class="flex items-center">
@@ -36,7 +38,6 @@
 import { defineProps } from "@vue/runtime-core";
 
 import { ElRow, ElCol, ElButton } from "element-plus";
-
 
 const props = defineProps({
   headerInfo: {

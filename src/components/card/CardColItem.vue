@@ -1,8 +1,8 @@
 <template>
   <section class="flex flex-col w-full h-full relative">
-    <div class="text-center clearfix relative">
+    <div class="text-center relative clearfix whauto">
       <img
-        :src="(playitem.coverImgUrl || playitem.al.picUrl) + '?param=144y90'"
+        :src="(playitem.coverImgUrl || playitem.al.picUrl) + '?param=90y90'"
         class="w-full h-full p-1"
       />
       <div
@@ -103,15 +103,22 @@ section {
   }
 }
 
-section .clearfix {
-  &::after {
-    content: "";
-    height: 0;
-    display: block;
-    clear: both;
-    visibility: hidden;
+section {
+  & .clearfix {
+    &::after {
+      content: "";
+      height: 0;
+      display: block;
+      clear: both;
+      visibility: hidden;
+    }
+
+    *zoom: 1;
   }
 
-  *zoom: 1;
+  & .whauto {
+    min-width: 90px;
+    min-height: 90px;
+  }
 }
 </style>

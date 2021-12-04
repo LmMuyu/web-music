@@ -8,13 +8,15 @@
         :key="index"
         :style="activeStyle(index)"
         @click="
-  clickActive(index);
-setCurPos(index);
+          clickActive(index);
+          setCurPos(index);
         "
         @mouseleave="leaveActive(index)"
         @mouseenter="moveActive(index)"
         class="text-sm px-6 cursor-pointer"
-      >{{ tagItem.tagName }}</li>
+      >
+        {{ tagItem.tagName }}
+      </li>
     </ul>
   </div>
 </template>
@@ -26,16 +28,12 @@ import { discoverMusic } from "../api/data";
 import { activeIndex } from "../../../../utils/activeIndex";
 import { getPlaylist } from "../api/methods";
 
-import ToplistMainContent from "../../toplist/components/ToplistMainContent.vue";
-
 const list = ref<any[]>([]);
 const curSlicePos = ref(0);
 
 const { activeStyle, clickActive, leaveActive, moveActive } = new activeIndex();
 
-getPlaylist(10).then(
-  (res) => (list.value = res.map((v) => v.data.albums.map(forMap)))
-);
+getPlaylist(10).then((res) => (list.value = res.map((v) => v.data.albums.map(forMap))));
 
 const forMap = (artistsValue: any) => ({
   id: artistsValue.id,

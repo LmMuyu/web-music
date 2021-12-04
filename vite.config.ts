@@ -4,6 +4,7 @@ import rollupOptions from "./vite/rollupOptions";
 import vueJsx from "@vitejs/plugin-vue-jsx";
 import vue from "@vitejs/plugin-vue";
 import createAlias from "./vite/alias";
+import { preloadStyleCss } from "./vite/plugins";
 
 import type { ConfigEnv, UserConfig } from "vite";
 
@@ -19,12 +20,12 @@ const cssOptions: CSSOptions = {
 };
 
 const aliasList = createAlias([
-  ["/@/", "src"],
-  ["/comps/", "src/components"],
-  ["/view/", "src/view"],
-  ["/utils/", "src/utils"],
-  ["/api/", "src/api"],
-  ["/layout/", "src/layout"],
+  ["@/", "src"],
+  ["comps/", "src/components"],
+  ["view/", "src/view"],
+  ["utils/", "src/utils"],
+  ["api/", "src/api"],
+  ["layout/", "src/layout"],
   ["vue", "vue/dist/vue.esm-bundler.js"],
 ]);
 
@@ -65,7 +66,6 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
     },
     server: {
       port: Number(VITE_PORT),
-      open: true,
       proxy: {
         "^/music": {
           target: "https://music.163.com",
