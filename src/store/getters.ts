@@ -5,4 +5,8 @@ export default {
   getMusicInfo(state: State) {
     return state.musicInfo;
   },
+
+  getMainTagsShow(state: State) {
+    return state.mainTagsShow;
+  },
 };

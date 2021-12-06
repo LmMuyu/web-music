@@ -8,23 +8,11 @@
       :style="{ backgroundColor: styleColor ?? '#fff' }"
     ></div>
     <div class="absolute top-0 left-0 m-2" style="z-index: 10">
-      <i
-        class="iconfont icondel cursor-pointer close delete_btn"
-        @click="unmount"
-      ></i>
+      <i class="iconfont icondel cursor-pointer close delete_btn" @click="unmount"></i>
     </div>
 
     <main
-      class="
-        margin_auto
-        relative
-        flex
-        items-center
-        justify-center
-        overflow-hidden
-        z-10
-        opacity-100
-      "
+      class="margin_auto relative flex items-center justify-center overflow-hidden z-10 opacity-100"
       ref="main"
       style="height: 90%"
     >
@@ -61,14 +49,6 @@ import DirectionIndicator from "./components/DirectionIndicator.vue";
 import PreviewFooter from "./components/Footer.vue";
 
 import type { PropType } from "vue";
-import type { globalRefType } from "../../type";
-
-getCurrentInstance().appContext.config.globalProperties.listViewPipe =
-  listViewPipe;
-
-defineExpose({
-  listViewPipe,
-});
 
 const props = defineProps({
   previewList: {
@@ -107,20 +87,10 @@ const { stopEffect, styleColor, setsrcpipe } = returnThemmColor(
   }
 );
 
-function listViewPipe(data: globalRefType<any>) {
-  listview.value = []; //清除数组
-
-  const newData = unref(data);
-  listview.value.push(...newData);
-}
-
 function switchImage(direction: "prev" | "next") {
   if (direction === "prev" && currentIndex.value !== 0) {
     currentIndex.value -= 1;
-  } else if (
-    direction === "next" &&
-    currentIndex.value !== listview.value.length - 1
-  ) {
+  } else if (direction === "next" && currentIndex.value !== listview.value.length - 1) {
     currentIndex.value += 1;
   }
 }

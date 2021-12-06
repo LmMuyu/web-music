@@ -1,12 +1,15 @@
 import type { RouteLocationNormalized } from "vue-router";
 import type { MusicDetailOption } from "../../utils/musicDetail";
 import type { Ref } from "vue";
+import type { Emitter } from "mitt";
 
 export interface State {
   countriesCode: null | Array<Record<string, any>>;
   musicInfo: null | MusicDetailOption;
   circleRef: Ref<boolean>;
   activeTagFn: (to: RouteLocationNormalized) => void | null;
+  mainTagsShow: boolean;
+  unmountList: Emitter;
 }
 
 export interface TokenJsonStr {
@@ -25,4 +28,3 @@ export interface UserInfo {
   tokenJsonStr: TokenJsonStr;
   userinfoData?: Record<string, any>;
 }
-

@@ -2,29 +2,27 @@
 import { computed, defineComponent, ref, shallowRef, unref } from "vue";
 import { useStore } from "vuex";
 
-
 import { linkeEvent } from "../methods";
 
-import type { State } from "../../../../../store/type";
-import type { PropType, Ref } from "vue"
+import type { PropType, Ref } from "vue";
 import { diffTime } from "../../hooks/diffTime";
 
 type Options = {
-  name: string
-  count: number
-  event?: Record<any, any>,
-  icon?: string[] | string
-}
+  name: string;
+  count: number;
+  event?: Record<any, any>;
+  icon?: string[] | string;
+};
 
 export default defineComponent({
   props: {
     info: {
       type: Array as PropType<Array<Options>>,
-      default: () => []
+      default: () => [],
     },
     showTime: {
       type: Number,
-      default: 0
+      default: 0,
     },
     latestLikedUsers: {
       type: Array,
@@ -39,51 +37,57 @@ export default defineComponent({
   setup(props, { emit: ctxEmit }) {
     const store = useStore();
     const isLatestLinke = shallowRef(false);
-    const linkedCounts = ref(props.info.find(v => v.name === "linke").count);
-    const eventMap = new Map()
+    const linkedCounts = ref(props.info.find((v) => v.name === "linke").count);
+    const eventMap = new Map();
 
-    eventMap.set("linke", linkeEvent(linkedCounts, isLatestLinke))
+    eventMap.set("linke", linkeEvent(linkedCounts, isLatestLinke));
 
     const switchText = (name: string) => {
-      let text = ""
+      let text = "";
 
       switch (name) {
         case "comment":
-          text = "评论"
-          break
+          text = "评论";
+          break;
         case "forward":
-          text = "转发"
-          break
+          text = "转发";
+          break;
         default:
-          text = ""
-          break
+          text = "";
+          break;
       }
 
-      return text
-    }
-
+      return text;
+    };
 
     const returnEmit = (event: Record<any, any>, el: Ref<HTMLElement | null>) =>
-      ctxEmit(event.emit_name, eventMap.get(event.emit_name), event.emit_name === "linke" && isLatestLinke.value, el)
+      ctxEmit(
+        event.emit_name,
+        eventMap.get(event.emit_name),
+        event.emit_name === "linke" && isLatestLinke.value,
+        el
+      );
 
     const infoBtn = (options: Options) => {
-      const rootEl = ref<HTMLElement | null>(null)
+      const rootEl = ref<HTMLElement | null>(null);
 
-      const icon = (icons: string | string[]) => Array.isArray(icons) ? isLinke ? icons[0] : icons[1] : icons
+      const icon = (icons: string | string[]) =>
+        Array.isArray(icons) ? (isLinke ? icons[0] : icons[1]) : icons;
 
       return (
-        <span ref={rootEl} class="flex justify-center items-center px-4 cursor-pointer icons"
-          onClick={!!options?.event?.emit && (() => returnEmit(options.event, rootEl))} >
+        <span
+          ref={rootEl}
+          class="flex justify-center items-center px-4 cursor-pointer icons"
+          onClick={!!options?.event?.emit && (() => returnEmit(options.event, rootEl))}
+        >
           <i class={`iconfont ${icon(options.icon)}`}></i>
-          <p
-            style="color: #b2bec3"
-            class="text-sm"
-          >{!options.icon && switchText(options.name)}{unref(options.count) === 0 ? "" : `${unref(options.count)}`}</p>
-        </span >
-      )
-    }
-
-
+          <p style="color: #b2bec3" class="text-sm">
+            {!options.icon && switchText(options.name)}
+            {unref(options.count) === 0 ? "" : `${unref(options.count)}`}
+          </p>
+        </span>
+      );
+    };
 
     const isLinke = computed(() => {
       if (isLatestLinke.value) return true;
@@ -119,23 +123,26 @@ export default defineComponent({
 
     isLatestLinke.value = isLinke.value;
 
-
     return () => {
-      const setClass = (str_class: string) => "flex" + " " + str_class
+      const setClass = (str_class: string) => "flex" + " " + str_class;
 
       return (
-        <section class="footer_heigth flex justify-end w-full h-full" >
+        <section class="footer_heigth flex justify-end w-full h-full">
           <div class="flex items-center w-1/2 h-full">
-            <p >{props.showTime > 0 && diffTime(props.showTime, Date.now())}</p>
+            <p>{props.showTime > 0 && diffTime(props.showTime, Date.now())}</p>
           </div>
           <div class="flex items-center justify-end w-1/2 h-full">
-            <div class={props.recursion ? setClass('items-end text-sm pb-2') : setClass('items-center')}>
+            <div
+              class={
+                props.recursion ? setClass("items-end text-sm pb-2") : setClass("items-center")
+              }
+            >
               {props.info.map((options) => infoBtn(options))}
-            </div >
+            </div>
           </div>
         </section>
-      )
-    }
+      );
+    };
   },
 });
 </script>

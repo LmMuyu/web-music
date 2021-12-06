@@ -1,5 +1,3 @@
-import store from "../store";
-
 import type { RouteRecordRaw } from "vue-router";
 import type { META } from "./type/type";
 
@@ -56,18 +54,6 @@ const routes: (RouteRecordRaw & {
   {
     path: "/message",
     name: "Message",
-    beforeEnter(to) {
-      const path = to.path;
-      const count = to.meta.fetchCount as number;
-
-      if (path === "/message" && count === 0) {
-        console.log("/message");
-
-        store.dispatch("message/fetchPrivateMsg", () => {
-          to.meta.fetchCount = count + 1;
-        });
-      }
-    },
     meta: {
       setting: {
         left: {
@@ -137,6 +123,13 @@ const routes: (RouteRecordRaw & {
     path: "/activity",
     name: "Activity",
     component: () => import("../view/activity/Activity.vue"),
+  },
+  {
+    path: "/login",
+    name: "Login",
+    components: {
+      default: () => import("../layout/login/LoginMain.vue"),
+    },
   },
 ];
 

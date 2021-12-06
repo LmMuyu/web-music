@@ -26,4 +26,22 @@ export default {
   switchGolbalMark(state: State | { circleRef: boolean }) {
     state.circleRef = false;
   },
+
+  setMainTagsShowStatus(state: State, status: boolean) {
+    state.mainTagsShow = status;
+  },
+
+  pubUnmountList(state: State, pubtype: string, unmount: (...args: any) => any | void) {
+    state.unmountList.off(pubtype, (args) => {
+      const resvalue = unmount(args[1]);
+
+      if (resvalue) {
+        args[0] && args[0](resvalue);
+      }
+    });
+  },
+
+  subUnmountList(state: State, subtype: string, callback: Function, ...args: any) {
+    state.unmountList.emit(subtype, [callback, args]);
+  },
 };

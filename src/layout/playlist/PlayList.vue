@@ -8,7 +8,7 @@
       ></PlayListMain>
     </el-main>
     <el-footer class="flex items-center bg-white padd">
-      <Audio ref="compAudio" />
+      <Audio ref="compAudio"></Audio>
     </el-footer>
   </el-container>
 </template>

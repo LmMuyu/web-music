@@ -18,7 +18,7 @@
           </div>
         </div>
       </div>
-      <div style="flex: 3" class="flex flex-col w-full">
+      <div style="flex: 3" class="flex flex-col h-full w-full">
         <div>
           <AudioAndVideoControls
             @next="controlsMethods.next"
@@ -27,25 +27,33 @@
             @pause="controlsMethods._pause"
           ></AudioAndVideoControls>
         </div>
-        <div class="flex justify-center itmes-center">
+        <div class="flex justify-center itmes-center h-full w-full">
           <PlayMusicTime :starttime="starttime" :maxtime="maxtime" class="w-full">
             <PlaySlider v-model="starttime" :max="maxtime" />
           </PlayMusicTime>
-          <!-- <div>
-            <el-slider class="transform -translate-y-full" v-model="volume" vertical height="80px">
+          <div class="relative h-full w-full clearfolat">
+            <el-slider
+              class="left-0"
+              style="position: absolute !important; top: 0"
+              v-model="volume"
+              :vertical="true"
+              height="80px"
+            >
             </el-slider>
-          </div> -->
-          <div @click="openRightDrawer">歌曲</div>
+          </div>
+          <div @click="openRightDrawer" class="flex items-center">
+            <i class="iconfont iconindent cursor-pointer"></i>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </template>
 <script setup lang="ts">
+import { reactive, ref, nextTick } from "vue";
 import { useRoute } from "vue-router";
 import { onMounted } from "vue-demi";
 import { useStore } from "vuex";
-import { reactive, ref } from "vue";
 
 import Howl from "./play";
 import { isType } from "../../utils/methods";
@@ -62,7 +70,6 @@ const maxtime = ref(0);
 const starttime = ref(0);
 const volume = ref(0);
 const historyData = ref([]);
-const musicinfoName = ref([]);
 
 const id = useRoute().query.id as unknown as number;
 
@@ -130,6 +137,16 @@ const openRightDrawer = () => openDrawer(historyData);
 onMounted(() => {
   playHowl.playid = id;
   maxtime.value = parseFloat(localStorage.getItem("duration"));
+
+  nextTick(() => {
+    const sliderBtn = document.querySelector(".el-slider__button")! as HTMLElement;
+    sliderBtn.style.cssText = `
+    {
+       width:"20px";
+      height:"20px"
+    }
+     `;
+  });
 });
 
 defineExpose({
@@ -137,6 +154,7 @@ defineExpose({
 });
 </script>
 <style scoped lang="scss">
+@include Iconfont(#2d3436, 20);
 .decoration {
   text-decoration: none !important;
 
@@ -149,5 +167,17 @@ defineExpose({
   -webkit-box-shadow: 0px -1px 3px 0px rgba(245, 245, 245, 1);
   -moz-box-shadow: 0px -1px 3px 0px rgba(245, 245, 245, 1);
   box-shadow: 0px -1px 3px 0px rgba(245, 245, 245, 1);
+}
+
+.clearfolat {
+  &::before,
+  &::after {
+    content: "";
+    display: block;
+  }
+
+  &::after {
+    clear: both;
+  }
 }
 </style>

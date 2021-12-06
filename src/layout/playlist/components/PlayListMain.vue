@@ -14,15 +14,16 @@
     <main class="w-full flex drop_filter">
       <div></div>
       <div class="p-4">
-        <div class="flex py-3">
-          <span class="flex items-center justify-center text-xl hover">
+        <div class="flex relative py-4">
+          <div class="flex items-center text-xl w-full hover">
             <p class="headercolor">歌手:</p>
             <span
               style="color: #1f2937"
               class="text-xl ml-3 cursor-pointer singer-color"
               v-html="singerName"
             ></span>
-          </span>
+          </div>
+          <div class="absolute right-0 w-full bottom_hover" style="height: 3px; bottom: 25%"></div>
         </div>
         <div class="relative lycs_music">
           <div ref="trackNode" class="absolute top-0 right-0 bottom-0 w-1 h-full">
@@ -212,12 +213,8 @@ section {
 .sliderTrack::-webkit-scrollbar {
   display: none;
 }
-.hover {
-  @include Decoration_Hover;
-
-  & > p:nth-child(2) {
-    @include Text_Color;
-  }
+.hover:hover.bottom_hover {
+  background-color: #1f2937;
 }
 
 .text_color {

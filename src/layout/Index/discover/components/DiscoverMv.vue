@@ -1,28 +1,17 @@
 <template>
   <div class="flex items-center relative py-3 border_bar">
-    <div style="font-size: 21px">推荐MV</div>
+    <span v-html="useHeaderTitle('推荐MV')"></span>
   </div>
   <div class="mt-8">
     <ul class="list-none grid">
       <li v-for="(MvItem, index) in renderData" :key="MvItem.id">
-        <div
-          class="relative"
-          @mouseenter="onMouseenter(index)"
-          @mouseleave="onMouseleave"
-        >
-          <img
-            :src="MvItem.cover + '?param=224y140'"
-            style="object-fit: cover"
-          />
+        <div class="relative" @mouseenter="onMouseenter(index)" @mouseleave="onMouseleave">
+          <img :src="MvItem.cover + '?param=224y140'" style="object-fit: cover" />
           <DiscoverMaskPlay :index="index" />
         </div>
         <div class="flex flex-col text-left">
           <span class="py-1 text-lg">{{ MvItem.name }}</span>
-          <span
-            class="py-1"
-            style="color: #dfe6e9"
-            v-html="computeDartists(MvItem.artists)"
-          ></span>
+          <span class="py-1" style="color: #dfe6e9" v-html="computeDartists(MvItem.artists)"></span>
         </div>
       </li>
     </ul>
@@ -30,8 +19,10 @@
 </template>
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref } from "@vue/runtime-core";
+
 import { recommendMV } from "../../../../api/discover";
 import { activeCurrent } from "../api/data";
+import useHeaderTitle from "../hooks/useHeaderTile";
 
 import DiscoverMaskPlay from "./DiscoverMaskPlay.vue";
 
@@ -39,9 +30,7 @@ const renderData = ref<any>([]);
 
 const computeDartists = computed(() => {
   return function (artists: Array<{ id: number; name: string }>) {
-    return artists
-      .map((value) => `<a class="cursor-pointer">${value.name}</a>`)
-      .join("/");
+    return artists.map((value) => `<a class="cursor-pointer">${value.name}</a>`).join("/");
   };
 });
 

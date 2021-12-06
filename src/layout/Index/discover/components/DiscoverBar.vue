@@ -1,8 +1,7 @@
 <template>
   <div class="mx-8">
-    <div class="text-2xl relative">
-      <span class="pb-4 block"> 推荐歌手 </span>
-      <div class="border_bar"></div>
+    <div class="relative border_bar">
+      <span v-html="useHeaderTile('推荐歌手')"> </span>
     </div>
     <div>
       <ul class="list-none relative">
@@ -41,7 +40,9 @@
 </template>
 <script setup lang="ts">
 import { ref } from "@vue/reactivity";
+
 import { getArtists } from "../../../../api/discover";
+import useHeaderTile from "../hooks/useHeaderTile";
 
 const renderList = ref<any>([]);
 

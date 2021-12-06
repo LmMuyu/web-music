@@ -1,14 +1,6 @@
 <template>
-  <div
-    v-if="countRef"
-    ref="section"
-    class="overflow-y-scroll relative scroll_bar h_calc"
-  >
-    <section
-      class="flex pt-4 border_style"
-      v-for="event in events"
-      :key="event.id"
-    >
+  <div v-if="countRef" ref="section" class="overflow-y-scroll relative scroll_bar h_calc">
+    <section class="flex pt-4 border_style" v-for="event in events" :key="event.id">
       <div style="width: 10%" class="flex justify-center">
         <el-avatar
           class="cursor-pointer"
@@ -23,40 +15,26 @@
         ></el-avatar>
       </div>
       <div style="width: 90%">
-        <MainContent @emitPics="unMountPrveImage" :event="event" />
+        <MainContent :event="event" />
       </div>
     </section>
   </div>
 </template>
 <script setup lang="ts">
-import {
-  getCurrentInstance,
-  nextTick,
-  onActivated,
-  onDeactivated,
-  onMounted,
-  onUnmounted,
-  watch,
-} from "@vue/runtime-core";
-import { reactive, ref } from "@vue/reactivity";
+import { nextTick, getCurrentInstance, watch, reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 
 import { getSubScriptDynamic } from "../../../../api/subscription";
 import { useRefNegate } from "../../../../utils/useRefNegate";
-import preview from "../../../../components/previewpicture";
 import { throttle } from "../../../../utils/throttle";
 
 import MainContent from "./layout/MainContent.vue";
 import { ElAvatar } from "element-plus";
 
-import type { Emitter } from "mitt";
-
 const instance = getCurrentInstance();
 const router = useRouter();
-const mitt: Emitter = instance.appContext.config.globalProperties["mittBus"];
 
 const { countRef, negate } = useRefNegate(false);
-let previewImg = new preview();
 
 //@ts-ignore
 const events = ref([]);
@@ -72,7 +50,6 @@ let initwatch = false;
 async function friend(lasttime: number = -1) {
   try {
     const res = await getSubScriptDynamic(lasttime);
-
     lasttime = res.data.lasttime;
     events.value.push(...res.data.event);
 
@@ -85,16 +62,13 @@ async function friend(lasttime: number = -1) {
 
 friend();
 
-mitt.on("preview", unMountPrveImage);
-
 let requestmidd = false;
 
 function viewScroll(e: Event) {
   const target = e.target as HTMLElement;
   const scrollTop = target.scrollTop;
 
-  const percentage =
-    Number((scrollTop / scrollInfo.scrollHeight).toFixed(2)) * 100;
+  const percentage = Number((scrollTop / scrollInfo.scrollHeight).toFixed(2)) * 100;
 
   if (percentage >= 90 && !requestmidd) {
     requestmidd = true;
@@ -120,24 +94,6 @@ function watchEvent() {
 
   negate();
 }
-
-function unMountPrveImage(picInfo: any[]) {
-  previewImg.mount(picInfo[0], picInfo[1]);
-}
-
-onActivated(() => {
-  previewImg = new preview();
-});
-
-onDeactivated(() => {
-  previewImg.unmount(true);
-});
-
-onMounted(() => {});
-
-onUnmounted(() => {
-  // section.value.removeEventListener("scroll", viewScroll, false);
-});
 </script>
 <style scoped lang="scss">
 .border_style {

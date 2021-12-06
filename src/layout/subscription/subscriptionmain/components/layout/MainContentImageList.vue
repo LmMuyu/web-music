@@ -1,15 +1,16 @@
 <template>
-  <ul ref="refGrid" :class="{ 'mt-6': isMarginTop }">
+  <ul :style="gridstyle" :class="{ 'mt-6': isMarginTop }" @click.capture="emitPreImage">
     <li v-for="(file, index) in picList" :key="index">
       <img :src="file" class="object-fit" :key-index="index" />
     </li>
   </ul>
 </template>
 <script setup lang="ts">
-import { computed, defineProps, nextTick, ref } from "vue";
-import axios from "axios";
+import { computed, defineProps, ref } from "vue";
 
 import type { PropType } from "vue";
+
+const ctxEmit = defineEmits(["preImage"]);
 
 const props = defineProps({
   pics: {
@@ -23,7 +24,6 @@ const props = defineProps({
 });
 
 const picList = ref<any[]>([]);
-const refGrid = ref<HTMLElement | null>(null);
 const w = ref(100);
 const h = ref(100);
 
@@ -42,38 +42,30 @@ async function toFileReader(fileList: any[]) {
       break;
   }
 
-  setStyle();
-
-  const pics = await Promise.all(
-    fileList.map((pic) => {
-      return axios({
-        method: "get",
-        url: pic.originUrl + `?param=${w.value}y${h.value}`,
-        responseType: "blob",
-      });
-    })
-  );
-
-  return pics.map((picBlob) => URL.createObjectURL(picBlob.data));
+  return fileList.map((pic) => pic.originUrl + `?param=${w.value}y${h.value}`);
 }
 
 toFileReader(props.pics).then((res) => (picList.value = res));
 
-function setStyle() {
-  nextTick().then(() => {
-    if (refGrid.value) {
-      const el = refGrid.value;
+function emitPreImage(e: Event) {
+  const target = e.target as HTMLElement;
 
-      el.style.display = "grid";
-      el.style.gridTemplateColumns = `repeat(3,${w.value + "px"})`;
-      el.style.gridTemplateRows = `repeat(${row.value},${h.value + "px"})`;
-      el.style.gridGap = "5px";
-    }
-  });
+  if (target.nodeName === "IMG") {
+    ctxEmit("preImage", target.getAttribute("key-index"));
+  }
 }
 
 const row = computed(() => {
   return Math.ceil(props.pics.length / 3);
+});
+
+const gridstyle = computed(() => {
+  return {
+    display: "grid",
+    gridTemplateColumns: `repeat(3,${w.value + "px"})`,
+    gridTemplateRows: `repeat(${row.value},${h.value + "px"})`,
+    gridGap: "5px",
+  };
 });
 </script>
 <style scoped lang="scss"></style>

@@ -10,7 +10,9 @@
       </div>
     </div>
   </div>
-  <SubscriptionContent />
+  <div>
+    <SubscriptionContent />
+  </div>
 </template>
 >
 <script setup lang="ts">

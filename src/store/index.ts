@@ -1,5 +1,6 @@
 import { createStore } from "vuex";
 import { ref } from "@vue/runtime-dom";
+import mitt from "mitt";
 
 import actions from "./actions";
 import getters from "./getters";
@@ -15,6 +16,8 @@ const store = createStore<State>({
       musicInfo: null,
       activeTagFn: null,
       circleRef: ref(true),
+      mainTagsShow: true,
+      unmountList: mitt(),
     };
   },
   getters,

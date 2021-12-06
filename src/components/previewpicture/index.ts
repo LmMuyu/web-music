@@ -1,43 +1,42 @@
 import { App, createApp } from "@vue/runtime-dom";
-import { isRef, ref, Ref, unref, watch } from "vue";
+import { ref, Ref, watch } from "vue";
 
 import PreviewPicture from "./PreviewPicture.vue";
 
 import type { globalRefType } from "../../type";
 
 export default class preview {
-  mounttag: HTMLElement;
+  mountDom: HTMLElement;
   app: Ref<App<Element> | null> = ref(null);
   options: any;
   previewList: Ref<any[]>;
   listViewPipe: (data: globalRefType<any>) => void;
+  private index: number;
+
+  constructor(imagelist: Ref<any[]>, defaultIndex: number) {
+    this.previewList = imagelist;
+    this.index = defaultIndex;
+  }
 
   private runCreateApp(index: number, options: any) {
-    const stop = watch(this.app, (value) => {
-      this.listViewPipe = value.config.globalProperties.listViewPipe;
-      stop();
-    });
-
     this.app.value = createApp(PreviewPicture, {
       index,
       options,
-      previewList: this.previewList.value,
+      previewList: this.previewList,
       unmount: this.unmount.bind(this, false),
     });
   }
 
-  mount(imgList: Ref<any[]> | any[], index: number, options?: any) {
-    if (!!this.app.value) {
-      this.addNode(imgList);
+  mount(options?: any) {
+    if (this.app.value) {
       return;
     }
 
     options = options ?? this.options ?? {};
-    this.previewList = isRef(imgList) ? imgList : ref(imgList);
 
-    this.findNode();
-    this.runCreateApp(index, options);
-    this.app.value.mount(this.mounttag);
+    this.insertNode();
+    this.runCreateApp(this.index, options);
+    this.app.value.mount(this.mountDom);
   }
 
   unmount(iscomp: boolean) {
@@ -49,26 +48,16 @@ export default class preview {
     if (this.app.value === null) return;
 
     this.app.value.unmount();
-    this.mounttag = null;
-    this.app = null;
-    return true;
+    this.app = this.mountDom = null;
   }
 
-  private findNode() {
-    this.mounttag = document.createElement("div");
-    document.querySelector("body").appendChild(this.mounttag);
-  }
-
-  private addNode(imageList: Ref<any[]> | any[]) {
-    const list = unref(imageList);
-    if (!list.length) return;
-
-    this.listViewPipe(list);
-    document.querySelector("body").appendChild(this.mounttag);
+  private insertNode() {
+    this.mountDom = document.createElement("div");
+    document.querySelector("body").appendChild(this.mountDom);
   }
 
   private removeNode() {
     this.previewList.value.length = 0;
-    this.mounttag.parentNode.removeChild(this.mounttag);
+    this.mountDom.parentNode.removeChild(this.mountDom);
   }
 }

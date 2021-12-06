@@ -1,34 +1,39 @@
 <template>
-  <section class="flex flex-col justify-center items-center w-full h-full">
-    <main class="flex flex-col justify-center items-center w-3/5">
-      <div class="py-2 w-full">
-        <InputBox
-          ref="phone"
-          placeholder="手机号"
-          :is-icon="true"
-          @change="registerChecking"
-          v-model="inputLoginInfo.phone"
-        />
+  <div class="flex items-center" style="width: 80%; height: 90%">
+    <div style="width: 40%" class="flex justify-center items-center h-full">
+      <div class="flex w-full">
+        <div class="w-3/5">
+          <div class="py-2">
+            <InputBox
+              ref="phone"
+              placeholder="手机号"
+              :is-icon="true"
+              @change="registerChecking"
+              v-model="inputLoginInfo.phone"
+            />
+          </div>
+          <div class="py-2 w-full">
+            <InputBox
+              ref="pass"
+              iconfont="iconmima"
+              type="password"
+              placeholder="密码"
+              v-model="inputLoginInfo.password"
+            />
+          </div>
+          <div class="py-2 w-full flex flex-col items-center">
+            <el-button class="rounded-lg w-full" type="primary" @click="loginBtn">登录</el-button>
+            <span class="flex justify-end py-4">
+              <a href="javascript:;;" class="text-sm px-4">注册</a>
+              <a href="javscript:;;" class="text-sm px-4">忘记密码?</a>
+            </span>
+          </div>
+        </div>
+        <div class="w-2/5"></div>
       </div>
-      <div class="py-2 w-full">
-        <InputBox
-          ref="pass"
-          iconfont="iconmima"
-          type="password"
-          placeholder="密码"
-          v-model="inputLoginInfo.password"
-        />
-      </div>
-      <div class="py-2 w-full flex items-center">
-        <el-button class="rounded-lg w-5/12" type="primary" @click="loginBtn"
-          >登录</el-button
-        >
-        <span class="flex-1 text-right">
-          <a href="javscript:;;" class>忘记密码?</a>
-        </span>
-      </div>
-    </main>
-  </section>
+    </div>
+    <div style="width: 60%" class="h-full bgimage"></div>
+  </div>
 </template>
 <script setup lang="ts">
 import { reactive, ref } from "@vue/reactivity";
@@ -53,8 +58,7 @@ let prephone = "";
 const phone = ref();
 const pass = ref();
 
-const showErrorInfo = (box: any, message: string) =>
-  box.value["showErrorInfo"]?.(message);
+const showErrorInfo = (box: any, message: string) => box.value["showErrorInfo"]?.(message);
 
 function checkingInput() {
   let isCheckingRes = true;
@@ -131,5 +135,33 @@ function setUserInfo(info: any) {
     router.push({ path: "/index" }); //登录成功，跳转到主页面
   };
 }
+
+document.addEventListener("keydown", (e) => {
+  if (e.code === "Enter") {
+    loginBtn();
+  }
+});
 </script>
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+div:nth-child(1) {
+  background-color: #fff;
+}
+
+.bgimage {
+  position: relative;
+  background-image: url("https://images.pexels.com/photos/991012/pexels-photo-991012.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940");
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    -webkit-box-shadow: 0px 0px 10px 0px rgba(234, 234, 234, 1);
+    -moz-box-shadow: 0px 0px 10px 0px rgba(234, 234, 234, 1);
+    box-shadow: 0px 0px 10px 0px rgba(234, 234, 234, 1);
+  }
+}
+</style>

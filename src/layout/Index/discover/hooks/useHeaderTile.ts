@@ -1,3 +1,3 @@
 export default (title: string) => {
-  return `<p class="text-3xl">${title}</p>`;
+  return `<p  style="font-size:21px">${title}</p>`;
 };

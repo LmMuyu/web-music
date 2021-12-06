@@ -21,7 +21,17 @@
     </div>
     <div style="flex: 1">
       <span
-        class="flex items-center justify-end h-full text-black transform -translate-x-4 cursor-pointer icon"
+        class="
+          flex
+          items-center
+          justify-end
+          h-full
+          text-black
+          transform
+          -translate-x-4
+          cursor-pointer
+          icon
+        "
       >
         <p>更多</p>
         <i class="iconfont iconup-copy-copy"></i>
@@ -51,14 +61,17 @@ const props = defineProps({
   },
 });
 
-const cardList = ref([])
+const cardList = ref([]);
 
 provide("cardlist", cardList);
 
-const playliststopFn = watch(() => props.playlist, (value) => {
-  cardList.value = value
-  Promise.resolve().then(() => playliststopFn())
-})
+const playliststopFn = watch(
+  () => props.playlist,
+  (value) => {
+    cardList.value = value;
+    Promise.resolve().then(() => playliststopFn());
+  }
+);
 
 const curindex = ref(0);
 

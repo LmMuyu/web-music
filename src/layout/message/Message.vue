@@ -1,4 +1,4 @@
-<!-- <template>
+<template>
   <ElRow class="flex h-full overflow-hidden relative border_radius">
     <ElCol :span="7" class="solide_border"> </ElCol>
     <ElCol class="w-full h-full absolute right-0 top-0" :span="17">
@@ -12,15 +12,10 @@
   </ElRow>
 </template>
 <script setup lang="ts">
-import { onMounted, nextTick, watch } from "@vue/runtime-core";
 import { reactive, ref } from "@vue/reactivity";
 import { useStore } from "vuex";
 
-import {
-  getPrivateLetter,
-  getUserMessageList,
-  getUserMessage,
-} from "../../api/message";
+import { getPrivateLetter, getUserMessageList, getUserMessage } from "../../api/message";
 import { promptbox } from "../../components/promptBox";
 import LRU from "../../utils/LRUCache";
 
@@ -45,9 +40,7 @@ const onEmitRequest = async (id: number) => {
   if (chatMsgs[0].id === id) {
     const result = await getUserMessage(id, chatMsgs[1].length + 5);
 
-    privateLetter.chatMsgs[1].push(
-      ...result.data.msgs.slice(chatMsgs.length + 1)
-    );
+    privateLetter.chatMsgs[1].push(...result.data.msgs.slice(chatMsgs.length + 1));
 
     LRUcatch.put(id, result);
   }
@@ -62,9 +55,7 @@ const findViewMsg = (useroptions: Record<string, any>) => {
   }
 
   if (privateLetter.storeMsg.length > 0) {
-    const msgObj = privateLetter.storeMsg.find(
-      (v) => v.config.params.uid === useroptions.id
-    );
+    const msgObj = privateLetter.storeMsg.find((v) => v.config.params.uid === useroptions.id);
 
     if (!msgObj) {
       return promptbox({
@@ -74,29 +65,12 @@ const findViewMsg = (useroptions: Record<string, any>) => {
 
     LRUcatch.put(useroptions.id, msgObj);
 
-    // console.log(LRUcatch.viewAllCache());
-
     privateLetter.chatMsgs.length = 0;
     privateLetter.chatMsgs.push(useroptions, msgObj.data.msgs);
   }
 };
 
 store.commit("login/onMittEvent", async (value: any) => {});
-
-onMounted(() => {
-  nextTick().then(() => {
-    if (!isMountApp() && msgmain.value) {
-      mountApp(msgmain.value.$el);
-
-      const stepWatch = watch(
-        () => privateLetter.main,
-        () => {
-          unmountApp(negate) && stepWatch();
-        }
-      );
-    }
-  });
-});
 </script>
 <style scoped lang="scss">
 .border_radius {
@@ -115,4 +89,4 @@ onMounted(() => {
     padding-left: 0 !important;
   }
 }
-</style> -->
+</style>

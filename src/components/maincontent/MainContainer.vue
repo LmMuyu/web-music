@@ -1,7 +1,7 @@
 <template>
   <div class="flex h-full w-full">
     <div v-if="isDefault" class="w-full">
-      <el-container class="h-full relative">
+      <el-container v-if="isLoginComp" class="h-full relative">
         <el-main class="h-full absolute top-0 left-0 right-0" :style="paddingStyle()">
           <router-view v-slot="{ Component }">
             <keep-alive :max="3">
@@ -10,6 +10,11 @@
           </router-view>
         </el-main>
       </el-container>
+      <div class="w-full h-full" v-else>
+        <router-view v-slot="{ Component }">
+          <component :is="Component"></component>
+        </router-view>
+      </div>
     </div>
 
     <div v-else class="w-full flex">
@@ -50,12 +55,14 @@ import { computed } from "@vue/runtime-core";
 import { useRoute, useRouter } from "vue-router";
 import { reactive, ref } from "vue";
 
+import { useWatchHost } from "../../utils/useWatchHost";
+
 import { ElContainer, ElMain } from "element-plus";
 
 import type { Container, META } from "../../routes/type/type";
 
 const router = useRouter();
-const route = useRoute()
+const route = useRoute();
 
 const isDefault = ref(false);
 
@@ -71,15 +78,20 @@ const settConInfo = reactive<{
   },
 });
 
+const isLoginComp = useWatchHost();
+
 function paddingStyle() {
-  const value = route.meta.padding
+  const value = route.meta.padding;
 
-  return value === "none" ? {
-    padding: 0
-  } : typeof value === "string" ? {
-    padding: value
-  } : value
-
+  return value === "none"
+    ? {
+        padding: 0,
+      }
+    : typeof value === "string"
+    ? {
+        padding: value,
+      }
+    : value;
 }
 
 router.beforeEach((to) => {
