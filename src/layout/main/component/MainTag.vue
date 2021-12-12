@@ -26,33 +26,41 @@ import { activeIndex } from "../../../utils/activeIndex";
 
 const router = useRouter();
 const store = useStore();
+let uid: number | null = null;
 
 const pathlist = inject("pathlist") as string[];
 
+const { activeStyle, clickActive, moveActive, leaveActive } = new activeIndex(
+  currentIndex,
+  moveIndex
+);
+
 const toPath = (path: string, index: number) => {
   const islogin = store.getters;
-
   if (!islogin && pathlist.indexOf(path) > -1) {
     router.push({ path: "/login" });
     return;
   }
 
   clickActive(index);
-  router.push({ path });
+
+  router.push({
+    path,
+    query: {
+      uid,
+    },
+  });
 };
 
+store.commit("login/onMittEvent", (userinfoObj) => {
+  uid = userinfoObj.value.account.id;
+});
+
 const activeTag = (to: any) => {
-  currentIndex.value = AsideTags.findIndex(
-    (value) => to.path.indexOf(value.path) > -1
-  );
+  currentIndex.value = AsideTags.findIndex((value) => to.path.indexOf(value.path) > -1);
 };
 
 router.beforeEach((to) => activeTag(to));
-
-const { activeStyle, clickActive, moveActive, leaveActive } = new activeIndex(
-  currentIndex,
-  moveIndex
-);
 </script>
 <style scoped lang="scss">
 .icons {

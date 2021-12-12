@@ -20,7 +20,7 @@ const cssOptions: CSSOptions = {
 };
 
 const aliasList = createAlias([
-  ["@/", "src"],
+  ["src/", "/src"],
   ["comps/", "src/components"],
   ["view/", "src/view"],
   ["utils/", "src/utils"],

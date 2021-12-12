@@ -2,7 +2,7 @@
   <section class="flex flex-col w-full h-full relative">
     <div class="text-center relative clearfix whauto">
       <img
-        :src="(playitem.coverImgUrl || playitem.al.picUrl) + '?param=90y90'"
+        :src="(playitem.coverImgUrl || playitem.al.picUrl) + '?param=120y80'"
         class="w-full h-full p-1"
       />
       <div
@@ -79,9 +79,12 @@ function fromPlayCount(count: number) {
 }
 
 section {
-  -webkit-box-shadow: -1px 0px 14px 0px rgba(177, 177, 179, 1);
-  -moz-box-shadow: -1px 0px 14px 0px rgba(177, 177, 179, 1);
-  box-shadow: -1px 0px 14px 0px rgba(177, 177, 179, 1);
+  -webkit-box-shadow: 0px 0px 7px 0px rgba(177, 177, 179, 1);
+  -moz-box-shadow: 0px 0px 7px 0px rgba(177, 177, 179, 1);
+  box-shadow: 0px 0px 7px 0px rgba(177, 177, 179, 1);
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
 
   & > div:nth-child(1) > img {
     border-radius: 6px 6px 6px 6px;
@@ -117,8 +120,8 @@ section {
   }
 
   & .whauto {
-    min-width: 90px;
-    min-height: 90px;
+    min-width: 120px;
+    min-height: 80px;
   }
 }
 </style>

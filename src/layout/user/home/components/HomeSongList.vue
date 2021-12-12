@@ -1,9 +1,9 @@
 <template>
-  <VirtualList :render-data="songlist" keyindex="id">
+  <!-- <VirtualList :render-data="songlist" keyindex="id">
     <template v-slot="{ scopeData: { renderItem } }">
       <HomeSongItem :songitem="renderItem" />
     </template>
-  </VirtualList>
+  </VirtualList> -->
 </template>
 <script setup lang="ts">
 import VirtualList from "../../../../components/virtuallist/VirtualList.vue";

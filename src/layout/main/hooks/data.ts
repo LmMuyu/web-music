@@ -29,7 +29,7 @@ export const AsideTags = [
     index: "tag_5",
     icon: "iconren-",
     title: "个人资料",
-    path: "/index",
+    path: "/user/home",
   },
   {
     index: "tag_6",

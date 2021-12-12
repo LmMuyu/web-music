@@ -1,4 +1,5 @@
 import { reactive, watchEffect, WatchStopHandle } from "vue";
+import { getMusicDetail } from "../../api/playList";
 import mitt, { Emitter, Handler } from "mitt";
 import { findLoginInfo } from "../methods";
 
@@ -6,6 +7,8 @@ export interface STATETYPE {
   mitt: Emitter;
   islogin: boolean;
   userinfo: Object;
+  ids: number[];
+  linkes: Record<string, any>[];
   watchStop: WatchStopHandle;
 }
 
@@ -19,9 +22,9 @@ class login {
   public constructor() {
     this.namespaced = true;
     this.state = this.createState();
-    this.actions = {};
     this.mutations = this.createMutations();
     this.getters = this.createGetters();
+    this.actions = this.createActions();
   }
 
   private createState() {
@@ -29,7 +32,10 @@ class login {
       mitt: mitt(),
       islogin: !!localStorage.getItem("token") ? true : false,
       userinfo: {},
+      ids: [],
+      linkes: [],
       watchStop: () => {},
+      handleCountWmap: new WeakMap(),
     });
 
     store.watchStop = this.watchUserInfo(store)();
@@ -47,12 +53,34 @@ class login {
         state.userinfo = data;
       },
 
-      onMittEvent(state: STATETYPE, Fn: Handler<Function>) {
-        state.mitt.on("login", Fn);
+      onMittEvent(state: STATETYPE, fn: Handler<Function>) {
+        state.mitt.on("login", fn);
       },
 
       findInfo(state: STATETYPE) {
         state.userinfo = findLoginInfo();
+      },
+
+      setLinkes(state: STATETYPE, { ids, linkes }) {
+        state.ids.push(...ids);
+        state.linkes.push(...linkes);
+      },
+    };
+  }
+
+  private createActions() {
+    return {
+      async getlinke(state: any, ids: number[]) {
+        const idlist = ids.splice(0, 12);
+
+        const linkes = await Promise.all(
+          idlist.map(async (id) => (await getMusicDetail(String(id))).data)
+        );
+
+        state.commit("setLinkes", {
+          ids,
+          linkes,
+        });
       },
     };
   }
@@ -62,6 +90,8 @@ class login {
       getUserInfo: (state: STATETYPE) => state.userinfo,
       getIslogin: (state: STATETYPE) => state.islogin,
       watchStop: (state: STATETYPE) => state.watchStop,
+      getLLinkes: (state: STATETYPE) => () => state.linkes,
+      getIds: (state: STATETYPE) => state.ids,
     };
   }
 

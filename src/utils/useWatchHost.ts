@@ -2,7 +2,7 @@ import { ref, watchEffect } from "vue";
 import { useRoute } from "vue-router";
 
 export function useWatchHost() {
-  const excludes = ["/login", "/playlist"];
+  const excludes = ["/login", "/playlist", "/user"];
 
   const route = useRoute();
   const isshow = ref(true);

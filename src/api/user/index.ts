@@ -25,10 +25,7 @@ export function getBindingInfo(uid: string) {
 }
 
 export async function allSettldRequest(uid: string) {
-  const allres = await Promise.allSettled([
-    getBindingInfo(uid),
-    getUserDetail(uid),
-  ]);
+  const allres = await Promise.allSettled([getBindingInfo(uid), getUserDetail(uid)]);
 
   console.log(allres);
 }
@@ -45,6 +42,15 @@ export function getUserAudio(uid: number) {
 export function obtainUserPlayList(uid: string) {
   return request({
     url: "/user/playlist",
+    params: {
+      uid,
+    },
+  });
+}
+
+export function llikelist(uid: string) {
+  return request({
+    url: "/likelist",
     params: {
       uid,
     },

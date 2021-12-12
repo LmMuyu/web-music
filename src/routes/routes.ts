@@ -44,14 +44,6 @@ const routes: (RouteRecordRaw & {
     },
   },
   {
-    path: "/explore",
-    name: "Explore",
-    meta: {
-      defaultView: ["ExploreContent", "ExploreRight"],
-    },
-    component: () => import("../view/explore/explore.vue"),
-  },
-  {
     path: "/message",
     name: "Message",
     meta: {
@@ -118,11 +110,6 @@ const routes: (RouteRecordRaw & {
     components: {
       default: () => import("../layout/user/User.vue"),
     },
-  },
-  {
-    path: "/activity",
-    name: "Activity",
-    component: () => import("../view/activity/Activity.vue"),
   },
   {
     path: "/login",

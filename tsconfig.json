@@ -20,11 +20,7 @@
       }
     ],
     "lib": ["esnext", "dom"],
-    "types": ["vite/client"],
-    "baseUrl": "./",
-    "paths": {
-      "comps/": ["/src/components"]
-    }
+    "types": ["vite/client"]
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"]
 }
