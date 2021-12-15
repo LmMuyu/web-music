@@ -78,7 +78,7 @@ const select = reactive({
       options: [
         {
           value: "创建的歌单",
-          label: "收藏的歌单",
+          label: "创建的歌单",
         },
         {
           value: "收藏的歌单",

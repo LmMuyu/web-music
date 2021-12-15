@@ -106,6 +106,11 @@ const routes: (RouteRecordRaw & {
         name: "Home",
         component: () => import("../layout/user/home/Home.vue"),
       },
+      {
+        path: "songs",
+        name: "Songs",
+        component: () => import("../layout/user/songs/Songs.vue"),
+      },
     ],
     components: {
       default: () => import("../layout/user/User.vue"),

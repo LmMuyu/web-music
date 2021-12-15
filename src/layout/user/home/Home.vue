@@ -10,35 +10,62 @@
     </ElHeader>
     <ElMain>
       <div class="flex" style="height: 30vh">
-        <HomeLLikeMusic></HomeLLikeMusic>
-        <div></div>
+        <div class="w-1/3">
+          <HomeLLikeMusic :linkelen="linkeLen"></HomeLLikeMusic>
+        </div>
+        <div class="w-2/3">
+          <HomeLLinkeLists />
+        </div>
       </div>
       <div>
         <HomeHeadSelect @songs="selectSong" />
+      </div>
+      <div>
+        <Component :songlist="songlist" :selectTag="selectTag" :is="contentComps"></Component>
       </div>
     </ElMain>
   </ElContainer>
 </template>
 <script setup lang="ts">
-import { ref } from "@vue/reactivity";
+import { ref, shallowRef } from "@vue/reactivity";
 import { useRoute } from "vue-router";
 import { useStore } from "vuex";
-import { provide } from "vue";
 
-import { obtainUserPlayList, getUserDetail } from "../../../api/user";
+import { obtainUserPlayList, getUserDetail, llikelist, getSubCount } from "../../../api/user";
+import { listDetail } from "../../../api/toplist";
 
 import { ElContainer, ElMain, ElHeader, ElAvatar } from "element-plus";
 import HomeSongList from "./components/HomeSongList.vue";
 import HomeLLikeMusic from "./components/HomeLLikeMusic.vue";
 import HomeHeadSelect from "./components/HomeHeadSelect.vue";
+import HomeLLinkeLists from "./components/HomeLLinkeLists.vue";
 
 const route = useRoute();
 const store = useStore();
-const uid = ref(route.query.uid);
-provide("uid", uid);
 
+const uid = ref(route.query.uid as string);
+const ids = ref([]);
+const linkeLen = ref(0);
 const userinfo = ref<any>({});
 const songlist = ref<any[]>([]);
+const contentComps = shallowRef(HomeSongList);
+const selectTag = ref<"all" | "linke" | "sub">("all");
+
+function selectSong(select: string) {
+  switch (select) {
+    case "全部歌单":
+      selectTag.value = "all";
+      return;
+
+    case "创建的歌单":
+      selectTag.value = "linke";
+      return;
+
+    case "收藏的歌单":
+      selectTag.value = "sub";
+      return;
+  }
+}
 
 function loginInfo() {
   return new Promise((resolve) => {
@@ -55,10 +82,6 @@ function loginInfo() {
   });
 }
 
-function selectSong(select: string) {
-  console.log(select);
-}
-
 (async function () {
   const islogin = await loginInfo();
 
@@ -66,18 +89,27 @@ function selectSong(select: string) {
     if (!islogin) {
       // const detail = await getUserDetail(uid);
       // userinfo.value = detail.data;
-      // obtainUserPlayList(uid).then((sub) => {
-      //   if (sub.data.playlist.length > 0) {
-      //     songlist.value.push(...sub.data.playlist);
-      //   }
+    } else {
+      // getSubCount().then((rs) => {
+      //   console.log(rs);
       // });
     }
+
+    obtainUserPlayList(uid.value).then(async (sub) => {
+      if (sub.data.playlist.length > 0) {
+        songlist.value.push(...sub.data.playlist);
+      }
+    });
+
+    const likelist = await llikelist(uid.value);
+    ids.value.push(...likelist.data.ids);
+    linkeLen.value = ids.value.length;
+
+    store.dispatch("login/getlinke", ids.value);
   } catch (error) {
     console.error("状态码:" + error.data.status);
   }
 })();
-
-provide("uid", uid); //home父组件全局注入uid
 </script>
 <style scoped lang="scss">
 .flexdir {

@@ -1,16 +1,13 @@
 <template>
   <section class="flex flex-col w-full h-full relative">
     <div class="text-center relative clearfix whauto">
-      <img
-        :src="(playitem.coverImgUrl || playitem.al.picUrl) + '?param=120y80'"
-        class="w-full h-full p-1"
-      />
+      <img :src="imgsrc(playitem.coverImgUrl || playitem.al.picUrl)" class="p-1" />
       <div
         style="z-index: 99"
         class="w-full h-full flex justify-center items-center overflow-hidden play_icon"
       >
         <router-link
-          :to="{ path: '/playlist', query: { id: playitem.id } }"
+          :to="{ path: playitem.topath ?? '/playlist', query: { id: playitem.id } }"
           class="absolute top-0 bottom-0 left-0 right-0 w-full h-full"
           target="_blank"
           :itemid="playitem.id"
@@ -23,7 +20,10 @@
         <i class="iconfont iconbofang1"></i>
         <p class="ml-2">{{ fromPlayCount(playitem.playCount) }}</p>
       </span>
-      <p class="text-left cursor-pointer text-xs fotn_title">{{ playitem.name }}</p>
+      <span class="black">
+        <p class="text-left cursor-pointer text-xs fotn_title">{{ playitem.name }}</p>
+        <p v-if="playitem.subtitle">{{ playitem.subtitle }}</p>
+      </span>
     </div>
   </section>
 </template>
@@ -44,6 +44,14 @@ function fromPlayCount(count: number) {
   } else if (count >= 10000) {
     return `${Math.floor((count / 10000) * 100) / 100}万`;
   }
+}
+
+function imgsrc(url: string) {
+  const xsize = props.playitem?.xsize ?? 120;
+  const ysize = props.playitem?.ysize ?? 80;
+
+  const imgsize = `?param=${xsize}y${ysize}`;
+  return url + imgsize;
 }
 </script>
 <style scoped lang="scss">
@@ -108,6 +116,14 @@ section {
 
 section {
   & .clearfix {
+    width: auto;
+    height: auto;
+
+    & > img {
+      max-width: 512px;
+      max-height: 512px;
+    }
+
     &::after {
       content: "";
       height: 0;
