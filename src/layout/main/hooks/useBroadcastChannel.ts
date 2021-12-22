@@ -1,41 +1,60 @@
 import { useStore } from "vuex";
-import { reactive } from "vue";
 
 import { useLocalStorage } from "../../../utils/useLocalStorage";
-import { useRefNegate } from "../../../utils/useRefNegate";
 
 import type { UserInfo } from "../../../store/type";
-import type { Ref } from "vue";
+import { ElNotification } from "element-plus";
+
+type NottificationType = "success" | "warning" | "info" | "error";
+
+function openNotification(content: string, title?: string, type: NottificationType = "info") {
+  return ElNotification.success({
+    type,
+    message: content,
+    showClose: false,
+    ...(title ? { title } : {}),
+  });
+}
 
 //登录后跨页面通信
-export const BCBus = () => {
-  let store = useStore();
-
-  const { countRef, negate } = useRefNegate(false);
-  const InfoCard = reactive({
-    userInfo: {},
-    countRef,
-    negate,
-  });
-
+export default function loginBCBus(isCurLoginPage: boolean = false, data?: any) {
+  const store = useStore();
   const BC = new BroadcastChannel("login");
 
-  BC.onmessage = async function (ev) {
-    const info = ev.data;
+  function portMess(data: any, BC: BroadcastChannel) {
+    BC.postMessage(data);
+  }
 
-    setLocalStorage(info.token, info); //写入local storage
-    store.commit("login/switchStatus", true);
-    store.commit("login/setUserInfo", info);
+  if (isCurLoginPage) {
+    BC.onmessage = function (ev) {
+      if (ev.data === "close_window") {
+        window.close();
+      }
+    };
 
-    BC.postMessage(""); //通知登录页面可以跳转到主页面了
-  };
+    portMess(data, BC);
+  } else {
+    return new Promise((resolve, inject) => {
+      BC.onmessage = function (ev) {
+        const userdata = ev.data;
+        console.log(userdata);
 
-  BC.onmessageerror = function () {
-    throw new Error("BroadcastChannel接收到一条无法反序列化的消息!");
-  };
+        // setLocalStorage(info.token, info); //写入local storage
+        store.commit("login/switchStatus", true);
+        store.commit("login/setUserInfo", userdata);
 
-  return InfoCard;
-};
+        portMess("close_window", BC);
+        resolve(userdata);
+
+        openNotification("话题哇哇哇哇");
+      };
+
+      BC.onmessageerror = function () {
+        inject("BroadcastChannel接收到一条无法反序列化的消息!");
+      };
+    });
+  }
+}
 
 function setLocalStorage(token: number, commitInfo: UserInfo) {
   if (!token) return;

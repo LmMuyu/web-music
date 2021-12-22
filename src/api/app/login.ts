@@ -1,17 +1,7 @@
 import request from "../../utils/request";
-import store from "../../store";
 
-let initlogin = false;
-
-export async function loginStateus() {
-  if (!initlogin) {
-    try {
-      initlogin = true;
-      return await request({ method: "post", url: "/login/status" });
-    } catch (err) {
-      console.log(err);
-    }
-  }
+export function loginStateus() {
+  return request({ method: "post", url: "/login/status" });
 }
 
 export async function logout() {

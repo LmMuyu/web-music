@@ -4,7 +4,8 @@
       <img :src="imgsrc(playitem.coverImgUrl || playitem.al.picUrl)" class="p-1" />
       <div
         style="z-index: 99"
-        class="w-full h-full flex justify-center items-center overflow-hidden play_icon"
+        class="w-full h-full flex justify-center items-center overflow-hidden"
+        :class="isPlayIcon && 'play_icon'"
       >
         <router-link
           :to="{ path: playitem.topath ?? '/playlist', query: { id: playitem.id } }"
@@ -12,7 +13,7 @@
           target="_blank"
           :itemid="playitem.id"
         ></router-link>
-        <i class="iconfont iconbofang2"></i>
+        <i v-if="isPlayIcon" class="iconfont iconbofang2"></i>
       </div>
     </div>
     <div class="px-1 hover_opacity">
@@ -21,8 +22,12 @@
         <p class="ml-2">{{ fromPlayCount(playitem.playCount) }}</p>
       </span>
       <span class="black">
-        <p class="text-left cursor-pointer text-xs fotn_title">{{ playitem.name }}</p>
-        <p v-if="playitem.subtitle">{{ playitem.subtitle }}</p>
+        <p :style="playitem?.style?.name ?? ''" class="text-left cursor-pointer text-xs fotn_title">
+          {{ playitem.name }}
+        </p>
+        <p :style="playitem?.style?.subtitle ?? ''" v-if="playitem.subtitle">
+          {{ playitem.subtitle }}
+        </p>
       </span>
     </div>
   </section>
@@ -32,6 +37,10 @@ const props = defineProps({
   playitem: {
     type: Object,
     required: true,
+  },
+  isPlayIcon: {
+    type: Boolean,
+    default: true,
   },
 });
 
@@ -79,9 +88,9 @@ function imgsrc(url: string) {
   @include absolute;
 
   & > i {
-    -webkit-box-shadow: 0 0 0 80px #f5f6fa60;
-    -moz-box-shadow: 0 0 0 80px #f5f6fa60;
-    box-shadow: 0 0 0 80px #f5f6fa60;
+    -webkit-box-shadow: 0 0 0 100px #f5f6fa60;
+    -moz-box-shadow: 0 0 0 100px #f5f6fa60;
+    box-shadow: 0 0 0 100px #f5f6fa60;
     background-color: #f5f6fa60;
   }
 }
@@ -120,8 +129,9 @@ section {
     height: auto;
 
     & > img {
-      max-width: 512px;
-      max-height: 512px;
+      width: auto;
+      height: auto;
+      object-fit: cover;
     }
 
     &::after {
@@ -136,8 +146,8 @@ section {
   }
 
   & .whauto {
-    min-width: 120px;
-    min-height: 80px;
+    max-width: 512px;
+    max-height: 512px;
   }
 }
 </style>

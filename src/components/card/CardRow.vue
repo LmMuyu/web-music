@@ -1,18 +1,20 @@
 <template>
   <div :style="gridStyle()" @click.capture="captureColItem">
     <div v-for="(playitem, index) in playlist" :key="index">
-      <PlayColItem :playitem="playitem" />
+      <play-col-item :is-play-icon="playitem?.isPlayIcon ?? true" :playitem="playitem" />
     </div>
   </div>
 </template>
 <script setup lang="ts">
 import PlayColItem from "./CardColItem.vue";
 
+import type { PropType } from "vue";
+
 const ctxEmit = defineEmits(["mutationSetName"]);
 
 const props = defineProps({
   playlist: {
-    type: Array,
+    type: Array as PropType<any[]>,
     required: true,
   },
   colItem: {

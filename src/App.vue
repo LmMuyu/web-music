@@ -12,7 +12,6 @@ import { promptbox } from "./components/promptBox";
 
 import HtmlMain from "./layout/main/Main.vue";
 
-import type { UserInfo } from "./store/type";
 import type { RouteLocationNormalized } from "vue-router";
 
 type linkType = "info" | "primary" | "success" | "warning" | "danger" | "default" | undefined;
@@ -22,7 +21,6 @@ const router = useRouter();
 
 const showTag = ref(false);
 const linkType = ref<linkType>("info");
-const userInfo = ref<UserInfo | null>(null);
 const circleRef = ref(true);
 
 const pathList = ["/message", "/subscription"];
@@ -43,7 +41,9 @@ function updateCircleRef() {
 }
 
 async function redirectPath(to: RouteLocationNormalized, islogin: boolean) {
-  await loginStateus();
+  const status = await loginStateus();
+  console.log(status);
+
   Promise.resolve().then(() => updateCircleRef());
 
   if (islogin && pathList.includes(to.path) && to.path !== "/index") {
@@ -52,28 +52,13 @@ async function redirectPath(to: RouteLocationNormalized, islogin: boolean) {
   }
 }
 
-router.beforeEach((to, from) => {
+router.beforeEach((to) => {
   const islogin: boolean = store.dispatch["login/getIslogin"];
-
   redirectPath(to, islogin);
 
-  const meta = to.meta;
-
-  if (meta.hasOwnProperty("showTag")) {
-    showTag.value = meta.showTag as boolean;
-  }
-
-  if (to.path === "/login" && islogin) {
+  if (to.path.indexOf("/login") > -1 && islogin) {
     router.push("/index");
   }
-});
-
-// router.beforeResolve((to) => {
-
-// });
-
-store.commit("login/onMittEvent", (value: any) => {
-  userInfo.value = value.value as UserInfo;
 });
 </script>
 

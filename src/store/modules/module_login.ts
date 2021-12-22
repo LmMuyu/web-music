@@ -1,15 +1,11 @@
-import { reactive, watchEffect, WatchStopHandle } from "vue";
 import { getMusicDetail } from "../../api/playList";
-import mitt, { Emitter, Handler } from "mitt";
 import { findLoginInfo } from "../methods";
 
 export interface STATETYPE {
-  mitt: Emitter;
-  islogin: boolean;
-  userinfo: Object;
   ids: number[];
+  islogin: boolean;
+  userdata: Object;
   linkes: Record<string, any>[];
-  watchStop: WatchStopHandle;
 }
 
 class login {
@@ -28,19 +24,13 @@ class login {
   }
 
   private createState() {
-    const store = reactive({
-      mitt: mitt(),
-      islogin: !!localStorage.getItem("token") ? true : false,
-      userinfo: {},
+    return {
       ids: [],
+      islogin: localStorage.getItem("token") ? true : false,
+      userdata: {},
       linkes: [],
-      watchStop: () => {},
       handleCountWmap: new WeakMap(),
-    });
-
-    store.watchStop = this.watchUserInfo(store)();
-
-    return store;
+    };
   }
 
   private createMutations() {
@@ -50,15 +40,12 @@ class login {
       },
 
       setUserInfo(state: STATETYPE, data: Object) {
-        state.userinfo = data;
-      },
-
-      onMittEvent(state: STATETYPE, fn: Handler<Function>) {
-        state.mitt.on("login", fn);
+        state.userdata = data;
+        console.log(state.userdata);
       },
 
       findInfo(state: STATETYPE) {
-        state.userinfo = findLoginInfo();
+        state.userdata = findLoginInfo();
       },
 
       setLinkes(state: STATETYPE, { ids, linkes }) {
@@ -87,44 +74,10 @@ class login {
 
   private createGetters() {
     return {
-      getUserInfo: (state: STATETYPE) => state.userinfo,
+      getUserData: (state: STATETYPE) => () => state.userdata,
       getIslogin: (state: STATETYPE) => state.islogin,
-      watchStop: (state: STATETYPE) => state.watchStop,
       getLLinkes: (state: STATETYPE) => () => state.linkes,
       getIds: (state: STATETYPE) => state.ids,
-    };
-  }
-
-  private watchUserInfo(store: STATETYPE) {
-    let list = [];
-    let init = false;
-
-    return function () {
-      return watchEffect(() => {
-        console.log("login/watchEffect");
-
-        const value = store.userinfo;
-        const keyList = Object.keys(value);
-        const n = keyList.every((v) => list.indexOf(v) > -1);
-
-        if (keyList.length > 0 && !n) {
-          list = keyList;
-
-          store.mitt.emit("login", {
-            value,
-            islogin: store.islogin,
-            watchStop: store.watchStop,
-          });
-        } else if (init) {
-          store.mitt.emit("login", {
-            value: {},
-            islogin: store.islogin,
-            watchStop: store.watchStop,
-          });
-        }
-
-        init = true;
-      });
     };
   }
 }

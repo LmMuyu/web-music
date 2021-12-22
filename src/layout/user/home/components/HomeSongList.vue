@@ -31,6 +31,8 @@ const renderSongs = computed(() => {
       return songType.noSubscribed;
     case "sub":
       return songType.yesSubscribed;
+    default:
+      return [];
   }
 });
 

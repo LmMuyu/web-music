@@ -1,7 +1,7 @@
 <template>
   <nav class="py-4">
-    <el-row class="w-3/5">
-      <el-col :span="6">
+    <el-row>
+      <el-col :span="3">
         <el-select @change="lableSelect" v-model="select.select">
           <el-option-group
             :label="group.lable"
@@ -17,22 +17,41 @@
           </el-option-group>
         </el-select>
       </el-col>
-      <el-col
-        :span="4"
-        class="flex cursor-pointer"
-        v-for="(selecttag, index) in select.tagstr"
-        :key="index"
-      >
+      <el-col :span="18" class="flex">
         <div
-          @click="currSelectTag(selecttag, index)"
-          class="flex items-center h-full w-3/5 px-2 hover_backcolor"
-          :style="currenSelectIndex === index ? currentBackColor : ''"
+          class="cursor-pointer px-2"
+          style="width: 10%"
+          v-for="(selecttag, index) in select.tagstr"
+          :key="index"
         >
-          <span
-            :style="currenSelectIndex === index ? textCssText : currentTextCssText"
-            class="w-full text-center"
-            >{{ selecttag }}</span
+          <div
+            @click="currSelectTag(selecttag, index)"
+            class="flex items-center h-full px-2 hover_backcolor"
+            :style="currenSelectIndex === index ? currentBackColor : ''"
           >
+            <span
+              :style="currenSelectIndex === index ? textCssText : currentTextCssText"
+              class="w-full text-center"
+              style="line-height: 16px; vertical-align: middle"
+              >{{ selecttag }}</span
+            >
+          </div>
+        </div>
+      </el-col>
+      <el-col :span="3">
+        <div class="w-4/5 h-full cursor-pointer" @click="ctxEmit('newSong')">
+          <div class="flex items-center h-full w-full px-2 hover_backcolor">
+            <div v-if="!isSelectCloud" class="flex items-center justify-center">
+              <font-icon icon="iconjia"></font-icon>
+              <span class="text-sm" style="color: #606266; font-weight: bold">新建歌单</span>
+            </div>
+            <div v-else>
+              <font-icon icon="iconshangchuanyunduan"></font-icon>
+              <span class="text-sm" @click="openInputFile" style="color: #606266; font-weight: bold"
+                >上传云盘</span
+              >
+            </div>
+          </div>
         </div>
       </el-col>
     </el-row>
@@ -41,9 +60,12 @@
 <script setup lang="ts">
 import { nextTick, onMounted, reactive, ref } from "vue";
 
-import { ElSelect, ElOption, ElOptionGroup, ElRow, ElCol } from "element-plus";
+import { musicUploadToCloudDisk } from "../../hooks";
 
-const ctxEmit = defineEmits(["songs", "selectTag"]);
+import { ElSelect, ElOption, ElOptionGroup, ElRow, ElCol } from "element-plus";
+import FontIcon from "../../../../components/fonticon/FontIcon.vue";
+
+const ctxEmit = defineEmits(["songs", "selectTag", "newSong"]);
 
 const noSelectCssText = "font-weight: bold;";
 const yesSelectCssText = "font-weight: bolder;";
@@ -60,6 +82,7 @@ const currentBackColor = `
   `;
 
 const currenSelectIndex = ref<null | number>(null);
+const isSelectCloud = ref(false);
 
 const select = reactive({
   select: "全部歌单",
@@ -92,6 +115,13 @@ const select = reactive({
 
 function currSelectTag(selecttag: string, index: number) {
   currenSelectIndex.value = index;
+
+  if (selecttag === "云盘") {
+    isSelectCloud.value = true;
+  } else {
+    isSelectCloud.value = false;
+  }
+
   ctxEmit("selectTag", selecttag);
 }
 
@@ -99,6 +129,21 @@ function lableSelect(change: string) {
   select.select = change;
   currenSelectIndex.value = null;
   ctxEmit("songs", select.select);
+}
+
+function openInputFile() {
+  const input = document.createElement("input");
+  input.setAttribute("type", "file");
+  input.setAttribute("multiple", "true");
+  input.click();
+
+  input.addEventListener("change", function () {
+    const files = this.files;
+
+    musicUploadToCloudDisk(files, (res) => {
+      console.log(res);
+    });
+  });
 }
 
 onMounted(() => {
@@ -116,6 +161,7 @@ onMounted(() => {
       ".el-input__inner",
       `
       border:none;
+      padding:0;
       ${textCssText}
       `
     );

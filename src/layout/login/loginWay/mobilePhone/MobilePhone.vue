@@ -39,13 +39,12 @@
 import { reactive, ref } from "@vue/reactivity";
 import { useRouter } from "vue-router";
 
+import loginBCBus from "../../../main/hooks/useBroadcastChannel";
 import { cellphone, loginCellphone } from "../../../../api/login";
 import { promptbox } from "../../../../components/promptBox";
 
 import InputBox from "./components/InputBox.vue";
 import { ElButton } from "element-plus";
-
-const router = useRouter();
 
 const inputLoginInfo = reactive({
   phone: "",
@@ -81,8 +80,6 @@ async function registerChecking() {
     return;
   }
 
-  console.log(111);
-
   const formData = new FormData();
   formData.append("phone", inputLoginInfo.phone.trim());
   prephone = inputLoginInfo.phone.trim();
@@ -115,25 +112,8 @@ async function loginBtn() {
       return showErrorInfo(pass, loginResult.data.message);
     }
 
-    setUserInfo(loginResult.data);
+    loginBCBus(true, loginResult.data);
   }
-}
-
-function setUserInfo(info: any) {
-  const BC = new BroadcastChannel("login");
-
-  const userInfo = {
-    token: info.token,
-    account: info.account,
-    userInfo: info.profile,
-    userID: info.profile.userId,
-  };
-
-  BC.postMessage(userInfo);
-
-  BC.onmessage = function () {
-    router.push({ path: "/index" }); //登录成功，跳转到主页面
-  };
 }
 
 document.addEventListener("keydown", (e) => {

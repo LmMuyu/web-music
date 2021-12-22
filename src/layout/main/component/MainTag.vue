@@ -52,10 +52,6 @@ const toPath = (path: string, index: number) => {
   });
 };
 
-store.commit("login/onMittEvent", (userinfoObj) => {
-  uid = userinfoObj.value.account.id;
-});
-
 const activeTag = (to: any) => {
   currentIndex.value = AsideTags.findIndex((value) => to.path.indexOf(value.path) > -1);
 };

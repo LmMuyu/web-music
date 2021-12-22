@@ -56,3 +56,31 @@ export function llikelist(uid: string) {
     },
   });
 }
+
+export function subArtist() {
+  return request({
+    url: "/artist/sublist",
+  });
+}
+
+export function getCloud(limit: number = 10) {
+  return request({
+    url: "/user/cloud",
+    method: "POST",
+    data: {
+      limit,
+    },
+  });
+}
+
+export function uploadCloud(formData: FormData) {
+  return request({
+    method: "post",
+    url: `/upclouddisk/cloud?time=${Date.now()}`,
+    data: formData,
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+    withCredentials: true,
+  });
+}
