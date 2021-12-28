@@ -1,15 +1,16 @@
-import Cookie from "js-cookie";
-
-import { useLocalStorage } from "../useLocalStorage";
+import jsCookie from "js-cookie";
 import store from "../../store";
 
+import { useLocalStorage } from "../useLocalStorage";
+import { logout } from "../../api/app/login";
+
 import type { CookieAttributes } from "js-cookie";
-import { nextTick } from "@vue/runtime-dom";
+import { AxiosResponse } from "axios";
 
 interface cookieOptions {
   name: string;
   value: string;
-  options: CookieAttributes;
+  options?: CookieAttributes;
 }
 
 interface CONFIG_DEFAULT {
@@ -19,63 +20,50 @@ interface CONFIG_DEFAULT {
 }
 
 export function setCookie(cookie: string) {
-  const matchList = cookie.match(/.+?(?=;;)/gi);
+  cookie.split(";;").map((cookieItem) => {
+    const cookieSplice = cookieItem.split(";");
 
-  if (matchList) {
-    for (const v of matchList) {
-      const cookieObj: cookieOptions = {
-        name: "",
-        value: "",
-        options: {
-          path: "",
-          expires: 0,
-        },
-      };
+    const setcookieObj: cookieOptions = {
+      name: "",
+      value: "",
+      options: {
+        expires: 0,
+        path: "",
+      },
+    };
 
-      if (v[0] === ";") {
-        const cookieStr = v.substring(2);
-        splitCookie(cookieStr, cookieObj);
+    for (let i = 0; i < cookieSplice.length; i++) {
+      const spliceIndex = cookieSplice[i].indexOf("=");
+
+      const [key, value] = [
+        cookieSplice[i].slice(0, spliceIndex),
+        cookieSplice[i].slice(spliceIndex + 1),
+      ];
+
+      if (i === 0) {
+        setcookieObj.name = key;
+        setcookieObj.value = value;
+      } else if (key === "Max-Age") {
+        setcookieObj.options.expires = parseInt(value);
       } else {
-        const cookieStr = v;
-        splitCookie(cookieStr, cookieObj);
+        const low = key.toLocaleLowerCase();
+        const is = Object.prototype.toString.call(setcookieObj.options, low);
+
+        if (is) {
+          if (low === "expires" && setcookieObj.options.expires === 0) {
+            setcookieObj.options.expires = value as unknown as Date;
+          } else {
+            continue;
+          }
+
+          setcookieObj.options[key] = value;
+        }
       }
     }
-  }
-}
 
-function splitCookie(cookie: string, cookieObj: cookieOptions) {
-  const splitList = cookie.split(";");
+    console.log(setcookieObj);
 
-  splitList.forEach((v, i) => {
-    const sliceIndex = v.indexOf("=");
-    let [key, value] = [v.slice(0, sliceIndex), v.slice(sliceIndex + 1)];
-
-    if (i === 0) {
-      cookieObj.name = key;
-      cookieObj.value = value;
-    } else {
-      const options = cookieObj.options;
-      type keys = keyof typeof options;
-
-      const name = key.toLocaleLowerCase().trim();
-      if (Object.prototype.hasOwnProperty.call(options, name)) {
-        let optionValue: string | Date = value;
-        if (name === "expires") optionValue = new Date(value);
-        options[name as keys] = optionValue;
-      }
-    }
-  });
-
-  const {
-    name,
-    value,
-    options: { expires, path },
-  } = cookieObj;
-
-  Cookie.set(name, value, {
-    path,
-    expires,
-    domain: window.location.host,
+    jsCookie.set(setcookieObj.name, setcookieObj.value, setcookieObj.options);
   });
 }
 
@@ -92,20 +80,33 @@ const removeLocalStoreageKey = () => {
   }
 };
 
-export function loginStateus(url: string, httpRes: Record<string, any>) {
+function isLoginWatchObj(isstatus: boolean) {
+  return new Promise((resolve) => {
+    store.dispatch("login/runWatchFn", [resolve, isstatus]);
+  });
+}
+
+export async function loginStateus(httpRes: AxiosResponse<any>) {
+  const url = httpRes.config.url;
+
   if (url === "/login/status") {
-    Promise.resolve(httpRes.data).then(({ data }) => {
-      if (data.account !== null && data.profile !== null) {
-        store.commit("login/switchStatus", true);
-      } else {
-        store.commit("login/switchStatus", false);
-        removeLocalStoreageKey();
-      }
-    });
+    //是否已经登录
+    const islogin = httpRes.data.account !== null && httpRes.data.profile !== null;
+    const token = window.localStorage.getItem("token");
+    await isLoginWatchObj(islogin);
+
+    if (islogin && token) {
+      store.commit("login/switchStatus", true);
+    } else {
+      store.commit("login/switchStatus", false);
+      removeLocalStoreageKey();
+      logout();
+    }
   } else if (url === "/logout") {
-    removeLocalStoreageKey();
+    store.commit("login/emitTypeWatchFn", "stopwatch");
     store.commit("login/switchStatus", false);
-    store.commit("login/setUserInfo", {});
+    isLoginWatchObj(false);
+    removeLocalStoreageKey();
   }
 }
 

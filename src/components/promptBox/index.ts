@@ -28,8 +28,7 @@ export function promptbox(option: options) {
       : document.querySelector(option.mountNode);
 
   mountNode.appendChild(div);
-
-  instance.mount(option.mountNode);
+  instance.mount(div);
 
   let timer: number | null = null;
 

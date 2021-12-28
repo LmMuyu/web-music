@@ -1,7 +1,11 @@
 <template>
   <section class="flex flex-col w-full h-full relative">
-    <div class="text-center relative clearfix whauto">
-      <img :src="imgsrc(playitem.coverImgUrl || playitem.al.picUrl)" class="p-1" />
+    <div class="text-center relative w-full clearfix whauto">
+      <img
+        :src="imgsrc(playitem.coverImgUrl || playitem.al.picUrl)"
+        class="p-1"
+        style="object-fit: fill; width: 100%"
+      />
       <div
         style="z-index: 99"
         class="w-full h-full flex justify-center items-center overflow-hidden"
@@ -16,13 +20,13 @@
         <i v-if="isPlayIcon" class="iconfont iconbofang2"></i>
       </div>
     </div>
-    <div class="px-1 hover_opacity">
+    <div class="px-1 h-full hover_opacity">
       <span v-if="!!playitem.playCount" class="text_icon flex items-center py-1 text-sm">
-        <i class="iconfont iconbofang1"></i>
-        <p class="ml-2">{{ fromPlayCount(playitem.playCount) }}</p>
+        <i class="iconfont iconbofang1 text-sm"></i>
+        <p class="ml-2 text-sm">{{ fromPlayCount(playitem.playCount) }}</p>
       </span>
       <span class="black">
-        <p :style="playitem?.style?.name ?? ''" class="text-left cursor-pointer text-xs fotn_title">
+        <p :style="playitem?.style?.name ?? ''" class="text-left cursor-pointer text-sm fotn_title">
           {{ playitem.name }}
         </p>
         <p :style="playitem?.style?.subtitle ?? ''" v-if="playitem.subtitle">
@@ -56,8 +60,8 @@ function fromPlayCount(count: number) {
 }
 
 function imgsrc(url: string) {
-  const xsize = props.playitem?.xsize ?? 120;
-  const ysize = props.playitem?.ysize ?? 80;
+  const xsize = props.playitem?.xsize ?? 150;
+  const ysize = props.playitem?.ysize ?? 100;
 
   const imgsize = `?param=${xsize}y${ysize}`;
   return url + imgsize;
@@ -77,10 +81,15 @@ function imgsrc(url: string) {
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
   overflow: hidden;
+
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
 .text_icon {
   @include Iconfont(#747d8c, 16);
+  font-size: 14px;
 }
 
 .play_icon {

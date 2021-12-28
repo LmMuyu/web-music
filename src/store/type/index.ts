@@ -12,19 +12,20 @@ export interface State {
   unmountList: Emitter;
 }
 
-export interface TokenJsonStr {
+export interface ALLTOKEN {
   access_token: string;
   refresh_token: string;
+  expires_in: string;
+  expried: boolean;
+  nickname: string;
   unionid: string;
   openid: string;
-  nickname: string;
-  expires_inv: string;
 }
 
-export interface UserInfo {
+export interface USERDATA {
   userID: number;
   id: number;
-  token: number;
-  tokenJsonStr: TokenJsonStr;
+  nickname: string;
+  avatarUrl: string;
   userinfoData?: Record<string, any>;
 }

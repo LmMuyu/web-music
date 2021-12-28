@@ -1,36 +1,114 @@
 import { ref } from "@vue/reactivity";
+import { Ref } from "vue";
 
 interface Options {
   isGet: boolean;
 }
 
-export function useStorage(
-  key: string,
-  value: string = "",
-  mode: "local" | "sess",
-  options: Options
-) {
-  const data = ref(value);
+function onStorageEvent() {
+  window.addEventListener("storage", (ev) => {
+    console.log(ev);
+  });
+}
 
-  const storeage =
-    mode === "local" ? window.localStorage : window.sessionStorage;
-  const { isGet = false } = options;
+function keyMap() {
+  const storageMap = new Map<any, Ref<any>>();
 
-  function read() {
-    const defaultValue = storeage.getItem(key);
+  return {
+    set(key: any, value: any) {
+      const data = storageMap.get(key);
+      if (data.value === value) return;
 
-    try {
-      if (!defaultValue && !!value && !isGet) {
-        storeage.setItem(key, value);
-      } else {
-        data.value = defaultValue || "";
-      }
-    } catch (err) {
-      console.log(err);
+      storageMap.set(key, data);
+
+      return true;
+    },
+
+    has(key: any) {
+      return storageMap.has(key);
+    },
+
+    remove(key: any) {
+      storageMap.delete(key);
+      return true;
+    },
+  };
+}
+
+const storageMap = keyMap();
+onStorageEvent();
+
+function setExpriedHashMap(key: string, expried: number) {
+  const hashmap = localStorage.getItem(key);
+
+  if (hashmap) {
+    localStorage.setItem(
+      "expriedhashmap",
+      JSON.stringify({
+        ...JSON.parse(hashmap),
+        key: expried,
+      })
+    );
+  } else {
+    localStorage.setItem("expriedhashmap", JSON.stringify({ key: expried }));
+  }
+}
+
+function getItem(key: string): undefined | boolean {
+  const hashmap = localStorage.getItem("expriedhashmap");
+
+  if (hashmap) {
+    const map = JSON.parse(hashmap);
+    if (Object.prototype.hasOwnProperty.call(map, key)) {
+      return map[key] > Date.now() ? false : true;
     }
   }
 
-  read();
+  return undefined;
+}
+
+function setItme(key: string, expried: number) {
+  return new Promise((resolve, reject) => {
+    const now = Date.now();
+
+    if (expried > now) {
+      setExpriedHashMap(key, expried);
+      resolve("");
+    } else {
+      reject("过期时间必须大于当前时间");
+    }
+  });
+}
+
+export function useStorage(key: string, value: any, mode: "local" | "sess", options: Options) {
+  const data = ref(value);
+
+  const storeage = mode === "local" ? window.localStorage : window.sessionStorage;
+  const { isGet } = options;
+
+  if (isGet) {
+    const isExpried = getItem(key);
+
+    if (isExpried) {
+      storeage.removeItem(key);
+      return undefined;
+    } else {
+      data.value = storeage.getItem(key);
+      return;
+    }
+  }
+
+  if (Object.prototype.toString.call(value) === "[object Object]" && value?.expried) {
+    setItme(key, value.expried)
+      .then(() => {
+        storeage.setItem(key, value.data);
+      })
+      .catch((err) => {
+        throw new Error(err);
+      });
+  } else {
+    storeage.setItem(key, value);
+  }
 
   return data;
 }

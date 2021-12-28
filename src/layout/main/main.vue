@@ -11,9 +11,9 @@
       :style="{ minWidth: minwidth + 'px' }"
     >
       <MainContainer></MainContainer>
-      <div class="golbalmark" style="z-index: 10" v-if="circleRef">
+      <!-- <div class="golbalmark" style="z-index: 10" v-if="circleRef">
         <Circle />
-      </div>
+      </div> -->
     </div>
   </div>
 </template>

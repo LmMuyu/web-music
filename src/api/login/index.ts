@@ -1,13 +1,11 @@
 import { AxiosRequestConfig } from "axios";
-import { isType } from "../../utils/methods";
 import request from "../../utils/request";
-import type { Captcha } from "../../view/login/otherLogin/type";
 
 export function captchaSend(config: AxiosRequestConfig) {
   config.method = config.method ? config.method : "POST";
 
-  let { phone, ctcode }: Captcha = config.data;
-  ctcode = String(ctcode).substr(1);
+  let { phone, ctcode } = config.data;
+  ctcode = String(ctcode).substring(1);
 
   const formData = new FormData();
   formData.append("phone", phone);
@@ -32,7 +30,7 @@ export async function cellphone(formData: FormData) {
 export function loginCellphone(formData: FormData) {
   return request({
     method: "POST",
-    url: "/login/cellphone",
+    url: `/login/cellphone?timestamp=${Date.now()}`,
     data: formData,
   });
 }
@@ -45,4 +43,3 @@ export function getBannerImg() {
     },
   });
 }
-

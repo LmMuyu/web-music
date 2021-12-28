@@ -3,6 +3,7 @@
     <Banner :bannerData="bannerLsit" />
     <RecHot :categoryname="hotList" :playlist="playList" />
     <RecMusic />
+     
     <RecMv />
   </div>
 </template>

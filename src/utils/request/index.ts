@@ -1,6 +1,5 @@
 import axios, { AxiosInstance } from "axios";
 
-import { promptbox } from "../../components/promptBox";
 import { loginStateus, setCookie, tryAgainRequest } from "./methods";
 
 import type { AxiosRequestConfig, Canceler, CancelTokenStatic } from "axios";
@@ -56,18 +55,14 @@ export default function request(config: AxiosRequestConfig) {
   instance.interceptors.response.use(
     (httpRes) => {
       const url = httpRes.config.url;
-
       (httpRes?.data?.cookie as string)?.length > 0 &&
         Promise.resolve().then(() => setCookie(httpRes.data.cookie));
-
-      loginStateus(url, httpRes);
+      Promise.resolve().then(() => loginStateus(httpRes));
 
       return httpRes;
     },
     async (config) => {
-      const ret: { config?: any; isretry?: boolean } = await tryAgainRequest(
-        config
-      );
+      const ret: { config?: any; isretry?: boolean } = await tryAgainRequest(config);
 
       if (ret.isretry) return instance(ret.config);
 

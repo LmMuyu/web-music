@@ -1,11 +1,22 @@
 import { getMusicDetail } from "../../api/playList";
-import { findLoginInfo } from "../methods";
+import mitt, { Emitter } from "mitt";
+
+enum watchType {
+  STOPWATCH = "stopwatch",
+}
+
+interface WATCHFNOPTIONS {
+  stopWatchFnLists: Emitter;
+  runFn: (iswatchbc: boolean) => void;
+}
 
 export interface STATETYPE {
   ids: number[];
   islogin: boolean;
   userdata: Object;
   linkes: Record<string, any>[];
+  initStatus: Boolean;
+  watch: WATCHFNOPTIONS;
 }
 
 class login {
@@ -26,10 +37,15 @@ class login {
   private createState() {
     return {
       ids: [],
-      islogin: localStorage.getItem("token") ? true : false,
+      islogin: null,
       userdata: {},
       linkes: [],
       handleCountWmap: new WeakMap(),
+      initStatus: false,
+      watch: {
+        stopWatchFnLists: mitt(),
+        runFn: null,
+      },
     };
   }
 
@@ -40,17 +56,40 @@ class login {
       },
 
       setUserInfo(state: STATETYPE, data: Object) {
-        state.userdata = data;
-        console.log(state.userdata);
+        console.log(data);
+
+        // UserInfo
+
+        // state.userdata = data;
+        console.log(data);
+      },
+
+      setInitStatus(state: STATETYPE) {
+        state.initStatus = true;
       },
 
       findInfo(state: STATETYPE) {
-        state.userdata = findLoginInfo();
+        // state.userdata  =
       },
 
       setLinkes(state: STATETYPE, { ids, linkes }) {
         state.ids.push(...ids);
         state.linkes.push(...linkes);
+      },
+
+      setWatchFn(state: STATETYPE, watch: Pick<WATCHFNOPTIONS, "runFn">) {
+        console.log(state);
+        console.log(watch);
+
+        state.watch.runFn = watch.runFn;
+      },
+
+      pushWatchFn(state: STATETYPE, mittops: [watchType, () => void]) {
+        state.watch.stopWatchFnLists.off(mittops[0], mittops[1]);
+      },
+
+      emitTypeWatchFn(state: STATETYPE, type: watchType) {
+        state.watch.stopWatchFnLists.emit(type);
       },
     };
   }
@@ -69,14 +108,32 @@ class login {
           linkes,
         });
       },
+
+      runWatchFn(state: { state: STATETYPE }, argvs: [(value: any) => void, boolean]) {
+        const _resolve = argvs[0];
+
+        let timer = setInterval(() => {
+          const watchRunFn = state.state.watch.runFn;
+
+          if (watchRunFn !== null) {
+            watchRunFn(argvs[1]);
+            _resolve(true);
+
+            clearInterval(timer);
+            timer = null;
+            console.log("store->module_login->runWatchFn");
+          }
+        }, 100);
+      },
     };
   }
 
   private createGetters() {
     return {
       getUserData: (state: STATETYPE) => () => state.userdata,
-      getIslogin: (state: STATETYPE) => state.islogin,
+      getInitStatus: (state: STATETYPE) => state.initStatus,
       getLLinkes: (state: STATETYPE) => () => state.linkes,
+      getIslogin: (state: STATETYPE) => state.islogin,
       getIds: (state: STATETYPE) => state.ids,
     };
   }

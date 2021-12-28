@@ -16,10 +16,7 @@ export default {
       if (!countriesList.value) {
         const { data } = await countries();
 
-        countriesList.value = useLocalStorage(
-          "countries",
-          JSON.stringify(data.data)
-        ).value;
+        countriesList.value = useLocalStorage("countries", JSON.stringify(data.data)).value;
       }
 
       context.commit("countriesCode", JSON.parse(countriesList.value));

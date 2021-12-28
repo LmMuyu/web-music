@@ -1,7 +1,7 @@
 <template>
   <div class="flex items-center" style="width: 80%; height: 90%">
     <div style="width: 40%" class="flex justify-center items-center h-full">
-      <div class="flex w-full">
+      <div class="flex justify-center w-full">
         <div class="w-3/5">
           <div class="py-2">
             <InputBox
@@ -29,7 +29,6 @@
             </span>
           </div>
         </div>
-        <div class="w-2/5"></div>
       </div>
     </div>
     <div style="width: 60%" class="h-full bgimage"></div>
@@ -37,7 +36,6 @@
 </template>
 <script setup lang="ts">
 import { reactive, ref } from "@vue/reactivity";
-import { useRouter } from "vue-router";
 
 import loginBCBus from "../../../main/hooks/useBroadcastChannel";
 import { cellphone, loginCellphone } from "../../../../api/login";
@@ -102,6 +100,8 @@ async function loginBtn() {
   const isCheckRes = checkingInput();
 
   if (inputLoginInfo.isregister && isCheckRes) {
+    const portMess = loginBCBus(true);
+
     const formData = new FormData();
     formData.append("phone", inputLoginInfo.phone);
     formData.append("password", inputLoginInfo.password);
@@ -110,9 +110,14 @@ async function loginBtn() {
 
     if (loginResult.data.code === 502) {
       return showErrorInfo(pass, loginResult.data.message);
+    } else if (loginResult.data.code === 406) {
+      return showErrorInfo(pass, loginResult.data.message);
     }
 
-    loginBCBus(true, loginResult.data);
+    portMess.then(({ portMess }) => {
+      console.log(portMess);
+      portMess(loginResult.data);
+    });
   }
 }
 

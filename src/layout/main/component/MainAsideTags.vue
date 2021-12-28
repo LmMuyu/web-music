@@ -32,18 +32,29 @@ const loginUserData = reactive({
   userdata: {},
 });
 
-loginBCBus().then(logindata); //接受登录后的用户信息
-watchRetUserData(store.getters["login/getUserData"]()); //接受登录后的用户信息
+store.commit("login/setWatchFn", { runFn: watchOrBus });
 
-function logindata(res: any) {
-  console.log(res);
+function watchOrBus(islogin: boolean) {
+  console.log("layout->Main->MainAsideTags->watchOrBus");
 
+  //是否已经登录
+  if (!islogin) {
+    console.log("layout->Main->MainAsideTags->loginBCBus");
+    loginBCBus(false).then(logindata); //接受登录后的用户信息
+  } else {
+    console.log("layout->Main->MainAsideTags->watchRetUserData");
+    watchRetUserData(store.getters["login/getUserData"]()); //接受登录后的用户信息
+  }
+}
+
+function logindata(bcWatch: { userdata: any; portMess: (data: any) => void }) {
   loginUserData.tramsformButton = true;
-  loginUserData.userdata = res;
+  loginUserData.userdata = bcWatch.userdata;
 }
 
 function watchRetUserData(watchData: any) {
   const { stopWatch, value } = useWatch(watchData);
+  store.commit("login/pushWatchFn", ["stopwatch", stopWatch]);
 
   watchEffect(() => {
     console.log(value);
