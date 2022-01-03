@@ -17,7 +17,6 @@
 </template>
 
 <script setup lang="ts">
-import { inject } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 
@@ -26,9 +25,6 @@ import { activeIndex } from "../../../utils/activeIndex";
 
 const router = useRouter();
 const store = useStore();
-let uid: number | null = null;
-
-const pathlist = inject("pathlist") as string[];
 
 const { activeStyle, clickActive, moveActive, leaveActive } = new activeIndex(
   currentIndex,
@@ -36,18 +32,14 @@ const { activeStyle, clickActive, moveActive, leaveActive } = new activeIndex(
 );
 
 const toPath = (path: string, index: number) => {
-  const islogin = store.getters;
-  if (!islogin && pathlist.indexOf(path) > -1) {
-    router.push({ path: "/login" });
-    return;
-  }
-
+  const userdata = store.getters["login/getUserData"]();
   clickActive(index);
 
   router.push({
     path,
     query: {
-      uid,
+      uid: userdata.userID,
+      isself: 1,
     },
   });
 };

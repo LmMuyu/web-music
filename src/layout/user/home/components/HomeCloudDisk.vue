@@ -23,10 +23,11 @@
   </el-container>
 </template>
 <script setup lang="ts">
+import { uploadCloudDisk } from "../../hooks";
+
 import { ElButton, ElContainer, ElMain, ElHeader } from "element-plus";
 import CloudDiskSearch from "../../../../components/search/Search.vue";
 import CloudDiskItem from "./CloudDiskItem.vue";
-import { uploadCloudDisk } from "../../hooks";
 
 import type { TITLEOPTIONS } from "../../type";
 import type { PropType } from "vue";

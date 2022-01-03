@@ -30,7 +30,7 @@ export async function cellphone(formData: FormData) {
 export function loginCellphone(formData: FormData) {
   return request({
     method: "POST",
-    url: `/login/cellphone?timestamp=${Date.now()}`,
+    url: "/login/cellphone",
     data: formData,
   });
 }

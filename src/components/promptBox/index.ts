@@ -30,14 +30,10 @@ export function promptbox(option: options) {
   mountNode.appendChild(div);
   instance.mount(div);
 
-  let timer: number | null = null;
-
-  timer = setTimeout(() => {
+  let timer = setTimeout(() => {
     instance && instance.unmount();
-    instance = null;
     mountNode.removeChild(div);
-    mountNode = null;
-    div = null;
+    div = instance = mountNode = null;
     option.success?.();
 
     clearTimeout(timer!);

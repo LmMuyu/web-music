@@ -12,11 +12,10 @@
 </template>
 <script setup lang="ts">
 import { nextTick, onMounted, ref } from "@vue/runtime-core";
-import { reactive, watchEffect } from "vue";
+import { computed, reactive, watchEffect } from "vue";
 import { useStore } from "vuex";
 
 import loginBCBus from "../hooks/useBroadcastChannel";
-import useWatch from "../../../utils/useWatch";
 
 import MainLoginButton from "./MainLoginButton.vue";
 import MainAsideCard from "./MainAsideCard.vue";
@@ -43,25 +42,29 @@ function watchOrBus(islogin: boolean) {
     loginBCBus(false).then(logindata); //接受登录后的用户信息
   } else {
     console.log("layout->Main->MainAsideTags->watchRetUserData");
-    watchRetUserData(store.getters["login/getUserData"]()); //接受登录后的用户信息
+    watchRetUserData(); //接受登录后的用户信息
   }
 }
 
 function logindata(bcWatch: { userdata: any; portMess: (data: any) => void }) {
-  loginUserData.tramsformButton = true;
-  loginUserData.userdata = bcWatch.userdata;
+  setUserData(bcWatch.userdata);
 }
 
-function watchRetUserData(watchData: any) {
-  const { stopWatch, value } = useWatch(watchData);
-  store.commit("login/pushWatchFn", ["stopwatch", stopWatch]);
+function setUserData(userdata: any) {
+  loginUserData.tramsformButton = true;
+  loginUserData.userdata = userdata;
+}
+
+function watchRetUserData() {
+  const watchData = computed(() => {
+    return store.getters["login/getUserData"]();
+  });
 
   watchEffect(() => {
-    console.log(value);
+    const userdata = watchData.value;
 
-    if (value.value) {
-      loginUserData.tramsformButton = true;
-      loginUserData.userdata = value.value;
+    if (Object.keys(userdata).length > 0) {
+      setUserData(userdata);
     }
   });
 }

@@ -2,9 +2,9 @@
   <ElContainer class="h-full">
     <ElHeader height="100" class="flex items-center py-4">
       <div v-if="Object.keys(userinfo).length > 0" class="flex">
-        <ElAvatar size="medium" :src="userinfo?.userInfo.avatarUrl" />
+        <ElAvatar size="medium" :src="userinfo.avatarUrl" />
         <div>
-          <span class="text-2xl px-2"> {{ userinfo.userInfo.nickname }}的音乐库 </span>
+          <span class="text-2xl px-2"> {{ userinfo.nickname }}的音乐库 </span>
         </div>
       </div>
     </ElHeader>
@@ -14,7 +14,7 @@
           <HomeLLikeMusic :linkelen="linkeLen"></HomeLLikeMusic>
         </div>
         <div class="w-2/3">
-          <HomeLLinkeLists />
+          <HomeLLinkeLists :linkeLists="linkeLists" />
         </div>
       </div>
       <div>
@@ -35,6 +35,7 @@
   </ElContainer>
 </template>
 <script setup lang="ts">
+import { computed, watchEffect, WatchStopHandle } from "vue";
 import { ref, shallowRef } from "@vue/reactivity";
 import { useRoute } from "vue-router";
 import { useStore } from "vuex";
@@ -59,6 +60,7 @@ const artistlist = ref([]);
 const cloudDiskData = ref([]);
 const userinfo = ref<any>({});
 const songlist = ref<any[]>([]);
+const linkeLists = ref<any[]>([]);
 const contentComps = shallowRef<any>(HomeSongList);
 const selectTag = ref<"all" | "linke" | "sub" | "">("all");
 
@@ -87,53 +89,51 @@ function selectViewComps(select: string) {
   }
 }
 
-function loginInfo() {
+function loginInfo(): Promise<{
+  islogin: boolean;
+  stopWatch: WatchStopHandle;
+}> {
   return new Promise((resolve) => {
-    // store.commit("login/onMittEvent", async (userinofobj: any) => {
-    //   if (Object.keys(userinofobj).length > 0) {
-    //     userinfo.value = userinofobj.value;
-    //     uid.value = userinfo.value.account.id;
-    //     resolve(userinofobj.islogin);
-    //   } else {
-    //     resolve(false);
-    //   }
-    // });
+    const isself = route.query.isself as string | number;
+    const computedUserData = computed(() => {
+      return store.getters["login/getUserData"]();
+    });
+
+    const stopWatch = watchEffect((oninvalidata) => {
+      if (Object.keys(computedUserData.value).length > 0) {
+        if (isself === "1") {
+          userinfo.value = computedUserData.value;
+          uid.value = computedUserData.value.userID;
+          console.log(uid.value);
+          resolve({
+            islogin: true,
+            stopWatch,
+          });
+        } else {
+          resolve({
+            islogin: false,
+            stopWatch,
+          });
+        }
+      }
+    });
   });
 }
 
 (async function () {
-  const islogin = await loginInfo();
+  const { islogin, stopWatch } = await loginInfo();
+  stopWatch();
 
   try {
-    if (!islogin) {
-      // const detail = await getUserDetail(uid);
-      // userinfo.value = detail.data;
-    } else {
-      subArtist().then((sub) => {
-        artistlist.value = sub.data.data.map((artist) => {
-          return {
-            coverImgUrl: artist.picUrl,
-            name: artist.name,
-            path: "/user/home",
-            isPlayIcon: false,
-            id: artist.id,
-            style: {
-              name: `
-                font-weight:bold;
-                color:#606266; 
-                font-size:18px;
-              `,
-            },
-            xsize: 512,
-            ysize: 512,
-          };
-        });
-      });
-
+    if (islogin) {
       getCloud().then((cloud) => {
         cloudDiskData.value.push(cloud.data);
       });
     }
+
+    subArtist().then((sub) => {
+      artistlist.value = sub.data.data.map((artist) => transformArtistData(artist));
+    });
 
     obtainUserPlayList(uid.value).then(async (sub) => {
       if (sub.data.playlist.length > 0) {
@@ -150,6 +150,25 @@ function loginInfo() {
     console.error("状态码:" + error.data.status);
   }
 })();
+
+function transformArtistData(artist: any) {
+  return {
+    coverImgUrl: artist.picUrl,
+    name: artist.name,
+    path: "/user/home",
+    isPlayIcon: false,
+    id: artist.id,
+    style: {
+      name: `
+      font-weight:bold;
+      color:#606266;
+      font-size:18px;
+      `,
+    },
+    xsize: 512,
+    ysize: 512,
+  };
+}
 </script>
 <style scoped lang="scss">
 .flexdir {

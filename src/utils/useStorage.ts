@@ -35,7 +35,6 @@ function keyMap() {
   };
 }
 
-const storageMap = keyMap();
 onStorageEvent();
 
 function setExpriedHashMap(key: string, expried: number) {
@@ -80,13 +79,19 @@ function setItme(key: string, expried: number) {
   });
 }
 
-export function useStorage(key: string, value: any, mode: "local" | "sess", options: Options) {
+export function useStorage(
+  key: string,
+  value: any,
+  mode: "local" | "sess",
+  options: Options
+): Ref<any> {
   const data = ref(value);
 
   const storeage = mode === "local" ? window.localStorage : window.sessionStorage;
   const { isGet } = options;
 
   if (isGet) {
+    //是否过期
     const isExpried = getItem(key);
 
     if (isExpried) {
@@ -94,7 +99,7 @@ export function useStorage(key: string, value: any, mode: "local" | "sess", opti
       return undefined;
     } else {
       data.value = storeage.getItem(key);
-      return;
+      return data;
     }
   }
 

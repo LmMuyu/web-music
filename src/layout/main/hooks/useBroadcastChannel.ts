@@ -58,8 +58,6 @@ export default function loginBCBus(
       console.log("loginWindowChannel");
       BC.onmessage = function (ev) {
         const userdata = ev.data;
-        console.log("useBroadcastChannel->loginBcBus->onmessage");
-
         const transformData = transformUserData(userdata);
         setLocalStorage(userdata, transformData); //写入local storage
         store.commit("login/switchStatus", true);

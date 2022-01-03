@@ -1,6 +1,7 @@
 import axios, { AxiosInstance } from "axios";
 
-import { loginStateus, setCookie, tryAgainRequest } from "./methods";
+import { loginStateus, tryAgainRequest } from "./methods";
+import useResponse from "./response";
 
 import type { AxiosRequestConfig, Canceler, CancelTokenStatic } from "axios";
 
@@ -54,16 +55,14 @@ export default function request(config: AxiosRequestConfig) {
 
   instance.interceptors.response.use(
     (httpRes) => {
-      const url = httpRes.config.url;
       (httpRes?.data?.cookie as string)?.length > 0 &&
-        Promise.resolve().then(() => setCookie(httpRes.data.cookie));
-      Promise.resolve().then(() => loginStateus(httpRes));
+        Promise.resolve().then(() => loginStateus(httpRes));
+      useResponse(httpRes);
 
       return httpRes;
     },
     async (config) => {
       const ret: { config?: any; isretry?: boolean } = await tryAgainRequest(config);
-
       if (ret.isretry) return instance(ret.config);
 
       return Promise.reject(config);

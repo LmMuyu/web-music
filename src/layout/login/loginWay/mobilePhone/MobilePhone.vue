@@ -102,22 +102,19 @@ async function loginBtn() {
   if (inputLoginInfo.isregister && isCheckRes) {
     const portMess = loginBCBus(true);
 
-    const formData = new FormData();
-    formData.append("phone", inputLoginInfo.phone);
-    formData.append("password", inputLoginInfo.password);
+    const worker = new Worker("/src/worker/password");
+    worker.postMessage(inputLoginInfo.password);
 
-    const loginResult = await loginCellphone(formData);
+    worker.addEventListener("message", async (ev) => {
+      const formData = new FormData();
+      formData.append("phone", inputLoginInfo.phone);
+      formData.append("password", ev.data);
 
-    if (loginResult.data.code === 502) {
-      return showErrorInfo(pass, loginResult.data.message);
-    } else if (loginResult.data.code === 406) {
-      return showErrorInfo(pass, loginResult.data.message);
-    }
-
-    portMess.then(({ portMess }) => {
-      console.log(portMess);
-      portMess(loginResult.data);
+      const loginResult = await loginCellphone(formData);
+      portMess.then(({ portMess }) => portMess(loginResult.data));
     });
+
+    worker.addEventListener("error", (err) => {});
   }
 }
 

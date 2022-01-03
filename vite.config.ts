@@ -75,12 +75,11 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
             return path;
           },
         },
-        "/puclouddisk/g": {
+        "^/puclouddisk/": {
           target: "https://netease-cloud-music-api-chi-ashy.vercel.app",
           changeOrigin: true,
           rewrite(path) {
             console.log(path);
-
             return path;
           },
         },

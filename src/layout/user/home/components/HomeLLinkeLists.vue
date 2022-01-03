@@ -17,18 +17,17 @@
   </section>
 </template>
 <script setup lang="tsx">
-import { computed } from "vue";
-import { useStore } from "vuex";
-
 import { ElImage } from "element-plus";
+import type { PropType } from "vue";
 
-const store = useStore();
+const props = defineProps({
+  linkeLists: {
+    type: Array as PropType<any[]>,
+    required: true,
+  },
+});
 
 const nicknames = (ar: Record<string, any>[]) => ar.map((userinfo) => userinfo.name).join("，");
-
-const linkeLists = computed(() => {
-  return store.getters["login/getLLinkes"]().map((linke) => linke.data);
-});
 
 function imgload(ev: Event) {
   (ev.target as HTMLElement).style.visibility = "visible";

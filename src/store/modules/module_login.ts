@@ -56,31 +56,18 @@ class login {
       },
 
       setUserInfo(state: STATETYPE, data: Object) {
-        console.log(data);
-
-        // UserInfo
-
-        // state.userdata = data;
-        console.log(data);
+        state.userdata = data;
       },
 
       setInitStatus(state: STATETYPE) {
         state.initStatus = true;
       },
 
-      findInfo(state: STATETYPE) {
-        // state.userdata  =
-      },
-
       setLinkes(state: STATETYPE, { ids, linkes }) {
-        state.ids.push(...ids);
         state.linkes.push(...linkes);
       },
 
       setWatchFn(state: STATETYPE, watch: Pick<WATCHFNOPTIONS, "runFn">) {
-        console.log(state);
-        console.log(watch);
-
         state.watch.runFn = watch.runFn;
       },
 
@@ -96,17 +83,15 @@ class login {
 
   private createActions() {
     return {
-      async getlinke(state: any, ids: number[]) {
-        const idlist = ids.splice(0, 12);
+      async getlinke(state: any, linkesId: number[]) {
+        const ids = linkesId.splice(0, 12).join(",");
+        const linkes = (await getMusicDetail(ids)).data;
+        console.log(linkes);
 
-        const linkes = await Promise.all(
-          idlist.map(async (id) => (await getMusicDetail(String(id))).data)
-        );
-
-        state.commit("setLinkes", {
-          ids,
-          linkes,
-        });
+        // state.commit("setLinkes", {
+        //   ids,
+        //   linkes,
+        // });
       },
 
       runWatchFn(state: { state: STATETYPE }, argvs: [(value: any) => void, boolean]) {
@@ -131,6 +116,7 @@ class login {
   private createGetters() {
     return {
       getUserData: (state: STATETYPE) => () => state.userdata,
+      getLLinkesLen: (state: STATETYPE) => state.linkes.length,
       getInitStatus: (state: STATETYPE) => state.initStatus,
       getLLinkes: (state: STATETYPE) => () => state.linkes,
       getIslogin: (state: STATETYPE) => state.islogin,

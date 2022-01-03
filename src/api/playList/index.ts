@@ -11,25 +11,13 @@ export function getMusicUrl(id: string) {
   });
 }
 
-export async function getMusicDetail(ids: string) {
-  const musicMaps = stroe.getters["toplist/retListMaps"];
-
-  if (musicMaps.has(ids)) {
-    return {
-      isExistMaps: true,
-      data: musicMaps.get(ids),
-    };
-  } else {
-    return {
-      isExistMaps: false,
-      data: await request({
-        url: "/song/detail",
-        params: {
-          ids,
-        },
-      }),
-    };
-  }
+export function getMusicDetail(ids: string) {
+  return request({
+    url: "/song/detail",
+    params: {
+      ids,
+    },
+  });
 }
 
 export function whetherMusic(id: string) {
