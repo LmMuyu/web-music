@@ -5,6 +5,7 @@ import Login from "./modules/module_login";
 import MainTags from "./modules/module_maintags";
 import Message from "./modules/module_message";
 import Toplist from "./modules/module_toplist";
+import Explore from "./modules/module_explore";
 
 const modules: ModuleTree<any> = {
   login: new Login(),
@@ -12,6 +13,7 @@ const modules: ModuleTree<any> = {
   message: new Message(),
   index: new Index(),
   toplist: new Toplist(),
+  explore: new Explore(),
 };
 
 export default modules;

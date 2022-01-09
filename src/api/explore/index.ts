@@ -10,3 +10,9 @@ export function getMvUrl(id: number, r: number = 1080) {
     params: { id, r },
   });
 }
+
+export function getPlaylistCatlist() {
+  return request({
+    url: "/playlist/catlist",
+  });
+}

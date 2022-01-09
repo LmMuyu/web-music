@@ -123,6 +123,13 @@ const routes: (RouteRecordRaw & {
       default: () => import("../layout/login/LoginMain.vue"),
     },
   },
+  {
+    path: "/explore",
+    name: "Explore",
+    components: {
+      default: () => import("../layout/explore/Explore.vue"),
+    },
+  },
 ];
 
 export default routes;
