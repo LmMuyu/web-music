@@ -20,7 +20,7 @@ export function reqCode(httpRes: AxiosResponse<any>) {
 }
 
 export function setCookie(httpRes: AxiosResponse<any>) {
-  console.log(httpRes);
+  // console.log(httpRes);
 
   // const cookie: string = httpRes.data.cookie;
   // cookie.split(";;").map((cookieItem) => {

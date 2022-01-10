@@ -16,3 +16,18 @@ export function getPlaylistCatlist() {
     url: "/playlist/catlist",
   });
 }
+
+export function highqualityTags() {
+  return request({
+    url: "/playlist/highquality/tags",
+  });
+}
+
+export function topPlaylist(tag: string = "全部") {
+  return request({
+    url: "/top/playlist",
+    params: {
+      cat: tag,
+    },
+  });
+}

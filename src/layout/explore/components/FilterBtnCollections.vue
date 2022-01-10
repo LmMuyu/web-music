@@ -10,9 +10,9 @@
     <ElTag
       class="m-2"
       v-for="selectTag in slectAllSection"
-      :key="selectTag.tagId"
+      :key="selectTag.id"
       closable
-      @close="removeSelectTag(selectTag.tagId)"
+      @close="removeSelectTag(selectTag.id)"
       >{{ selectTag.name }}
     </ElTag>
     <ElButton type="danger" size="small" v-if="ifSelectList" @click="closeAll">清空</ElButton>
@@ -28,6 +28,7 @@
               :is-in-all-main="true"
               :key="index"
               :tag="tag.name"
+              :default-active="tag.defaultactive ?? false"
             >
             </filterBtnItem>
           </div>
@@ -39,10 +40,12 @@
 <script setup lang="tsx">
 import { ref, defineEmits, unref, defineComponent, Ref, computed } from "vue";
 
-import { getPlaylistCatlist } from "../../../api/explore";
+import { getPlaylistCatlist, highqualityTags, topPlaylist } from "../../../api/explore";
+import { useRefNegate } from "../../../utils/useRefNegate";
 
 import { ElCheckTag, ElAside, ElContainer, ElMain, ElTag, ElButton } from "element-plus";
-import { useRefNegate } from "../../../utils/useRefNegate";
+import { debounce } from "../../../utils/debounce";
+import { AxiosPromise } from "axios";
 
 const ctxEmit = defineEmits(["btnWithActive"]);
 
@@ -58,11 +61,17 @@ const recordSelectClick = ref(false);
 getPlaylistCatlist().then((catvalue) => {
   categories.value = Object.values(catvalue.data.categories);
   catlist.push(...catvalue.data.sub);
-  beforeCatlist.value.push({ name: "全部" }, ...catlist.slice(0, 15), { name: "· · ·" });
+});
+
+highqualityTags().then((highquality) => {
+  beforeCatlist.value.push({ name: "全部" }, ...highquality.data.tags.slice(0, 15), {
+    name: "· · ·",
+  });
 });
 
 const filterBtnItem = defineComponent({
   props: {
+    defaultActive: Boolean,
     tag: String,
     isInAllMain: {
       type: Boolean,
@@ -70,20 +79,27 @@ const filterBtnItem = defineComponent({
     },
   },
   setup(props) {
-    const { countRef: selectBtnValue } = useRefNegate(props.tag === "全部" ? true : false);
+    const initRef = () => (props.tag === "全部" ? true : false || props.defaultActive);
+    const { countRef: selectBtnValue } = useRefNegate(initRef());
     activeBtnRefList.push(selectBtnValue);
 
-    function addSlectAllSection(tag: string) {
-      const [first, last] = retListFirstLast();
-      if (tag !== "" && tag !== first.name && tag !== last.name) {
-        slectAllSection.value.push({ id: ++tagId, name: tag });
-      }
+    const _topPlaylist = debounce(topPlaylist, 200, {
+      asyncBackcall: toDealWithTopPlaylist,
+    });
+
+    if (selectBtnValue.value) {
+      _topPlaylist(props.tag);
     }
 
-    function enterTriggerRef() {
-      const tags = slectAllSection.value.map((value) => value.name);
-      
-      
+    function toDealWithTopPlaylist(catData: AxiosPromise<any>) {
+      console.log(catData);
+    }
+
+    function addSlectAllSection(tag: string, btnref: Ref<boolean>) {
+      const [first, last] = retListFirstLast();
+      if (tag !== "" && tag !== first.name && tag !== last.name) {
+        slectAllSection.value.push({ id: ++tagId, name: tag, btnref });
+      }
     }
 
     function activeBtn() {
@@ -94,9 +110,11 @@ const filterBtnItem = defineComponent({
       }
 
       exclusive(activeBtnRefList, props.isInAllMain);
-      addSlectAllSection(props.tag);
+      addSlectAllSection(props.tag, selectBtnValue);
       recordSelectClick.value = props.isInAllMain;
       selectBtnValue.value = true;
+
+      _topPlaylist(props.tag);
     }
 
     return () => (
@@ -120,14 +138,21 @@ function exclusive(reflist: Ref<boolean>[], isInAllMain: boolean) {
 }
 
 function playlistTags(index: number) {
-  return catlist.filter((cat) => cat.category === index);
+  const tags = slectAllSection.value.map((value) => value.name);
+
+  return catlist.filter((cat) => {
+    if (tags.indexOf(cat.name) > -1) {
+      cat.defaultactive = true;
+    }
+
+    return cat.category === index;
+  });
 }
 
 function removeSelectTag(tagId: number) {
-  slectAllSection.value.splice(
-    slectAllSection.value.findIndex((tag) => tag.tagId === tagId),
-    1
-  );
+  const index = slectAllSection.value.findIndex((tag) => tag.id === tagId);
+  slectAllSection.value[index].btnref = false;
+  slectAllSection.value.splice(index, 1);
 }
 
 function closeAll() {

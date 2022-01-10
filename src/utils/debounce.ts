@@ -1,13 +1,22 @@
-export function debounce(fn: Function, delay: number = 150) {
+interface OPTIONS {
+  asyncBackcall?: (value: any) => any;
+}
+
+export function debounce<T extends Function>(fn: T, delay: number = 150, options?: OPTIONS) {
   let times: NodeJS.Timeout | null = null;
 
-  function _debounce(arg?: any) {
+  function _debounce(...arg: any) {
     if (times) {
       clearTimeout(times);
     }
 
     times = setTimeout(() => {
-      fn.apply(null, arg);
+      const retData = fn.apply(null, arg);
+
+      if ("then" in retData) {
+        (retData as Promise<any>).then(options?.asyncBackcall || (() => {}));
+      }
+
       _debounce.clearTimes();
     }, delay);
   }
