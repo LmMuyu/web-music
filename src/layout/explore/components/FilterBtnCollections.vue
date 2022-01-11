@@ -38,16 +38,14 @@
   </transition>
 </template>
 <script setup lang="tsx">
-import { ref, defineEmits, unref, defineComponent, Ref, computed } from "vue";
+import { ref, unref, defineComponent, Ref, computed } from "vue";
 
-import { getPlaylistCatlist, highqualityTags, topPlaylist } from "../../../api/explore";
+import { getPlaylistCatlist, highqualityTags } from "../../../api/explore";
 import { useRefNegate } from "../../../utils/useRefNegate";
 
 import { ElCheckTag, ElAside, ElContainer, ElMain, ElTag, ElButton } from "element-plus";
-import { debounce } from "../../../utils/debounce";
-import { AxiosPromise } from "axios";
 
-const ctxEmit = defineEmits(["btnWithActive"]);
+const ctxEmit = defineEmits(["withTagData"]);
 
 let tagId = 0;
 const catlist = [];
@@ -83,26 +81,22 @@ const filterBtnItem = defineComponent({
     const { countRef: selectBtnValue } = useRefNegate(initRef());
     activeBtnRefList.push(selectBtnValue);
 
-    const _topPlaylist = debounce(topPlaylist, 200, {
-      asyncBackcall: toDealWithTopPlaylist,
-    });
-
     if (selectBtnValue.value) {
-      _topPlaylist(props.tag);
-    }
-
-    function toDealWithTopPlaylist(catData: AxiosPromise<any>) {
-      console.log(catData);
+      ctxEmit("withTagData", props.tag);
     }
 
     function addSlectAllSection(tag: string, btnref: Ref<boolean>) {
       const [first, last] = retListFirstLast();
-      if (tag !== "" && tag !== first.name && tag !== last.name) {
+      const isin = slectAllSection.value.some((taginfo) => taginfo.name === tag);
+
+      if (tag !== "" && tag !== first.name && tag !== last.name && !isin) {
         slectAllSection.value.push({ id: ++tagId, name: tag, btnref });
       }
     }
 
     function activeBtn() {
+      ctxEmit("withTagData", props.tag);
+
       if (props.tag === beforeCatlist.value[beforeCatlist.value.length - 1].name) {
         showAllBtnItem.value = !showAllBtnItem.value;
         const len = activeBtnRefList.length;
@@ -113,8 +107,6 @@ const filterBtnItem = defineComponent({
       addSlectAllSection(props.tag, selectBtnValue);
       recordSelectClick.value = props.isInAllMain;
       selectBtnValue.value = true;
-
-      _topPlaylist(props.tag);
     }
 
     return () => (

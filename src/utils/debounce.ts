@@ -1,5 +1,12 @@
 interface OPTIONS {
   asyncBackcall?: (value: any) => any;
+  quickrequest?: boolean;
+}
+
+function promiseData(thendata: Promise<any>, asyncBackcall: OPTIONS["asyncBackcall"] = () => {}) {
+  if ("then" in thendata) {
+    thendata.then(asyncBackcall);
+  }
 }
 
 export function debounce<T extends Function>(fn: T, delay: number = 150, options?: OPTIONS) {
@@ -8,23 +15,27 @@ export function debounce<T extends Function>(fn: T, delay: number = 150, options
   function _debounce(...arg: any) {
     if (times) {
       clearTimeout(times);
+      times = null;
     }
 
-    times = setTimeout(() => {
+    if (options.quickrequest) {
       const retData = fn.apply(null, arg);
-
-      if ("then" in retData) {
-        (retData as Promise<any>).then(options?.asyncBackcall || (() => {}));
-      }
-
-      _debounce.clearTimes();
-    }, delay);
+      promiseData(retData);
+      options.quickrequest = false;
+    } else {
+      times = setTimeout(() => {
+        const retData = fn.apply(null, arg);
+        promiseData(retData);
+        clearTimes();
+      }, delay);
+    }
   }
 
-  _debounce.clearTimes = function () {
+  function clearTimes() {
     clearTimeout(times!);
     times = null;
-  };
+  }
 
+  _debounce.clearTimes = clearTimes;
   return _debounce;
 }
