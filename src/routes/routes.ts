@@ -130,6 +130,16 @@ const routes: (RouteRecordRaw & {
       default: () => import("../layout/explore/Explore.vue"),
     },
   },
+  {
+    path: "/songdetail",
+    name: "SongDetail",
+    components: {
+      default: () => import("../layout/songdetail/SongDetail.vue"),
+    },
+    meta: {
+      showTags: false,
+    },
+  },
 ];
 
 export default routes;

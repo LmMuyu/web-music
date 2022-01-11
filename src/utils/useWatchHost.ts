@@ -9,13 +9,9 @@ export function useWatchHost() {
 
   watchEffect(() => {
     const routePath = route.path;
-    const is = excludes.some((path) => path.indexOf(routePath) > -1);
-
-    if (is) {
-      isshow.value = false;
-    } else {
-      isshow.value = true;
-    }
+    const showTags = route.meta.showTags;
+    const is = !showTags ? true : excludes.some((path) => path.indexOf(routePath) > -1);
+    isshow.value = is ? false : true;
   });
 
   return isshow;

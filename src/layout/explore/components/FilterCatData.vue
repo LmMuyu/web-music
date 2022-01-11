@@ -1,7 +1,7 @@
 <template>
   <el-container>
     <el-main>
-      <card-row :playlist="catPlaylists"></card-row>
+      <card-row topath="/songdetail" :playlist="catPlaylists"></card-row>
     </el-main>
   </el-container>
 </template>

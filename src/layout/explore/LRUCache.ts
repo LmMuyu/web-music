@@ -30,8 +30,8 @@ export default class LRU {
     if (this.head === null) {
       this.head = this.tail = node;
     } else {
-      this.head.prev = node;
       node.next = this.head;
+      this.head.prev = node;
       this.head = node;
     }
   }
@@ -48,14 +48,11 @@ export default class LRU {
       const newnode = this.node(key, value);
 
       if (this.map.size >= this.size) {
-        console.log("remove");
-        this.remove(this.tail);
-        console.log(this.tail.key);
         this.map.delete(this.tail.key);
+        this.remove(this.tail);
         this.appendHead(newnode);
         this.map.set(key, newnode);
       } else {
-        console.log("append");
         this.appendHead(newnode);
         this.map.set(key, newnode);
       }

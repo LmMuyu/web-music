@@ -3,7 +3,7 @@ interface OPTIONS {
   quickrequest?: boolean;
 }
 
-function promiseData(thendata: Promise<any>, asyncBackcall: OPTIONS["asyncBackcall"] = () => {}) {
+function promiseData(thendata: Promise<any>, asyncBackcall: OPTIONS["asyncBackcall"]) {
   if ("then" in thendata) {
     thendata.then(asyncBackcall);
   }
@@ -20,12 +20,12 @@ export function debounce<T extends Function>(fn: T, delay: number = 150, options
 
     if (options.quickrequest) {
       const retData = fn.apply(null, arg);
-      promiseData(retData);
+      promiseData(retData, options?.asyncBackcall ?? (() => {}));
       options.quickrequest = false;
     } else {
       times = setTimeout(() => {
         const retData = fn.apply(null, arg);
-        promiseData(retData);
+        promiseData(retData, options.asyncBackcall ?? (() => {}));
         clearTimes();
       }, delay);
     }

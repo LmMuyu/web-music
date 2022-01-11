@@ -1,7 +1,10 @@
 <template>
   <div :style="gridStyle()" @click.capture="captureColItem">
     <div v-for="(playitem, index) in playlist" :key="index">
-      <play-col-item :is-play-icon="playitem?.isPlayIcon ?? true" :playitem="playitem" />
+      <play-col-item
+        :is-play-icon="playitem?.isPlayIcon ?? true"
+        :playitem="transformPlayitem(playitem)"
+      />
     </div>
   </div>
 </template>
@@ -25,7 +28,16 @@ const props = defineProps({
     type: Array,
     default: () => [20, 10],
   },
+  topath: String,
 });
+
+function transformPlayitem(playlist: any) {
+  if (props.topath && !playlist.topath) {
+    return { ...playlist, topath: props.topath };
+  } else {
+    return playlist;
+  }
+}
 
 function gridStyle() {
   return {
