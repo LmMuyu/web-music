@@ -1,3 +1,4 @@
+import filterDate from "./filterDate";
 import { isType } from "./methods";
 import { allType } from "./type";
 
@@ -5,7 +6,8 @@ export interface MusicDetailOption {
   id: number;
   name: string;
   picUrl: string;
-  ar: allType<typeSinger>;
+  ar: typeSinger;
+  durationTime: string;
 }
 
 export interface typeSinger {
@@ -54,6 +56,7 @@ export class musicDetail {
   singerInfo: allType<typeSinger>;
   isMusicDetail: boolean;
   nickName: string;
+  durationTime: string;
 
   constructor(options: MusicDetailOption) {
     const { id, name, picUrl, ar } = this.runMusicDetail(options);
@@ -65,6 +68,7 @@ export class musicDetail {
     this.singerInfo = this.setSingerInfo(ar);
     this.nickName = this.singerDomString();
     this.isMusicDetail = true;
+    this.durationTime = options.durationTime;
   }
 
   runMusicDetail(options: Record<string, any>) {
@@ -106,12 +110,18 @@ export class resultOptions implements MusicDetailOption {
   name: string;
   picUrl: string;
   ar: typeSinger;
+  durationTime: string;
 
-  constructor(options: Record<string, any>) {
-    this.id = this.getID(options, options.type);
-    this.name = this.getName(options);
-    this.picUrl = this.getPicUrl(options);
-    this.ar = this.getAr(options);
+  constructor(musicdata: Record<string, any>) {
+    this.id = this.getID(musicdata, musicdata.type);
+    this.name = this.getName(musicdata);
+    this.picUrl = this.getPicUrl(musicdata);
+    this.ar = this.getAr(musicdata);
+    this.durationTime = this.durationFilterTime(musicdata.dt);
+  }
+
+  durationFilterTime(dt: number) {
+    return filterDate(dt);
   }
 
   picUrlRecursion(options: any) {
@@ -143,8 +153,7 @@ export class resultOptions implements MusicDetailOption {
   }
 
   getPicUrl(options: any) {
-    const url = this.picUrlRecursion(options);
-
+    const url = options?.album ? this.picUrlRecursion(options) : "";
     if (url) return url;
 
     return options.coverUrl || options.coverImgUrl || options["al"]["picUrl"] || "";

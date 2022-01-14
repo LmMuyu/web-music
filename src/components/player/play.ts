@@ -1,5 +1,6 @@
 import { Howl, Howler } from "howler";
 import { getMusicDetail } from "../../api/playList";
+import filterDate from "../../utils/filterDate";
 import { musicDetail } from "../../utils/musicDetail";
 
 export default class play {
@@ -7,12 +8,11 @@ export default class play {
   private loop: boolean;
   private src: string;
   private volume: number;
-  private isduration: boolean;
   private currIndex: number;
   private playing: boolean;
   format: string[];
   autoplay: boolean;
-  duration: number;
+  duration: string;
   lyrics: string[];
   playlist: any[];
   playid: number | string;
@@ -51,12 +51,6 @@ export default class play {
     if (autoplay) {
       this.play();
     }
-
-    this.howl.once("end", () => {});
-    this.howl.once("play", () => {
-      this.duration = this.paly_duration;
-      this.setLocalMusicDuration(this.duration);
-    });
   }
 
   async _init() {
@@ -148,23 +142,24 @@ export default class play {
 
   async getMusicDeatils(id: number) {
     const retData = await getMusicDetail(String(id));
-    const musicDateail = retData.data?.data.songs[0] || retData.data;
-    const musicinfo = new musicDetail(musicDateail);
 
+    const musicDateail = retData.data?.songs[0] || retData.data;
+    Promise.resolve(musicDateail.dt).then((dt) => {
+      this.duration = this.filterDurationTime(dt);
+    });
+
+    const musicinfo = new musicDetail(musicDateail);
     this.playlist.unshift(musicinfo);
     this.splicingSrc(0);
 
     return {
-      isExistMaps: retData.isExistMaps,
+      isExistMaps: musicDateail.isExistMaps,
       musicinfo,
     };
   }
 
-  get paly_duration() {
-    if (this.isduration) return;
-    this.isduration = true;
-
-    return this.howl.duration();
+  filterDurationTime(dt: number) {
+    return filterDate(dt);
   }
 
   get play_volume() {

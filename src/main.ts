@@ -8,6 +8,7 @@ import lazy from "./directives/lazy-loading";
 import "element-plus/theme-chalk/el-icon.css";
 import "element-plus/dist/index.css";
 import startPace from "./lib/pacejs";
+import filterDate from "./utils/filterDate";
 
 startPace();
 
