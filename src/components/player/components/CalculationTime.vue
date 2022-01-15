@@ -1,7 +1,6 @@
 <script lang="tsx">
 import { defineComponent } from "vue";
-
-import countTime from "../hook/useCountTime"
+import filterDate from "../../../utils/filterDate";
 
 export default defineComponent({
   props: {
@@ -11,16 +10,14 @@ export default defineComponent({
     },
   },
   setup(props) {
-
-
     function CalculationTime(duration: number) {
-      const [minute, second] = countTime(duration);
+      const [minute, second] = filterDate(duration).split(":");
 
       return (
         <div class="flex px-4">
-          <span class="p-1 text-sm">{second}</span>
-          <span class="p-1">:</span>
           <span class="p-1 text-sm">{minute}</span>
+          <span class="p-1">:</span>
+          <span class="p-1 text-sm">{second}</span>
         </div>
       );
     }
@@ -29,5 +26,4 @@ export default defineComponent({
   },
 });
 </script>
-<style scoped lang="scss">
-</style>
+<style scoped lang="scss"></style>

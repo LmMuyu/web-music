@@ -1,7 +1,7 @@
 <template>
-  <div class="flex items-center relative h-full w-full audio_shadow">
+  <div class="flex items-center relative h-full w-full py-2 audio_shadow">
     <div class="flex items-center h-full w-full px-4">
-      <div class="flex" style="flex: 1">
+      <div class="flex">
         <div style="width: 48px; height: 48px">
           <img
             class="object-cover"
@@ -18,33 +18,47 @@
           </div>
         </div>
       </div>
-      <div style="flex: 3" class="flex flex-col h-full w-full">
-        <div>
-          <AudioAndVideoControls
-            @next="controlsMethods.next"
-            @pre="controlsMethods.pre"
-            @play="controlsMethods.play"
-            @pause="controlsMethods._pause"
-          ></AudioAndVideoControls>
-        </div>
-        <div class="flex justify-center itmes-center h-full w-full">
-          <PlayMusicTime :starttime="starttime" :maxtime="maxtime" class="w-full">
-            <PlaySlider v-model="starttime" :max="maxtime" />
-          </PlayMusicTime>
-          <div class="relative h-full w-full clearfolat">
-            <el-slider
-              class="left-0"
-              style="position: absolute !important; top: 0"
-              v-model="volume"
-              :vertical="true"
-              height="80px"
-            >
-            </el-slider>
-          </div>
-          <div @click="openRightDrawer" class="flex items-center">
-            <i class="iconfont iconindent cursor-pointer"></i>
-          </div>
-        </div>
+      <div class="flex flex-col h-full w-full">
+        <el-row class="flex content-center h-full w-full">
+          <el-col :span="15" class="flex self-center">
+            <div class="flex items-center justify-center" style="flex: 1">
+              <AudioAndVideoControls
+                @next="controlsMethods.next"
+                @pre="controlsMethods.pre"
+                @play="controlsMethods.play"
+                @pause="controlsMethods._pause"
+              ></AudioAndVideoControls>
+            </div>
+            <div style="flex: 2">
+              <PlayMusicTime
+                :starttime="starttime"
+                :maxtime="playHowl.dt"
+                class="w-full items-baseline"
+              >
+                <PlaySlider v-model="starttime" :max="playHowl.dt" />
+              </PlayMusicTime>
+            </div>
+          </el-col>
+          <el-col :span="1" class="flex flex-col">
+            <div  v-show="showSlider" class="relative flex justify-center audio_slider clearfolat">
+              <el-slider
+                class="absolute left-0 -top-10"
+                v-model="volume"
+                :vertical="true"
+                height="80px"
+                @mouseenter="enterEvent"
+              >
+              </el-slider>
+            </div>
+            <volume-icon @click.captrue="showSlider = !showSlider" :volume="volume"></volume-icon>
+          </el-col>
+          <el-col :span="1" class="flex items-center justify-center">
+            <div @click="openRightDrawer" class="flex items-center">
+              <font-icon icon="iconindent" size="24"></font-icon>
+            </div>
+          </el-col>
+          <el-col :span="2"></el-col>
+        </el-row>
       </div>
     </div>
   </div>
@@ -53,10 +67,8 @@
 import { reactive, ref, nextTick } from "vue";
 import { useRoute } from "vue-router";
 import { onMounted } from "vue-demi";
-import { useStore } from "vuex";
 
 import Howl from "./play";
-import { isType } from "../../utils/methods";
 import { musicDetail } from "../../utils/musicDetail";
 import { openDrawer } from "../../layout/playlist/components/PlayListHistory";
 
@@ -64,14 +76,18 @@ import { openDrawer } from "../../layout/playlist/components/PlayListHistory";
 import AudioAndVideoControls from "./components/AudioAndVideoControls.vue";
 import PlaySlider from "../../components/slider/Slider.vue";
 import PlayMusicTime from "./components/PlayMusicTime.vue";
-import { ElSlider } from "element-plus";
+import VolumeIcon from "./components/VolumeIcon.vue";
+import { ElSlider, ElRow, ElCol } from "element-plus";
+import FontIcon from "../fonticon/FontIcon.vue";
+import { debounce } from "../../utils/debounce";
 
-const maxtime = ref(0);
 const starttime = ref(0);
 const volume = ref(0);
 const historyData = ref([]);
-
-const id = useRoute().query.id as unknown as number;
+const musicHowler = new Howl();
+const musicinfo = ref<musicDetail>();
+const showSlider = ref(false);
+let isenterSlider = false;
 
 const controlsMethods = reactive({
   pre: () => {},
@@ -80,10 +96,7 @@ const controlsMethods = reactive({
   next: () => {},
 });
 
-const musicHowler = new Howl();
-const store = useStore();
-const musicinfo = ref<musicDetail>();
-
+const id = useRoute().query.id as unknown as number;
 volume.value = musicHowler.play_volume * 100;
 
 const playHowl = new Proxy(musicHowler, {
@@ -96,11 +109,8 @@ const playHowl = new Proxy(musicHowler, {
         musicinfo.value = data.musicinfo;
         historyData.value.unshift(data.musicinfo);
       }
-
-      if (key === "duration" && isType(key) !== "Null") {
-        maxtime.value = value;
-      }
     })();
+
     return true;
   },
 });
@@ -134,18 +144,58 @@ function replaceMethods(methods: Record<string, Function>, howler: Howl) {
 
 const openRightDrawer = () => openDrawer(historyData);
 
+const enterEvent = debounce(cursourEnterSlider);
+
+function cursourEnterSlider(e) {
+  if (isenterSlider) {
+    e.stopPropagation();
+    e.preventDefault();
+  }
+
+  isenterSlider = true;
+}
+
+async function sliderstyle() {
+  try {
+    const boxSlider = document.querySelector(".audio_slider");
+    const sliderBtn = boxSlider.querySelector(".el-slider__button") as HTMLElement;
+    const sliderRunway = boxSlider.querySelector(".el-slider__runway") as HTMLElement;
+    const sliderBar = boxSlider.querySelector(".el-slider__bar") as HTMLElement;
+
+    sliderBtn.style.cssText = `
+      width:15px;
+      height:15px;
+     `;
+
+    sliderRunway.style.cssText = `
+    height:80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 4px;
+  `;
+
+    sliderBar.style.cssText = `
+    height: 100%;
+    width: inherit;
+  `;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 onMounted(() => {
   playHowl.playid = id;
-  maxtime.value = parseFloat(localStorage.getItem("duration"));
 
   nextTick(() => {
-    const sliderBtn = document.querySelector(".el-slider__button")! as HTMLElement;
-    sliderBtn.style.cssText = `
-    {
-       width:"20px";
-      height:"20px"
-    }
-     `;
+    sliderstyle();
+
+    document.documentElement.addEventListener("click", () => {
+      if (isenterSlider) {
+        showSlider.value = false;
+        isenterSlider = false;
+      }
+    });
   });
 });
 

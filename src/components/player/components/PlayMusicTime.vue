@@ -11,23 +11,22 @@
     </div>
   </div>
 </template>
-<script setup lang='ts'>
-import CalculationTime from './CalculationTime.vue';
+<script setup lang="ts">
+import CalculationTime from "./CalculationTime.vue";
 
 const props = defineProps({
   starttime: {
     type: Number,
-    required: true
+    required: true,
   },
   maxtime: {
     type: Number,
-    required: true
+    required: true,
   },
   class: {
     type: String,
-    default: ""
-  }
-})
+    default: "",
+  },
+});
 </script>
-<style scoped lang='scss'>
-</style>
+<style scoped lang="scss"></style>

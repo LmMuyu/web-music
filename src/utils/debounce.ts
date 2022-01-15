@@ -4,9 +4,11 @@ interface OPTIONS {
 }
 
 function promiseData(thendata: Promise<any>, asyncBackcall: OPTIONS["asyncBackcall"]) {
-  if ("then" in thendata) {
-    thendata.then(asyncBackcall);
-  }
+  try {
+    if ("then" in thendata) {
+      thendata.then(asyncBackcall);
+    }
+  } catch (error) {}
 }
 
 export function debounce<T extends Function>(fn: T, delay: number = 150, options?: OPTIONS) {
@@ -18,14 +20,14 @@ export function debounce<T extends Function>(fn: T, delay: number = 150, options
       times = null;
     }
 
-    if (options.quickrequest) {
+    if (options?.quickrequest) {
       const retData = fn.apply(null, arg);
       promiseData(retData, options?.asyncBackcall ?? (() => {}));
       options.quickrequest = false;
     } else {
       times = setTimeout(() => {
         const retData = fn.apply(null, arg);
-        promiseData(retData, options.asyncBackcall ?? (() => {}));
+        promiseData(retData, options?.asyncBackcall ?? (() => {}));
         clearTimes();
       }, delay);
     }

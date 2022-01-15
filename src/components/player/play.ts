@@ -10,6 +10,7 @@ export default class play {
   private volume: number;
   private currIndex: number;
   private playing: boolean;
+  dt: number;
   format: string[];
   autoplay: boolean;
   duration: string;
@@ -146,6 +147,8 @@ export default class play {
     const musicDateail = retData.data?.songs[0] || retData.data;
     Promise.resolve(musicDateail.dt).then((dt) => {
       this.duration = this.filterDurationTime(dt);
+      this.setLocalMusicDuration(dt);
+      this.dt = dt;
     });
 
     const musicinfo = new musicDetail(musicDateail);
