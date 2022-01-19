@@ -59,3 +59,17 @@ export function userRecord(uid: number, type?: "0" | "1") {
     },
   });
 }
+
+const LIMIT = 20;
+
+export function commentMusic(id: number, offset: number = 1, before?: number) {
+  return request({
+    url: "/comment/music",
+    params: {
+      id,
+      limit: LIMIT,
+      offset: (offset - 1) * LIMIT,
+      ...(before ? { before } : {}),
+    },
+  });
+}

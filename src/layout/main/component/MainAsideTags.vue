@@ -1,23 +1,24 @@
 <template>
-  <section ref="asidetags" class="pl-14 h-full">
-    <header style="height: 10%">44444</header>
+  <section ref="asidetags" class="h-full">
+    <header style="height: 10%" class="flex items-center justify-center">44444</header>
     <main class="h-3/4">
       <MainTag />
     </main>
-    <footer ref="footer" class="flex items-center" style="height: 15%">
+    <footer ref="footer" class="flex items-center justify-center" style="height: 15%">
       <MainAsideCard v-if="loginUserData.tramsformButton" :infoData="loginUserData.userdata" />
-      <MainLoginButton class="flex justify-center outline" v-else />
+      <ButtonEnter v-else-if="windowResize" />
+      <AvatarEnter v-else />
     </footer>
   </section>
 </template>
-<script setup lang="ts">
+<script setup lang="tsx">
 import { nextTick, onMounted, ref } from "@vue/runtime-core";
-import { computed, reactive, watchEffect } from "vue";
+import { computed, inject, reactive, watchEffect } from "vue";
 import { useStore } from "vuex";
 
 import loginBCBus from "../hooks/useBroadcastChannel";
 
-import MainLoginButton from "./MainLoginButton.vue";
+import { AvatarEnter, ButtonEnter } from "./LoginModule";
 import MainAsideCard from "./MainAsideCard.vue";
 import MainTag from "./MainTag.vue";
 
@@ -25,6 +26,7 @@ const store = useStore();
 
 const asidetags = ref(null);
 const footer = ref(null);
+const windowResize = inject("windowResize");
 
 const loginUserData = reactive({
   tramsformButton: false,

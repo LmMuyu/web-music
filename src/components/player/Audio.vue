@@ -39,25 +39,26 @@
               </PlayMusicTime>
             </div>
           </el-col>
-          <el-col :span="1" class="flex flex-col">
-            <div  v-show="showSlider" class="relative flex justify-center audio_slider clearfolat">
-              <el-slider
-                class="absolute left-0 -top-10"
-                v-model="volume"
-                :vertical="true"
-                height="80px"
-                @mouseenter="enterEvent"
-              >
+          <el-col :span="1" class="flex items-center">
+            <div>
+              <volume-icon @click.captrue="showSlider = !showSlider" :volume="volume"></volume-icon>
+            </div>
+          </el-col>
+          <el-col v-show="showSlider" :span="2" class="h-full flex items-center justify-center">
+            <div class="w-full audio_slider">
+              <el-slider @mousemove="mouseEvent" @mouseleave="mouseEvent" v-model="volume">
               </el-slider>
             </div>
-            <volume-icon @click.captrue="showSlider = !showSlider" :volume="volume"></volume-icon>
           </el-col>
           <el-col :span="1" class="flex items-center justify-center">
             <div @click="openRightDrawer" class="flex items-center">
               <font-icon icon="iconindent" size="24"></font-icon>
             </div>
           </el-col>
-          <el-col :span="2"></el-col>
+          <el-col :span="1" class="flex items-center justify-center">
+            <font-icon @click.captrue="openDrawer" icon="iconpinglun_huabanfuben" size="24">
+            </font-icon>
+          </el-col>
         </el-row>
       </div>
     </div>
@@ -80,6 +81,7 @@ import VolumeIcon from "./components/VolumeIcon.vue";
 import { ElSlider, ElRow, ElCol } from "element-plus";
 import FontIcon from "../fonticon/FontIcon.vue";
 import { debounce } from "../../utils/debounce";
+import { commentMusic } from "../../api/playList";
 
 const starttime = ref(0);
 const volume = ref(0);
@@ -87,7 +89,7 @@ const historyData = ref([]);
 const musicHowler = new Howl();
 const musicinfo = ref<musicDetail>();
 const showSlider = ref(false);
-let isenterSlider = false;
+let isclick = true;
 
 const controlsMethods = reactive({
   pre: () => {},
@@ -132,6 +134,10 @@ function handler<T extends Function>(): ProxyHandler<any> {
   };
 }
 
+commentMusic(id, 1).then(({ data: comment }) => {
+  console.log(comment);
+});
+
 function replaceMethods(methods: Record<string, Function>, howler: Howl) {
   ["play", "_pause", "next", "pre"].map((mdsname) => {
     const newBindFn: Function = howler[mdsname].bind(howler);
@@ -144,15 +150,14 @@ function replaceMethods(methods: Record<string, Function>, howler: Howl) {
 
 const openRightDrawer = () => openDrawer(historyData);
 
-const enterEvent = debounce(cursourEnterSlider);
+const mouseEvent = debounce(cursourEnterSlider);
 
-function cursourEnterSlider(e) {
-  if (isenterSlider) {
-    e.stopPropagation();
-    e.preventDefault();
+function cursourEnterSlider(e: MouseEvent) {
+  if (e.type === "mousedown") {
+    isclick = false;
+  } else {
+    isclick = true;
   }
-
-  isenterSlider = true;
 }
 
 async function sliderstyle() {
@@ -166,15 +171,12 @@ async function sliderstyle() {
       width:15px;
       height:15px;
      `;
-
     sliderRunway.style.cssText = `
-    height:80px;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 4px;
-  `;
-
+      width: 100%;
+    `;
     sliderBar.style.cssText = `
     height: 100%;
     width: inherit;
@@ -190,12 +192,17 @@ onMounted(() => {
   nextTick(() => {
     sliderstyle();
 
-    document.documentElement.addEventListener("click", () => {
-      if (isenterSlider) {
-        showSlider.value = false;
-        isenterSlider = false;
-      }
-    });
+    document.documentElement.addEventListener(
+      "click",
+      () => {
+        console.log(showSlider.value);
+
+        if (isclick && !showSlider.value) {
+          showSlider.value = false;
+        }
+      },
+      false
+    );
   });
 });
 
@@ -217,17 +224,5 @@ defineExpose({
   -webkit-box-shadow: 0px -1px 3px 0px rgba(245, 245, 245, 1);
   -moz-box-shadow: 0px -1px 3px 0px rgba(245, 245, 245, 1);
   box-shadow: 0px -1px 3px 0px rgba(245, 245, 245, 1);
-}
-
-.clearfolat {
-  &::before,
-  &::after {
-    content: "";
-    display: block;
-  }
-
-  &::after {
-    clear: both;
-  }
 }
 </style>

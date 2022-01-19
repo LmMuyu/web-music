@@ -19,7 +19,7 @@
 </template>
 
 <script setup lang="ts">
-import { inject } from "vue";
+import { inject, onMounted, provide, ref } from "vue";
 
 import { useMinWh } from "./hooks/useMinWH";
 import { useWatchHost } from "../../utils/useWatchHost";
@@ -27,11 +27,40 @@ import { useWatchHost } from "../../utils/useWatchHost";
 import MainContainer from "../../components/maincontent/MainContainer.vue";
 import IndexAsideTags from "./component/MainAsideTags.vue";
 import Circle from "./component/MainCircle.vue";
+import { throttle } from "../../utils/throttle";
 
 const circleRef = inject("circleRef");
 const isTagShow = useWatchHost();
+const windowResize = ref(true);
+
+provide("windowResize", windowResize);
 
 const { minwidth, minheight } = useMinWh();
+
+const minWidth = 1024;
+
+function addEventResize() {
+  const _resize = throttle(resize, 50, {
+    initThrollte: true,
+  });
+
+  function resize() {
+    const dcw = document.documentElement.clientWidth;
+    console.log(dcw);
+
+    if (dcw <= minWidth) {
+      windowResize.value = false;
+    } else if (!windowResize.value) {
+      windowResize.value = true;
+    }
+  }
+
+  _resize();
+
+  window.addEventListener("resize", _resize, false);
+}
+
+onMounted(addEventResize);
 </script>
 
 <style scoped lang="scss">

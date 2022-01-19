@@ -1,5 +1,5 @@
 <template>
-  <div :style="gridStyle()" @click.capture="captureColItem">
+  <div :style="gridStyle()" class="sm:grid-cols-3" @click.capture="captureColItem">
     <div v-for="(playitem, index) in playlist" :key="index">
       <play-col-item
         :is-play-icon="playitem?.isPlayIcon ?? true"
