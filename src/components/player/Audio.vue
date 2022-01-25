@@ -56,7 +56,7 @@
             </div>
           </el-col>
           <el-col :span="1" class="flex items-center justify-center">
-            <font-icon @click.captrue="openDrawer" icon="iconpinglun_huabanfuben" size="24">
+            <font-icon @click.captrue="openCommentList" icon="iconpinglun_huabanfuben" size="24">
             </font-icon>
           </el-col>
         </el-row>
@@ -65,13 +65,15 @@
   </div>
 </template>
 <script setup lang="ts">
-import { reactive, ref, nextTick } from "vue";
+import { reactive, ref, nextTick, toRef } from "vue";
 import { useRoute } from "vue-router";
 import { onMounted } from "vue-demi";
 
 import Howl from "./play";
 import { musicDetail } from "../../utils/musicDetail";
 import { openDrawer } from "../../layout/playlist/components/PlayListHistory";
+import { debounce } from "../../utils/debounce";
+import { commentMusic } from "../../api/playList";
 
 //@ts-ignore
 import AudioAndVideoControls from "./components/AudioAndVideoControls.vue";
@@ -80,8 +82,6 @@ import PlayMusicTime from "./components/PlayMusicTime.vue";
 import VolumeIcon from "./components/VolumeIcon.vue";
 import { ElSlider, ElRow, ElCol } from "element-plus";
 import FontIcon from "../fonticon/FontIcon.vue";
-import { debounce } from "../../utils/debounce";
-import { commentMusic } from "../../api/playList";
 
 const starttime = ref(0);
 const volume = ref(0);
@@ -89,7 +89,16 @@ const historyData = ref([]);
 const musicHowler = new Howl();
 const musicinfo = ref<musicDetail>();
 const showSlider = ref(false);
+const comments = ref([]);
+const COMMENT_LEN = 40;
 let isclick = true;
+let currPage = 1;
+const MAX_LIMIT = COMMENT_LEN;
+const playListHistoryOptions = reactive({
+  total: 0,
+  time: 0,
+});
+const timeTable = new Map();
 
 const controlsMethods = reactive({
   pre: () => {},
@@ -134,9 +143,27 @@ function handler<T extends Function>(): ProxyHandler<any> {
   };
 }
 
-commentMusic(id, 1).then(({ data: comment }) => {
-  console.log(comment);
-});
+function setTimeTable(page: number, time: number) {
+  if (!timeTable.has(page)) {
+    timeTable.set(page, time);
+  }
+}
+
+function commentMusicThenFn({ config, data: comment }) {
+  playListHistoryOptions.total = comment.total;
+  playListHistoryOptions.time = comment.comments[comment.comments.length - 1].time;
+
+  if (config.params.offset + 1 === 1 && comment.hotComments.length > 0) {
+    const diff = COMMENT_LEN - comment.hotComments.length;
+    comments.value = [...comment.hotComments, ...comment.comments.slice(0, diff)];
+    return;
+  }
+
+  comments.value = comment.comments;
+  setTimeTable(1, playListHistoryOptions.time);
+}
+
+commentMusic(id, 1, 0, MAX_LIMIT).then(commentMusicThenFn);
 
 function replaceMethods(methods: Record<string, Function>, howler: Howl) {
   ["play", "_pause", "next", "pre"].map((mdsname) => {
@@ -184,6 +211,30 @@ async function sliderstyle() {
   } catch (error) {
     console.log(error);
   }
+}
+
+function currentChange(index: number) {
+  if (index === currPage) {
+    return;
+  }
+  commentMusic(id, index, timeTable.get(index - 1)).then(commentMusicThenFn);
+}
+
+function changePageIndex(index: number) {
+  if (index === currPage) {
+    return;
+  }
+  commentMusic(id, index, timeTable.get(index - 1) ?? 0).then(commentMusicThenFn);
+}
+
+function openCommentList() {
+  openDrawer(comments, "评论", {
+    "current-change": currentChange,
+    "next-click": changePageIndex,
+    "prev-click": changePageIndex,
+    total: toRef(playListHistoryOptions, "total"),
+    size: MAX_LIMIT,
+  });
 }
 
 onMounted(() => {

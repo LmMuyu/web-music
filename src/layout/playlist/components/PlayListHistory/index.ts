@@ -3,20 +3,34 @@ import { createApp, nextTick, Ref, ref } from "@vue/runtime-dom";
 import PlayListHistory from "./PlayListHistory.vue";
 
 import type { App } from "@vue/runtime-dom";
+import type { ElPagination } from "element-plus";
+import type { Include, OPTIONS } from "./type";
 
 let app: App<Element> | null = null;
 let div: HTMLDivElement | null = null;
 let root: Element | null = null;
 
-export function openDrawer<T extends any[] | Ref<any[]>>(recordData: T) {
+export function openDrawer<T extends any[] | Ref<any[]>>(
+  recordData: T,
+  title = "历史记录",
+  options?: OPTIONS & Include<typeof ElPagination, "prev-click" | "next-click" | "current-change">
+) {
   const open = (function () {
     const isopen = ref(false);
 
     app = createApp(PlayListHistory, {
+      title,
       record: {
         allData: recordData,
         isopen,
       },
+      on: {
+        "prev-click": options["prev-click"],
+        "next-click": options["next-click"],
+        "current-change": options["current-change"],
+      },
+      total: options.total,
+      size: options.size,
       unmountApp,
     });
 

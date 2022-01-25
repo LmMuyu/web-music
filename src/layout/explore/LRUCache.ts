@@ -91,6 +91,10 @@ export default class LRU {
     }
   }
 
+  clear() {
+    this.head = this.head = null;
+  }
+
   get mapAllData() {
     return Array.from(this.map.values());
   }

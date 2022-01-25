@@ -1,8 +1,22 @@
 import { AxiosResponse } from "axios";
-import { reqCode, setCookie } from "./result";
+import * as allResultMethods from "./result";
+import * as allErrorMethods from "./error";
 
-export default function useResponse(httpRes: AxiosResponse<any>) {
-  [reqCode, setCookie].map((fn) => {
-    Promise.resolve(httpRes).then((res) => fn(res));
-  });
+function forRunFn(httpRes: AxiosResponse<any>) {
+  for (const key in allResultMethods) {
+    if (typeof key === "function" && Object.prototype.hasOwnProperty.call(allResultMethods, key)) {
+      (allResultMethods[key] as Function)(httpRes);
+    }
+  }
+}
+
+export default function useResponse(
+  httpRes: AxiosResponse<any>,
+  type: "error" | "result" = "result"
+) {
+  if (type === "result") {
+    forRunFn(httpRes);
+  } else {
+    forRunFn(httpRes);
+  }
 }

@@ -1,7 +1,7 @@
 <template>
   <span>
     <slot name="before"></slot>
-    <i :style="fonticon" :class="icon" class="cursor-pointer"></i>
+    <i :style="fonticon" :class="[icon, setclass]" class="cursor-pointer"></i>
     <slot name="after"></slot>
   </span>
 </template>
@@ -21,6 +21,10 @@ const props = defineProps({
     type: String,
     default: "16",
   },
+  class: {
+    type: String,
+    default: "",
+  },
 });
 
 const fonticon = computed(() => {
@@ -34,5 +38,7 @@ const fonticon = computed(() => {
       -moz-osx-font-smoothing: grayscale;
   `;
 });
+
+const setclass = computed(() => props.class);
 </script>
 <style scoped lang="scss"></style>

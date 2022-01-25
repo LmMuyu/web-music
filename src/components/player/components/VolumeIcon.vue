@@ -41,8 +41,6 @@ const ifmethods = {
 };
 
 watchEffect(() => {
-  console.log(props.volume);
-
   for (const key in ifmethods) {
     if (Object.prototype.hasOwnProperty.call(ifmethods, key)) {
       const iconclass = ifmethods[key](props.volume);

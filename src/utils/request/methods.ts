@@ -1,9 +1,4 @@
-import store from "../../store";
-
-import { useLocalStorage } from "../useLocalStorage";
-import { logout } from "../../api/app/login";
-
-import { AxiosResponse } from "axios";
+import { CancelToken, CancelTokenSource } from "axios";
 
 interface CONFIG_DEFAULT {
   retry?: number;
@@ -11,57 +6,12 @@ interface CONFIG_DEFAULT {
   _retryCount?: number;
 }
 
-const removeLocalStoreageKey = () => {
-  const info = useLocalStorage("userinfo");
-  const token = useLocalStorage("token");
+type CANCEL_MAP = Map<string, CancelTokenSource[]>;
 
-  if (info) {
-    localStorage.removeItem("userinfo");
-  }
-
-  if (token) {
-    localStorage.removeItem("token");
-  }
-};
-
-function isLoginWatchObj(isstatus: boolean) {
-  return new Promise((resolve) => {
-    store.dispatch("login/runWatchFn", [resolve, isstatus]);
-  });
-}
-
-export async function loginStateus(httpRes: AxiosResponse<any>) {
-  try {
-    const url = httpRes.config.url;
-
-    if (url === "/login/status") {
-      //是否已经登录
-      const islogin = httpRes.data.account !== null && httpRes.data.profile !== null;
-      const token = localStorage.getItem("token");
-      await isLoginWatchObj(islogin);
-
-      if (islogin && token) {
-        const data = findInfo();
-
-        store.commit("login/switchStatus", true);
-        store.commit("login/setUserInfo", data);
-      } else {
-        store.commit("login/switchStatus", false);
-        removeLocalStoreageKey();
-        logout();
-      }
-    } else if (url === "/logout") {
-      store.commit("login/emitTypeWatchFn", "stopwatch");
-      store.commit("login/switchStatus", false);
-      isLoginWatchObj(false);
-      removeLocalStoreageKey();
-    }
-  } catch (err) {
-    console.log(err);
-  }
-}
-
+//重新请求
 export function tryAgainRequest(err: any) {
+  console.log(err);
+
   const config: CONFIG_DEFAULT = err.config;
 
   if (!config.retry || !config)
@@ -81,7 +31,7 @@ export function tryAgainRequest(err: any) {
 
   config._retryCount += 1;
 
-  const before = new Promise((resolve) => {
+  return new Promise((resolve) => {
     setTimeout(() => {
       resolve({
         config,
@@ -89,15 +39,32 @@ export function tryAgainRequest(err: any) {
       });
     }, config.retrydelay || 1);
   });
-
-  return before;
 }
 
-function findInfo() {
-  const data = useLocalStorage("userinfo");
-  if (!data.value) {
-    throw new Error("local_undefined_userinfo");
-  }
+export function deleteHttpToken(url: string, map: CANCEL_MAP, token: CancelToken) {
+  const cancelSourceLists = map.get(url);
+  const index = cancelSourceLists.findIndex((source) => source.token === token);
 
-  return JSON.parse(data.value);
+
+  console.log(index);
+  
+
+  if (index >= 0) {
+    cancelSourceLists.length === 0
+      ? map.delete(url)
+      : map.set(url, cancelSourceLists.splice(index, 1));
+  }
+}
+
+export function cancelHttpRequest(url: string, map: CANCEL_MAP, meg?: string) {
+  if (map.has(url)) {
+    const cancelSourceLists = map.get(url);
+    const index = cancelSourceLists.length - 1;
+
+    if (index >= 0) {
+      const source = cancelSourceLists.splice(index, 1)[0];
+      source.cancel(meg ? meg : "");
+      cancelSourceLists.length === 0 ? map.delete(url) : map.set(url, cancelSourceLists);
+    }
+  }
 }

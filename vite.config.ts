@@ -1,9 +1,11 @@
-import { CSSOptions, loadEnv } from "vite";
+import vite, { CSSOptions, loadEnv } from "vite";
 import styleImport from "vite-plugin-style-import";
 import rollupOptions from "./vite/rollupOptions";
 import vueJsx from "@vitejs/plugin-vue-jsx";
-import vue from "@vitejs/plugin-vue";
 import createAlias from "./vite/alias";
+import vue from "@vitejs/plugin-vue";
+import os from "os";
+
 import { preloadStyleCss } from "./vite/plugins";
 
 import type { ConfigEnv, UserConfig } from "vite";
@@ -19,6 +21,8 @@ const cssOptions: CSSOptions = {
   },
 };
 
+const hostIp = os.networkInterfaces()["以太网"][1].address;
+
 const aliasList = createAlias([
   ["src/", "/src"],
   ["comps/", "src/components"],
@@ -33,7 +37,9 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
   const root = process.cwd();
 
   const env = loadEnv(mode, root);
-  const { VITE_PROXY, VITE_PORT, VITE_HOST } = env;
+  const { VITE_PROXY, VITE_PORT, VITE_HOST, VITE_REQUEST_IP } = env;
+
+  console.log(VITE_REQUEST_IP);
 
   return {
     plugins: [
@@ -65,6 +71,7 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
       rollupOptions,
     },
     server: {
+      host: hostIp,
       port: Number(VITE_PORT),
       proxy: {
         "^/music": {
