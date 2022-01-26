@@ -78,6 +78,8 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
           target: "https://music.163.com",
           changeOrigin: true,
           rewrite(path) {
+            console.log(path);
+            
             path = path.replace(/^\/music/, "");
             return path;
           },

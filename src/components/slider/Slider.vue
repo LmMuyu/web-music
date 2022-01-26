@@ -1,6 +1,6 @@
 <template>
   <div
-    class="slider_track relative flex items-center cursor-pointer w-full"
+    class="slider_track relative flex items-center cursor-pointer"
     ref="first_track"
     @click="clickCurrent"
     id="slider"
@@ -79,9 +79,7 @@ watch(
 );
 
 function resize() {
-  nextTick(() => {
-    getSlideRect();
-  });
+  nextTick(getSlideRect);
 }
 
 function startdown(e: MouseEvent) {
@@ -109,7 +107,6 @@ function clickCurrent(e: Event) {
     thatClick.value = true;
     ctxEmit("click");
     setValueOnPos(getMoveEndPos(e), false);
-
     nextTick().then(() => setTimeout(() => setTransitionTime(0), interdelay * 1000));
   }
 }
@@ -132,7 +129,11 @@ const position = computed(() => {
 });
 
 function getMoveEndPos(e: any) {
-  return e.clientX - slider_track_left.value;
+  const val = e.clientX - slider_track_left.value;
+  console.log(e.clientX);
+  console.log(slider_track_left.value);
+
+  return val;
 }
 
 function setValueOnPos(val: number, bool: boolean) {
@@ -196,11 +197,8 @@ function setPosition(delay?: number | undefined) {
 
 function setTransitionTime(time: number) {
   (top_track.value as unknown as HTMLElement).style.transitionDuration = `${time}s`;
-
   (top_track.value as unknown as HTMLElement).style.webkitTransitionDuration = `${time}s`;
-
   (tooltip.value as unknown as HTMLElement).style.transitionDuration = `${time}s`;
-
   (tooltip.value as unknown as HTMLElement).style.webkitTransitionDuration = `${time}s`;
 }
 
@@ -212,17 +210,14 @@ function bindEvents() {
 }
 
 function getSlideRect() {
-  slider_track_width.value = (first_track.value as unknown as HTMLElement).offsetWidth;
-
-  slider_track_left.value = (
-    first_track.value as unknown as HTMLElement
-  ).getBoundingClientRect().left;
-
-  tooltip_scrollWidth.value = (tooltip.value as unknown as HTMLElement).scrollWidth / 3 - 2;
+  slider_track_width.value = first_track.value.offsetWidth;
+  slider_track_left.value = first_track.value.getBoundingClientRect().left;
+  console.log(top_track.value.getBoundingClientRect());
+  tooltip_scrollWidth.value = tooltip.value.scrollWidth / 3 - 2;
 }
 
 onMounted(() => {
-  nextTick(() => getSlideRect());
+  nextTick(getSlideRect);
   bindEvents();
 });
 </script>
@@ -231,6 +226,8 @@ onMounted(() => {
   transform: translateX(-50%, -50%);
   border: 1px solid #8fc2ff;
   height: 4px;
+  min-width: 100%;
+  width: inherit;
 }
 
 .border_rad {

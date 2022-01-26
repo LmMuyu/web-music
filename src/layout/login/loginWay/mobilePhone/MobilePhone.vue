@@ -108,13 +108,18 @@ async function loginBtn() {
     worker.addEventListener("message", async (ev) => {
       const formData = new FormData();
       formData.append("phone", inputLoginInfo.phone);
-      formData.append("password", ev.data);
+      formData.append("md5_password", ev.data);
 
       const loginResult = await loginCellphone(formData);
+      console.log(loginResult);
+
       portMess.then(({ portMess }) => portMess(loginResult.data));
     });
 
-    worker.addEventListener("error", (err) => {});
+    worker.addEventListener("error", (err) => {
+      console.log(err);
+      promptbox({ title: "md5加密密码错误" });
+    });
   }
 }
 

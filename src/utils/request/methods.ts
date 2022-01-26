@@ -45,10 +45,6 @@ export function deleteHttpToken(url: string, map: CANCEL_MAP, token: CancelToken
   const cancelSourceLists = map.get(url);
   const index = cancelSourceLists.findIndex((source) => source.token === token);
 
-
-  console.log(index);
-  
-
   if (index >= 0) {
     cancelSourceLists.length === 0
       ? map.delete(url)

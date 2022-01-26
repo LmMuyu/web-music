@@ -46,7 +46,6 @@ function addEventResize() {
 
   function resize() {
     const dcw = document.documentElement.clientWidth;
-    console.log(dcw);
 
     if (dcw <= minWidth) {
       windowResize.value = false;

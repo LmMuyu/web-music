@@ -1,5 +1,6 @@
+import axios from "axios";
 import { Howl, Howler } from "howler";
-import { getMusicDetail } from "../../api/playList";
+import { getMusicDetail, getMusicUrl } from "../../api/playList";
 import filterDate from "../../utils/filterDate";
 import { musicDetail } from "../../utils/musicDetail";
 
@@ -112,16 +113,14 @@ export default class play {
   }
 
   async setSrc(id: number) {
-    this.src = `/music/song/media/outer/url?id=${id}`;
+    this.src = `https://music.163.com/song/media/outer/url?id=${id}.mp3`;
     await this._init();
   }
 
   splicingSrc(index: number) {
     const musicInfo = this.playlist[index];
-    this.setSrc(musicInfo.id);
+    this.setSrc(musicInfo.mid);
   }
-
-  writeMediaMeta() {}
 
   setLocalMusicDuration(duration) {
     localStorage.setItem("duration", String(duration));
@@ -152,7 +151,7 @@ export default class play {
     });
 
     const musicinfo = new musicDetail(musicDateail);
-    this.playlist.unshift(musicinfo);
+    this.playlist.unshift(Object.assign({}, musicinfo, { mid: id }));
     this.splicingSrc(0);
 
     return {

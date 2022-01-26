@@ -65,12 +65,12 @@ export default function request(config: AxiosRequestConfig) {
 
   instance.interceptors.response.use(
     (httpRes) => {
-      Promise.resolve(() => useResponse(httpRes));
-      Promise.resolve(() => deleteHttpToken(config.url, cancelMap, cancelToken));
+      Promise.resolve().then(() => useResponse(httpRes, "result"));
+      Promise.resolve().then(() => deleteHttpToken(config.url, cancelMap, cancelToken));
       return httpRes;
     },
     async (config) => {
-      Promise.resolve(() => deleteHttpToken(config.url, cancelMap, cancelToken));
+      Promise.resolve().then(() => deleteHttpToken(config.url, cancelMap, cancelToken));
 
       const ret: { config?: any; isretry?: boolean } = await tryAgainRequest(config);
       if (ret.isretry) return await instance(ret.config);

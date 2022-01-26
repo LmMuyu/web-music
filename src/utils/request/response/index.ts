@@ -4,7 +4,10 @@ import * as allErrorMethods from "./error";
 
 function forRunFn(httpRes: AxiosResponse<any>) {
   for (const key in allResultMethods) {
-    if (typeof key === "function" && Object.prototype.hasOwnProperty.call(allResultMethods, key)) {
+    if (
+      typeof allResultMethods[key] === "function" &&
+      Object.prototype.hasOwnProperty.call(allResultMethods, key)
+    ) {
       (allResultMethods[key] as Function)(httpRes);
     }
   }

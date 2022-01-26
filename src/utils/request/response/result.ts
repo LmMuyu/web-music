@@ -18,7 +18,7 @@ export async function reqCode(httpRes: AxiosResponse<any>) {
   try {
     const data = httpRes.data;
 
-    switch (httpRes.status) {
+    switch (data.code) {
       case 404:
         promptbox({ title: data.message });
         break;
@@ -44,7 +44,6 @@ function isLoginWatchObj(isstatus: boolean) {
 
 async function status(httpRes: AxiosResponse<any>) {
   const url = httpRes.config.url;
-
   if (url === "/login/status") {
     //是否已经登录
     const islogin = httpRes.data.account !== null && httpRes.data.profile !== null;
@@ -71,7 +70,7 @@ async function status(httpRes: AxiosResponse<any>) {
 
 export async function loginStateus(httpRes: AxiosResponse<any>) {
   try {
-    Promise.resolve(() => status(httpRes));
+    Promise.resolve().then(() => status(httpRes));
   } catch (err) {
     console.log(err);
   }
@@ -100,8 +99,9 @@ function findInfo() {
 }
 
 export function setCookie(httpRes: AxiosResponse<any>) {
-  // console.log(httpRes);
   const cookie: string = httpRes.data.cookie;
+  if (!cookie) return;
+
   cookie.split(";;").map((cookieItem) => {
     const cookieSplice = cookieItem.split(";");
     const setcookieObj: cookieOptions = {

@@ -4,7 +4,7 @@
     <main class="h-3/4">
       <MainTag />
     </main>
-    <footer ref="footer" class="flex items-center justify-center" style="height: 15%">
+    <footer ref="footer" class="flex items-center justify-center px-4" style="height: 15%">
       <MainAsideCard v-if="loginUserData.tramsformButton" :infoData="loginUserData.userdata" />
       <ButtonEnter v-else-if="windowResize" />
       <AvatarEnter v-else />
@@ -36,6 +36,7 @@ const loginUserData = reactive({
 store.commit("login/setWatchFn", { runFn: watchOrBus });
 
 function watchOrBus(islogin: boolean) {
+  console.log(islogin);
   console.log("layout->Main->MainAsideTags->watchOrBus");
 
   //是否已经登录

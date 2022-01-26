@@ -3,6 +3,7 @@
     <el-col :span="7">
       <div
         class="autowh rounded-md"
+        style="width: 256px; height: 256px"
         :style="{ backgroundImage: `url(${playlist.backgroundUrlImage + '?param=256y256'})` }"
       >
         <el-image

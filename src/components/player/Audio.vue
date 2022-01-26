@@ -20,7 +20,7 @@
       </div>
       <div class="flex flex-col h-full w-full">
         <el-row class="flex content-center h-full w-full">
-          <el-col :span="15" class="flex self-center">
+          <el-col :span="18" class="flex self-center h-full">
             <div class="flex items-center justify-center" style="flex: 1">
               <AudioAndVideoControls
                 @next="controlsMethods.next"
@@ -30,11 +30,7 @@
               ></AudioAndVideoControls>
             </div>
             <div style="flex: 2">
-              <PlayMusicTime
-                :starttime="starttime"
-                :maxtime="playHowl.dt"
-                class="w-full items-baseline"
-              >
+              <PlayMusicTime :starttime="starttime" :maxtime="playHowl.dt" class="w-full">
                 <PlaySlider v-model="starttime" :max="playHowl.dt" />
               </PlayMusicTime>
             </div>
@@ -129,7 +125,7 @@ const playHowl = new Proxy(musicHowler, {
 function interceptFnApply(Fn: Function) {
   if (Fn.name.indexOf("play") > 0) {
     playHowl._seek(function (curtime) {
-      starttime.value = curtime;
+      starttime.value = curtime * 1000;
     });
   }
 }
@@ -238,6 +234,8 @@ function openCommentList() {
 }
 
 onMounted(() => {
+  console.log(id);
+
   playHowl.playid = id;
 
   nextTick(() => {

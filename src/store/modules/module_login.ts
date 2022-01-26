@@ -86,12 +86,6 @@ class login {
       async getlinke(state: any, linkesId: number[]) {
         const ids = linkesId.splice(0, 12).join(",");
         const linkes = (await getMusicDetail(ids)).data;
-        console.log(linkes);
-
-        // state.commit("setLinkes", {
-        //   ids,
-        //   linkes,
-        // });
       },
 
       runWatchFn(state: { state: STATETYPE }, argvs: [(value: any) => void, boolean]) {
