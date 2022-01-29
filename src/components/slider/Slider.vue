@@ -10,7 +10,7 @@
       :style="{
         width: currentPosition + 'px',
         backgroundColor: background,
-        height: 4 + 'px',
+        height: 2 + 'px',
       }"
       ref="top_track"
     >

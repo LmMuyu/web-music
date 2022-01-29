@@ -54,8 +54,6 @@ const props = defineProps({
     required: true,
   },
 });
-
-console.log(props.playlist);
 </script>
 <style scoped lang="scss">
 .boxtext {

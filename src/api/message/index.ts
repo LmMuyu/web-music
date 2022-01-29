@@ -12,29 +12,17 @@ export function getUserMessage(uid: number, limit: number) {
   });
 }
 
-export async function getPrivateLetter(method: Method, limit: number = 30) {
-  method = method.toLocaleUpperCase() as Method;
-  const privateletterList = await request({
-    method,
+export async function getPrivateLetter(limit: number = 30) {
+  return request({
     url: "/msg/private",
-    ...(method === "HEAD"
-      ? {}
-      : {
-          params: {
-            limit,
-          },
-        }),
+    params: {
+      limit,
+    },
   });
-
-  return privateletterList;
 }
 
-export async function getUserMessageList(
-  privateletterList: Record<string, any>
-) {
+export async function getUserMessageList(privateletterList: Record<string, any>) {
   const msgs: any[] = privateletterList.data.msgs;
-  // console.log(msgs);
-
   return await async_pool(
     msgs.map((res) =>
       request({

@@ -2,12 +2,12 @@
   <ElRow class="flex h-full overflow-hidden relative border_radius">
     <ElCol :span="7" class="solide_border"> </ElCol>
     <ElCol class="w-full h-full absolute right-0 top-0" :span="17">
-      <MessageChatBox
+      <!-- <MessageChatBox
         @emitRequest="onEmitRequest"
         v-if="privateLetter.viewMsg.length > 0"
         :viewMsg="privateLetter.viewMsg"
       />
-      <MessageBackground v-else />
+      <MessageBackground v-else /> -->
     </ElCol>
   </ElRow>
 </template>
@@ -17,15 +17,14 @@ import { useStore } from "vuex";
 
 import { getPrivateLetter, getUserMessageList, getUserMessage } from "../../api/message";
 import { promptbox } from "../../components/promptBox";
-import LRU from "../../utils/LRUCache";
+import LRU from "../explore/LRUCache";
 
 import MessageBackground from "./components/MessageBackground.vue";
 import MessageChatBox from "./components/MessageChatBox.vue";
+import { ElRow, ElCol } from "element-plus";
 
 const store = useStore();
-const LRUcatch = new LRU();
-
-const msgmain = ref<any | null>(null);
+const lru = new LRU();
 
 const privateLetter = reactive({
   main: [],
@@ -39,18 +38,18 @@ const onEmitRequest = async (id: number) => {
 
   if (chatMsgs[0].id === id) {
     const result = await getUserMessage(id, chatMsgs[1].length + 5);
-
     privateLetter.chatMsgs[1].push(...result.data.msgs.slice(chatMsgs.length + 1));
 
-    LRUcatch.put(id, result);
+    lru.put(id, result);
   }
 };
 
 const findViewMsg = (useroptions: Record<string, any>) => {
-  const res = LRUcatch.get(useroptions.id);
+  const data = lru.get(useroptions.id);
+  console.log(data);
 
-  if (res !== -1) {
-    privateLetter.chatMsgs.push(useroptions, res.data.msgs);
+  if (data !== -1) {
+    privateLetter.chatMsgs.push(useroptions, data.value.msgs);
     return;
   }
 
@@ -63,12 +62,15 @@ const findViewMsg = (useroptions: Record<string, any>) => {
       });
     }
 
-    LRUcatch.put(useroptions.id, msgObj);
-
+    lru.put(useroptions.id, msgObj);
     privateLetter.chatMsgs.length = 0;
     privateLetter.chatMsgs.push(useroptions, msgObj.data.msgs);
   }
 };
+
+getPrivateLetter().then((chat) => {
+  console.log(chat);
+});
 
 store.commit("login/onMittEvent", async (value: any) => {});
 </script>

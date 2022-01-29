@@ -98,3 +98,11 @@ export async function commentMusic(
 
   return data;
 }
+
+function urlBlob(url: string) {
+  return request({
+    method: "get",
+    url,
+    responseType: "blob",
+  });
+}

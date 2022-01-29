@@ -10,8 +10,6 @@ type CANCEL_MAP = Map<string, CancelTokenSource[]>;
 
 //重新请求
 export function tryAgainRequest(err: any) {
-  console.log(err);
-
   const config: CONFIG_DEFAULT = err.config;
 
   if (!config.retry || !config)

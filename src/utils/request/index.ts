@@ -1,9 +1,10 @@
 import axios, { AxiosInstance, CancelTokenSource } from "axios";
 
 import { tryAgainRequest, cancelHttpRequest, deleteHttpToken } from "./methods";
+import useResponse from "./response";
+import useRequest from "./request";
 
 import type { AxiosRequestConfig } from "axios";
-import useResponse from "./response";
 
 const cancelMap = new Map<string, CancelTokenSource[]>();
 
@@ -56,6 +57,7 @@ export default function request(config: AxiosRequestConfig) {
 
   instance.interceptors.request.use(
     (config) => {
+      useRequest(config)
       return config;
     },
     (err) => {

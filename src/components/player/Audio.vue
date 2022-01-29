@@ -22,16 +22,11 @@
         <el-row class="flex content-center h-full w-full">
           <el-col :span="18" class="flex self-center h-full">
             <div class="flex items-center justify-center" style="flex: 1">
-              <AudioAndVideoControls
-                @next="controlsMethods.next"
-                @pre="controlsMethods.pre"
-                @play="controlsMethods.play"
-                @pause="controlsMethods._pause"
-              ></AudioAndVideoControls>
+              <AudioAndVideoControls @play="play" @pause="pause"></AudioAndVideoControls>
             </div>
             <div style="flex: 2">
-              <PlayMusicTime :starttime="starttime" :maxtime="playHowl.dt" class="w-full">
-                <PlaySlider v-model="starttime" :max="playHowl.dt" />
+              <PlayMusicTime :starttime="musicPosTime * 1000" :maxtime="0" class="w-full">
+                <PlaySlider v-model="starttime" :max="0" />
               </PlayMusicTime>
             </div>
           </el-col>
@@ -65,11 +60,11 @@ import { reactive, ref, nextTick, toRef } from "vue";
 import { useRoute } from "vue-router";
 import { onMounted } from "vue-demi";
 
-import Howl from "./play";
 import { musicDetail } from "../../utils/musicDetail";
 import { openDrawer } from "../../layout/playlist/components/PlayListHistory";
 import { debounce } from "../../utils/debounce";
 import { commentMusic } from "../../api/playList";
+import AudioHow from "./Howler";
 
 //@ts-ignore
 import AudioAndVideoControls from "./components/AudioAndVideoControls.vue";
@@ -79,65 +74,31 @@ import VolumeIcon from "./components/VolumeIcon.vue";
 import { ElSlider, ElRow, ElCol } from "element-plus";
 import FontIcon from "../fonticon/FontIcon.vue";
 
+const id = useRoute().query.id as unknown as number;
+
+let isclick = true;
+let currPage = 1;
 const starttime = ref(0);
 const volume = ref(0);
 const historyData = ref([]);
-const musicHowler = new Howl();
 const musicinfo = ref<musicDetail>();
 const showSlider = ref(false);
 const comments = ref([]);
 const COMMENT_LEN = 40;
-let isclick = true;
-let currPage = 1;
 const MAX_LIMIT = COMMENT_LEN;
-const playListHistoryOptions = reactive({
-  total: 0,
-  time: 0,
-});
 const timeTable = new Map();
+const playListHistoryOptions = reactive({ total: 0, time: 0 });
 
-const controlsMethods = reactive({
-  pre: () => {},
-  play: () => {},
-  _pause: () => {},
-  next: () => {},
+const {
+  pause,
+  stop,
+  play,
+  playSeek: seekTime,
+} = AudioHow(id, [], {
+  currentIndexBackFn: currentMusicPlayIndex,
 });
 
-const id = useRoute().query.id as unknown as number;
-volume.value = musicHowler.play_volume * 100;
-
-const playHowl = new Proxy(musicHowler, {
-  set(target, key, value) {
-    (async function () {
-      if (key === "playid") {
-        const data = await target.getMusicDeatils(value);
-        replaceMethods(controlsMethods, target);
-
-        musicinfo.value = data.musicinfo;
-        historyData.value.unshift(data.musicinfo);
-      }
-    })();
-
-    return true;
-  },
-});
-
-function interceptFnApply(Fn: Function) {
-  if (Fn.name.indexOf("play") > 0) {
-    playHowl._seek(function (curtime) {
-      starttime.value = curtime * 1000;
-    });
-  }
-}
-
-function handler<T extends Function>(): ProxyHandler<any> {
-  return {
-    apply(target: T, thisarg: any, args: any) {
-      target.call(playHowl);
-      interceptFnApply(target);
-    },
-  };
-}
+const musicPosTime = seekTime();
 
 function setTimeTable(page: number, time: number) {
   if (!timeTable.has(page)) {
@@ -159,21 +120,11 @@ function commentMusicThenFn({ config, data: comment }) {
   setTimeTable(1, playListHistoryOptions.time);
 }
 
-commentMusic(id, 1, 0, MAX_LIMIT).then(commentMusicThenFn);
-
-function replaceMethods(methods: Record<string, Function>, howler: Howl) {
-  ["play", "_pause", "next", "pre"].map((mdsname) => {
-    const newBindFn: Function = howler[mdsname].bind(howler);
-    const proxyFn = new Proxy(newBindFn, handler());
-    methods[mdsname] = proxyFn;
-
-    return proxyFn;
-  });
-}
-
 const openRightDrawer = () => openDrawer(historyData);
 
 const mouseEvent = debounce(cursourEnterSlider);
+
+commentMusic(id, 1, 0, MAX_LIMIT).then(commentMusicThenFn);
 
 function cursourEnterSlider(e: MouseEvent) {
   if (e.type === "mousedown") {
@@ -181,6 +132,10 @@ function cursourEnterSlider(e: MouseEvent) {
   } else {
     isclick = true;
   }
+}
+
+function currentMusicPlayIndex(index: number) {
+  console.log(index);
 }
 
 async function sliderstyle() {
@@ -234,9 +189,7 @@ function openCommentList() {
 }
 
 onMounted(() => {
-  console.log(id);
-
-  playHowl.playid = id;
+  console.log("child");
 
   nextTick(() => {
     sliderstyle();

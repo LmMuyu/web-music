@@ -27,17 +27,18 @@ const playListMainInfo = reactive({
 });
 
 onMounted(() => {
-  let timer = setInterval(() => {
-    const musicdateil = compAudio.value.musicinfo;
-    if (musicdateil !== undefined) {
-      playListMainInfo.musicName = musicdateil.name;
-      playListMainInfo.nickName = musicdateil.nickName;
-      playListMainInfo.backgroundurl = musicdateil.picUrl;
-
-      clearInterval(timer);
-      timer = null;
-    }
-  }, 1000);
+  // let timer = setInterval(() => {
+  //   const musicdateil = compAudio.value.musicinfo;
+  //   if (musicdateil !== undefined) {
+  //     playListMainInfo.musicName = musicdateil.name;
+  //     playListMainInfo.nickName = musicdateil.nickName;
+  //     playListMainInfo.backgroundurl = musicdateil.picUrl;
+  //     clearInterval(timer);
+  //     timer = null;
+  //   } else {
+  //     console.error("musicdateil为undefined");
+  //   }
+  // }, 1000);
 });
 </script>
 

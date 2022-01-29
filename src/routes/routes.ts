@@ -33,7 +33,7 @@ const routes: (RouteRecordRaw & {
   },
   {
     path: "/playlist",
-    name: "Playerlist",
+    name: "Playlist",
     meta: {
       isShowTags: false,
       keepAlive: false,
@@ -46,22 +46,8 @@ const routes: (RouteRecordRaw & {
   {
     path: "/message",
     name: "Message",
-    meta: {
-      setting: {
-        left: {
-          header: false,
-          width: 3,
-        },
-        right: {
-          header: false,
-          width: 7,
-        },
-      },
-      fetchCount: 0,
-    },
     components: {
-      section: () => import("../layout/message/privatemsgpeople/PrivateMsgPeople.vue"),
-      article: () => import("../layout/message/privatemsgcontent/PrivateMsgContent.vue"),
+      default: () => import("../layout/message/Message.vue"),
     },
   },
   {
