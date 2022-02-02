@@ -6,6 +6,7 @@ import { createApp } from "vue";
 import hover from "./directives/hover";
 import lazy from "./directives/lazy-loading";
 import { setCookie } from "./utils/request/response/result";
+import AsayncSuspense from "./components/suspense/AsayncSuspense.vue";
 
 import "element-plus/theme-chalk/el-icon.css";
 import "element-plus/dist/index.css";
@@ -21,6 +22,9 @@ function client_cookie() {
 client_cookie();
 
 const app = createApp(App);
+
+app.component("AsayncSuspense", AsayncSuspense);
+
 app.directive(hover.name, hover);
 app.directive("lazy", lazy);
 

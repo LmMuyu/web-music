@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <div class="flex items-center relative py-3">
     <div class="font_size" style="width: 16.666%">推荐歌曲</div>
     <ul class="flex items-center">
@@ -51,4 +51,4 @@ const sliceList = computed(() => list.value[curSlicePos.value]);
 .font_size {
   font-size: 21px;
 }
-</style>
+</style> -->

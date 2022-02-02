@@ -13,22 +13,8 @@ const routes: (RouteRecordRaw & {
   {
     path: "/index",
     name: "Index",
-    redirect: "/index/recommend",
-    meta: {},
-    children: [
-      {
-        path: "recommend",
-        name: "Discover",
-        component: () => import("../layout/Index/discover/Recommend.vue"),
-      },
-      {
-        path: "toplist",
-        name: "Toplist",
-        component: () => import("../layout/Index/toplist/Toplist.vue"),
-      },
-    ],
     components: {
-      default: () => import("../layout/Index/index/Index.vue"),
+      default: () => import("../layout/index/Index.vue"),
     },
   },
   {

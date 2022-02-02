@@ -12,8 +12,8 @@
 <script setup lang='ts'>
 import { useRouter } from 'vue-router';
 
-import IndexSearch from "../../../../components/search/Search.vue";
-import IndexNavTag from '../../navTag/NavTag.vue';
+import IndexSearch from "../../../components/search/Search.vue";
+import IndexNavTag from '../navTag/NavTag.vue';
 import { ElRow, ElCol } from "element-plus"
 
 const router = useRouter();

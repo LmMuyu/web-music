@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <div class="flex items-center relative py-3 border_bar">
     <span v-html="useHeaderTitle('推荐MV')"></span>
   </div>
@@ -67,4 +67,4 @@ onMounted(() => {
   grid-template-columns: repeat(4, 1fr);
   grid-gap: 10px;
 }
-</style>
+</style> -->

@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <div class="flex py-3">
     <div class="flex items-center translate-x-4 font_size" style="flex: 1">
       <span class="cursor-default" v-html="useHeaderTile('热门推荐')"></span>
@@ -112,4 +112,4 @@ const hotName = computed<any[]>(() => props.categoryname.slice(0, 5));
 .text_shadow {
   box-shadow: 0 10px 40px -10px rgba(0, 64, 128, 0.2);
 }
-</style>
+</style> -->

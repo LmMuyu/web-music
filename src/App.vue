@@ -48,7 +48,7 @@ provide("circleRef", circleRef);
 }
 
 #app {
-  font-family: "Bahnschrift", sans-serif;
+  font-family: "ArialMT, Arial";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

@@ -26,7 +26,7 @@
             </div>
             <div style="flex: 2">
               <PlayMusicTime :starttime="musicPosTime * 1000" :maxtime="0" class="w-full">
-                <PlaySlider v-model="starttime" :max="0" />
+                <el-slider ref="slider" v-model="starttime" :show-tooltip="false"></el-slider>
               </PlayMusicTime>
             </div>
           </el-col>
@@ -68,7 +68,6 @@ import AudioHow from "./Howler";
 
 //@ts-ignore
 import AudioAndVideoControls from "./components/AudioAndVideoControls.vue";
-import PlaySlider from "../../components/slider/Slider.vue";
 import PlayMusicTime from "./components/PlayMusicTime.vue";
 import VolumeIcon from "./components/VolumeIcon.vue";
 import { ElSlider, ElRow, ElCol } from "element-plus";
@@ -78,6 +77,7 @@ const id = useRoute().query.id as unknown as number;
 
 let isclick = true;
 let currPage = 1;
+const slider = ref<typeof ElSlider | null>(null);
 const starttime = ref(0);
 const volume = ref(0);
 const historyData = ref([]);

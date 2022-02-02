@@ -1,4 +1,4 @@
-<script lang="tsx">
+<!-- <script lang="tsx">
 import {
   defineComponent,
   onBeforeUnmount,
@@ -76,4 +76,4 @@ export default defineComponent({
     );
   },
 });
-</script>
+</script> -->

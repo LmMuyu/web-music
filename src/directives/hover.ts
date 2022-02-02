@@ -1,5 +1,5 @@
 import { isType } from "../utils/methods";
-import type { HoverOption } from "../layout/Index/toplist/types/components";
+import type { HoverOption } from "../layout/index/toplist/types/components";
 import { nextTick } from "@vue/runtime-core";
 
 type BGCOLOR = string | Array<HoverOption> | HoverOption;
