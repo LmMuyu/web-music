@@ -1,14 +1,14 @@
 <template>
   <ElRow class="flex items-center w-full h-full" :class="class">
-    <ElCol :span="4" class="px-1 h-full relative">
+    <ElCol :span="3" class="px-1 h-full relative">
       <div class="flex items-center h-full absolute top-0 left-0">
         <CalculationTime :time="starttime"></CalculationTime>
       </div>
     </ElCol>
-    <ElCol :span="16" class="px-1 w-full">
+    <ElCol :span="18" class="px-1 w-full">
       <slot></slot>
     </ElCol>
-    <ElCol :span="4" class="px-1 h-full relative">
+    <ElCol :span="3" class="px-1 h-full relative">
       <div class="flex items-center h-full absolute right-0 top-0">
         <CalculationTime :time="maxtime"></CalculationTime>
       </div>

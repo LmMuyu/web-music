@@ -1,8 +1,10 @@
+export type hookname = "onPlayerror" | "onPlay" | "onStop" | "onPause";
+
+export type SetHook<T extends string> = { [P in T]?: (args: any) => void };
+
+export type OPTIONS_ON = Readonly<SetHook<hookname>>;
+
 export interface OPTIONS {
-  on?: {
-    onPlay: (sounid: number) => void;
-    onPlayerror: () => void;
-    onStop: () => void;
-    onPause: () => void;
-  };
+  mute?: boolean;
+  on?: OPTIONS_ON;
 }

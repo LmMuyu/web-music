@@ -1,38 +1,27 @@
-<script lang="tsx">
-import { defineComponent, ref } from "vue";
+<template>
+  <div class="flex items-center justify-center px-10">
+    <FontIcon @click.capture="ctxEmit('pre')" icon="iconarrow-right-copy" class="px-3" size="24" />
+    <div>
+      <FontIcon
+        @click.capture="ctxEmit(status ? 'pause' : 'play')"
+        :icon="status ? 'iconpause' : 'iconbofang1'"
+        size="24"
+        class="px-3"
+      />
+    </div>
+    <FontIcon @click.capture="ctxEmit('next')" icon="iconmore" size="24" class="px-3" />
+  </div>
+</template>
+<script setup lang="ts">
+import FontIcon from "../../fonticon/FontIcon.vue";
 
-import "../css/controls.scss";
+const ctxEmit = defineEmits(["pre", "play", "next", "pause"]);
 
-export default defineComponent({
-  emits: ["pre", "play", "next", "pause"],
-  setup(props, { emit: ctxEmit }) {
-    const status = ref(false); //true 播放中 false 暂停中
-
-    function Pre() {
-      ctxEmit("pre");
-    }
-
-    function Player() {
-      status.value = !status.value;
-      status.value ? ctxEmit("play") : ctxEmit("pause");
-    }
-
-    function Next() {
-      ctxEmit("next");
-    }
-
-    return () => (
-      <div class="flex items-center justify-center  px-10">
-        <span onClick={Pre} class="px-3 iconfont iconarrow-right-copy cursor-pointer" />
-        <div>
-          <span
-            onClick={Player}
-            class={[status.value ? " iconpause" : "iconbofang1", "px-3 iconfont cursor-pointer"]}
-          />
-        </div>
-        <span onClick={Next} class="px-3 iconfont iconmore cursor-pointer" />
-      </div>
-    );
+const props = defineProps({
+  status: {
+    type: Boolean,
+    default: false,
   },
 });
 </script>
+<style scoped lang="scss"></style>

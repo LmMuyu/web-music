@@ -121,11 +121,23 @@ export async function getTopList(config: AxiosRequestConfig) {
   );
 }
 
-export function getRecommend() {
+export function getRecommend(limit: number = 4) {
   return request({
     url: "/personalized",
     params: {
-      limit: 4,
+      limit,
     },
+  });
+}
+
+export function recentlyAlbum() {
+  return request({
+    url: "/album/newest",
+  });
+}
+
+export function artistList() {
+  return request({
+    url: "/artist/list",
   });
 }

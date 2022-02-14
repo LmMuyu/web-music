@@ -1,7 +1,7 @@
 export function throttle(
   fn: Function,
-  delay: number,
-  options: {
+  delay: number = 150,
+  options?: {
     initThrollte?: boolean;
   }
 ) {

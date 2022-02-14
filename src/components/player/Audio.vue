@@ -1,88 +1,69 @@
 <template>
-  <div class="flex items-center relative h-full w-full py-2 audio_shadow">
-    <div class="flex items-center h-full w-full px-4">
-      <div class="flex">
-        <div style="width: 48px; height: 48px">
-          <img
-            class="object-cover"
-            :src="musicinfo?.picUrl + '?param=48y48'"
-            :alt="musicinfo?.name"
+  <div class="flex items-center relative h-full w-full px-4 audio_shadow">
+    <div class="flex"><AudioSongInfoShow /></div>
+    <el-row class="flex content-center h-full w-full">
+      <el-col :span="4" class="flex items-center justify-center">
+        <AudioAndVideoControls :status="isplay" @play="play" @pause="pause"></AudioAndVideoControls>
+      </el-col>
+      <el-col :span="14" class="flex self-center h-full">
+        <PlayMusicTime :starttime="musicPosTime * 1000" :maxtime="maxTime" class="w-full">
+          <AudioSlider
+            :starttime="musicPosTime * 1000"
+            :mintime="0"
+            :maxtime="maxTime"
+            @input="inputValue"
           />
-        </div>
-        <div>
-          <div class="flex justify-center flex-col ml-4 truncate text-gray-700">
-            <span :music-id="id" class="flex-1 cursor-pointer decoration">{{
-              musicinfo?.name
-            }}</span>
-            <span class="text-sm flex-1 decoration" v-html="musicinfo?.nickName"></span>
+        </PlayMusicTime>
+      </el-col>
+      <el-col :span="6" class="flex items-center">
+        <div class="flex px-4">
+          <volume-icon @click.captrue="showSlider = !showSlider" :volume="volume"></volume-icon>
+          <div v-if="showSlider" class="w-full audio_slider">
+            <el-slider @mousemove="mouseEvent" @mouseleave="mouseEvent" v-model="volume">
+            </el-slider>
           </div>
         </div>
-      </div>
-      <div class="flex flex-col h-full w-full">
-        <el-row class="flex content-center h-full w-full">
-          <el-col :span="18" class="flex self-center h-full">
-            <div class="flex items-center justify-center" style="flex: 1">
-              <AudioAndVideoControls @play="play" @pause="pause"></AudioAndVideoControls>
-            </div>
-            <div style="flex: 2">
-              <PlayMusicTime :starttime="musicPosTime * 1000" :maxtime="0" class="w-full">
-                <el-slider ref="slider" v-model="starttime" :show-tooltip="false"></el-slider>
-              </PlayMusicTime>
-            </div>
-          </el-col>
-          <el-col :span="1" class="flex items-center">
-            <div>
-              <volume-icon @click.captrue="showSlider = !showSlider" :volume="volume"></volume-icon>
-            </div>
-          </el-col>
-          <el-col v-show="showSlider" :span="2" class="h-full flex items-center justify-center">
-            <div class="w-full audio_slider">
-              <el-slider @mousemove="mouseEvent" @mouseleave="mouseEvent" v-model="volume">
-              </el-slider>
-            </div>
-          </el-col>
-          <el-col :span="1" class="flex items-center justify-center">
-            <div @click="openRightDrawer" class="flex items-center">
-              <font-icon icon="iconindent" size="24"></font-icon>
-            </div>
-          </el-col>
-          <el-col :span="1" class="flex items-center justify-center">
-            <font-icon @click.captrue="openCommentList" icon="iconpinglun_huabanfuben" size="24">
-            </font-icon>
-          </el-col>
-        </el-row>
-      </div>
-    </div>
+        <div @click="openRightDrawer" class="flex items-center px-4">
+          <font-icon icon="iconindent" size="24"></font-icon>
+        </div>
+        <div class="px-4">
+          <font-icon @click.captrue="openCommentList" icon="iconpinglun_huabanfuben" size="24">
+          </font-icon>
+        </div>
+      </el-col>
+    </el-row>
   </div>
 </template>
 <script setup lang="ts">
-import { reactive, ref, nextTick, toRef } from "vue";
+import { reactive, ref, nextTick, toRef, onUnmounted } from "vue";
 import { useRoute } from "vue-router";
 import { onMounted } from "vue-demi";
 
 import { musicDetail } from "../../utils/musicDetail";
 import { openDrawer } from "../../layout/playlist/components/PlayListHistory";
 import { debounce } from "../../utils/debounce";
-import { commentMusic } from "../../api/playList";
+import { commentMusic, getMusicDetail } from "../../api/playList";
 import AudioHow from "./Howler";
 
 //@ts-ignore
 import AudioAndVideoControls from "./components/AudioAndVideoControls.vue";
+import AudioSongInfoShow from "./components/AudioSongInfoShow.vue";
 import PlayMusicTime from "./components/PlayMusicTime.vue";
-import VolumeIcon from "./components/VolumeIcon.vue";
+import AudioSlider from "./components/AudioSlider.vue";
 import { ElSlider, ElRow, ElCol } from "element-plus";
+import VolumeIcon from "./components/VolumeIcon.vue";
 import FontIcon from "../fonticon/FontIcon.vue";
 
 const id = useRoute().query.id as unknown as number;
 
 let isclick = true;
 let currPage = 1;
-const slider = ref<typeof ElSlider | null>(null);
-const starttime = ref(0);
+const initTime = ref(0);
 const volume = ref(0);
 const historyData = ref([]);
 const musicinfo = ref<musicDetail>();
 const showSlider = ref(false);
+const maxTime = ref(0);
 const comments = ref([]);
 const COMMENT_LEN = 40;
 const MAX_LIMIT = COMMENT_LEN;
@@ -90,21 +71,33 @@ const timeTable = new Map();
 const playListHistoryOptions = reactive({ total: 0, time: 0 });
 
 const {
+  isplay,
   pause,
   stop,
   play,
+  seek: setseek,
   playSeek: seekTime,
 } = AudioHow(id, [], {
   currentIndexBackFn: currentMusicPlayIndex,
 });
 
-const musicPosTime = seekTime();
+let musicPosTime = seekTime();
 
 function setTimeTable(page: number, time: number) {
   if (!timeTable.has(page)) {
     timeTable.set(page, time);
   }
 }
+
+function inputValue(pos: number) {
+  musicPosTime.value = pos / 1000;
+  setseek(pos);
+}
+
+getMusicDetail(String(id)).then(({ data }) => {
+  const songdetail = data.songs[0];
+  maxTime.value = songdetail.dt;
+});
 
 function commentMusicThenFn({ config, data: comment }) {
   playListHistoryOptions.total = comment.total;
@@ -188,24 +181,21 @@ function openCommentList() {
   });
 }
 
-onMounted(() => {
-  console.log("child");
+function windowClick() {
+  if (isclick && !showSlider.value) {
+    showSlider.value = false;
+  }
+}
 
+onMounted(() => {
   nextTick(() => {
     sliderstyle();
-
-    document.documentElement.addEventListener(
-      "click",
-      () => {
-        console.log(showSlider.value);
-
-        if (isclick && !showSlider.value) {
-          showSlider.value = false;
-        }
-      },
-      false
-    );
+    document.documentElement.addEventListener("click", windowClick, false);
   });
+});
+
+onUnmounted(() => {
+  document.documentElement.removeEventListener("click", windowClick, false);
 });
 
 defineExpose({

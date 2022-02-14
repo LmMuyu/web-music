@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
 
-    <link rel="stylesheet" href="//at.alicdn.com/t/font_2449341_ihex5f4rs5o.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_2449341_8na6qmq9e8b.css">
 
     <link href="https://cdn.bootcdn.net/ajax/libs/element-ui/2.15.3/theme-chalk/index.min.css">
 
@@ -27,67 +27,15 @@
 
 
     <script>
-      const tailwindcss = (name) => `https://cdn.jsdelivr.net/npm/tailwindcss@2.2.7/dist/${name}.min.css`
-      const head = document.querySelector("head")
-
-      function indexOf(str, target) {
-        return str.indexOf(target) > -1
-      }
-
-      function createStyleLink(href) {
-        const link = document.createElement("link")
-        link.rel = "stylesheet";
-        link.href = href
-        return link
-      }
+      const bootcdn = (cdnname, version, name) => `https://cdn.bootcdn.net/ajax/libs/${cdnname}/${version}/${name}.min.css`
 
 
-      const ifErrorTailwindcss = {
-        targetHref(href) {
-          this.href = href
-        },
-
-        base() {
-          const res = indexOf(ifErrorTailwindcss.href, "base")
-
-          if (res) {
-            const link = createStyleLink(tailwindcss("base"))
-            head.appendChild(link)
-          }
-        },
-
-        tailwind() {
-          const res = indexOf(ifErrorTailwindcss.href, "tailwind")
-
-          if (res) {
-            const link = createStyleLink(tailwindcss("tailwind"))
-            head.appendChild(link)
-          }
-        },
-        components() {
-          const res = indexOf(ifErrorTailwindcss.href, "components")
-
-          if (res) {
-            const link = createStyleLink(tailwindcss("components"))
-            head.appendChild(link)
-          }
-        }
-
-      }
-
-      function onError(e) {
-        const href = e.target.href
-        ifErrorTailwindcss.targetHref(href)
-
-        for (const key in ifErrorTailwindcss) {
-          if (Object.hasOwnProperty.call(ifErrorTailwindcss, key)) {
-            ifErrorTailwindcss[key]();
-          }
-        }
+      function headLinkError(e) {
+        console.log(e);
       }
 
       document.querySelector("head").querySelectorAll("link").forEach((link) => {
-        link.addEventListener("error", onError, false)
+        link.addEventListener("error", headLinkError, false)
       })
     </script>
     <script type="module" src="/src/main.ts"></script>

@@ -1,29 +1,29 @@
-<script lang="tsx">
-import { defineComponent } from "vue";
+<template>
+  <div class="flex justify-center items-center px-4">
+    <span class="p-1 text-xs">{{ minute }}</span>
+    <span class="p-1 text-xs">:</span>
+    <span class="p-1 text-xs">{{ second }}</span>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, watchEffect } from "vue";
 import filterDate from "../../../utils/filterDate";
 
-export default defineComponent({
-  props: {
-    time: {
-      type: Number,
-      default: 0,
-    },
+const props = defineProps({
+  time: {
+    type: Number,
+    default: 0,
   },
-  setup(props) {
-    function CalculationTime(duration: number) {
-      const [minute, second] = filterDate(duration).split(":");
+});
 
-      return (
-        <div class="flex px-4">
-          <span class="p-1 text-sm">{minute}</span>
-          <span class="p-1">:</span>
-          <span class="p-1 text-sm">{second}</span>
-        </div>
-      );
-    }
+const minute = ref([]);
+const second = ref([]);
 
-    return () => <>{CalculationTime(props.time)}</>;
-  },
+watchEffect(() => {
+  const deta = filterDate(props.time).split(":");
+  minute.value = deta[0];
+  second.value = deta[1];
 });
 </script>
 <style scoped lang="scss"></style>

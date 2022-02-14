@@ -77,7 +77,7 @@ export async function commentMusic(
   }
 
   const dataNode = disposeLRU(lru, offset);
-  console.log(dataNode);
+  // console.log(dataNode);
 
   if (dataNode !== -1) {
     return dataNode.value;

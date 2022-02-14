@@ -4,7 +4,9 @@
       <div><slot></slot></div>
     </template>
     <template #fallback>
-      <div>Loading....</div>
+      <div class="flex justify-center items-center h-full">
+        <div>Loading....</div>
+      </div>
     </template>
   </Suspense>
 </template>

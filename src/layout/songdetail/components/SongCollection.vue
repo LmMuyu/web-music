@@ -1,11 +1,13 @@
 <template>
-  <song-item
-    class="py-2 cursor-pointer"
-    v-for="(track, index) in playlistTracks"
-    :key="index"
-    :index="index"
-    :track="track"
-  />
+  <div>
+    <song-item
+      class="py-2 cursor-pointer"
+      v-for="(track, index) in playlistTracks"
+      :key="index"
+      :index="index"
+      :track="track"
+    />
+  </div>
 </template>
 <script setup lang="tsx">
 import { ElRow, ElCol, ElAvatar } from "element-plus";
@@ -30,14 +32,7 @@ function songItem(props: Readonly<SONGITEM>) {
   const track = props.track;
 
   return (
-    <div
-      onClick={() =>
-        router.push({
-          path: "/playlist",
-          query: { id: track.id },
-        })
-      }
-    >
+    <router-link to={{ path: "/playlist", query: { id: track.id } }} target="_blank">
       <ElRow class={props.class}>
         <ElCol span={10} class="flex">
           <div>
@@ -55,7 +50,7 @@ function songItem(props: Readonly<SONGITEM>) {
           <span> {track.durationTime} </span>
         </ElCol>
       </ElRow>
-    </div>
+    </router-link>
   );
 }
 </script>

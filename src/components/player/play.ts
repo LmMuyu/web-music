@@ -1,17 +1,28 @@
 import { Howl, Howler } from "howler";
 import { OPTIONS } from "./type";
 
-const ons = ["onPlayerror", "onPlay", "onStop", "onpause"];
+const ons = ["onPlayerror", "onPlay", "onStop", "onPause"];
 
-function transformOptonsOn(options: OPTIONS) {
-  if (!options.on) return;
-  for (const onstr of ons) {
-    if (!options.on[onstr] || typeof options.on[onstr] !== "function") {
-      options.on[onstr] = () => {};
+function setThatMethods(hookMethods: OPTIONS["on"]) {
+  const self = this as Play;
+
+  for (const key in hookMethods) {
+    if (!Object.prototype.hasOwnProperty.call(self, key)) {
+      const method = hookMethods[key];
+      if (typeof method === "function") {
+        self[key] = method;
+      }
     }
   }
+}
 
-  return options;
+function ifRate(rate: string) {
+  const count = Number(rate.substring(0, rate.indexOf(".")));
+  if (count < 0.5 || count > 4) {
+    return 1;
+  }
+
+  return count;
 }
 
 export default class Play {
@@ -20,10 +31,12 @@ export default class Play {
   private src: string;
   private volume: number;
   private options: OPTIONS;
+
   dt: number;
   format: string[];
   autoplay: boolean;
   duration: string;
+  ismute: boolean;
 
   constructor(options?: OPTIONS) {
     this.howl = null;
@@ -32,7 +45,10 @@ export default class Play {
     this.volume = 0.5;
     this.format = ["mp3", "flac"];
     this.autoplay = true;
-    this.options = transformOptonsOn(options);
+    this.options = options;
+    this.ismute = options.mute ?? false;
+
+    setThatMethods.call(this, options.on);
   }
 
   createHowler() {
@@ -48,8 +64,12 @@ export default class Play {
       html5: true,
     });
 
-    this.addEvent(this.howl);
-    autoplay && this.play();
+    this.onHookMethods(this.howl, this);
+
+    if (autoplay) {
+      this.play();
+      this.checkAudioIsPlay();
+    }
   }
 
   async init() {
@@ -57,10 +77,25 @@ export default class Play {
     this.createHowler();
   }
 
-  addEvent(howl: Howl) {
-    ons.forEach((evevtname) =>
-      howl.on(evevtname.substring(2).toLocaleLowerCase(), this.options[evevtname])
-    );
+  checkAudioIsPlay() {
+    if (!this.howl.playing()) {
+      //@ts-ignore
+      this.onPlay(false);
+    }
+  }
+
+  onHookMethods(howl: Howl, self: Play) {
+    ons.forEach((evevtname) => {
+      if (self[evevtname]) {
+        howl.on(evevtname.substring(2).toLocaleLowerCase(), self[evevtname]);
+      }
+    });
+
+    this.removeAllHook();
+  }
+
+  removeAllHook() {
+    this.howl.on("stop", () => this.howl.off());
   }
 
   play() {
@@ -78,22 +113,53 @@ export default class Play {
     this.howl.pause();
   }
 
-  _volume(value: number) {
+  set_volume(value: number) {
     if (value >= 0 || value <= 1) {
       this.howl.volume(value);
     }
   }
 
-  _loop(loop: boolean) {
+  set_loop(loop: boolean) {
     this.howl.loop(loop);
   }
 
   time_seek() {
     if (this.howl.playing()) {
-      const time_seek = this.howl.seek();
+      let time_seek = this.howl.seek();
       window.localStorage.setItem("audio_play_time", JSON.stringify(time_seek));
       return time_seek;
     }
+  }
+
+  set_seek(pos: number) {
+    return this.howl.seek(pos);
+  }
+
+  mute() {
+    const ismute = (this.ismute = !this.ismute);
+    if (this.howl.playing()) {
+      this.howl.mute(ismute);
+    }
+  }
+
+  rate(rate: string) {
+    const numRate = ifRate(rate);
+
+    this.howl.rate(numRate);
+  }
+
+  unWindowHowler() {
+    try {
+      Howler.unload();
+      this.howl.unload();
+      this.howl = null;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  offHookMethods(howl: Howl) {
+    howl.off();
   }
 
   async setSrc(src: string) {

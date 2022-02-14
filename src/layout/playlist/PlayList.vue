@@ -1,5 +1,5 @@
 <template>
-  <el-container class="h-full relative section_container">
+  <el-container class="h-full relative section_container min_w_h">
     <el-main class="backdrop padd">
       <PlayListMain
         :singerName="playListMainInfo.nickName"
@@ -66,5 +66,10 @@ onMounted(() => {
   background-color: #2d3436;
   opacity: 0.5;
   z-index: -1;
+}
+
+.min_w_h {
+  min-height: 100vh;
+  max-width: 100vw;
 }
 </style>

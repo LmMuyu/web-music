@@ -1,13 +1,20 @@
 <template>
-  <el-container>
+  <el-container class="h-full" style="background: rgb(245, 248, 255)">
     <el-header height="40px">
       <IndexHeaderModule />
     </el-header>
     <el-main class="flex flex-col">
-      <IndexBanner :banner-data="bannerImages" />
-      <AsayncSuspense>
-        <IndexRecommended />
-      </AsayncSuspense>
+      <keep-alive>
+        <AsayncSuspense>
+          <IndexBanner :banner-data="bannerImages" />
+          <IndexRecommended />
+          <IndexDiscover />
+          <IndexRecentlyAlbums />
+          <IndexHotsong />
+          <IndexFeaturedSinger />
+          <IndexHotPlaylists :playList="playList" />
+        </AsayncSuspense>
+      </keep-alive>
     </el-main>
   </el-container>
 </template>
@@ -16,10 +23,15 @@ import { ref } from "vue";
 
 import { getBanner as getBannerImages, getHot, getPlayList } from "../../api/index";
 
-import IndexHeaderModule from "./components/IndexHeaderModule.vue";
+import IndexHotsong from "./components/IndexHotsong.vue";
+import IndexDiscover from "./components/IndexDiscover.vue";
 import { ElContainer, ElHeader, ElMain } from "element-plus";
 import IndexBanner from "../../components/banner/Banner.vue";
 import IndexRecommended from "./components/IndexRecommended.vue";
+import IndexHeaderModule from "./components/IndexHeaderModule.vue";
+import IndexHotPlaylists from "./components/IndexHotPlaylists.vue";
+import IndexRecentlyAlbums from "./components/IndexRecentlyAlbums.vue";
+import IndexFeaturedSinger from "./components/IndexFeaturedSinger.vue";
 
 import type { AxiosResponse } from "axios";
 
@@ -34,6 +46,7 @@ function requestThenFn(value: AxiosResponse<any>) {
     hotList.value = value.data.tags;
   } else {
     playList.value = value.data.playlists;
+    console.log(playList.value);
   }
 }
 
@@ -51,9 +64,8 @@ getHot({
 fucpalyList({
   url: "/top/playlist",
   params: {
-    limit: 18,
+    limit: 6,
   },
 }).then(requestThenFn);
 </script>
-0
 <style scoped lang="scss"></style>

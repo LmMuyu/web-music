@@ -1,14 +1,11 @@
-import { ref, unref } from "@vue/reactivity";
+import { ref, isRef } from "@vue/reactivity";
 import type { Ref } from "@vue/reactivity";
 
-export function useRefNegate(count: Ref<boolean> | boolean) {
-  const num = unref(count);
-
-  const countRef = ref(num);
+export function useRefNegate(form: Ref<boolean> | boolean) {
+  const countRef = isRef(form) ? form : ref(form);
 
   function negate() {
     countRef.value = !countRef.value;
-
     return true;
   }
 

@@ -1,6 +1,6 @@
 <template>
   <div class="w-full h-full">
-    <font-icon :icon="fonticonclass" size="20"></font-icon>
+    <font-icon :icon="fonticonclass" size="24"></font-icon>
   </div>
 </template>
 <script setup lang="ts">
