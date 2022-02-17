@@ -7,38 +7,32 @@
         :backgroundurl="playListMainInfo.backgroundurl"
       ></PlayListMain>
     </el-main>
-    <el-footer class="flex items-center bg-white padd">
-      <Audio ref="compAudio"></Audio>
-    </el-footer>
   </el-container>
 </template>
 <script setup lang="ts">
-import { onMounted, reactive, ref } from "vue";
+import { computed, reactive, watchEffect } from "vue";
+import { useStore } from "vuex";
 
-import Audio from "../../components/player/Audio.vue";
 import PlayListMain from "./components/PlayListMain.vue";
-import { ElContainer, ElMain, ElFooter } from "element-plus";
+import { ElContainer, ElMain } from "element-plus";
+import { musicDetail } from "../../utils/musicDetail";
 
-const compAudio = ref<any>(null);
+const store = useStore();
+
 const playListMainInfo = reactive({
   musicName: "",
   nickName: "",
   backgroundurl: "",
 });
 
-onMounted(() => {
-  // let timer = setInterval(() => {
-  //   const musicdateil = compAudio.value.musicinfo;
-  //   if (musicdateil !== undefined) {
-  //     playListMainInfo.musicName = musicdateil.name;
-  //     playListMainInfo.nickName = musicdateil.nickName;
-  //     playListMainInfo.backgroundurl = musicdateil.picUrl;
-  //     clearInterval(timer);
-  //     timer = null;
-  //   } else {
-  //     console.error("musicdateil为undefined");
-  //   }
-  // }, 1000);
+const songInfo = computed<musicDetail>(store.getters("playlist/getSongInfo"));
+
+watchEffect(() => {
+  if (Object.keys(songInfo.value).length > 0) {
+    playListMainInfo.backgroundurl = songInfo.value.picUrl;
+    playListMainInfo.nickName = songInfo.value.nickName;
+    playListMainInfo.musicName = songInfo.value.name;
+  }
 });
 </script>
 

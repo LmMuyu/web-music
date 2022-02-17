@@ -1,6 +1,6 @@
 <template>
-  <div class="flex items-center relative h-full w-full px-4 audio_shadow">
-    <div class="flex"><AudioSongInfoShow /></div>
+  <div class="flex items-center h-full w-full px-4 relative bg-white audio_shadow">
+    <div class="flex"><AudioSongInfoShow :musicinfo="musicinfo" /></div>
     <el-row class="flex content-center h-full w-full">
       <el-col :span="4" class="flex items-center justify-center">
         <AudioAndVideoControls :status="isplay" @play="play" @pause="pause"></AudioAndVideoControls>
@@ -11,14 +11,14 @@
             :starttime="musicPosTime * 1000"
             :mintime="0"
             :maxtime="maxTime"
-            @input="inputValue"
+            @input="(pos) => inputValue(pos)"
           />
         </PlayMusicTime>
       </el-col>
       <el-col :span="6" class="flex items-center">
         <div class="flex px-4">
-          <volume-icon @click.captrue="showSlider = !showSlider" :volume="volume"></volume-icon>
-          <div v-if="showSlider" class="w-full audio_slider">
+          <volume-icon :volume="volume"></volume-icon>
+          <div v-show="showSlider" class="w-full audio_slider">
             <el-slider @mousemove="mouseEvent" @mouseleave="mouseEvent" v-model="volume">
             </el-slider>
           </div>
@@ -35,14 +35,25 @@
   </div>
 </template>
 <script setup lang="ts">
-import { reactive, ref, nextTick, toRef, onUnmounted } from "vue";
-import { useRoute } from "vue-router";
-import { onMounted } from "vue-demi";
+import {
+  reactive,
+  ref,
+  nextTick,
+  toRef,
+  onUnmounted,
+  PropType,
+  watchEffect,
+  computed,
+  onMounted,
+} from "vue";
+import { useStore } from "vuex";
 
-import { musicDetail } from "../../utils/musicDetail";
 import { openDrawer } from "../../layout/playlist/components/PlayListHistory";
-import { debounce } from "../../utils/debounce";
 import { commentMusic, getMusicDetail } from "../../api/playList";
+import { useLocalStorage } from "../../utils/useLocalStorage";
+import { musicDetail } from "../../utils/musicDetail";
+import { debounce } from "../../utils/debounce";
+import dexieFn from "../../common/dexie";
 import AudioHow from "./Howler";
 
 //@ts-ignore
@@ -54,34 +65,50 @@ import { ElSlider, ElRow, ElCol } from "element-plus";
 import VolumeIcon from "./components/VolumeIcon.vue";
 import FontIcon from "../fonticon/FontIcon.vue";
 
-const id = useRoute().query.id as unknown as number;
+const props = defineProps({
+  songinfo: {
+    type: Object as PropType<musicDetail>,
+    required: true,
+  },
+});
 
+const store = useStore();
+
+let id = 0;
 let isclick = true;
 let currPage = 1;
 const initTime = ref(0);
 const volume = ref(0);
 const historyData = ref([]);
-const musicinfo = ref<musicDetail>();
 const showSlider = ref(false);
 const maxTime = ref(0);
 const comments = ref([]);
 const COMMENT_LEN = 40;
+const musicinfo = ref<musicDetail>();
 const MAX_LIMIT = COMMENT_LEN;
 const timeTable = new Map();
 const playListHistoryOptions = reactive({ total: 0, time: 0 });
+
+const songlists = [];
+
+const dexie = dexieFn();
 
 const {
   isplay,
   pause,
   stop,
   play,
+  setPlayLists,
+  initCurrentIndex,
   seek: setseek,
+  volume: setVolume,
   playSeek: seekTime,
-} = AudioHow(id, [], {
+} = AudioHow(songlists, {
   currentIndexBackFn: currentMusicPlayIndex,
 });
 
 let musicPosTime = seekTime();
+volume.value = setVolume() * 100;
 
 function setTimeTable(page: number, time: number) {
   if (!timeTable.has(page)) {
@@ -94,10 +121,30 @@ function inputValue(pos: number) {
   setseek(pos);
 }
 
-getMusicDetail(String(id)).then(({ data }) => {
-  const songdetail = data.songs[0];
-  maxTime.value = songdetail.dt;
-});
+async function indexDBAAllData() {
+  const allCollectionData = await (await dexie).getAllSong();
+  const data = allCollectionData.map((musicDetailData) => musicDetailData.songinfo);
+  songlists.push(...data);
+
+  setPlayLists(data);
+  firstSongInfo();
+}
+
+async function firstSongInfo() {
+  const songinfo = useLocalStorage("preSongInfo");
+
+  if (!songinfo.value) {
+    const songinfo = await (await dexie).first();
+    musicinfo.value = songinfo.songinfo;
+    useLocalStorage("preSongInfo", JSON.stringify(songinfo.songinfo));
+  } else {
+    const index = initCurrentIndex(JSON.parse(songinfo.value));
+    musicinfo.value = songlists[index];
+    console.log(songlists[index]);
+  }
+}
+
+indexDBAAllData();
 
 function commentMusicThenFn({ config, data: comment }) {
   playListHistoryOptions.total = comment.total;
@@ -116,8 +163,6 @@ function commentMusicThenFn({ config, data: comment }) {
 const openRightDrawer = () => openDrawer(historyData);
 
 const mouseEvent = debounce(cursourEnterSlider);
-
-commentMusic(id, 1, 0, MAX_LIMIT).then(commentMusicThenFn);
 
 function cursourEnterSlider(e: MouseEvent) {
   if (e.type === "mousedown") {
@@ -168,6 +213,7 @@ function changePageIndex(index: number) {
   if (index === currPage) {
     return;
   }
+
   commentMusic(id, index, timeTable.get(index - 1) ?? 0).then(commentMusicThenFn);
 }
 
@@ -187,19 +233,44 @@ function windowClick() {
   }
 }
 
-onMounted(() => {
+const songId = computed<number>(store.getters["playlist/getSongId"]);
+
+watchEffect(async () => {
+  try {
+    if (songId.value && songId.value !== id && songId.value !== musicinfo.value.id) {
+      id = songId.value;
+      console.log(id);
+
+      const reqdata = await getMusicDetail(id);
+      const song = reqdata.data.songs[0];
+      const songInfo = new musicDetail(song);
+
+      Promise.resolve().then(() => store.commit("playlist/setSongInfo", songInfo));
+
+      const data = await commentMusic(id, 1, 0, MAX_LIMIT);
+      if (data) {
+        commentMusicThenFn(data);
+      }
+
+      (await dexie).put(songInfo.id, songInfo);
+      setPlayLists(songInfo);
+      initCurrentIndex(songInfo);
+      useLocalStorage("preSongInfo", JSON.stringify(songInfo));
+    }
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+onMounted(() =>
   nextTick(() => {
     sliderstyle();
     document.documentElement.addEventListener("click", windowClick, false);
-  });
-});
+  })
+);
 
 onUnmounted(() => {
   document.documentElement.removeEventListener("click", windowClick, false);
-});
-
-defineExpose({
-  musicinfo,
 });
 </script>
 <style scoped lang="scss">

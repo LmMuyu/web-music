@@ -16,11 +16,11 @@ export function getMusicUrl(id: string) {
   });
 }
 
-export function getMusicDetail(ids: string) {
+export function getMusicDetail(ids: number) {
   return request({
     url: "/song/detail",
     params: {
-      ids,
+      ids: String(ids),
     },
   });
 }

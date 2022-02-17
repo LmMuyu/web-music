@@ -37,6 +37,7 @@ export default class Play {
   autoplay: boolean;
   duration: string;
   ismute: boolean;
+  playing: boolean;
 
   constructor(options?: OPTIONS) {
     this.howl = null;
@@ -47,6 +48,7 @@ export default class Play {
     this.autoplay = true;
     this.options = options;
     this.ismute = options.mute ?? false;
+    this.playing = false;
 
     setThatMethods.call(this, options.on);
   }
@@ -79,8 +81,11 @@ export default class Play {
 
   checkAudioIsPlay() {
     if (!this.howl.playing()) {
+      this.playing = false;
       //@ts-ignore
       this.onPlay(false);
+    } else {
+      this.playing = true;
     }
   }
 
@@ -100,23 +105,29 @@ export default class Play {
 
   play() {
     if (this.howl.playing()) return true;
+    this.playing = true;
     this.howl.play();
   }
 
   stop() {
     if (!this.howl.playing()) return true;
+    this.playing = false;
     this.howl.stop();
   }
 
   pause() {
     if (!this.howl.playing()) return true;
+    this.playing = false;
     this.howl.pause();
   }
 
   set_volume(value: number) {
-    if (value >= 0 || value <= 1) {
+    if (value && (value >= 0 || value <= 1)) {
       this.howl.volume(value);
+      this.volume = value;
     }
+
+    return this.volume;
   }
 
   set_loop(loop: boolean) {

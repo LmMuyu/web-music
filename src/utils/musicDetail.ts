@@ -7,7 +7,7 @@ export interface MusicDetailOption {
   name: string;
   picUrl: string;
   ar: typeSinger;
-  durationTime: string;
+  dt: number;
 }
 
 export interface typeSinger {
@@ -56,7 +56,7 @@ export class musicDetail {
   singerInfo: allType<typeSinger>;
   isMusicDetail: boolean;
   nickName: string;
-  durationTime: string;
+  dt: number;
 
   constructor(options: MusicDetailOption) {
     const { id, name, picUrl, ar } = this.runMusicDetail(options);
@@ -68,7 +68,7 @@ export class musicDetail {
     this.singerInfo = this.setSingerInfo(ar);
     this.nickName = this.singerDomString();
     this.isMusicDetail = true;
-    this.durationTime = options.durationTime;
+    this.dt = options.dt;
   }
 
   runMusicDetail(options: Record<string, any>) {
@@ -110,18 +110,14 @@ export class resultOptions implements MusicDetailOption {
   name: string;
   picUrl: string;
   ar: typeSinger;
-  durationTime: string;
+  dt: number;
 
   constructor(musicdata: Record<string, any>) {
     this.id = this.getID(musicdata, musicdata.type);
     this.name = this.getName(musicdata);
     this.picUrl = this.getPicUrl(musicdata);
     this.ar = this.getAr(musicdata);
-    this.durationTime = this.durationFilterTime(musicdata.dt);
-  }
-
-  durationFilterTime(dt: number) {
-    return filterDate(dt);
+    this.dt = musicdata.dt;
   }
 
   picUrlRecursion(options: any) {

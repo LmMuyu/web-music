@@ -6,12 +6,13 @@
       :key="index"
       :index="index"
       :track="track"
+      @click.capture="acceptTrackData(track)"
     />
   </div>
 </template>
 <script setup lang="tsx">
 import { ElRow, ElCol, ElAvatar } from "element-plus";
-import { useRouter } from "vue-router";
+import { useStore } from "vuex";
 
 interface SONGITEM {
   track: Record<string, any>;
@@ -26,7 +27,11 @@ const props = defineProps({
   },
 });
 
-const router = useRouter();
+const store = useStore();
+
+function acceptTrackData(track) {
+  store.commit("playlist/setSongId", track.id);
+}
 
 function songItem(props: Readonly<SONGITEM>) {
   const track = props.track;
@@ -36,7 +41,7 @@ function songItem(props: Readonly<SONGITEM>) {
       <ElRow class={props.class}>
         <ElCol span={10} class="flex">
           <div>
-            <ElAvatar shape="square" src={track.picUrl} size="large" />
+            <ElAvatar shape="square" srcSet={track.picUrl} size="large" />
           </div>
           <div class="flex flex-col px-2">
             <span>{track.name}</span>

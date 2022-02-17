@@ -79,7 +79,7 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
           changeOrigin: true,
           rewrite(path) {
             console.log(path);
-            
+
             path = path.replace(/^\/music/, "");
             return path;
           },
@@ -93,6 +93,9 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
           },
         },
       },
+    },
+    optimizeDeps: {
+      exclude: ["vue-demi"],
     },
   };
 };

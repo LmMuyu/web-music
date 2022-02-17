@@ -1,16 +1,14 @@
 import { Ref, ref, watchEffect, WatchStopHandle } from "vue";
 import { useStore } from "vuex";
 import filterDate from "../../utils/filterDate";
+import { isType } from "../../utils/methods";
+import { musicDetail } from "../../utils/musicDetail";
 import { useRefNegate } from "../../utils/useRefNegate";
 import Play from "./Play";
 
 interface staticPlaySeekMethods {
   (): Ref<number>;
   clear(): void;
-}
-
-interface SONGS {
-  id: number;
 }
 
 interface HOWLOPTIONS {
@@ -27,14 +25,16 @@ function fetchServeBlobData(id: number): string {
   return "";
 }
 
-export default function Howl(id: number, songlists: SONGS[], options: HOWLOPTIONS) {
+export default function Howl(songlists: musicDetail[], options: HOWLOPTIONS) {
   let timeseek = null;
-  let stopWatch: WatchStopHandle | null = null;
   let currIndex = 0;
   let autoplay = true;
   let ismove = false;
+  let initplay = false;
   const playtime = ref(0);
+  const palylists = ref<musicDetail[]>(songlists.slice(0));
   const { countRef: isplay, negate: changePlayIcon } = useRefNegate(autoplay);
+  let stopWatch: WatchStopHandle | null = null;
 
   const how = new Play({
     on: {
@@ -47,12 +47,14 @@ export default function Howl(id: number, songlists: SONGS[], options: HOWLOPTION
 
   function onPlayerror() {}
 
-  function createSrc(id) {
+  function createSrc(id: number) {
     return `https://music.163.com/song/media/outer/url?id=${id}.mp3`;
   }
 
   function playSrcSet(index: number) {
-    const { id } = songlists[index];
+    const { id } = palylists.value[index];
+    if (!id) return;
+
     // if (islogin) {
     //   how.setSrc(fetchServeBlobData(id));
     // } else {
@@ -62,7 +64,7 @@ export default function Howl(id: number, songlists: SONGS[], options: HOWLOPTION
   }
 
   function nextMusic() {
-    if (currIndex > songlists.length - 1) {
+    if (currIndex > palylists.value.length - 1) {
       currIndex = 0;
     } else {
       currIndex += 1;
@@ -73,7 +75,7 @@ export default function Howl(id: number, songlists: SONGS[], options: HOWLOPTION
 
   function preveMusic() {
     if (currIndex === 0) {
-      currIndex = songlists.length - 1;
+      currIndex = palylists.value.length - 1;
     } else {
       currIndex--;
     }
@@ -83,6 +85,8 @@ export default function Howl(id: number, songlists: SONGS[], options: HOWLOPTION
 
   const playSeek: staticPlaySeekMethods = function playSeek() {
     if (timeseek !== null) return;
+    if (!how.playing) return playtime;
+
     if (!ismove) {
       playtime.value = how.time_seek() ?? playtime.value;
     }
@@ -107,7 +111,6 @@ export default function Howl(id: number, songlists: SONGS[], options: HOWLOPTION
     timeseek = setInterval(() => {
       const time = how.time_seek();
       console.log(time);
-      
       playtime.value = time ? time : playtime.value;
     }, 1000);
   }
@@ -135,11 +138,19 @@ export default function Howl(id: number, songlists: SONGS[], options: HOWLOPTION
     playSeek();
   };
 
-  function init() {
-    how.setSrc(createSrc(id));
+  function volume(volume?: number): number {
+    const howVolume = how.set_volume(volume);
+    return howVolume;
   }
 
-  init();
+  function setPlayLists(lists: any[] | any) {
+    palylists.value.unshift(...(isType(lists) === "Array" ? lists : [lists]));
+  }
+
+  function initCurrentIndex(songinfo: musicDetail) {
+    const index = palylists.value.findIndex((value) => value.id === songinfo.id);
+    return (currIndex = index > -1 ? index : 0);
+  }
 
   window.addEventListener("unload", how.unWindowHowler.bind(how), false);
 
@@ -149,9 +160,12 @@ export default function Howl(id: number, songlists: SONGS[], options: HOWLOPTION
     play,
     stop,
     pause,
+    volume,
+    preveMusic,
     playSeek,
     nextMusic,
-    preveMusic,
+    setPlayLists,
+    initCurrentIndex,
     filterDurationTime,
   };
 }

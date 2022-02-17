@@ -1,5 +1,5 @@
 <template>
-  <div style="width: 48px; height: 48px">
+  <div style="width: 48px; height: 48px" class="flex items-center justify-center">
     <ElAvatar shape="square" :src-set="musicinfo?.picUrl + '?param=48y48'" :alt="musicinfo?.name" />
   </div>
   <div>

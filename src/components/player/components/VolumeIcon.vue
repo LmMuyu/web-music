@@ -41,9 +41,11 @@ const ifmethods = {
 };
 
 watchEffect(() => {
+  const volume = props.volume === NaN ? 0 : props.volume;
+
   for (const key in ifmethods) {
     if (Object.prototype.hasOwnProperty.call(ifmethods, key)) {
-      const iconclass = ifmethods[key](props.volume);
+      const iconclass = ifmethods[key](volume);
 
       if (iconclass) {
         fonticonclass.value = iconclass;

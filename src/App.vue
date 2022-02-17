@@ -1,15 +1,21 @@
 <template>
   <HtmlMain />
+  <div class="absolute bottom-0 left-0 w-full">
+    <Audio :songinfo="songInfo" />
+  </div>
 </template>
 
 <script setup lang="ts">
+import { provide, ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
-import { provide, ref } from "vue";
 
 import routerLimit from "./common/routerLimit";
 
+import Audio from "./components/player/Audio.vue";
 import HtmlMain from "./layout/main/Main.vue";
+
+import type { musicDetail } from "./utils/musicDetail";
 
 type linkType = "info" | "primary" | "success" | "warning" | "danger" | "default" | undefined;
 
@@ -24,6 +30,8 @@ const circleRef = ref(true);
 
 store.dispatch("countriesCode");
 provide("circleRef", circleRef);
+
+const songInfo = computed<musicDetail>(store.getters["playlist/getSongInfo"]);
 </script>
 
 <style lang="scss">
