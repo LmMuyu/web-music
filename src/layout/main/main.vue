@@ -1,5 +1,5 @@
 <template>
-  <div class="flex h-full">
+  <div class="flex h-full overflow-y-hidden">
     <div v-if="isTagShow" class="float-left w-1/5 h-full right_border">
       <div class="h-full" :style="{ minHeight: minheight + 'px' }">
         <IndexAsideTags />

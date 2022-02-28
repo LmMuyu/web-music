@@ -1,4 +1,4 @@
-import { useRouter, RouteLocationNormalized } from "vue-router";
+import { useRouter, RouteLocationNormalized, NavigationGuardNext } from "vue-router";
 import { loginStateus } from "../api/app/login";
 import { promptbox } from "../components/promptBox";
 
@@ -13,14 +13,17 @@ async function redirectPath(to: RouteLocationNormalized, islogin: boolean) {
 }
 
 export default async function routerLimit() {
-  let islogin = await loginStateus();
-  console.log(islogin);
+  let statuslogin = await loginStateus();
 
-  return function beforeRouterFn(to: RouteLocationNormalized) {
-    redirectPath(to, islogin);
-
-    if (to.path.indexOf("/login") > -1 && islogin) {
-      router.push("/index");
+  return function beforeRouterFn<R extends RouteLocationNormalized, N extends NavigationGuardNext>(
+    to: R,
+    from: R,
+    next: N
+  ) {
+    if (to.path.indexOf("/login") > -1 && !statuslogin) {
+      to.redirectedFrom && to.redirectedFrom.path === to.path ? next() : next("/login");
+    } else {
+      next();
     }
   };
 }

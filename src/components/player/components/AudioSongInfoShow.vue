@@ -1,6 +1,6 @@
 <template>
   <div style="width: 48px; height: 48px" class="flex items-center justify-center">
-    <ElAvatar shape="square" :src-set="musicinfo?.picUrl + '?param=48y48'" :alt="musicinfo?.name" />
+    <ElAvatar shape="square" :src="musicinfo?.picUrl + '?param=48y48'" :alt="musicinfo?.name" />
   </div>
   <div>
     <div class="flex justify-center flex-col ml-4 truncate text-gray-700">

@@ -1,5 +1,7 @@
 import { getMusicDetail } from "../../api/playList";
 import mitt, { Emitter } from "mitt";
+import { ActionTree } from "vuex";
+import { computed, watchEffect } from "vue";
 
 enum watchType {
   STOPWATCH = "stopwatch",
@@ -7,12 +9,12 @@ enum watchType {
 
 interface WATCHFNOPTIONS {
   stopWatchFnLists: Emitter;
-  runFn: (iswatchbc: boolean) => void;
+  watchLoginFn: (iswatchbc: boolean) => void | null;
 }
 
 export interface STATETYPE {
   ids: number[];
-  islogin: boolean;
+  islogin: true | false;
   userdata: Object;
   linkes: Record<string, any>[];
   initStatus: Boolean;
@@ -44,7 +46,7 @@ class login {
       initStatus: false,
       watch: {
         stopWatchFnLists: mitt(),
-        runFn: null,
+        watchLoginFn: null,
       },
     };
   }
@@ -67,8 +69,10 @@ class login {
         state.linkes.push(...linkes);
       },
 
-      setWatchFn(state: STATETYPE, watch: Pick<WATCHFNOPTIONS, "runFn">) {
-        state.watch.runFn = watch.runFn;
+      setWatchFn(state: STATETYPE, watchLoginFn) {
+        if (typeof watchLoginFn !== "function") return;
+
+        state.watch.watchLoginFn = watchLoginFn;
       },
 
       pushWatchFn(state: STATETYPE, mittops: [watchType, () => void]) {
@@ -81,28 +85,19 @@ class login {
     };
   }
 
-  private createActions() {
+  private createActions(): ActionTree<STATETYPE, any> {
     return {
-      async getlinke(state: any, linkesId: number[]) {
-        const ids = linkesId.splice(0, 12).join(",");
-        const linkes = (await getMusicDetail(ids)).data;
-      },
-
-      runWatchFn(state: { state: STATETYPE }, argvs: [(value: any) => void, boolean]) {
+      dispatchWatchFn(state, argvs: [(value: unknown) => void, boolean]) {
         const _resolve = argvs[0];
+        const fn = () => state.state.watch.watchLoginFn;
+        const watchRunFn = computed(() => fn());
 
-        let timer = setInterval(() => {
-          const watchRunFn = state.state.watch.runFn;
-
-          if (watchRunFn !== null) {
-            watchRunFn(argvs[1]);
-            _resolve(true);
-
-            clearInterval(timer);
-            timer = null;
-            console.log("store->module_login->runWatchFn");
+        const stop = watchEffect(() => {
+          if (watchRunFn.value !== null) {
+            watchRunFn.value(argvs[1]);
+            _resolve(stop());
           }
-        }, 100);
+        });
       },
     };
   }

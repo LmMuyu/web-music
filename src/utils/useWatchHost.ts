@@ -1,5 +1,20 @@
 import { ref, watchEffect } from "vue";
-import { useRoute } from "vue-router";
+import { RouteLocationNormalizedLoaded, useRoute } from "vue-router";
+
+export function useWatchRoutePath() {
+  const RLNL = ref<Partial<RouteLocationNormalizedLoaded>>({});
+  const route = useRoute();
+  let prepath = "";
+
+  watchEffect(() => {
+    if (prepath !== route.path) {
+      prepath = route.path;
+      RLNL.value = route;
+    }
+  });
+
+  return RLNL;
+}
 
 export function useWatchHost() {
   const excludes = ["/login", "/playlist", "/user"];

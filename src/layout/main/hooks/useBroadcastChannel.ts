@@ -2,13 +2,23 @@ import { nextTick } from "vue";
 import route from "../../../routes";
 import store from "../../../store";
 
+import { setCookie } from "../../../utils/request/response/result";
 import { useLocalStorage } from "../../../utils/useLocalStorage";
 
 import { ElNotification } from "element-plus";
 
 import type { USERDATA } from "../../../store/type";
+import { AxiosResponse } from "axios";
 
 type NottificationType = "success" | "warning" | "info" | "error";
+type ExtractPickForValue<T, K extends keyof T> = T[K];
+
+export type PromiseExtractPickValue = ExtractPickForValue<BroadcastChannel, "postMessage">;
+
+export interface DispatchBcRet {
+  postMessage: PromiseExtractPickValue;
+  userdata?: any;
+}
 
 interface ACCESS_OR_REFRESH_TOKEN {
   token: string;
@@ -27,19 +37,22 @@ function openNotification(content: string, title?: string, type: NottificationTy
   });
 }
 
+function dispatchBc<T extends BroadcastChannel>(BC: T): ExtractPickForValue<T, "postMessage"> {
+  return;
+}
+
 //登录后跨页面通信
 export default function loginBCBus(
   isloginPages: boolean, //判断是否是登录页面
   data?: any
-): Promise<{ portMess: (data: any) => void; userdata?: any }> {
+): Promise<DispatchBcRet> {
   const BC = new BroadcastChannel("login");
   const closeBcWatch = () => BC.close();
-
-  function portMess(data: any) {
-    BC.postMessage(data);
-  }
-
   store.commit("login/pushWatchFn", ["stopwatch", closeBcWatch]);
+
+  function sendEmitPost(): PromiseExtractPickValue {
+    return BC.postMessage.bind(BC);
+  }
 
   return new Promise((resolve, reject) => {
     if (isloginPages) {
@@ -49,27 +62,28 @@ export default function loginBCBus(
         }
       };
 
-      if (data) {
-        portMess(data);
-      } else {
-        resolve({ portMess });
-      }
+      return data
+        ? resolve({ postMessage: sendEmitPost(), userdata: data })
+        : resolve({ postMessage: sendEmitPost() });
     } else {
-      console.log("loginWindowChannel");
+      const _resolve = Promise.resolve;
+
       BC.onmessage = function (ev) {
         const userdata = ev.data;
+        console.log(userdata);
         const transformData = transformUserData(userdata);
-        setLocalStorage(userdata, transformData); //写入local storage
+
         store.commit("login/switchStatus", true);
         store.commit("login/setUserInfo", userdata);
+        setLocalStorage(userdata, transformData); //写入local storage
 
-        portMess("close_window");
-        resolve({ portMess, userdata: transformData });
+        _resolve().then(() => setCookie(userdata as AxiosResponse<any>));
+        sendEmitPost()("close_window");
 
-        nextTick(() => {
-          openNotification("话题哇哇哇哇", null, "success");
-        });
+        resolve({ postMessage: sendEmitPost(), userdata: transformData });
+        nextTick(() => openNotification("欢迎回来" + transformData.nickname, null, "success"));
       };
+
       BC.onmessageerror = function () {
         reject("BroadcastChannel接收到一条无法反序列化的消息!");
       };

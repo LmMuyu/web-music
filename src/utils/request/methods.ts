@@ -1,4 +1,5 @@
 import { CancelToken, CancelTokenSource } from "axios";
+import { useLocalStorage } from "../useLocalStorage";
 
 interface CONFIG_DEFAULT {
   retry?: number;
@@ -61,4 +62,15 @@ export function cancelHttpRequest(url: string, map: CANCEL_MAP, meg?: string) {
       cancelSourceLists.length === 0 ? map.delete(url) : map.set(url, cancelSourceLists);
     }
   }
+}
+
+export function findInfo() {
+  const data = useLocalStorage("userinfo");
+
+  if (!data.value) {
+    console.warn("local_undefined_userinfo");
+    return "";
+  }
+
+  return JSON.parse(data.value);
 }

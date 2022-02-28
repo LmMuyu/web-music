@@ -10,7 +10,7 @@ import { computed, watch } from "vue-demi";
 import { useStore } from "vuex";
 import { ref } from "vue";
 
-import MessageChatBox from "../components/MessageChatBox.vue";
+import MessageChatBox from "./MessageChatBox.vue";
 // import MessageBackground from "../components/MessageBackground.vue";
 
 import type { LocationQuery } from "vue-router";

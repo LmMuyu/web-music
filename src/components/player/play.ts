@@ -3,6 +3,8 @@ import { OPTIONS } from "./type";
 
 const ons = ["onPlayerror", "onPlay", "onStop", "onPause"];
 
+type KeXuan<T> = { [K in keyof T]?: T[K] };
+
 function setThatMethods(hookMethods: OPTIONS["on"]) {
   const self = this as Play;
 
@@ -31,7 +33,6 @@ export default class Play {
   private src: string;
   private volume: number;
   private options: OPTIONS;
-
   dt: number;
   format: string[];
   autoplay: boolean;
@@ -39,7 +40,7 @@ export default class Play {
   ismute: boolean;
   playing: boolean;
 
-  constructor(options?: OPTIONS) {
+  constructor(options?: OPTIONS & KeXuan<Pick<Play, "autoplay">>) {
     this.howl = null;
     this.src = "";
     this.loop = false;
@@ -53,9 +54,17 @@ export default class Play {
     setThatMethods.call(this, options.on);
   }
 
+  unmountHow() {
+    if (this.howl) {
+      this.howl.unload();
+      this.howl = null;
+    }
+  }
+
   createHowler() {
     Howler.unload();
     const { loop, src, volume, format, autoplay } = this;
+    this.unmountHow();
 
     this.howl = new Howl({
       src,

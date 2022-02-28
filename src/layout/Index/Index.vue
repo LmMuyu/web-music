@@ -3,7 +3,7 @@
     <el-header height="40px">
       <IndexHeaderModule />
     </el-header>
-    <el-main class="flex flex-col">
+    <el-main class="flex flex-col scrollbar">
       <keep-alive>
         <AsayncSuspense>
           <IndexBanner :banner-data="bannerImages" />
@@ -68,4 +68,8 @@ fucpalyList({
   },
 }).then(requestThenFn);
 </script>
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.scrollbar::-webkit-scrollbar {
+  display: none;
+}
+</style>

@@ -1,6 +1,6 @@
 <template>
   <HtmlMain />
-  <div class="absolute bottom-0 left-0 w-full">
+  <div class="absolute bottom-0 left-0 w-full" v-if="loadCompAudio">
     <Audio :songinfo="songInfo" />
   </div>
 </template>
@@ -16,14 +16,34 @@ import Audio from "./components/player/Audio.vue";
 import HtmlMain from "./layout/main/Main.vue";
 
 import type { musicDetail } from "./utils/musicDetail";
+import { useWatchRoutePath } from "./utils/useWatchHost";
 
 type linkType = "info" | "primary" | "success" | "warning" | "danger" | "default" | undefined;
 
 const store = useStore();
 const router = useRouter();
 
+function stopLoadAudioComp() {
+  const RouteRLNL = useWatchRoutePath();
+
+  const loadCompAudio = computed(() => {
+    return RouteRLNL.value.path.indexOf("/login") > -1 ? false : true;
+  });
+
+  return loadCompAudio;
+}
+
+const loadCompAudio = stopLoadAudioComp();
+
+const globalBeforeRouters = [routerLimit];
+
 //全局路由限制
-routerLimit().then((beforeRouterFn) => router.beforeEach(beforeRouterFn));
+router.beforeEach(async (to, from, next) => {
+  for (const globalRouterFunction of globalBeforeRouters) {
+    const fu = await globalRouterFunction();
+    fu(to, from, next);
+  }
+});
 
 const linkType = ref<linkType>("info");
 const circleRef = ref(true);

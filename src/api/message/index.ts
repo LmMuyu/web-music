@@ -1,4 +1,3 @@
-import { Method } from "axios";
 import { async_pool } from "../../utils/asyncPool";
 import request from "../../utils/request";
 
@@ -12,12 +11,10 @@ export function getUserMessage(uid: number, limit: number) {
   });
 }
 
-export async function getPrivateLetter(limit: number = 30) {
+export async function getSendMsgUser(limit: number = 30) {
   return request({
     url: "/msg/private",
-    params: {
-      limit,
-    },
+    params: { limit },
   });
 }
 

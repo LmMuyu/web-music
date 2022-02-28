@@ -1,4 +1,5 @@
 import { Ref, ref, watchEffect, WatchStopHandle } from "vue";
+import { useRoute } from "vue-router";
 import { useStore } from "vuex";
 import filterDate from "../../utils/filterDate";
 import { isType } from "../../utils/methods";
@@ -28,9 +29,10 @@ function fetchServeBlobData(id: number): string {
 export default function Howl(songlists: musicDetail[], options: HOWLOPTIONS) {
   let timeseek = null;
   let currIndex = 0;
-  let autoplay = true;
+  let preIndex = currIndex;
+  let autoplay = initAutoPlay();
   let ismove = false;
-  let initplay = false;
+  let initfirst = false;
   const playtime = ref(0);
   const palylists = ref<musicDetail[]>(songlists.slice(0));
   const { countRef: isplay, negate: changePlayIcon } = useRefNegate(autoplay);
@@ -43,6 +45,7 @@ export default function Howl(songlists: musicDetail[], options: HOWLOPTIONS) {
       },
       onPlayerror,
     },
+    autoplay,
   });
 
   function onPlayerror() {}
@@ -61,6 +64,11 @@ export default function Howl(songlists: musicDetail[], options: HOWLOPTIONS) {
     // }
     how.setSrc(createSrc(id));
     options?.currentIndexBackFn(index);
+  }
+
+  function initAutoPlay() {
+    console.log(useRoute().path);
+    return useRoute().path === "/playlist" ? true : false;
   }
 
   function nextMusic() {
@@ -151,6 +159,19 @@ export default function Howl(songlists: musicDetail[], options: HOWLOPTIONS) {
     const index = palylists.value.findIndex((value) => value.id === songinfo.id);
     return (currIndex = index > -1 ? index : 0);
   }
+
+  function moveMusicFirst(songinfo: musicDetail) {}
+
+  watchEffect(() => {
+    if (palylists.value.length) {
+      console.log({ currIndex, preIndex });
+      if (currIndex !== preIndex || !initfirst) {
+        initfirst = true;
+        playSrcSet(currIndex);
+        preIndex = currIndex;
+      }
+    }
+  });
 
   window.addEventListener("unload", how.unWindowHowler.bind(how), false);
 

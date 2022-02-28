@@ -1,10 +1,7 @@
 import { Ref, ref, unref } from "vue";
 
 import type { StoreOptions, Store } from "vuex";
-import {
-  getPrivateLetter as fetchPrivateLetter,
-  getUserMessageList as fetchPropleLetter,
-} from "../../api/message";
+import { getUserMessageList as fetchPropleLetter } from "../../api/message";
 
 interface STATE {
   privateLetter: Ref<record[]>;
@@ -54,22 +51,7 @@ class Message implements StoreOptions<record> {
   }
 
   createActions() {
-    return {
-      fetchPrivateMsg: async (store: Store<record>, backing: Function) => {
-        try {
-          const list = await fetchPrivateLetter("GET");
-          const privateMesList = await fetchPropleLetter(list);
-
-          const letterList = tidyMsgs(list.data.msgs, privateMesList);
-
-          store.commit("setPropleMessage", letterList);
-        } catch (err) {
-          console.log(err);
-        } finally {
-          backing();
-        }
-      },
-    };
+    return {};
   }
 
   createGetters() {

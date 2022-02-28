@@ -1,38 +1,62 @@
 <template>
-  <div class="flex items-center h-full w-full px-4 relative bg-white audio_shadow">
-    <div class="flex"><AudioSongInfoShow :musicinfo="musicinfo" /></div>
-    <el-row class="flex content-center h-full w-full">
-      <el-col :span="4" class="flex items-center justify-center">
-        <AudioAndVideoControls :status="isplay" @play="play" @pause="pause"></AudioAndVideoControls>
-      </el-col>
-      <el-col :span="14" class="flex self-center h-full">
-        <PlayMusicTime :starttime="musicPosTime * 1000" :maxtime="maxTime" class="w-full">
-          <AudioSlider
-            :starttime="musicPosTime * 1000"
-            :mintime="0"
-            :maxtime="maxTime"
-            @input="(pos) => inputValue(pos)"
-          />
-        </PlayMusicTime>
-      </el-col>
-      <el-col :span="6" class="flex items-center">
-        <div class="flex px-4">
-          <volume-icon :volume="volume"></volume-icon>
-          <div v-show="showSlider" class="w-full audio_slider">
-            <el-slider @mousemove="mouseEvent" @mouseleave="mouseEvent" v-model="volume">
-            </el-slider>
+  <transition name="fide">
+    <div
+      @mouseenter="enterAudio"
+      @mouseleave="leaveAudio"
+      v-show="!isLeaveSanSecBelow"
+      class="flex items-center h-full w-full px-4 relative bg-white audio_shadow"
+    >
+      <div class="flex"><AudioSongInfoShow :musicinfo="musicinfo" /></div>
+      <el-row class="flex content-center h-full w-full">
+        <el-col :span="4" class="flex items-center justify-center">
+          <AudioAndVideoControls
+            :status="isplay"
+            @play="play"
+            @pause="pause"
+          ></AudioAndVideoControls>
+        </el-col>
+        <el-col :span="14" class="flex self-center h-full">
+          <PlayMusicTime :starttime="musicPosTime * 1000" :maxtime="maxTime" class="w-full">
+            <AudioSlider
+              :starttime="musicPosTime * 1000"
+              :mintime="0"
+              :maxtime="maxTime"
+              @input="(pos) => inputValue(pos)"
+            />
+          </PlayMusicTime>
+        </el-col>
+        <el-col :span="6" class="flex items-center">
+          <div class="flex px-4">
+            <volume-icon :volume="volume"></volume-icon>
+            <div v-show="showSlider" class="w-full audio_slider">
+              <el-slider @mousemove="mouseEvent" @mouseleave="mouseEvent" v-model="volume">
+              </el-slider>
+            </div>
           </div>
-        </div>
-        <div @click="openRightDrawer" class="flex items-center px-4">
-          <font-icon icon="iconindent" size="24"></font-icon>
-        </div>
-        <div class="px-4">
-          <font-icon @click.captrue="openCommentList" icon="iconpinglun_huabanfuben" size="24">
-          </font-icon>
-        </div>
-      </el-col>
-    </el-row>
-  </div>
+          <div @click="openRightDrawer" class="flex items-center px-4">
+            <font-icon icon="iconindent" size="24"></font-icon>
+          </div>
+          <div class="px-4">
+            <font-icon @click.captrue="openCommentList" icon="iconpinglun_huabanfuben" size="24">
+            </font-icon>
+          </div>
+          <div class="px-4">
+            <font-icon
+              @click.capture="onLock"
+              :icon="islock ? 'iconsuoding_o' : 'iconjiesuo'"
+              size="24"
+            >
+            </font-icon>
+          </div>
+        </el-col>
+      </el-row>
+    </div>
+  </transition>
+  <div
+    v-if="isLeaveSanSecBelow"
+    @mouseenter="enterAudio"
+    class="w-full h-6 absolute bottom-0 left-0"
+  ></div>
 </template>
 <script setup lang="ts">
 import {
@@ -77,7 +101,6 @@ const store = useStore();
 let id = 0;
 let isclick = true;
 let currPage = 1;
-const initTime = ref(0);
 const volume = ref(0);
 const historyData = ref([]);
 const showSlider = ref(false);
@@ -88,8 +111,9 @@ const musicinfo = ref<musicDetail>();
 const MAX_LIMIT = COMMENT_LEN;
 const timeTable = new Map();
 const playListHistoryOptions = reactive({ total: 0, time: 0 });
+const islock = ref(false);
 
-const songlists = [];
+const songlists: musicDetail[] = [];
 
 const dexie = dexieFn();
 
@@ -110,10 +134,40 @@ const {
 let musicPosTime = seekTime();
 volume.value = setVolume() * 100;
 
+let tiemr = null;
+let isLeaveSanSecBelow = ref<null | boolean>(null);
+
+function leaveTimeout() {
+  tiemr = setTimeout(() => {
+    isLeaveSanSecBelow.value = true;
+  }, 3000);
+}
+
+function enterAudioActive() {
+  isLeaveSanSecBelow.value = false;
+
+  clearTimeout(tiemr);
+  tiemr = null;
+}
+
+function enterAudio() {
+  enterAudioActive();
+}
+
+function leaveAudio() {
+  if (!islock.value) {
+    leaveTimeout();
+  }
+}
+
 function setTimeTable(page: number, time: number) {
   if (!timeTable.has(page)) {
     timeTable.set(page, time);
   }
+}
+
+function onLock() {
+  islock.value = !islock.value;
 }
 
 function inputValue(pos: number) {
@@ -135,13 +189,17 @@ async function firstSongInfo() {
 
   if (!songinfo.value) {
     const songinfo = await (await dexie).first();
+    if (!songinfo) return;
+
     musicinfo.value = songinfo.songinfo;
     useLocalStorage("preSongInfo", JSON.stringify(songinfo.songinfo));
   } else {
     const index = initCurrentIndex(JSON.parse(songinfo.value));
     musicinfo.value = songlists[index];
-    console.log(songlists[index]);
+    maxTime.value = musicinfo.value.dt;
   }
+
+  setPlayLists(musicinfo.value);
 }
 
 indexDBAAllData();
@@ -237,15 +295,23 @@ const songId = computed<number>(store.getters["playlist/getSongId"]);
 
 watchEffect(async () => {
   try {
-    if (songId.value && songId.value !== id && songId.value !== musicinfo.value.id) {
+    if (songId.value && songId.value !== id) {
       id = songId.value;
-      console.log(id);
+      const findIndex = songlists.findIndex((value) => value.id === id);
+
+      if (findIndex > -1) {
+        songlists.unshift(...songlists.splice(findIndex, 1));
+      }
 
       const reqdata = await getMusicDetail(id);
       const song = reqdata.data.songs[0];
       const songInfo = new musicDetail(song);
 
+      songlists.unshift(songInfo);
       Promise.resolve().then(() => store.commit("playlist/setSongInfo", songInfo));
+
+      enterAudioActive();
+      leaveTimeout();
 
       const data = await commentMusic(id, 1, 0, MAX_LIMIT);
       if (data) {
@@ -263,8 +329,9 @@ watchEffect(async () => {
 });
 
 onMounted(() =>
-  nextTick(() => {
+  nextTick().then(() => {
     sliderstyle();
+    leaveTimeout();
     document.documentElement.addEventListener("click", windowClick, false);
   })
 );
@@ -287,5 +354,18 @@ onUnmounted(() => {
   -webkit-box-shadow: 0px -1px 3px 0px rgba(245, 245, 245, 1);
   -moz-box-shadow: 0px -1px 3px 0px rgba(245, 245, 245, 1);
   box-shadow: 0px -1px 3px 0px rgba(245, 245, 245, 1);
+}
+
+.fide-leave-active {
+  transition: all 0.45s ease-out;
+}
+
+.fide-enter-active {
+  transition: all 0.25s ease-out;
+}
+
+.fide-leave-to,
+.fide-enter-from {
+  transform: translateY(48px);
 }
 </style>

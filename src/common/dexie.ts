@@ -36,16 +36,33 @@ export default async function () {
         console.warn(`typeof mid:应该传"number"类型,结果收到为${typeof mid}类型`);
         return;
       }
-      const data = await table.where("mid").equals(mid).toArray();
+      const collection = table.where("mid").equals(mid);
 
-      return !!data.length;
+      return {
+        collection,
+        has: !!(await collection.toArray()).length,
+      };
     }
 
-    async function put(mid: number, songinfo: musicDetail) {
-      const has = await idWhere(mid);
+    async function put(
+      mid: number,
+      songinfo: musicDetail,
+      putlists?: musicDetail[],
+      bulk?: boolean
+    ) {
+      const { has } = await idWhere(mid);
       if (has) return;
 
-      return table.put({ mid, songinfo });
+      if (bulk) {
+        const puts = putlists.map((value) => ({
+          mid: value.id,
+          songinfo: value,
+        }));
+
+        return table.bulkPut(puts);
+      } else {
+        return table.put({ mid, songinfo });
+      }
     }
 
     async function first() {
@@ -60,13 +77,18 @@ export default async function () {
       return (await table.toArray()).reverse();
     }
 
-    function tableDetele() {
+    function tableDelete() {
       dexieMusiclist.delete();
     }
 
-    async function deteleCount(ids: number | number[]) {
-      const deteleCounts = await table.where("mid").anyOf(ids).delete();
-      return deteleCounts;
+    async function setFirst(detele: musicDetail) {
+      await deleteCount(detele.id);
+      return put(detele.id, detele);
+    }
+
+    async function deleteCount(ids: number | number[]) {
+      const deleteCounts = await table.where("mid").anyOf(ids).delete();
+      return deleteCounts;
     }
 
     return {
@@ -74,8 +96,9 @@ export default async function () {
       last,
       first,
       getAllSong,
-      deteleCount,
-      tableDetele,
+      deleteCount,
+      tableDelete,
+      setFirst,
     };
   } catch (error) {
     console.log(error);

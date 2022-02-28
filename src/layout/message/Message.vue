@@ -1,6 +1,8 @@
 <template>
   <ElRow class="flex h-full overflow-hidden relative border_radius">
-    <ElCol :span="7" class="solide_border"> </ElCol>
+    <ElCol :span="7" class="solide_border">
+      <MessageUser />
+    </ElCol>
     <ElCol class="w-full h-full absolute right-0 top-0" :span="17">
       <!-- <MessageChatBox
         @emitRequest="onEmitRequest"
@@ -15,12 +17,13 @@
 import { reactive, ref } from "@vue/reactivity";
 import { useStore } from "vuex";
 
-import { getPrivateLetter, getUserMessageList, getUserMessage } from "../../api/message";
+import { getUserMessageList, getUserMessage } from "../../api/message";
 import { promptbox } from "../../components/promptBox";
 import LRU from "../explore/LRUCache";
 
 import MessageBackground from "./components/MessageBackground.vue";
 import MessageChatBox from "./components/MessageChatBox.vue";
+import MessageUser from "./components/MessageUser.vue";
 import { ElRow, ElCol } from "element-plus";
 
 const store = useStore();
@@ -67,12 +70,6 @@ const findViewMsg = (useroptions: Record<string, any>) => {
     privateLetter.chatMsgs.push(useroptions, msgObj.data.msgs);
   }
 };
-
-getPrivateLetter().then((chat) => {
-  console.log(chat);
-});
-
-store.commit("login/onMittEvent", async (value: any) => {});
 </script>
 <style scoped lang="scss">
 .border_radius {

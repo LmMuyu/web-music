@@ -71,7 +71,6 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
       rollupOptions,
     },
     server: {
-      host: hostIp,
       port: Number(VITE_PORT),
       proxy: {
         "^/music": {
@@ -94,6 +93,7 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
         },
       },
     },
+
     optimizeDeps: {
       exclude: ["vue-demi"],
     },

@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-center" style="width: 80%; height: 90%">
+  <div class="flex items-center w-full h-full">
     <div style="width: 40%" class="flex justify-center items-center h-full">
       <div class="flex justify-center w-full">
         <div class="w-3/5">
@@ -31,7 +31,7 @@
         </div>
       </div>
     </div>
-    <div style="width: 60%" class="h-full bgimage"></div>
+    <div style="width: 60%" class="h-full py-2 bgimage"></div>
   </div>
 </template>
 <script setup lang="ts">
@@ -56,6 +56,7 @@ const phone = ref();
 const pass = ref();
 
 const showErrorInfo = (box: any, message: string) => box.value["showErrorInfo"]?.(message);
+const BC = loginBCBus(true);
 
 function checkingInput() {
   let isCheckingRes = true;
@@ -100,8 +101,6 @@ async function loginBtn() {
   const isCheckRes = checkingInput();
 
   if (inputLoginInfo.isregister && isCheckRes) {
-    const portMess = loginBCBus(true);
-
     const worker = new Worker("/src/worker/password");
     worker.postMessage(inputLoginInfo.password);
 
@@ -111,9 +110,11 @@ async function loginBtn() {
       formData.append("md5_password", ev.data);
 
       const loginResult = await loginCellphone(formData);
-      console.log(loginResult);
-
-      portMess.then(({ portMess }) => portMess(loginResult.data));
+      BC.then(({ postMessage }) => {
+        postMessage(loginResult.data);
+      }).catch((err) => {
+        console.log("postMessage" + ":" + err);
+      });
     });
 
     worker.addEventListener("error", (err) => {

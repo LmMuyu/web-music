@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full flex items-center justify-center pr-4 py-2 text-sm rounded-sm div_border">
+  <div class="w-full h-full flex items-center justify-center py-2 text-sm rounded-sm div_border">
     <span class="bg-white px-4 ip_icon" v-if="isIcon">
       <i class="iconfont iconsousuo"></i>
     </span>

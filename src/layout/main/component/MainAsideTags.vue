@@ -22,40 +22,37 @@ import { AvatarEnter, ButtonEnter } from "./LoginModule";
 import MainAsideCard from "./MainAsideCard.vue";
 import MainTag from "./MainTag.vue";
 
+import type { DispatchBcRet } from "../hooks/useBroadcastChannel";
+
 const store = useStore();
 
 const asidetags = ref(null);
 const footer = ref(null);
-const windowResize = inject("windowResize");
-
 const loginUserData = reactive({
   tramsformButton: false,
   userdata: {},
 });
 
-store.commit("login/setWatchFn", { runFn: watchOrBus });
+const windowResize = inject("windowResize");
+
+store.commit("login/setWatchFn", watchOrBus);
 
 function watchOrBus(islogin: boolean) {
-  console.log(islogin);
-  console.log("layout->Main->MainAsideTags->watchOrBus");
-
   //是否已经登录
   if (!islogin) {
-    console.log("layout->Main->MainAsideTags->loginBCBus");
     loginBCBus(false).then(logindata); //接受登录后的用户信息
   } else {
-    console.log("layout->Main->MainAsideTags->watchRetUserData");
     watchRetUserData(); //接受登录后的用户信息
   }
 }
 
-function logindata(bcWatch: { userdata: any; portMess: (data: any) => void }) {
-  setUserData(bcWatch.userdata);
+function logindata(broadcastChannelData: DispatchBcRet) {
+  serLoginUserData(broadcastChannelData);
 }
 
-function setUserData(userdata: any) {
+function serLoginUserData(userdata: DispatchBcRet) {
   loginUserData.tramsformButton = true;
-  loginUserData.userdata = userdata;
+  loginUserData.userdata = userdata.userdata;
 }
 
 function watchRetUserData() {
@@ -67,7 +64,7 @@ function watchRetUserData() {
     const userdata = watchData.value;
 
     if (Object.keys(userdata).length > 0) {
-      setUserData(userdata);
+      serLoginUserData(userdata);
     }
   });
 }

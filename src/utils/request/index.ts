@@ -44,6 +44,7 @@ export default function request(config: AxiosRequestConfig) {
 
   const instance = axios.create({
     baseURL: "http://120.27.135.200:3000/",
+    // baseURL: "https://netease-cloud-music-api-chi-ashy.vercel.app/",
     method: "GET",
     timeout: 10000,
     headers: {},
@@ -57,7 +58,7 @@ export default function request(config: AxiosRequestConfig) {
 
   instance.interceptors.request.use(
     (config) => {
-      useRequest(config)
+      useRequest(config);
       return config;
     },
     (err) => {
@@ -73,7 +74,6 @@ export default function request(config: AxiosRequestConfig) {
     },
     async (config) => {
       Promise.resolve().then(() => deleteHttpToken(config.url, cancelMap, cancelToken));
-
       const ret: { config?: any; isretry?: boolean } = await tryAgainRequest(config);
       if (ret.isretry) return await instance(ret.config);
 

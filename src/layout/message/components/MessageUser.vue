@@ -1,12 +1,7 @@
 <template>
   <el-container class="h-full container">
     <el-header class="flex justify-center">
-      <div>
-        <PeopleSearch
-          class="border border-gray-300 border-solid rounded-md"
-          :isroot-class="false"
-        />
-      </div>
+      <PeopleSearch class="border border-gray-300 border-solid rounded-md" :isroot-class="false" />
     </el-header>
     <el-main ref="msgmain" class="h-full relative main_padding">
       <MessagePrivateLetter :privateLetterList="letterList" v-if="letterList.length > 0" />
@@ -14,19 +9,21 @@
   </el-container>
 </template>
 <script setup lang="ts">
-import { computed } from "vue";
-import { useStore } from "vuex";
-
 // import Trid from "../hook/trid";
+import { getSendMsgUser } from "../../../api/message";
 
-import MessagePrivateLetter from "../components/MessagePrivateLetter.vue";
+import MessagePrivateLetter from "./MessagePrivateLetter.vue";
 import PeopleSearch from "../../../components/search/Search.vue";
 import { ElHeader, ElContainer, ElMain } from "element-plus";
+import { ref } from "vue";
 
-const store = useStore();
 // const trid = new Trid();
 
-const letterList = computed(() => store.getters["message/retLetterList"]);
+const letterList = ref([]);
+
+getSendMsgUser().then((senduser) => {
+  console.log(senduser);
+});
 
 // watchEffect(() => {
 //   letterList.value.map((people) => {

@@ -1,24 +1,9 @@
 import request from "../../utils/request";
-import store from "../../store";
 
 export async function loginStateus() {
-  const isInitStatus = store.getters["login/getInitStatus"];
-  const islogin = store.getters["login/getIslogin"];
-  console.log("isInitStatus:", isInitStatus);
-  console.log("islogin:", islogin);
-
-  try {
-    if (!isInitStatus) {
-      await request({ method: "post", url: "/login/status" });
-    } else {
-      throw new Error(isInitStatus);
-    }
-  } catch (err) {
-    console.log(err);
-    store.commit("login/setInitStatus", false);
-  } finally {
-    return islogin;
-  }
+  const httpRes = await request({ method: "post", url: "/login/status" });
+  const data = httpRes.data;
+  return data.code === 200 && data.data.account !== null && data.data.profile !== null;
 }
 
 export async function logout() {
