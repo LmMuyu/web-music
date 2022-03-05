@@ -112,6 +112,13 @@ const routes: (RouteRecordRaw & {
       showTags: false,
     },
   },
+  {
+    path: "/searchres",
+    name: "Searchres",
+    components: {
+      default: () => import("../layout/displaysearchresult/DisplaySearchResult.vue"),
+    },
+  },
 ];
 
 export default routes;

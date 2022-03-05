@@ -5,6 +5,7 @@ import useResponse from "./response";
 import useRequest from "./request";
 
 import type { AxiosRequestConfig } from "axios";
+import jsCookie from "js-cookie";
 
 const cancelMap = new Map<string, CancelTokenSource[]>();
 
@@ -14,6 +15,8 @@ interface CONFIG_DEFAULT {
     retrydelay?: number;
   };
 }
+
+const csrf_token = jsCookie.get("__csrf");
 
 function httpCancelToken(url: string) {
   const token = axios.CancelToken;
@@ -43,11 +46,13 @@ export default function request(config: AxiosRequestConfig) {
   const isget = (config.method ?? "GET").toLocaleUpperCase() === "GET";
 
   const instance = axios.create({
-    baseURL: "http://120.27.135.200:3000/",
-    // baseURL: "https://netease-cloud-music-api-chi-ashy.vercel.app/",
+    // baseURL: "http://120.27.135.200:3000/",
+    baseURL: "https://netease-cloud-music-api-chi-ashy.vercel.app/",
     method: "GET",
+    headers: {
+      // Cookie: document.cookie,
+    },
     timeout: 10000,
-    headers: {},
     withCredentials: true,
     cancelToken,
   });
@@ -81,5 +86,9 @@ export default function request(config: AxiosRequestConfig) {
     }
   );
 
-  return instance(Object.assign({}, config));
+  return instance(
+    Object.assign({}, config, {
+      url: config.url + `?csrf_token=${!!csrf_token ? csrf_token : ""}`,
+    } as AxiosRequestConfig)
+  );
 }

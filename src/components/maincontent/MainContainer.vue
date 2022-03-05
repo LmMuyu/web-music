@@ -1,14 +1,21 @@
 <template>
-  <div class="flex h-full w-full">
+  <div class="flex h-full w-full" style="background: hsl(220, 50%, 98%)">
     <div v-if="isDefault" class="w-full">
       <el-container v-if="isLoginComp" class="h-full relative">
-        <el-main class="h-full absolute top-0 left-0 right-0" :style="paddingStyle()">
+        <el-main
+          class="h-full absolute top-0 left-0 right-0"
+          :style="paddingStyle()"
+          style="z-index: 1"
+        >
           <router-view v-slot="{ Component }">
             <keep-alive :max="3">
               <component :is="Component"></component>
             </keep-alive>
           </router-view>
         </el-main>
+        <div class="absolute top-0 left-0 w-full h-5 bg-white"></div>
+        <div class="absolute top-5 left-0 bg-white w-5 h-10"></div>
+        <div class="absolute top-5 right-0 bg-white w-5 h-10"></div>
       </el-container>
       <div class="w-full h-full" v-else>
         <router-view v-slot="{ Component }">

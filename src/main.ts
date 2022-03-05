@@ -9,17 +9,6 @@ import AsayncSuspense from "./components/suspense/AsayncSuspense.vue";
 
 import "element-plus/theme-chalk/el-icon.css";
 import "element-plus/dist/index.css";
-import { setCookie } from "./utils/request/response/result";
-import { useLocalStorage } from "./utils/useLocalStorage";
-
-// const cookie = JSON.parse(JSON.stringify(useLocalStorage("tokenStrObj"))).cookie;
-
-// //@ts-ignore
-// setCookie({
-//   data: {
-//     cookie,
-//   },
-// });
 
 const app = createApp(App);
 

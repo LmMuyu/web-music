@@ -1,6 +1,6 @@
 <template>
   <HeadTitle title="发现" />
-  <div class="flex">
+  <div class="flex justify-between">
     <div
       v-for="(types, index) in discoverTypeLists"
       :key="index"
@@ -72,8 +72,6 @@ function setLinearGradient(pos: number) {
     };
   }
 }
-
-
 </script>
 <style scoped lang="scss">
 .xianxjianbian {

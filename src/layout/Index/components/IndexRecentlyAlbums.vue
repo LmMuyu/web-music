@@ -1,17 +1,24 @@
 <template>
   <IndexModuleHeadTitle title="最近的专辑" />
-  <div class="flex">
+  <div class="flex justify-between overflow-hidden">
     <div
       v-for="(album, index) in albums.slice(0, 4)"
       :key="index"
       :class="[margin_right(index + 1), activeIndex === index && 'bg-white']"
-      class="relative cursor-context-menu"
+      class="relative cursor-context-menu w-full h-full"
       @mouseenter.stop="() => active(index)"
       @mouseleave.stop="() => leave()"
     >
-      <div class="w-56 h-44 bg-black">
+      <div
+        class="w-full h-44 bg-white"
+        :style="{
+          backgroundImage: `url(${album.picUrl}?param=224y176)`,
+          backgroundSize: '200%',
+          zIndex: 9,
+        }"
+      >
         <img
-          :src="album.picUrl + `?param=${224}y${176}`"
+          :src="album.picUrl + '?param=224y176'"
           :alt="album.commentThreadId"
           class="object-cover w-full h-full"
         />

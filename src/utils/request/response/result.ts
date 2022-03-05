@@ -6,13 +6,12 @@ import { useLocalStorage } from "../../useLocalStorage";
 import { promptbox } from "../../../components/promptBox";
 import { findInfo } from "../methods";
 
-import type { CookieAttributes } from "js-cookie";
 import type { AxiosResponse } from "axios";
 
 interface cookieOptions {
   name: string;
   value: string;
-  options?: CookieAttributes;
+  options?: jsCookie.CookieAttributes;
 }
 
 export async function reqCode(httpRes: AxiosResponse<any>) {
@@ -91,40 +90,45 @@ export function setCookie(httpRes: AxiosResponse<any>) {
   if (!cookie) return;
 
   cookie.split(";;").map((cookieItem) => {
-    const setcookieObj: cookieOptions = {
+    const setCookieInstance: cookieOptions = {
       name: "",
       value: "",
       options: {
-        expires: 0,
+        expires: new Date(),
         path: "/",
         sameSite: "None",
         secure: true,
       },
     };
 
-    const cookikeSplitItem = cookieItem.split(";").reduce((pre, next, index) => {
-      const reg = /(.+?)=(.+?);/g;
-      let execReg: RegExpExecArray = null;
+    const reg = /(.+?)=(.*?)(;|(?<=(Path=)).+)/g;
+    let execReg: RegExpExecArray = null;
+    let index = 0;
 
-      while ((execReg = reg.exec(next)) !== null) {
-        const [key, value] = [execReg[1], execReg[2]];
+    while ((execReg = reg.exec(cookieItem)) !== null) {
+      const [key, value] = [execReg[1], execReg[2]];
 
-        if (index === 0) {
-          pre.name = key;
-          pre.value = value;
+      if (index === 0) {
+        setCookieInstance.name = key;
+        setCookieInstance.value = value;
+      } else {
+        const has = Object.prototype.hasOwnProperty;
+        const instanceOptions = setCookieInstance.options;
+        const low = key.toLocaleLowerCase().trim();
+
+        if (low !== "path") {
+          if (has.call(setCookieInstance.options, low))
+            instanceOptions[low] = low === "expires" ? new Date(low) : value;
         } else {
-          const low = key.toLocaleLowerCase();
-          if (low !== "path") {
-            pre.options[low] = value;
-          }
+          instanceOptions[low] = value;
         }
       }
 
-      return pre;
-    }, setcookieObj);
+      index++;
+    }
 
-    console.log(cookikeSplitItem);
+    console.log(setCookieInstance);
 
-    jsCookie.set(cookikeSplitItem.name, cookikeSplitItem.value, cookikeSplitItem.options);
+    jsCookie.set(setCookieInstance.name, setCookieInstance.value, setCookieInstance.options);
   });
 }

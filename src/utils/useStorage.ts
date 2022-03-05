@@ -7,7 +7,7 @@ interface Options {
 
 function onStorageEvent() {
   window.addEventListener("storage", (ev) => {
-    console.log(ev);
+    // console.log(ev);
   });
 }
 

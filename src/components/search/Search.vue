@@ -1,19 +1,21 @@
 <template>
-  <div class="w-full h-full flex items-center justify-center py-2 text-sm rounded-sm div_border">
-    <span class="bg-white px-4 ip_icon" v-if="isIcon">
-      <i class="iconfont iconsousuo"></i>
-    </span>
-    <input
-      :type="type"
-      :placeholder="placeholder"
-      :disabled="disabled"
-      @focus="onFocus"
-      @blur="onBlur"
-      @keydown.enter="keyupEnter"
-      v-model="text"
-      class="text-black w-full h-full border-none outline-none"
-      style="z-index: 9"
-    />
+  <div class="w-full h-9 overflow-hidden bg-white flex items-center text-sm rounded-md div_border">
+    <div class="flex items-center justify-center px-4">
+      <font-icon v-if="isIcon" icon="iconsousuo"></font-icon>
+    </div>
+    <div class="h-full">
+      <input
+        :type="type"
+        :placeholder="placeholder"
+        :disabled="disabled"
+        @focus="onFocus"
+        @blur="onBlur"
+        @keydown.enter="keyupEnter"
+        v-model="text"
+        class="text-black w-full h-full border-none outline-none text-xs thecursor"
+        style="z-index: 9"
+      />
+    </div>
   </div>
 </template>
 
@@ -23,6 +25,7 @@ import { defineEmits, defineProps, customRef } from "vue";
 import { keyupEnter } from "./api/onSearch";
 
 import type { PropType } from "vue";
+import FontIcon from "../fonticon/FontIcon.vue";
 
 const ctxEmit = defineEmits(["change", "focus", "blur", "update:modelValue"]);
 
@@ -69,7 +72,7 @@ function onBlur() {
 }
 
 const changeModel = (value?: any, delay: number = 300) => {
-  let timeout: number | null = null;
+  let timeout: NodeJS.Timeout | null = null;
 
   return customRef((track, trigger) => {
     return {
@@ -90,10 +93,16 @@ const changeModel = (value?: any, delay: number = 300) => {
 
         timeout = setTimeout(() => {
           if (newVlaue != "") {
-            searchValue = newVlaue;
+            value = searchValue = newVlaue;
             ctxEmit("change", newVlaue);
+          } else {
+            value = searchValue = "";
           }
+
+          clearTimeout(timeout);
           timeout = null;
+
+          ctxEmit("update:modelValue", newVlaue);
         }, delay);
       },
     };
@@ -113,29 +122,41 @@ const text = changeModel();
   position: relative;
   border: #fff;
 
-  &::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 0;
-    border: 1px solid #f5f5f5;
-    border-radius: 10px;
-    transform-origin: 0 0;
-    transform: scale(0.5);
-    width: 200%;
-    height: 200%;
-    box-sizing: border-box;
-  }
+  -webkit-box-shadow: 0px 0px 4px 3px rgba(245, 246, 250, 1);
+  -moz-box-shadow: 0px 0px 4px 3px rgba(245, 246, 250, 1);
+  box-shadow: 0px 0px 4px 3px rgba(245, 246, 250, 1);
+}
 
+.thecursor {
+  position: relative;
   &::after {
     content: "";
     position: absolute;
-    left: 0;
-    right: 0;
     top: 0;
-    width: 100%;
+    left: 0;
+    display: block;
+    width: 10px;
     height: 100%;
-    box-shadow: 0 3px 8px 0 rgba(0, 0, 0, 0.03);
+    background-color: black;
+    animation: flashing 0.25ms ease-in-out infinite;
+  }
+
+  @keyframes flashing {
+    0% {
+      opacity: 0;
+    }
+
+    33% {
+      opacity: 1;
+    }
+
+    66% {
+      opacity: 0;
+    }
+
+    100% {
+      opacity: 0;
+    }
   }
 }
 </style>

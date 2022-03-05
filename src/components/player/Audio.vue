@@ -4,7 +4,7 @@
       @mouseenter="enterAudio"
       @mouseleave="leaveAudio"
       v-show="!isLeaveSanSecBelow"
-      class="flex items-center h-full w-full px-4 relative bg-white audio_shadow"
+      class="flex items-center h-full w-full px-4 relative bg-white z-50 audio_shadow"
     >
       <div class="flex"><AudioSongInfoShow :musicinfo="musicinfo" /></div>
       <el-row class="flex content-center h-full w-full">

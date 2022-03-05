@@ -141,3 +141,9 @@ export function artistList() {
     url: "/artist/list",
   });
 }
+
+export function hotSearch() {
+  return request({
+    url: "/search/hot",
+  });
+}

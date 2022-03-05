@@ -4,11 +4,16 @@ import rollupOptions from "./vite/rollupOptions";
 import vueJsx from "@vitejs/plugin-vue-jsx";
 import createAlias from "./vite/alias";
 import vue from "@vitejs/plugin-vue";
+import path from "path";
 import os from "os";
 
 import { preloadStyleCss } from "./vite/plugins";
 
 import type { ConfigEnv, UserConfig } from "vite";
+import { readFileSync } from "fs";
+
+const privatekey = readFileSync(path.join(process.cwd(), "/public/server_key.pem"), "utf-8");
+const publiccer = readFileSync(path.join(process.cwd(), "/public/server.crt"), "utf-8");
 
 const cssOptions: CSSOptions = {
   preprocessorOptions: {
@@ -35,7 +40,6 @@ const aliasList = createAlias([
 
 export default ({ command, mode }: ConfigEnv): UserConfig => {
   const root = process.cwd();
-
   const env = loadEnv(mode, root);
   const { VITE_PROXY, VITE_PORT, VITE_HOST, VITE_REQUEST_IP } = env;
 
@@ -70,8 +74,14 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
     build: {
       rollupOptions,
     },
+
     server: {
       port: Number(VITE_PORT),
+      host: "127.0.0.1",
+      https: {
+        key: privatekey,
+        cert: publiccer,
+      },
       proxy: {
         "^/music": {
           target: "https://music.163.com",
