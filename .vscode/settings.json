@@ -21,5 +21,6 @@
     "!scala",
     "jsx-tags",
     "vue"
-  ]
+  ],
+  "typescript.tsdk": "node_modules/typescript/lib"
 }

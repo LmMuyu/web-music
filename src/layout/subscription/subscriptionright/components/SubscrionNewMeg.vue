@@ -14,7 +14,7 @@
 <script setup lang="ts">
 import { onBeforeUnmount, ref } from "vue";
 
-import { getPrivateLetter } from "../../../../api/message";
+// import { getPrivateLetter } from "../../../../api/message";
 
 import SubscrionItem from "./SubscrionItem.vue";
 
@@ -26,17 +26,17 @@ const msgList = ref([]);
 let timer = null;
 
 function getMsg(method: Method = "GET") {
-  getPrivateLetter(method, 5).then((privatemeg) => {
-    msgList.value = privatemeg.data["msgs"].map((v) => {
-      return {
-        sharePicUrl: v.fromUser.avatarUrl,
-        nickname: v.fromUser.nickname,
-        msg: JSON.parse(v.lastMsg).msg,
-      };
-    });
+  // getPrivateLetter(method, 5).then((privatemeg) => {
+  //   msgList.value = privatemeg.data["msgs"].map((v) => {
+  //     return {
+  //       sharePicUrl: v.fromUser.avatarUrl,
+  //       nickname: v.fromUser.nickname,
+  //       msg: JSON.parse(v.lastMsg).msg,
+  //     };
+  //   });
 
-    newMsgCount.value = privatemeg.data.newMsgCount;
-  });
+  //   newMsgCount.value = privatemeg.data.newMsgCount;
+  // });
 
   // timer = setInterval(() => {
   //   getMsg("HEAD");

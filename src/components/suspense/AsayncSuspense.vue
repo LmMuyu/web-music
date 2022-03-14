@@ -1,7 +1,7 @@
 <template>
   <Suspense>
-    <template #default>
-      <div><slot></slot></div>
+    <template #default class="relative">
+      <div class="h-full w-full"><slot></slot></div>
     </template>
     <template #fallback>
       <div class="flex justify-center items-center h-full">

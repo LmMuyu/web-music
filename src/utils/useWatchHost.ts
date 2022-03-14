@@ -17,7 +17,7 @@ export function useWatchRoutePath() {
 }
 
 export function useWatchHost() {
-  const excludes = ["/login", "/playlist", "/user"];
+  const excludes = ["/login", "/playlist", "/user", "/video"];
 
   const route = useRoute();
   const isshow = ref(true);

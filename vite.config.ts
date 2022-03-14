@@ -2,12 +2,13 @@ import vite, { CSSOptions, loadEnv } from "vite";
 import styleImport from "vite-plugin-style-import";
 import rollupOptions from "./vite/rollupOptions";
 import vueJsx from "@vitejs/plugin-vue-jsx";
+import { createSvgIconsPlugin } from "vite-plugin-svg-icons";
 import createAlias from "./vite/alias";
 import vue from "@vitejs/plugin-vue";
 import path from "path";
 import os from "os";
 
-import { preloadStyleCss } from "./vite/plugins";
+// import { preloadStyleCss } from "./vite/plugins";
 
 import type { ConfigEnv, UserConfig } from "vite";
 import { readFileSync } from "fs";
@@ -65,6 +66,9 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
             },
           },
         ],
+      }),
+      createSvgIconsPlugin({
+        iconDirs: [path.join(process.cwd(), "/src/assets/xgplayerstyle/.xgplayer/skin/assets")],
       }),
     ],
     css: cssOptions,

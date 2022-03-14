@@ -9,9 +9,7 @@
       @mouseenter="moveActive(index)"
       @mouseleave="leaveActive(index)"
     >
-      <a href="javascript:void(;)" class="text-lg">
-        {{ key }}
-      </a>
+      <a href="javascript:void(;)" class="lg:text-lg text-sm">{{ key }}</a>
     </span>
   </div>
 </template>
@@ -22,30 +20,23 @@ import { activeIndex } from "../../../utils/activeIndex";
 
 const ctxEmits = defineEmits(["selectType"]);
 
+const props = defineProps({
+  keyword: {
+    type: Object,
+    required: true,
+  },
+});
+
 const { activeStyle, clickActive, moveActive, leaveActive } = new activeIndex(null, null, {
   enterColor: "#7cbcfc66",
   initColor: "#fff",
 });
 
 function keywordLists() {
-  const keyword = {
-    1: "单曲",
-    10: "专辑",
-    100: "歌手",
-    1000: "歌单",
-    1002: "用户",
-    1004: "MV",
-    1006: "歌词",
-    1009: "电台",
-    1014: "视频",
-    1018: "综合",
-    2000: "声音",
-  };
-
   const keywords = {};
 
-  for (const key in keyword) {
-    keywords[keyword[key]] = key;
+  for (const key in props.keyword) {
+    keywords[props.keyword[key]] = key;
   }
 
   return ref(keywords);
@@ -57,7 +48,5 @@ function selectType(e) {
   const textContent = e.target.textContent;
   ctxEmits("selectType", textContent);
 }
-
-defineExpose({ keyword });
 </script>
 <style scoped lang="scss"></style>

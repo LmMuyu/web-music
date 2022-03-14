@@ -27,7 +27,7 @@
           v-show="showPlayIcon === index"
           class="flex justify-center items-center absolute top-0 left-0 w-full h-full"
         >
-          <PlayIcon />
+          <PlayerIcon />
         </div>
       </transition>
     </router-link>
@@ -35,9 +35,11 @@
 </template>
 <script setup lang="ts">
 import { PropType, ref } from "vue";
+
 import { margin_right } from "../hook";
+
+import PlayerIcon from "../../../components/playericon/PlayerIcon.vue";
 import HeadTitle from "./IndexModuleHeadTitle.vue";
-import PlayIcon from "./IndexPlayIcon.vue";
 
 const props = defineProps({
   playList: {

@@ -13,9 +13,9 @@
             </keep-alive>
           </router-view>
         </el-main>
-        <div class="absolute top-0 left-0 w-full h-5 bg-white"></div>
-        <div class="absolute top-5 left-0 bg-white w-5 h-10"></div>
-        <div class="absolute top-5 right-0 bg-white w-5 h-10"></div>
+        <div class="absolute top-0 left-0 w-full h-5 bg-white z-10"></div>
+        <div class="absolute top-5 left-0 bg-white w-5 h-10 z-10"></div>
+        <div class="absolute top-5 right-0 bg-white w-5 h-10 z-10"></div>
       </el-container>
       <div class="w-full h-full" v-else>
         <router-view v-slot="{ Component }">

@@ -10,7 +10,7 @@ function onlyGetSec(h: string, m: string, s: string) {
   const min = Number(m);
   const sec = Number(s);
 
-  return hours * 60 * 60 + min * 60 + sec;
+  return hours * 60 * 60 + min * 60 + sec + "";
 }
 
 export default function (datetime: number, onlySec?: boolean) {

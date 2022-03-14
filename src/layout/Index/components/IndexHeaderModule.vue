@@ -42,7 +42,6 @@ function watchModel(negateRef: Ref<boolean>) {
 
     if (negateRef.value && isToPage) {
       isToPage = false;
-      console.log(value.value);
 
       router.push({
         path: "/searchres",

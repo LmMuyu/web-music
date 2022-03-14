@@ -6,7 +6,7 @@
 </template>
 
 <script setup lang="ts">
-import { provide, ref, computed } from "vue";
+import { provide, ref, computed, watchEffect } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 
@@ -25,9 +25,11 @@ const router = useRouter();
 
 function stopLoadAudioComp() {
   const RouteRLNL = useWatchRoutePath();
+  const excludeLists = ["/login", "/video"];
+  const loadCompAudio = ref(true);
 
-  const loadCompAudio = computed(() => {
-    return RouteRLNL.value.path.indexOf("/login") > -1 ? false : true;
+  watchEffect(() => {
+    loadCompAudio.value = excludeLists.indexOf(RouteRLNL.value.path) > -1 ? false : true;
   });
 
   return loadCompAudio;

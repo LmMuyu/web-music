@@ -1,4 +1,3 @@
-import filterDate from "./filterDate";
 import { isType } from "./methods";
 import { allType } from "./type";
 

@@ -119,6 +119,13 @@ const routes: (RouteRecordRaw & {
       default: () => import("../layout/displaysearchresult/DisplaySearchResult.vue"),
     },
   },
+  {
+    path: "/video",
+    name: "Video",
+    components: {
+      default: () => import("../layout/playervideo/PlayerVideo.vue"),
+    },
+  },
 ];
 
 export default routes;

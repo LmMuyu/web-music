@@ -11,6 +11,7 @@
     "allowSyntheticDefaultImports": true,
     "skipLibCheck": false,
     "removeComments": true,
+    "allowJs": true,
     "plugins": [
       {
         "name": "typescript-style-plugin"
