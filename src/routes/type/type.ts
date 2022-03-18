@@ -15,6 +15,7 @@ export interface META {
   };
   fetchCount?: number;
   padding?: "none" | string | number | Record<string, string>;
+  showtiao?: boolean;
 }
 
 export interface Route {

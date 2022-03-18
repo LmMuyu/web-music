@@ -6,5 +6,7 @@ export function fromPlayCount(count: number) {
     return `${Math.floor((count / 100000) * 100) / 100}万`;
   } else if (count >= 10000) {
     return `${Math.floor((count / 10000) * 100) / 100}万`;
+  } else {
+    return count + "";
   }
 }

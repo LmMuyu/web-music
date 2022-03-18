@@ -16,13 +16,13 @@ import { nextTick, onMounted, ref } from "@vue/runtime-core";
 import { computed, inject, reactive, watchEffect } from "vue";
 import { useStore } from "vuex";
 
-import loginBCBus from "../hooks/useBroadcastChannel";
+import { mainBCBus } from "../../login/useBroadcastChannel";
 
 import { AvatarEnter, ButtonEnter } from "./LoginModule";
 import MainAsideCard from "./MainAsideCard.vue";
 import MainTag from "./MainTag.vue";
 
-import type { DispatchBcRet } from "../hooks/useBroadcastChannel";
+import type { USERINFO } from "../../login/useBroadcastChannel";
 
 const store = useStore();
 
@@ -35,37 +35,38 @@ const loginUserData = reactive({
 
 const windowResize = inject("windowResize");
 
-store.commit("login/setWatchFn", watchOrBus);
-
-function watchOrBus(islogin: boolean) {
-  //是否已经登录
+store.commit("login/setWatchFn", (islogin) => {
+  //登录islogin为true 没登录islogin为false
   if (!islogin) {
-    loginBCBus(false).then(logindata); //接受登录后的用户信息
+    mainBCBus().then(logindata); //接受登录后的用户信息
   } else {
-    watchRetUserData(); //接受登录后的用户信息
+    watchRetUserData().then(logindata); //接受登录后的用户信息
   }
-}
+});
 
-function logindata(broadcastChannelData: DispatchBcRet) {
+function logindata(broadcastChannelData: USERINFO) {
   serLoginUserData(broadcastChannelData);
 }
 
-function serLoginUserData(userdata: DispatchBcRet) {
+function serLoginUserData(userdata: USERINFO | { userdata: USERINFO }) {
   loginUserData.tramsformButton = true;
-  loginUserData.userdata = userdata.userdata;
+  //@ts-ignore
+  loginUserData.userdata = userdata?.userdata ?? userdata;
 }
 
 function watchRetUserData() {
-  const watchData = computed(() => {
-    return store.getters["login/getUserData"]();
-  });
+  return new Promise((resolve, reject) => {
+    const watchData = computed(() => {
+      return store.getters["login/getUserData"]();
+    });
 
-  watchEffect(() => {
-    const userdata = watchData.value;
+    watchEffect(() => {
+      const userdata = watchData.value;
 
-    if (Object.keys(userdata).length > 0) {
-      serLoginUserData(userdata);
-    }
+      if (Object.keys(userdata).length > 0) {
+        resolve(userdata);
+      }
+    });
   });
 }
 

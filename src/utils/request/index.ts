@@ -6,6 +6,7 @@ import useRequest from "./request";
 
 import type { AxiosRequestConfig } from "axios";
 import jsCookie from "js-cookie";
+import { sliceurl } from "./response/result";
 
 const cancelMap = new Map<string, CancelTokenSource[]>();
 
@@ -74,11 +75,11 @@ export default function request(config: AxiosRequestConfig) {
   instance.interceptors.response.use(
     (httpRes) => {
       Promise.resolve().then(() => useResponse(httpRes, "result"));
-      // Promise.resolve().then(() => deleteHttpToken(config.url, cancelMap, cancelToken));
+      httpRes.config.url = sliceurl(httpRes.config.url);
+
       return httpRes;
     },
     async (config) => {
-      // Promise.resolve().then(() => deleteHttpToken(config.url, cancelMap, cancelToken));
       const ret: { config?: any; isretry?: boolean } = await tryAgainRequest(config);
       if (ret.isretry) return await instance(ret.config);
 

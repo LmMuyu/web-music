@@ -9,10 +9,12 @@ interface NickName {
 }
 
 export interface VIDEO_INFO {
+  vid: number;
   videoname: string;
   nickname: string;
   artistNames: NickName[];
   title: string;
+  poster: string;
   playcount: string;
   createtime: number;
   duration: string;
@@ -24,12 +26,12 @@ export interface VIDEO_INFO {
 }
 
 export function videoinfodata(data: any): VIDEO_INFO {
-  console.log(data);
-
   const videoinfo: VIDEO_INFO = {
+    vid: null,
     videoname: "",
     nickname: "",
     artistNames: [],
+    poster: "",
     title: "",
     playcount: "",
     createtime: 0,
@@ -49,6 +51,8 @@ export function videoinfodata(data: any): VIDEO_INFO {
   videoinfo.title = data.desc;
   videoinfo.duration = filterDate(data.duration);
   videoinfo.commentCount = data.commentCount;
+  videoinfo.poster = data.picUrl ?? "";
+  videoinfo.vid = data.id;
 
   return videoinfo;
 }

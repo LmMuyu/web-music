@@ -71,7 +71,6 @@ class login {
 
       setWatchFn(state: STATETYPE, watchLoginFn) {
         if (typeof watchLoginFn !== "function") return;
-
         state.watch.watchLoginFn = watchLoginFn;
       },
 
@@ -92,10 +91,10 @@ class login {
         const fn = () => state.state.watch.watchLoginFn;
         const watchRunFn = computed(() => fn());
 
-        const stop = watchEffect(() => {
+        watchEffect(() => {
           if (watchRunFn.value !== null) {
             watchRunFn.value(argvs[1]);
-            _resolve(stop());
+            _resolve(true);
           }
         });
       },

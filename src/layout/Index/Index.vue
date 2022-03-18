@@ -40,13 +40,21 @@ const hotList = ref([]);
 const playList = ref([]);
 
 function requestThenFn(value: AxiosResponse<any>) {
-  if (value.config.url === "/banner") {
+  let url = value.config.url;
+  const index = value.config.url.indexOf("?");
+
+  if (index > -1) {
+    url = value.config.url.slice(0, index);
+  }
+
+  if (url === "/banner") {
     bannerImages.value = value.data.banners;
-  } else if (value.config.url === "/playlist/hot") {
+  } else if (url === "/playlist/hot") {
     hotList.value = value.data.tags;
-  } else {
+  } else if (url === "/top/playlist") {
     playList.value = value.data.playlists;
-    console.log(playList.value);
+  } else {
+    console.log(url + "url数据无法写入");
   }
 }
 

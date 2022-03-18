@@ -13,9 +13,9 @@
             </keep-alive>
           </router-view>
         </el-main>
-        <div class="absolute top-0 left-0 w-full h-5 bg-white z-10"></div>
-        <div class="absolute top-5 left-0 bg-white w-5 h-10 z-10"></div>
-        <div class="absolute top-5 right-0 bg-white w-5 h-10 z-10"></div>
+        <div class="absolute top-0 left-0 w-full h-5 bg-white z-10" v-if="showtiao"></div>
+        <div class="absolute top-5 left-0 bg-white w-5 h-10 z-10" v-if="showtiao"></div>
+        <div class="absolute top-5 right-0 bg-white w-5 h-10 z-10" v-if="showtiao"></div>
       </el-container>
       <div class="w-full h-full" v-else>
         <router-view v-slot="{ Component }">
@@ -62,7 +62,7 @@ import { computed } from "@vue/runtime-core";
 import { useRoute, useRouter } from "vue-router";
 import { reactive, ref } from "vue";
 
-import { useWatchHost } from "../../utils/useWatchHost";
+import { useWatchHost, useWatchRoutePath } from "../../utils/useWatchHost";
 
 import { ElContainer, ElMain } from "element-plus";
 
@@ -72,6 +72,7 @@ const router = useRouter();
 const route = useRoute();
 
 const isDefault = ref(false);
+const showtiao = ref(true);
 
 const settConInfo = reactive<{
   left: Container;
@@ -100,6 +101,23 @@ function paddingStyle() {
       }
     : value;
 }
+
+async function showtianegatie() {
+  function negate() {
+    const meta = route.meta;
+
+    if (meta && typeof meta.showtiao !== "undefined") {
+      showtiao.value = meta.showtiao as boolean;
+      // console.log(showtiao.value);
+    }
+  }
+
+  await router.isReady();
+  useWatchRoutePath(negate);
+  negate();
+}
+
+showtianegatie();
 
 router.beforeEach((to) => {
   const matched = to.matched;

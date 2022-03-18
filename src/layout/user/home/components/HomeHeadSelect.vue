@@ -45,9 +45,12 @@
               <font-icon icon="iconjia"></font-icon>
               <span class="text-sm" style="color: #606266; font-weight: bold">新建歌单</span>
             </div>
-            <div v-else>
+            <div v-else class="flex">
               <font-icon icon="iconshangchuanyunduan"></font-icon>
-              <span class="text-sm" @click="openInputFile" style="color: #606266; font-weight: bold"
+              <span
+                class="text-sm px-1"
+                @click="openInputFile"
+                style="color: #606266; font-weight: bold"
                 >上传云盘</span
               >
             </div>

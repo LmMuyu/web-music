@@ -1,18 +1,23 @@
-import { logout } from "../../../api/app/login";
 import store from "../../../store";
+import router from "../../../routes";
 
 import jsCookie from "js-cookie";
-import { useLocalStorage } from "../../useLocalStorage";
 import { promptbox } from "../../../components/promptBox";
-import { findInfo } from "../methods";
 
 import type { AxiosResponse } from "axios";
+import {
+  dispatchWatchObserver,
+  loginStatus,
+  removeLocalStoreageKey,
+} from "../../../layout/login/login";
 
 interface cookieOptions {
   name: string;
   value: string;
   options?: jsCookie.CookieAttributes;
 }
+
+let loginguo = false;
 
 export async function reqCode(httpRes: AxiosResponse<any>) {
   try {
@@ -36,33 +41,23 @@ export async function reqCode(httpRes: AxiosResponse<any>) {
   }
 }
 
-function dispatchWatchObserver(status: boolean) {
-  return new Promise((resolve) => {
-    store.dispatch("login/dispatchWatchFn", [resolve, status]);
-  });
-}
-
-async function loginStatus(serveIslogin: boolean) {
-  const token = useLocalStorage("token");
-  await dispatchWatchObserver(serveIslogin);
-
-  if (serveIslogin && token.value) {
-    const data = findInfo();
-    store.commit("login/switchStatus", true);
-    store.commit("login/setUserInfo", data);
-  } else {
-    store.commit("login/switchStatus", false);
-    removeLocalStoreageKey();
-  }
-}
-
 async function status(httpRes: AxiosResponse<any>) {
   const url = httpRes.config.url;
-  if (url === "/login/status") {
+
+  await router.isReady();
+  const route = router.currentRoute;
+
+  if (url === "/login/status" && !(route.value.path.indexOf("/login") > -1) && !loginguo) {
+    loginguo = true;
+    console.log(true);
+    const account = httpRes.data.data.account;
+    const profile = httpRes.data.data.profile;
+
     //是否已经登录
-    const islogin = httpRes.data.data.account !== null && httpRes.data.data.profile !== null;
-    loginStatus(islogin);
+    const islogin = account !== null && profile !== null;
+    loginStatus(islogin, account, profile);
   } else if (url === "/logout") {
+    loginguo = false;
     store.commit("login/emitTypeWatchFn", "stopwatch");
     store.commit("login/switchStatus", false);
     dispatchWatchObserver(false);
@@ -78,15 +73,8 @@ export async function loginStateus(httpRes: AxiosResponse<any>) {
   }
 }
 
-const removeLocalStoreageKey = () => {
-  const storeages = ["tokenJsonStr", "userinfo", "token", "tokenStrObj"];
-  storeages.map((key) => {
-    localStorage.removeItem(key);
-  });
-};
-
-export function setCookie(httpRes: AxiosResponse<any>) {
-  const cookie: string = httpRes.data.cookie;
+export function setCookie(data) {
+  const cookie: string = data.cookie;
   if (!cookie) return;
 
   cookie.split(";;").map((cookieItem) => {
@@ -127,8 +115,16 @@ export function setCookie(httpRes: AxiosResponse<any>) {
       index++;
     }
 
-    console.log(setCookieInstance);
-
     jsCookie.set(setCookieInstance.name, setCookieInstance.value, setCookieInstance.options);
   });
+}
+
+export function sliceurl(url: string) {
+  //@ts-ignore
+  if (typeof url != "string") return url.config.url;
+  const index = url.indexOf("?");
+
+  if (index > -1) {
+    return url.slice(0, index);
+  }
 }

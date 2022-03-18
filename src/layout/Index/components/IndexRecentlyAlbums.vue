@@ -1,20 +1,28 @@
 <template>
   <IndexModuleHeadTitle v-if="!donreferto" title="最近的专辑" />
-  <div class="overflow-hidden h-full w-full betterscroll">
-    <BetterScrollVue class="container">
-      <CardExhibition
-        v-for="(album, index) in donreferto ? outsidealbums : albums.slice(0, 4)"
+  <div :class="donreferto && 'h-full'" class="overflow-hidden w-full betterscroll">
+    <better-scroll v-if="donreferto" class="container">
+      <card-exhibition
+        v-for="(album, index) in outsidealbums"
         :key="index"
         :keyindex="index"
         :data="album"
       />
-    </BetterScrollVue>
+    </better-scroll>
+    <div class="flex" v-else>
+      <card-exhibition
+        v-for="(album, index) in albums.slice(0, 4)"
+        :key="index"
+        :keyindex="index"
+        :data="album"
+      />
+    </div>
   </div>
 </template>
 <script setup lang="ts">
 import { ref, watchEffect } from "vue";
 import { recentlyAlbum } from "../../../api/index";
-import BetterScrollVue from "../../../components/betterscroll/BetterScroll.vue";
+import BetterScroll from "../../../components/betterscroll/BetterScroll.vue";
 import CardExhibition from "../../../components/cardexhibition/CardExhibition.vue";
 
 import IndexModuleHeadTitle from "./IndexModuleHeadTitle.vue";

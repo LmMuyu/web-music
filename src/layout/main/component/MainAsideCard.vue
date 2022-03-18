@@ -1,28 +1,14 @@
 <template>
-  <component
-    ref="model"
-    :infoData="infoData"
-    :is="modelComp"
-    @logout="updateModelStatus"
-  />
-  <ElRow class="w-full mr-8 mt-4 cursor-pointer">
+  <component ref="model" :infoData="infoData" :is="modelComp" @logout="updateModelStatus" />
+  <ElRow class="w-full cursor-pointer">
     <MainInfoCard :infoData="infoData" />
-    <ElCol :span="8" class="flex items-center justify-end icons">
-      <i
-        class="iconfont icongengduo-copy"
-        openModel="copy"
-        @click="openLoginModel"
-      ></i>
+    <ElCol :span="4" class="flex items-center justify-end icons">
+      <i class="iconfont icongengduo-copy" openModel="copy" @click="openLoginModel"></i>
     </ElCol>
   </ElRow>
 </template>
 <script setup lang="ts">
-import {
-  defineAsyncComponent,
-  defineProps,
-  onMounted,
-  shallowRef,
-} from "@vue/runtime-core";
+import { defineAsyncComponent, defineProps, onMounted, shallowRef } from "@vue/runtime-core";
 import { ref } from "vue";
 import { useStore } from "vuex";
 

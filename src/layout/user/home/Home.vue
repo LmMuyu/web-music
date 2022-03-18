@@ -1,7 +1,7 @@
 <template>
-  <ElContainer class="h-full">
+  <ElContainer class="h-full bg-white">
     <ElHeader height="100" class="flex items-center py-4">
-      <div v-if="Object.keys(userinfo).length > 0" class="flex">
+      <div v-if="Object.keys(userinfo).length > 0" class="flex py-2">
         <ElAvatar size="medium" :src="userinfo.avatarUrl" />
         <div>
           <span class="text-2xl px-2"> {{ userinfo.nickname }}的音乐库 </span>

@@ -1,7 +1,14 @@
 <template>
   <div class="py-4">
     <div class="titletext">{{ videoinfo.videoname }}</div>
-    <div class="videoinfo">{{ videoinfo.playcount }} • {{ videoinfo.createtime }}</div>
+    <div class="videoinfo flex items-center">
+      <font-icon class="videoinfo" icon="iconbofang1">
+        <template #after>
+          <span class="pl-2">{{ videoinfo.playcount }} </span>
+        </template>
+      </font-icon>
+      <span class="px-2">•</span> {{ videoinfo.createtime }}
+    </div>
   </div>
   <div class="w-full" style="border: 1px solid #e5e5e5"></div>
   <div class="py-4">
@@ -15,7 +22,7 @@
         </div>
       </div>
     </div>
-    <div class="py-6 pb-8 transform-gpu translate-x-20">
+    <div v-if="videoinfo.title" class="py-6 pb-8 transform-gpu translate-x-20">
       {{ videoinfo.title }}
     </div>
   </div>
@@ -26,6 +33,7 @@ import { PropType } from "vue";
 import { ElAvatar } from "element-plus";
 
 import type { VIDEO_INFO } from "../";
+import FontIcon from "../../../components/fonticon/FontIcon.vue";
 
 const props = defineProps({
   videoinfo: {
@@ -33,8 +41,6 @@ const props = defineProps({
     required: true,
   },
 });
-
-console.log(props.videoinfo);
 </script>
 <style scoped lang="scss">
 @mixin Text_Css($size, $lhight, $weight: 500) {

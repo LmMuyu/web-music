@@ -27,7 +27,7 @@
       <span class="text-sm" style="color: #19191b"> {{ data.size }}张专辑 </span>
     </div>
     <Transition name="fide">
-      <div class="absolute" style="top: 16vh; left: 8vw" v-show="activeIndex === keyindex">
+      <div class="absolute" style="top: 16vh; right: 2vw" v-show="activeIndex === keyindex">
         <PlayerIcon />
       </div>
     </Transition>

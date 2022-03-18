@@ -1,65 +1,60 @@
 <template>
-  <section>
-    <el-row class="row">
-      <el-col class="col" :span="9">
-        <div class="w-2/5"></div>
-        <div class="w-3/5">
-          <p
-            :class="!isNullObj && 'text-sm py-1'"
-            :style="isNullObj && { color: '#606266', fontWeight: 'bold' }"
-            style="text-align: center"
-          >
-            {{ itemInfo.musicName }}
-          </p>
-        </div>
-      </el-col>
-      <el-col class="col" :span="3">
-        <p
-          :class="!isNullObj && 'text-sm py-1'"
-          :style="isNullObj && { color: '#606266', fontWeight: 'bold' }"
-          style="text-align: center"
-        >
-          {{ itemInfo.singer }}
-        </p>
-      </el-col>
-      <el-col class="col" :span="3">
-        <p
-          :class="!isNullObj && 'text-sm py-1'"
-          :style="isNullObj && { color: '#606266', fontWeight: 'bold' }"
-          style="text-align: center"
-        >
-          {{ itemInfo.album }}
-        </p>
-      </el-col>
-      <el-col class="col" :span="3">
-        <p
-          :class="!isNullObj && 'text-sm py-1'"
-          :style="isNullObj && { color: '#606266', fontWeight: 'bold' }"
-          style="text-align: center"
-        >
-          {{ itemInfo.format }}
-        </p>
-      </el-col>
-      <el-col class="col" :span="3">
-        <p
-          :class="!isNullObj && 'text-sm py-1'"
-          :style="isNullObj && { color: '#606266', fontWeight: 'bold' }"
-          style="text-align: center"
-        >
-          {{ itemInfo.size }}
-        </p>
-      </el-col>
-      <el-col class="col" :span="3">
-        <p
-          :class="!isNullObj && 'text-sm py-1'"
-          :style="isNullObj && { color: '#606266', fontWeight: 'bold' }"
-          style="text-align: center"
-        >
-          {{ itemInfo.uploadTime }}
-        </p>
-      </el-col>
-    </el-row>
-  </section>
+  <el-row class="row">
+    <el-col class="col flex justify-start" :span="6">
+      <p
+        :class="!isNullObj && 'text-sm py-1'"
+        :style="isNullObj && { color: '#606266', fontWeight: 'bold' }"
+        style="text-align: center"
+      >
+        {{ itemInfo.musicName }}
+      </p>
+    </el-col>
+    <el-col class="col" :span="3">
+      <p
+        :class="!isNullObj && 'text-sm py-1'"
+        :style="isNullObj && { color: '#606266', fontWeight: 'bold' }"
+        style="text-align: center"
+      >
+        {{ itemInfo.singer }}
+      </p>
+    </el-col>
+    <el-col class="col" :span="3">
+      <p
+        :class="!isNullObj && 'text-sm py-1'"
+        :style="isNullObj && { color: '#606266', fontWeight: 'bold' }"
+        style="text-align: center"
+      >
+        {{ itemInfo.album }}
+      </p>
+    </el-col>
+    <el-col class="col" :span="3">
+      <p
+        :class="!isNullObj && 'text-sm py-1'"
+        :style="isNullObj && { color: '#606266', fontWeight: 'bold' }"
+        style="text-align: center"
+      >
+        {{ itemInfo.format }}
+      </p>
+    </el-col>
+    <el-col class="col" :span="3">
+      <p
+        :class="!isNullObj && 'text-sm py-1'"
+        :style="isNullObj && { color: '#606266', fontWeight: 'bold' }"
+        style="text-align: center"
+      >
+        {{ itemInfo.size }}
+      </p>
+    </el-col>
+    <el-col class="col" :span="3">
+      <p
+        :class="!isNullObj && 'text-sm py-1'"
+        :style="isNullObj && { color: '#606266', fontWeight: 'bold' }"
+        style="text-align: center"
+      >
+        {{ itemInfo.uploadTime }}
+      </p>
+    </el-col>
+  </el-row>
 </template>
 <script setup lang="ts">
 import { ElRow, ElCol } from "element-plus";

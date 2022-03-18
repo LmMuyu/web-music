@@ -28,5 +28,8 @@ export function personalizedMv() {
 export function timelineVideo(offset: number = 0) {
   return request({
     url: "/video/timeline/recommend",
+    params: {
+      offset,
+    },
   });
 }

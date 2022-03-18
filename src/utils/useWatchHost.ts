@@ -1,15 +1,20 @@
 import { ref, watchEffect } from "vue";
 import { RouteLocationNormalizedLoaded, useRoute } from "vue-router";
+import router from "../routes";
 
-export function useWatchRoutePath() {
+export function useWatchRoutePath(callbck?: Function) {
   const RLNL = ref<Partial<RouteLocationNormalizedLoaded>>({});
-  const route = useRoute();
-  let prepath = "";
+  let route = useRoute();
+  route = route ?? router.currentRoute.value;
+  let prepath = "/";
 
   watchEffect(() => {
+    console.log(prepath);
+
     if (prepath !== route.path) {
       prepath = route.path;
       RLNL.value = route;
+      callbck?.(route);
     }
   });
 

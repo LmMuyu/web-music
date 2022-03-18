@@ -71,6 +71,7 @@ const routes: (RouteRecordRaw & {
           subject: false,
         },
       },
+      showtiao: false,
     },
     children: [
       {

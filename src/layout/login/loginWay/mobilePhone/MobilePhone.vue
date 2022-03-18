@@ -37,7 +37,7 @@
 <script setup lang="ts">
 import { reactive, ref } from "@vue/reactivity";
 
-import loginBCBus from "../../../main/hooks/useBroadcastChannel";
+import {loginBCBus} from "../../useBroadcastChannel";
 import { cellphone, loginCellphone } from "../../../../api/login";
 import { promptbox } from "../../../../components/promptBox";
 
@@ -56,7 +56,6 @@ const phone = ref();
 const pass = ref();
 
 const showErrorInfo = (box: any, message: string) => box.value["showErrorInfo"]?.(message);
-const BC = loginBCBus(true);
 
 function checkingInput() {
   let isCheckingRes = true;
@@ -110,25 +109,27 @@ async function loginBtn() {
       formData.append("md5_password", ev.data);
 
       const loginResult = await loginCellphone(formData);
-      BC.then(({ postMessage }) => {
-        postMessage(loginResult.data);
-      }).catch((err) => {
-        console.log("postMessage" + ":" + err);
-      });
+      loginBCBus(loginResult.data);
+
+      window.removeEventListener("keydown", keydownfn, false);
     });
 
     worker.addEventListener("error", (err) => {
       console.log(err);
       promptbox({ title: "md5加密密码错误" });
     });
+  } else {
+    inputLoginInfo.password = "";
   }
 }
 
-document.addEventListener("keydown", (e) => {
+function keydownfn(e) {
   if (e.code === "Enter") {
     loginBtn();
   }
-});
+}
+
+window.addEventListener("keydown", keydownfn, false);
 </script>
 <style scoped lang="scss">
 div:nth-child(1) {

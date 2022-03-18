@@ -11,7 +11,7 @@
   </div>
 </template>
 <script lang="js">
-import { defineComponent, getCurrentInstance, nextTick, onMounted, ref, watchEffect } from 'vue';
+import { defineComponent, getCurrentInstance, nextTick, onMounted, onUnmounted, ref, watchEffect } from 'vue';
 import useLoadNetworkRes from "../../utils/useLoadNetworkRes"
 
 
@@ -19,16 +19,26 @@ export default defineComponent({
   props: {
     class: String
   },
-  setup() {
+  setup(props, { expose }) {
     const viewport = ref(null)
     const viewportHeight = ref(0)
     const { loadnetworkmes, loading, instance } = useLoadNetworkRes("https://cdn.jsdelivr.net/npm/better-scroll@2.4.2/dist/better-scroll.esm.js")
     const ctx = getCurrentInstance()
+    let BS = null
 
+
+    function disable() {
+      console.log(BS);
+      BS.disable()
+    }
+
+    function enable() {
+      BS.enable()
+    }
 
 
     nextTick(() => {
-      const el = ctx.parent.parent.ctx["$el"]
+      const el = ctx.parent.ctx["$el"]
       if (el) {
         viewportHeight.value = el.clientHeight || document.documentElement.clientHeight
       }
@@ -36,12 +46,17 @@ export default defineComponent({
 
     function mutationSubtree(contentport, BS) {
       if (contentport) {
-        let refresh = false
+        let timer = null
+
         const mutation = new MutationObserver((mutationlists) => {
-          if (!refresh) {
-            BS.refresh()
-            refresh = true
+          if (timer) {
+            clearTimeout(timer)
+            timer = null
           }
+
+          timer = setTimeout(() => {
+            BS.refresh()
+          }, 20);
         })
 
 
@@ -63,9 +78,10 @@ export default defineComponent({
 
 
           const BScroll = instance.value
-          const BS = new BScroll(viewport.value, {
+          BS = new BScroll(viewport.value, {
             mouseWheel: true,
-            bounce: false
+            bounce: false,
+            click: true
           })
 
           const content = viewport.value.children[0]
@@ -82,9 +98,22 @@ export default defineComponent({
     onMounted(() => {
       nextTick(betterBscroll)
     })
+
+
+    onUnmounted(() => {
+      BS.destroy()
+    })
+
+
+    expose({
+      disable,
+      enable
+    })
+
+
     return {
       viewport,
-      viewportHeight
+      viewportHeight,
     }
   }
 })
