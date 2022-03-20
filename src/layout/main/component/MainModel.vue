@@ -1,16 +1,12 @@
 <template>
-  <section
-    ref="model"
-    style="background-color: #99ccff"
-    class="rounded-md z-10 absolute opacity shadow"
-    :style="nodeinfo"
-  >
+  <section ref="model" class="rounded-md z-10 absolute opacity shadow" :style="nodeinfo">
     <el-row class="p-4">
       <MainInfoCard :infoData="infoData" />
     </el-row>
     <div class="whitespace-nowrap p-4 bordert">
-      <button class="outline border-none" @click="updateLogout">
+      <button class="outline border-none text-sm font-medium" @click="updateLogout">
         退出登录
+        <span style="color: rgb(116, 185, 255)"> @{{ userdata.nickname }} </span>
       </button>
     </div>
 
@@ -23,19 +19,14 @@
   </section>
 </template>
 <script setup lang="ts">
-import {
-  nextTick,
-  onMounted,
-  reactive,
-  ref,
-  useAttrs,
-} from "@vue/runtime-core";
+import { nextTick, onMounted, reactive, ref, useAttrs } from "@vue/runtime-core";
 
 import MainInfoCard from "./MainInfoCard.vue";
 import { ElRow } from "element-plus";
 import { useStore } from "vuex";
 
 import { logout } from "../../../api/app/login";
+import { computed } from "vue";
 
 const attrs = useAttrs();
 const ctxEmit = defineEmits(["logout"]);
@@ -55,6 +46,11 @@ async function updateLogout() {
   await logout();
   ctxEmit("logout");
 }
+
+const userdata = computed(() => {
+  const storedata = store.getters["login/getUserData"]();
+  return storedata.data;
+});
 
 onMounted(() => {
   nextTick(() => {

@@ -3,7 +3,7 @@
     <el-header class="bg-white" height="40px">
       <IndexHeaderModule />
     </el-header>
-    <el-main class="flex flex-col scrollbar">
+    <el-main class="flex flex-col scrollbar" style="padding: 16px 0 !important">
       <keep-alive>
         <AsayncSuspense>
           <IndexBanner :banner-data="bannerImages" />

@@ -48,7 +48,7 @@ function modelCompEvent(e: MouseEvent) {
 
   if (!!bute) return;
 
-  const x = e.clientX;
+  const x = e.clientX + 16;
   const y = e.clientY;
 
   const logoutModelInfo = store.getters["maintags/getPosInfo"];

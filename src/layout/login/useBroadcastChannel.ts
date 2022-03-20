@@ -41,7 +41,6 @@ function openNotification(content: string, title?: string, type: NottificationTy
 
 export function mainBCBus(): Promise<USERDATA> {
   const BC = new BroadcastChannel("login");
-  console.log("main");
 
   return new Promise((resolve) => {
     BC.onmessage = function (ev) {
@@ -58,16 +57,13 @@ export function mainBCBus(): Promise<USERDATA> {
 export function loginBCBus(userdata: any): BroadcastChannel {
   const route = useRoute();
   const BC = new BroadcastChannel("login");
-  console.log("login");
-  console.log(userdata);
 
   const closeBcWatch = () => BC.close();
-  const _resolve = Promise.resolve();
   store.commit("login/pushWatchFn", ["stopwatch", closeBcWatch]);
 
   const transformData = transformUserData(userdata);
   loginStoreSetInfo(transformData, true);
-  _resolve.then(() => setCookie(userdata));
+  Promise.resolve().then(() => setCookie(userdata));
 
   BC.postMessage(transformData);
   setLocalStorage(userdata);
@@ -75,6 +71,11 @@ export function loginBCBus(userdata: any): BroadcastChannel {
   nextTick(() => openNotification("欢迎回来" + transformData.nickname, null, "success"));
 
   const path = (route && route.path) ?? "/login";
+  console.log({
+    route,
+    path,
+  });
+
   if (path.indexOf("/login") > -1) {
     window.close();
   }
@@ -85,7 +86,6 @@ export function loginBCBus(userdata: any): BroadcastChannel {
 function setLocalStorage(tokenobj: Record<string, any>) {
   if (Object.keys(tokenobj).length === 0) return;
   const transformTokenData = transformToken(tokenobj);
-  console.log(transformTokenData);
 
   for (const key in transformTokenData) {
     useLocalStorage(key, transformTokenData[key]);
@@ -93,7 +93,10 @@ function setLocalStorage(tokenobj: Record<string, any>) {
 }
 
 function transformToken(tokenobj: Record<string, any>): ACCESS_OR_REFRESH_TOKEN {
-  const binding_token = JSON.parse(JSON.stringify(tokenobj.bindings[1].tokenJsonStr));
+  const binding_token = JSON.parse(tokenobj.bindings[1].tokenJsonStr);
+  console.log(tokenobj);
+  console.log(binding_token);
+
   return Object.keys(binding_token).reduce((pre, next) => (pre[next] = binding_token[next]), {});
 }
 

@@ -72,6 +72,7 @@ const routes: (RouteRecordRaw & {
         },
       },
       showtiao: false,
+      query: ["uid", "isself"],
     },
     children: [
       {
@@ -111,6 +112,7 @@ const routes: (RouteRecordRaw & {
     },
     meta: {
       showTags: false,
+      query: ["id"],
     },
   },
   {
@@ -125,6 +127,16 @@ const routes: (RouteRecordRaw & {
     name: "Video",
     components: {
       default: () => import("../layout/playervideo/PlayerVideo.vue"),
+    },
+  },
+  {
+    path: "/404",
+    name: "404",
+    components: {
+      default: () => import("../components/404/404.vue"),
+    },
+    meta: {
+      showTags: false,
     },
   },
 ];

@@ -49,6 +49,8 @@ import HomeLLikeMusic from "./components/HomeLLikeMusic.vue";
 import HomeHeadSelect from "./components/HomeHeadSelect.vue";
 import HomeLLinkeLists from "./components/HomeLLinkeLists.vue";
 import HomeCloudDisk from "./components/HomeCloudDisk.vue";
+import { getMusicDetail } from "../../../api/playList";
+import { musicDetail } from "../../../utils/musicDetail";
 
 const route = useRoute();
 const store = useStore();
@@ -95,25 +97,26 @@ function loginInfo(): Promise<{
 }> {
   return new Promise((resolve) => {
     const isself = route.query.isself as string | number;
+    const _resolve = Promise.resolve();
     const computedUserData = computed(() => {
       return store.getters["login/getUserData"]();
     });
 
     const stopWatch = watchEffect((oninvalidata) => {
-      if (Object.keys(computedUserData.value).length > 0) {
+      const userdata = computedUserData.value.data;
+      if (!userdata) {
+        return;
+      }
+
+      if (Object.keys(userdata).length > 0) {
+        computedUserData.effect.stop();
+
         if (isself === "1") {
-          userinfo.value = computedUserData.value;
-          uid.value = computedUserData.value.userID;
-          console.log(uid.value);
-          resolve({
-            islogin: true,
-            stopWatch,
-          });
+          userinfo.value = userdata;
+          uid.value = userdata.userID;
+          _resolve.then(() => resolve({ islogin: true, stopWatch }));
         } else {
-          resolve({
-            islogin: false,
-            stopWatch,
-          });
+          _resolve.then(() => resolve({ islogin: false, stopWatch }));
         }
       }
     });
@@ -135,17 +138,25 @@ function loginInfo(): Promise<{
       artistlist.value = sub.data.data.map((artist) => transformArtistData(artist));
     });
 
-    obtainUserPlayList(uid.value).then(async (sub) => {
-      if (sub.data.playlist.length > 0) {
-        songlist.value.push(...sub.data.playlist);
-      }
-    });
+    obtainUserPlayList(uid.value)
+      .then(async (sub) => {
+        if (sub.data.playlist.length > 0) {
+          songlist.value.push(...sub.data.playlist);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
 
     const likelist = await llikelist(uid.value);
+
     ids.value.push(...likelist.data.ids);
     linkeLen.value = ids.value.length;
+    const strids = ids.value.join(",");
 
-    store.dispatch("login/getlinke", ids.value);
+    getMusicDetail(strids).then((sources) => {
+      linkeLists.value = sources.data.songs.map((song) => new musicDetail(song));
+    });
   } catch (error) {
     console.error("状态码:" + error.data.status);
   }

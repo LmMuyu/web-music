@@ -49,7 +49,6 @@ async function status(httpRes: AxiosResponse<any>) {
 
   if (url === "/login/status" && !(route.value.path.indexOf("/login") > -1) && !loginguo) {
     loginguo = true;
-    console.log(true);
     const account = httpRes.data.data.account;
     const profile = httpRes.data.data.profile;
 
@@ -60,6 +59,7 @@ async function status(httpRes: AxiosResponse<any>) {
     loginguo = false;
     store.commit("login/emitTypeWatchFn", "stopwatch");
     store.commit("login/switchStatus", false);
+    store.commit("navRouterPushRun");
     dispatchWatchObserver(false);
     removeLocalStoreageKey();
   }

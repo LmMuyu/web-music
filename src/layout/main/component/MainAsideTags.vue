@@ -4,7 +4,7 @@
     <main class="h-3/4">
       <MainTag />
     </main>
-    <footer ref="footer" class="flex items-center justify-center px-4" style="height: 15%">
+    <footer ref="footer" class="flex items-center justify-center px-4 pb-4" style="height: 15%">
       <MainAsideCard v-if="loginUserData.tramsformButton" :infoData="loginUserData.userdata" />
       <ButtonEnter v-else-if="windowResize" />
       <AvatarEnter v-else />
@@ -13,7 +13,7 @@
 </template>
 <script setup lang="tsx">
 import { nextTick, onMounted, ref } from "@vue/runtime-core";
-import { computed, inject, reactive, watchEffect } from "vue";
+import { computed, inject, onUnmounted, reactive, watchEffect } from "vue";
 import { useStore } from "vuex";
 
 import { mainBCBus } from "../../login/useBroadcastChannel";
@@ -46,12 +46,16 @@ store.commit("login/setWatchFn", (islogin) => {
 
 function logindata(broadcastChannelData: USERINFO) {
   serLoginUserData(broadcastChannelData);
+  watchRetUserData().then(logindata);
 }
 
 function serLoginUserData(userdata: USERINFO | { userdata: USERINFO }) {
-  loginUserData.tramsformButton = true;
   //@ts-ignore
-  loginUserData.userdata = userdata?.userdata ?? userdata;
+  userdata = userdata?.userdata ?? userdata;
+  console.log(userdata);
+
+  loginUserData.tramsformButton = Object.keys(userdata).length > 0 ? true : false;
+  loginUserData.userdata = userdata;
 }
 
 function watchRetUserData() {
@@ -60,11 +64,31 @@ function watchRetUserData() {
       return store.getters["login/getUserData"]();
     });
 
-    watchEffect(() => {
-      const userdata = watchData.value;
+    const _resolve = Promise.resolve();
 
-      if (Object.keys(userdata).length > 0) {
+    let stop = watchEffect(() => {
+      const storedata = watchData.value;
+      const userdata = storedata.data ?? {};
+      const type = storedata.type ?? "";
+
+      //有登录信息
+      if (Object.keys(userdata).length > 0 && type && type === "login") {
         resolve(userdata);
+        _resolve.then(() => {
+          watchData.effect.stop();
+          stop();
+          stop = null;
+        });
+        store.commit("login/setUserInfo", [userdata ?? {}, ""]);
+        //退出登录
+      } else if (type && type === "logout") {
+        resolve({});
+        _resolve.then(() => {
+          watchData.effect.stop();
+          stop();
+          stop = null;
+        });
+        store.commit("login/setUserInfo", [userdata ?? {}, ""]);
       }
     });
   });
@@ -98,6 +122,10 @@ onMounted(() => {
     reviseButtonPos();
     setButtonStyle();
   });
+});
+
+onUnmounted(() => {
+  console.log("onUnmounted");
 });
 </script>
 <style scoped lang="scss"></style>

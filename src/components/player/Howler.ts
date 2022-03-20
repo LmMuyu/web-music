@@ -67,7 +67,7 @@ export default function Howl(songlists: musicDetail[], options: HOWLOPTIONS) {
   }
 
   function initAutoPlay() {
-    console.log(useRoute().path);
+    // console.log(useRoute().path);
     return useRoute().path === "/playlist" ? true : false;
   }
 
@@ -141,8 +141,8 @@ export default function Howl(songlists: musicDetail[], options: HOWLOPTIONS) {
 
   const seek = (pos: number) => {
     playSeek.clear();
-    const sec = filterDate(pos, true) as number;
-    how.set_seek(sec);
+    const sec = filterDate(pos, true) as string;
+    how.set_seek(Number(sec));
     playSeek();
   };
 

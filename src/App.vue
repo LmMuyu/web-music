@@ -7,25 +7,28 @@
 
 <script setup lang="ts">
 import { provide, ref, computed, watchEffect } from "vue";
-import { useRouter } from "vue-router";
+import { NavigationGuardNext, useRouter } from "vue-router";
 import { useStore } from "vuex";
-
-import routerLimit from "./common/routerLimit";
 
 import Audio from "./components/player/Audio.vue";
 import HtmlMain from "./layout/main/Main.vue";
 
-import type { musicDetail } from "./utils/musicDetail";
+import { loginStateus } from "./api/app/login";
+import { promptbox } from "./components/promptBox";
 import { useWatchRoutePath } from "./utils/useWatchHost";
+
+import type { musicDetail } from "./utils/musicDetail";
 
 type linkType = "info" | "primary" | "success" | "warning" | "danger" | "default" | undefined;
 
 const store = useStore();
 const router = useRouter();
+const linkType = ref<linkType>("info");
+const circleRef = ref(true);
 
 function stopLoadAudioComp() {
   const RouteRLNL = useWatchRoutePath();
-  const excludeLists = ["/login", "/video"];
+  const excludeLists = ["/login", "/video", "/404"];
   const loadCompAudio = ref(true);
 
   watchEffect(() => {
@@ -37,18 +40,55 @@ function stopLoadAudioComp() {
 
 const loadCompAudio = stopLoadAudioComp();
 
-const globalBeforeRouters = [routerLimit];
-
 //全局路由限制
 router.beforeEach(async (to, from, next) => {
-  for (const globalRouterFunction of globalBeforeRouters) {
-    const fu = await globalRouterFunction();
-    fu(to, from, next);
+  const pathList = ["/message", "/subscription"];
+  const islogin = await loginStateus();
+  const meta = to.meta;
+
+  const logoutnvaindex = meta.isnavindex;
+
+  if (logoutnvaindex) {
+    store.commit("setNavRouterPush", () => router.push({ path: "/index" }));
+  } else {
+    store.commit("setNavRouterPush", null);
+  }
+
+  if (pathList.indexOf(to.path) > -1 && !islogin) {
+    // if (islogin && pathList.includes(to.path) && to.path !== "/index") {
+    //   promptbox({ mountNode: "body", title: "请先登录!" });
+    //   return;
+    // }
+    return next("/index");
+  }
+
+  if (to.path.indexOf("/login") > -1 && !islogin) {
+    return next();
+  } else if (to.path.indexOf("/login") > -1 && islogin) {
+    return next(from.path);
+  }
+
+  const mparams = meta.params as any;
+  const mquery = meta.query as any;
+  const rparams = to.params as any;
+  const rquery = to.query as any;
+
+  const has = Object.prototype.hasOwnProperty;
+  function everykey(querys, mquerys) {
+    return mquerys.every((key) => has.call(querys, key) && querys[key] !== null);
+  }
+
+  //@ts-ignore
+  const pres = typeof mparams === "undefined" ? true : everykey(rparams, mparams);
+  //@ts-ignore
+  const qres = typeof mquery === "undefined" ? true : everykey(rquery, mquery);
+
+  if (pres && qres) {
+    next();
+  } else {
+    next("/404");
   }
 });
-
-const linkType = ref<linkType>("info");
-const circleRef = ref(true);
 
 store.dispatch("countriesCode");
 provide("circleRef", circleRef);

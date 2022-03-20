@@ -18,6 +18,7 @@ const store = createStore<State>({
       circleRef: ref(true),
       mainTagsShow: true,
       unmountList: mitt(),
+      navRouterPush: null,
     };
   },
   getters,

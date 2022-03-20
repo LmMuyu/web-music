@@ -16,7 +16,7 @@ export function getMusicUrl(id: string) {
   });
 }
 
-export function getMusicDetail(ids: number) {
+export function getMusicDetail(ids: string) {
   return request({
     url: "/song/detail",
     params: {

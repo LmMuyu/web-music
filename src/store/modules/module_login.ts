@@ -7,6 +7,8 @@ enum watchType {
   STOPWATCH = "stopwatch",
 }
 
+type loginType = "logout" | "login" | "";
+
 interface WATCHFNOPTIONS {
   stopWatchFnLists: Emitter;
   watchLoginFn: (iswatchbc: boolean) => void | null;
@@ -15,7 +17,7 @@ interface WATCHFNOPTIONS {
 export interface STATETYPE {
   ids: number[];
   islogin: true | false;
-  userdata: Object;
+  userdata: { data?: Object; type?: loginType };
   linkes: Record<string, any>[];
   initStatus: Boolean;
   watch: WATCHFNOPTIONS;
@@ -57,8 +59,11 @@ class login {
         state.islogin = status;
       },
 
-      setUserInfo(state: STATETYPE, data: Object) {
-        state.userdata = data;
+      setUserInfo(state: STATETYPE, data: [Object, loginType]) {
+        state.userdata = {
+          data: data[0],
+          type: data[1],
+        };
       },
 
       setInitStatus(state: STATETYPE) {
@@ -93,6 +98,10 @@ class login {
 
         watchEffect(() => {
           if (watchRunFn.value !== null) {
+            if (argvs[1] === false) {
+              state.commit("setUserInfo", [{}, "logout"]);
+            }
+
             watchRunFn.value(argvs[1]);
             _resolve(true);
           }

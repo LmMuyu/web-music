@@ -16,6 +16,9 @@ export interface META {
   fetchCount?: number;
   padding?: "none" | string | number | Record<string, string>;
   showtiao?: boolean;
+  query?: string[];
+  params?: string[];
+  isnavindex?: boolean;
 }
 
 export interface Route {

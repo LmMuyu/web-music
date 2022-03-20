@@ -2,7 +2,9 @@
   <div class="flex h-full overflow-y-hidden">
     <div v-if="isTagShow" class="float-left w-1/5 h-full right_border">
       <div class="h-full" :style="{ minHeight: minheight + 'px' }">
-        <IndexAsideTags />
+        <keep-alive>
+          <index-aside-tags />
+        </keep-alive>
       </div>
     </div>
     <div
@@ -11,9 +13,6 @@
       :style="{ minWidth: minwidth + 'px' }"
     >
       <MainContainer></MainContainer>
-      <!-- <div class="golbalmark" style="z-index: 10" v-if="circleRef">
-        <Circle />
-      </div> -->
     </div>
   </div>
 </template>
@@ -26,10 +25,8 @@ import { useWatchHost } from "../../utils/useWatchHost";
 
 import MainContainer from "../../components/maincontent/MainContainer.vue";
 import IndexAsideTags from "./component/MainAsideTags.vue";
-import Circle from "./component/MainCircle.vue";
 import { throttle } from "../../utils/throttle";
 
-const circleRef = inject("circleRef");
 const isTagShow = useWatchHost();
 const windowResize = ref(true);
 

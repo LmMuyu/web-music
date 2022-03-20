@@ -41,9 +41,10 @@ const artists = ref([]);
 
 function artistRandom(artists: any[]) {
   const songlists = artists.slice(0);
+  const len = songlists.length;
 
   for (let i = 0; i < songlists.length; i++) {
-    const randomCount = Math.floor(Math.random() * songlists.length - 1);
+    const randomCount = Math.floor(Math.random() * (len - 1));
     [songlists[i], songlists[randomCount]] = [songlists[randomCount], songlists[i]];
   }
 

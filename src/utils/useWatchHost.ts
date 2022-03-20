@@ -9,8 +9,6 @@ export function useWatchRoutePath(callbck?: Function) {
   let prepath = "/";
 
   watchEffect(() => {
-    console.log(prepath);
-
     if (prepath !== route.path) {
       prepath = route.path;
       RLNL.value = route;

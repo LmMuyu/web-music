@@ -45,5 +45,15 @@ export default {
     state.unmountList.emit(subtype, [callback, args]);
   },
 
- 
+  navRouterPushRun(state: State) {
+    state.navRouterPush();
+  },
+
+  setNavRouterPush(state: State, playload: () => any | null) {
+    if (typeof playload !== "function" && playload !== null) {
+      return console.warn("playload目标是Function给定的是" + typeof playload);
+    }
+
+    state.navRouterPush = playload;
+  },
 };

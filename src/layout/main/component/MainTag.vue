@@ -40,8 +40,9 @@ const { activeStyle, clickActive, moveActive, leaveActive } = new activeIndex(
 );
 
 const toPath = (path: string, index: number) => {
-  const userdata = store.getters["login/getUserData"]();
+  const storedata = store.getters["login/getUserData"]();
   clickActive(index);
+  const userdata = storedata.data;
 
   router.push({
     path,

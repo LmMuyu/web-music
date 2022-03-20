@@ -10,6 +10,7 @@ export interface State {
   activeTagFn: (to: RouteLocationNormalized) => void | null;
   mainTagsShow: boolean;
   unmountList: Emitter;
+  navRouterPush: () => any | null;
 }
 
 export interface ALLTOKEN {
