@@ -19,7 +19,7 @@
         <span class="text-4x1" style="color: #0984e3"> 我喜欢的音乐 </span>
         <span class="text-xs" style="color: #74b9ff"> {{ `${linkelen} 首歌` }} </span>
       </div>
-      <div class="absolute bottom-2 right-4">
+      <div class="absolute bottom-2 right-4" @click.capture="ctxEmits('playermusic')">
         <FontIcon icon="iconbofang" size="38" color="#74b9ff"></FontIcon>
       </div>
     </div>
@@ -27,6 +27,8 @@
 </template>
 <script setup lang="ts">
 import FontIcon from "../../../../components/fonticon/FontIcon.vue";
+
+const ctxEmits = defineEmits(["playermusic"]);
 
 const props = defineProps({
   linkelen: {

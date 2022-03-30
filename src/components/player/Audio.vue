@@ -3,29 +3,34 @@
     <div
       @mouseenter="enterAudio"
       @mouseleave="leaveAudio"
-      v-show="!isLeaveSanSecBelow"
       class="flex items-center h-full w-full px-4 relative bg-white z-50 audio_shadow"
     >
-      <div class="flex"><AudioSongInfoShow :musicinfo="musicinfo" /></div>
       <el-row class="flex content-center h-full w-full">
+        <el-col :span="4" class="flex"><AudioSongInfoShow :musicinfo="musicinfo" /></el-col>
         <el-col :span="4" class="flex items-center justify-center">
           <AudioAndVideoControls
             :status="isplay"
             @play="play"
             @pause="pause"
+            @next="nextMusic"
+            @pre="preveMusic"
           ></AudioAndVideoControls>
         </el-col>
-        <el-col :span="14" class="flex self-center h-full">
-          <PlayMusicTime :starttime="musicPosTime * 1000" :maxtime="maxTime" class="w-full">
+        <el-col :span="12" class="flex self-center h-full">
+          <PlayMusicTime
+            :starttime="audioPlayTime"
+            :maxtime="maxTime"
+            class="w-full"
+          >
             <AudioSlider
-              :starttime="musicPosTime * 1000"
+              :starttime="audioPlayTime"
               :mintime="0"
               :maxtime="maxTime"
               @input="(pos) => inputValue(pos)"
             />
           </PlayMusicTime>
         </el-col>
-        <el-col :span="6" class="flex items-center">
+        <el-col :span="4" class="flex items-center">
           <div class="flex px-4">
             <volume-icon :volume="volume"></volume-icon>
             <div v-show="showSlider" class="w-full audio_slider">
@@ -69,6 +74,8 @@ import {
   watchEffect,
   computed,
   onMounted,
+  getCurrentInstance,
+  watch,
 } from "vue";
 import { useStore } from "vuex";
 
@@ -78,7 +85,9 @@ import { useLocalStorage } from "../../utils/useLocalStorage";
 import { musicDetail } from "../../utils/musicDetail";
 import { debounce } from "../../utils/debounce";
 import dexieFn from "../../common/dexie";
+import { musicPlayEndZero, sliderstyle } from "./methods";
 import AudioHow from "./Howler";
+// v-show="!isLeaveSanSecBelow"
 
 //@ts-ignore
 import AudioAndVideoControls from "./components/AudioAndVideoControls.vue";
@@ -98,13 +107,12 @@ const props = defineProps({
 
 const store = useStore();
 
-let id = 0;
+let mid = 0;
 let isclick = true;
 let currPage = 1;
 const volume = ref(0);
 const historyData = ref([]);
 const showSlider = ref(false);
-const maxTime = ref(0);
 const comments = ref([]);
 const COMMENT_LEN = 40;
 const musicinfo = ref<musicDetail>();
@@ -112,27 +120,36 @@ const MAX_LIMIT = COMMENT_LEN;
 const timeTable = new Map();
 const playListHistoryOptions = reactive({ total: 0, time: 0 });
 const islock = ref(false);
-
-const songlists: musicDetail[] = [];
+const ctx = getCurrentInstance();
 
 const dexie = dexieFn();
-
 const {
   isplay,
   pause,
   stop,
   play,
-  setPlayLists,
-  initCurrentIndex,
+  maxTime,
+  palylists,
+  nextMusic,
+  preveMusic,
   seek: setseek,
+  setImmdPlayLists,
+  initCurrentIndex,
   volume: setVolume,
   playSeek: seekTime,
-} = AudioHow(songlists, {
-  currentIndexBackFn: currentMusicPlayIndex,
-});
+} = AudioHow(
+  {
+    currentIndexBackFn: currentMusicPlayIndex,
+    musicinfoRef: musicinfo,
+  },
+  getCurrentInstance()
+);
 
-let musicPosTime = seekTime();
+const musicPosTime = seekTime();
 volume.value = setVolume() * 100;
+
+musicPlayEndZero(ctx, musicPosTime);
+const audioPlayTime = computed(() => Math.round(musicPosTime.value));
 
 let tiemr = null;
 let isLeaveSanSecBelow = ref<null | boolean>(null);
@@ -145,7 +162,6 @@ function leaveTimeout() {
 
 function enterAudioActive() {
   isLeaveSanSecBelow.value = false;
-
   clearTimeout(tiemr);
   tiemr = null;
 }
@@ -175,49 +191,6 @@ function inputValue(pos: number) {
   setseek(pos);
 }
 
-async function indexDBAAllData() {
-  const allCollectionData = await (await dexie).getAllSong();
-  const data = allCollectionData.map((musicDetailData) => musicDetailData.songinfo);
-  songlists.push(...data);
-
-  setPlayLists(data);
-  firstSongInfo();
-}
-
-async function firstSongInfo() {
-  const songinfo = useLocalStorage("preSongInfo");
-
-  if (!songinfo.value) {
-    const songinfo = await (await dexie).first();
-    if (!songinfo) return;
-
-    musicinfo.value = songinfo.songinfo;
-    useLocalStorage("preSongInfo", JSON.stringify(songinfo.songinfo));
-  } else {
-    const index = initCurrentIndex(JSON.parse(songinfo.value));
-    musicinfo.value = songlists[index];
-    maxTime.value = musicinfo.value.dt;
-  }
-
-  setPlayLists(musicinfo.value);
-}
-
-indexDBAAllData();
-
-function commentMusicThenFn({ config, data: comment }) {
-  playListHistoryOptions.total = comment.total;
-  playListHistoryOptions.time = comment.comments[comment.comments.length - 1].time;
-
-  if (config.params.offset + 1 === 1 && comment.hotComments.length > 0) {
-    const diff = COMMENT_LEN - comment.hotComments.length;
-    comments.value = [...comment.hotComments, ...comment.comments.slice(0, diff)];
-    return;
-  }
-
-  comments.value = comment.comments;
-  setTimeTable(1, playListHistoryOptions.time);
-}
-
 const openRightDrawer = () => openDrawer(historyData);
 
 const mouseEvent = debounce(cursourEnterSlider);
@@ -234,37 +207,11 @@ function currentMusicPlayIndex(index: number) {
   console.log(index);
 }
 
-async function sliderstyle() {
-  try {
-    const boxSlider = document.querySelector(".audio_slider");
-    const sliderBtn = boxSlider.querySelector(".el-slider__button") as HTMLElement;
-    const sliderRunway = boxSlider.querySelector(".el-slider__runway") as HTMLElement;
-    const sliderBar = boxSlider.querySelector(".el-slider__bar") as HTMLElement;
-
-    sliderBtn.style.cssText = `
-      width:15px;
-      height:15px;
-     `;
-    sliderRunway.style.cssText = `
-    display: flex;
-    align-items: center;
-    justify-content: center;
-      width: 100%;
-    `;
-    sliderBar.style.cssText = `
-    height: 100%;
-    width: inherit;
-  `;
-  } catch (error) {
-    console.log(error);
-  }
-}
-
 function currentChange(index: number) {
   if (index === currPage) {
     return;
   }
-  commentMusic(id, index, timeTable.get(index - 1)).then(commentMusicThenFn);
+  commentMusic(mid, index, timeTable.get(index - 1)).then(commentMusicThenFn);
 }
 
 function changePageIndex(index: number) {
@@ -272,7 +219,21 @@ function changePageIndex(index: number) {
     return;
   }
 
-  commentMusic(id, index, timeTable.get(index - 1) ?? 0).then(commentMusicThenFn);
+  commentMusic(mid, index, timeTable.get(index - 1) ?? 0).then(commentMusicThenFn);
+}
+
+function commentMusicThenFn({ config, data: comment }) {
+  playListHistoryOptions.total = comment.total;
+  playListHistoryOptions.time = comment.comments[comment.comments.length - 1].time;
+
+  if (config.params.offset + 1 === 1 && comment.hotComments.length > 0) {
+    const diff = COMMENT_LEN - comment.hotComments.length;
+    comments.value = [...comment.hotComments, ...comment.comments.slice(0, diff)];
+    return;
+  }
+
+  comments.value = comment.comments;
+  setTimeTable(1, playListHistoryOptions.time);
 }
 
 function openCommentList() {
@@ -291,40 +252,54 @@ function windowClick() {
   }
 }
 
-const songId = computed<number>(store.getters["playlist/getSongId"]);
-
+const storeMid = computed<number>(store.getters["playlist/getSongId"]);
 watchEffect(async () => {
   try {
-    if (songId.value && songId.value !== id) {
-      id = songId.value;
-      const findIndex = songlists.findIndex((value) => value.id === id);
+    if (storeMid.value && storeMid.value !== mid) {
+      mid = storeMid.value;
+      const findIndex = palylists.value.findIndex((value) => value.id === mid);
 
+      //点击播放，查询看一下有没有在播放在列表中，有就将它插入到列表最前
       if (findIndex > -1) {
-        songlists.unshift(...songlists.splice(findIndex, 1));
+        palylists.value.unshift(...palylists.value.splice(findIndex, 1));
+        return;
       }
 
-      const reqdata = await getMusicDetail(id);
+      const reqdata = await getMusicDetail(String(mid));
+      if (reqdata.data.songs.length === 0) return;
+
       const song = reqdata.data.songs[0];
       const songInfo = new musicDetail(song);
 
-      songlists.unshift(songInfo);
+      setImmdPlayLists(songInfo);
       Promise.resolve().then(() => store.commit("playlist/setSongInfo", songInfo));
+      musicinfo.value = songInfo;
 
       enterAudioActive();
       leaveTimeout();
 
-      const data = await commentMusic(id, 1, 0, MAX_LIMIT);
+      const data = await commentMusic(mid, 1, 0, MAX_LIMIT);
+
       if (data) {
         commentMusicThenFn(data);
       }
 
       (await dexie).put(songInfo.id, songInfo);
-      setPlayLists(songInfo);
+      setImmdPlayLists(songInfo);
       initCurrentIndex(songInfo);
-      useLocalStorage("preSongInfo", JSON.stringify(songInfo));
+      useLocalStorage("recplaysong", JSON.stringify(songInfo));
     }
   } catch (error) {
     console.log(error);
+  }
+});
+
+//获取登录用户的播放队列
+const musiclists = computed<musicDetail[]>(store.getters["playlist/getMusiclists"]);
+watchEffect(() => {
+  if (musiclists.value.length > 0) {
+    palylists.value.length = 0;
+    setImmdPlayLists(musiclists.value);
   }
 });
 

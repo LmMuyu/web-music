@@ -1,7 +1,7 @@
 import { Howl, Howler } from "howler";
 import { OPTIONS } from "./type";
 
-const ons = ["onPlayerror", "onPlay", "onStop", "onPause"];
+const ons = ["onPlayerror", "onPlay", "onStop", "onPause", "onEnd"];
 
 type KeXuan<T> = { [K in keyof T]?: T[K] };
 
@@ -33,11 +33,12 @@ export default class Play {
   private src: string;
   private volume: number;
   private options: OPTIONS;
+  private ismute: boolean;
+  private format: string[];
+  private setaction: boolean;
   dt: number;
-  format: string[];
   autoplay: boolean;
   duration: string;
-  ismute: boolean;
   playing: boolean;
 
   constructor(options?: OPTIONS & KeXuan<Pick<Play, "autoplay">>) {
@@ -46,10 +47,11 @@ export default class Play {
     this.loop = false;
     this.volume = 0.5;
     this.format = ["mp3", "flac"];
-    this.autoplay = true;
+    this.autoplay = options.autoplay;
     this.options = options;
     this.ismute = options.mute ?? false;
     this.playing = false;
+    this.setaction = false;
 
     setThatMethods.call(this, options.on);
   }
@@ -64,6 +66,8 @@ export default class Play {
   createHowler() {
     Howler.unload();
     const { loop, src, volume, format, autoplay } = this;
+    // console.log(this.howl);
+
     this.unmountHow();
 
     this.howl = new Howl({
@@ -75,6 +79,8 @@ export default class Play {
       html5: true,
     });
 
+    // console.log(this.howl);
+
     this.onHookMethods(this.howl, this);
 
     if (autoplay) {
@@ -84,7 +90,10 @@ export default class Play {
   }
 
   async init() {
-    this.setActionHandler();
+    if (!this.setaction) {
+      this.setActionHandler();
+      this.setaction = true;
+    }
     this.createHowler();
   }
 
@@ -207,5 +216,17 @@ export default class Play {
 
   get play_volume() {
     return this.volume;
+  }
+
+  get audio_loop() {
+    return this.loop;
+  }
+
+  get how_playing() {
+    if (this.howl) {
+      return this.howl.playing();
+    } else {
+      return false;
+    }
   }
 }

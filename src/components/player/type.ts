@@ -1,4 +1,4 @@
-export type hookname = "onPlayerror" | "onPlay" | "onStop" | "onPause";
+export type hookname = "onPlayerror" | "onPlay" | "onStop" | "onPause"  | "onEnd";
 
 export type SetHook<T extends string> = { [P in T]?: (args: any) => void };
 

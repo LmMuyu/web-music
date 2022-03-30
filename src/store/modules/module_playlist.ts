@@ -5,6 +5,7 @@ interface store {
   songinfo: SongInfo | {};
   iconsize: number;
   songId: number;
+  playlists: any[];
 }
 
 export default class Playlist implements StoreOptions<store> {
@@ -25,6 +26,7 @@ export default class Playlist implements StoreOptions<store> {
       iconsize: 22,
       songinfo: {},
       songId: 0,
+      playlists: [],
     };
   }
 
@@ -37,6 +39,12 @@ export default class Playlist implements StoreOptions<store> {
 
       setSongId(state, id) {
         state.songId = id;
+      },
+
+      musiclists(state, lists: any[]) {
+        if (Array.isArray(lists)) {
+          state.playlists = lists;
+        }
       },
     };
   }
@@ -59,6 +67,10 @@ export default class Playlist implements StoreOptions<store> {
 
       getSongId(state) {
         return () => state.songId;
+      },
+
+      getMusiclists(state) {
+        return () => state.playlists;
       },
     };
   }

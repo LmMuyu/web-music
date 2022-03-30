@@ -8,8 +8,6 @@ import type { AxiosRequestConfig } from "axios";
 import jsCookie from "js-cookie";
 import { sliceurl } from "./response/result";
 
-const cancelMap = new Map<string, CancelTokenSource[]>();
-
 interface CONFIG_DEFAULT {
   defaults?: {
     retry?: number;
@@ -18,21 +16,6 @@ interface CONFIG_DEFAULT {
 }
 
 const csrf_token = jsCookie.get("__csrf");
-
-function httpCancelToken(url: string) {
-  const token = axios.CancelToken;
-  const source = token.source();
-
-  if (cancelMap.has(url)) {
-    const cancelArr = cancelMap.get(url);
-    cancelArr.push(source);
-    cancelMap.set(url, cancelArr);
-  } else {
-    cancelMap.set(url, [source]);
-  }
-
-  return source.token;
-}
 
 function setRetryCount(
   instance: AxiosInstance & CONFIG_DEFAULT,
@@ -43,7 +26,11 @@ function setRetryCount(
 }
 
 export default function request(config: AxiosRequestConfig) {
-  const cancelToken = httpCancelToken(config.url);
+  // const cancelToken = httpCancelToken({
+  //   url: config.url,
+  //   query: config.params,
+  //   params: config.data,
+  // });
   const isget = (config.method ?? "GET").toLocaleUpperCase() === "GET";
 
   const instance = axios.create({
@@ -55,7 +42,7 @@ export default function request(config: AxiosRequestConfig) {
     },
     timeout: 10000,
     withCredentials: true,
-    cancelToken,
+    // cancelToken,
   });
 
   if (isget) {

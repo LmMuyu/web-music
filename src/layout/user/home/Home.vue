@@ -11,7 +11,7 @@
     <ElMain class="container_main">
       <div class="flex" style="height: 30vh">
         <div class="w-1/3">
-          <HomeLLikeMusic :linkelen="linkeLen"></HomeLLikeMusic>
+          <HomeLLikeMusic :linkelen="linkeLen" @playermusic="playermusic"></HomeLLikeMusic>
         </div>
         <div class="w-2/3">
           <HomeLLinkeLists :linkeLists="linkeLists" />
@@ -40,6 +40,9 @@ import { ref, shallowRef } from "@vue/reactivity";
 import { useRoute } from "vue-router";
 import { useStore } from "vuex";
 
+import { getMusicDetail } from "../../../api/playList";
+import { musicDetail } from "../../../utils/musicDetail";
+import HomeLLinkeListsPlay from "./hooks/HomeLLinkeListsPlay";
 import { obtainUserPlayList, llikelist, subArtist, getCloud } from "../../../api/user";
 
 import { ElContainer, ElMain, ElHeader, ElAvatar } from "element-plus";
@@ -49,8 +52,6 @@ import HomeLLikeMusic from "./components/HomeLLikeMusic.vue";
 import HomeHeadSelect from "./components/HomeHeadSelect.vue";
 import HomeLLinkeLists from "./components/HomeLLinkeLists.vue";
 import HomeCloudDisk from "./components/HomeCloudDisk.vue";
-import { getMusicDetail } from "../../../api/playList";
-import { musicDetail } from "../../../utils/musicDetail";
 
 const route = useRoute();
 const store = useStore();
@@ -62,9 +63,11 @@ const artistlist = ref([]);
 const cloudDiskData = ref([]);
 const userinfo = ref<any>({});
 const songlist = ref<any[]>([]);
-const linkeLists = ref<any[]>([]);
+const linkeLists = ref<musicDetail[]>([]);
 const contentComps = shallowRef<any>(HomeSongList);
 const selectTag = ref<"all" | "linke" | "sub" | "">("all");
+
+const { playermusic } = HomeLLinkeListsPlay(linkeLists);
 
 function selectViewComps(select: string) {
   switch (select) {

@@ -1,11 +1,13 @@
-import { Ref, ref, watchEffect, WatchStopHandle } from "vue";
-import { useRoute } from "vue-router";
-import { useStore } from "vuex";
+import { ComponentInternalInstance, Ref, ref, watchEffect, WatchStopHandle } from "vue";
+import { getLyrics, getMusicDetail } from "../../api/playList";
 import filterDate from "../../utils/filterDate";
 import { isType } from "../../utils/methods";
 import { musicDetail } from "../../utils/musicDetail";
 import { useRefNegate } from "../../utils/useRefNegate";
+import { setIndexDBAAllDataToHowlLists, twoSearch, watchMusicinfo } from "./methods";
 import Play from "./Play";
+
+type compinstance = ComponentInternalInstance;
 
 interface staticPlaySeekMethods {
   (): Ref<number>;
@@ -14,6 +16,7 @@ interface staticPlaySeekMethods {
 
 interface HOWLOPTIONS {
   currentIndexBackFn: (index: number) => void;
+  musicinfoRef: Ref<musicDetail>;
 }
 
 // const islogin = useStore().getters["login/getIslogin"];
@@ -22,72 +25,92 @@ function filterDurationTime(dt: number) {
   return filterDate(dt);
 }
 
-function fetchServeBlobData(id: number): string {
-  return "";
-}
-
-export default function Howl(songlists: musicDetail[], options: HOWLOPTIONS) {
+const Howl = (options: HOWLOPTIONS, ctx: compinstance) => {
   let timeseek = null;
   let currIndex = 0;
-  let preIndex = currIndex;
-  let autoplay = initAutoPlay();
+  let autoplay = true;
   let ismove = false;
   let initfirst = false;
+  let playlistsLen = 0;
   const playtime = ref(0);
-  const palylists = ref<musicDetail[]>(songlists.slice(0));
-  const { countRef: isplay, negate: changePlayIcon } = useRefNegate(autoplay);
+  const maxTime = ref(0);
+  const palylists = ref<musicDetail[]>([]);
   let stopWatch: WatchStopHandle | null = null;
+  const lyricsmap = new Map<number, string>();
+  let watchTheMusicInfo = JSON.parse(JSON.stringify(options.musicinfoRef.value ?? {}));
+  const { countRef: isplay, negate: changePlayIcon } = useRefNegate(autoplay);
+
+  watchMusicinfo(options.musicinfoRef, maxTime);
 
   const how = new Play({
     on: {
-      onPlay(playOrsoundid?: boolean | number | undefined) {
-        typeof playOrsoundid === "boolean" ? (isplay.value = playOrsoundid) : (isplay.value = true);
+      onPlay() {
+        console.log("play");
+        isplay.value = true;
+        play();
       },
-      onPlayerror,
+      onPause() {
+        console.log("pause");
+
+        isplay.value = false;
+      },
+      onPlayerror(err) {
+        console.log(err);
+      },
+      onEnd() {
+        playSeek.clear();
+        mmusicEndNext();
+      },
     },
     autoplay,
   });
 
-  function onPlayerror() {}
+  function mmusicEndNext() {
+    const mitt = ctx.appContext.config.globalProperties["mittBus"];
+    mitt.emit("musicend");
+
+    if (!how.audio_loop) {
+      nextMusic();
+    }
+  }
 
   function createSrc(id: number) {
     return `https://music.163.com/song/media/outer/url?id=${id}.mp3`;
   }
 
   function playSrcSet(index: number) {
-    const { id } = palylists.value[index];
-    if (!id) return;
+    return new Promise(async (resolve) => {
+      const musicdetail = palylists.value[index];
+      if (!musicdetail.id) return;
 
-    // if (islogin) {
-    //   how.setSrc(fetchServeBlobData(id));
-    // } else {
-    // }
-    how.setSrc(createSrc(id));
-    options?.currentIndexBackFn(index);
-  }
-
-  function initAutoPlay() {
-    // console.log(useRoute().path);
-    return useRoute().path === "/playlist" ? true : false;
+      musicFoundation(musicdetail);
+      // if (islogin) {
+      //   how.setSrc(fetchServeBlobData(id));
+      // } else {
+      // }
+      how.setSrc(createSrc(musicdetail.id));
+      resolve(true);
+      options?.currentIndexBackFn(index);
+    });
   }
 
   function nextMusic() {
+    currIndex += 1;
     if (currIndex > palylists.value.length - 1) {
       currIndex = 0;
-    } else {
-      currIndex += 1;
     }
 
+    playtime.value = 0;
     playSrcSet(currIndex);
   }
 
   function preveMusic() {
-    if (currIndex === 0) {
+    currIndex -= 1;
+    if (currIndex < 0) {
       currIndex = palylists.value.length - 1;
-    } else {
-      currIndex--;
     }
 
+    playtime.value = 0;
     playSrcSet(currIndex);
   }
 
@@ -109,7 +132,6 @@ export default function Howl(songlists: musicDetail[], options: HOWLOPTIONS) {
   playSeek.clear = function () {
     stopWatch?.();
     stopWatch = null;
-
     if (!timeseek) return;
     clearInterval(timeseek);
     timeseek = null;
@@ -119,22 +141,43 @@ export default function Howl(songlists: musicDetail[], options: HOWLOPTIONS) {
     timeseek = setInterval(() => {
       const time = how.time_seek();
       console.log(time);
+      documentTitle(twoSearch(time, lyricsmap));
       playtime.value = time ? time : playtime.value;
     }, 1000);
   }
 
-  const play = () => {
-    changePlayIcon();
+  function documentTitle(lrctime: number) {
+    // console.log(lrctime);
+    const lrc = lyricsmap.get(lrctime);
+
+    if (lrc) {
+      const musicdetail = options.musicinfoRef.value;
+      document.title = `${musicdetail.name}-${lrc}`;
+    } else {
+      console.warn(lrctime + ":" + lrc);
+    }
+  }
+
+  function play() {
+    if (!how.how_playing) {
+      changePlayIcon();
+    }
+
     playSeek.clear();
-    playSeek();
     how.play();
-  };
+    playSeek();
+  }
+
   const stop = () => {
     changePlayIcon();
     how.stop();
   };
+
   const pause = () => {
-    changePlayIcon();
+    if (!how.how_playing) {
+      changePlayIcon();
+    }
+
     playSeek.clear();
     how.pause();
   };
@@ -151,7 +194,7 @@ export default function Howl(songlists: musicDetail[], options: HOWLOPTIONS) {
     return howVolume;
   }
 
-  function setPlayLists(lists: any[] | any) {
+  function setImmdPlayLists(lists: any[] | any) {
     palylists.value.unshift(...(isType(lists) === "Array" ? lists : [lists]));
   }
 
@@ -162,31 +205,85 @@ export default function Howl(songlists: musicDetail[], options: HOWLOPTIONS) {
 
   function moveMusicFirst(songinfo: musicDetail) {}
 
-  watchEffect(() => {
-    if (palylists.value.length) {
-      console.log({ currIndex, preIndex });
-      if (currIndex !== preIndex || !initfirst) {
-        initfirst = true;
-        playSrcSet(currIndex);
-        preIndex = currIndex;
+  function watchImmediatelyPlayMusics() {
+    let isonewatch = true;
+    watchEffect(async () => {
+      if (palylists.value.length && palylists.value.length !== playlistsLen && !isonewatch) {
+        playlistsLen = palylists.value.length;
+        const firstListsMusicData = palylists.value[0];
+
+        if (firstListsMusicData.id !== watchTheMusicInfo.id || !initfirst) {
+          initfirst = true;
+          playSrcSet(0);
+        }
+      } else {
+        isonewatch = false;
       }
+    });
+  }
+  function watchLaterPlayQueue() {}
+
+  function musicFoundation(musicdetail: musicDetail) {
+    if (musicdetail !== options.musicinfoRef.value) {
+      options.musicinfoRef.value = musicdetail;
+      watchTheMusicInfo = musicdetail;
     }
-  });
 
-  window.addEventListener("unload", how.unWindowHowler.bind(how), false);
+    getLyrics(String(musicdetail.id)).then((lyrics) => {
+      const lrc = lyrics.data.lrc.lyric;
+      setmaplyrics(lrc);
+    });
+  }
 
+  async function retMusicData(musicifno: any) {
+    if (!(musicifno instanceof musicDetail)) {
+      const reqdata = await getMusicDetail(musicifno.id);
+      const song = reqdata.data.songs[0];
+      const songInfo = new musicDetail(song);
+
+      return songInfo;
+    } else {
+      return true;
+    }
+  }
+
+  function setmaplyrics(lrc: string) {
+    const lrcworker = new Worker("src/worker/lrc.js");
+    lyricsmap.clear();
+
+    lrcworker.onmessage = function ({ data }) {
+      if (data === "close") {
+        lrcworker.terminate();
+      } else {
+        lyricsmap.set(data.showtime, data.lrc);
+      }
+    };
+
+    lrcworker.postMessage(lrc);
+  }
+
+  function onEvent() {
+    window.addEventListener("unload", how.unWindowHowler.bind(how), false);
+  }
+
+  onEvent();
+  setIndexDBAAllDataToHowlLists(setImmdPlayLists, watchImmediatelyPlayMusics);
   return {
-    isplay,
     seek,
     play,
     stop,
     pause,
+    isplay,
     volume,
-    preveMusic,
+    maxTime,
     playSeek,
+    palylists,
+    preveMusic,
     nextMusic,
-    setPlayLists,
+    setImmdPlayLists,
     initCurrentIndex,
     filterDurationTime,
   };
-}
+};
+
+export default Howl;

@@ -60,8 +60,8 @@ export class musicDetail {
   constructor(options: MusicDetailOption) {
     const { id, name, picUrl, ar } = this.runMusicDetail(options);
 
-    this.id = id;
-    this.name = name;
+    this.id = options.id;
+    this.name = options.name;
     this.picUrl = picUrl;
     this.singer = ar;
     this.singerInfo = this.setSingerInfo(ar);

@@ -1,4 +1,4 @@
-import { CancelToken, CancelTokenSource } from "axios";
+import axios, { CancelToken, CancelTokenSource } from "axios";
 
 interface CONFIG_DEFAULT {
   retry?: number;
@@ -62,3 +62,14 @@ export function cancelHttpRequest(url: string, map: CANCEL_MAP, meg?: string) {
     }
   }
 }
+
+const cancelTokenMap = new Map<number, CancelTokenSource>();
+
+export function httpCancelToken<T>(options: T): CancelToken {
+  const token = axios.CancelToken;
+  const source = token.source();
+
+  return source.token;
+}
+
+function crcCheck(requestDorP: any) {}
