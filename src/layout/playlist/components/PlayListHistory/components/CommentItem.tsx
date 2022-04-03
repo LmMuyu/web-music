@@ -20,7 +20,7 @@ export default function CommentItem(props: PROPSTYPE) {
 
   function ChildBeReplied() {
     return (
-      <div class="flex flex-col  ">
+      <div class="flex flex-col">
         <div class="w-full">
           <div
             style={{

@@ -12,17 +12,20 @@
           <span class="text-base">{{ title }}</span>
         </div>
       </ElHeader>
-      <ElMain class="relative h-full parser">
-        <div class="absolute top-0 left-0 w-full h-full overflow-y-scroll scrollbar">
+      <el-main v-if="loading" class="w-full h-full flex justify-center items-center">
+        <loading></loading>
+      </el-main>
+      <el-main v-else class="relative h-full parser">
+        <BetterScroll class="absolute top-0 left-0 w-full h-full">
           <component
             v-for="(item, index) in data"
             :key="index"
             :scopedData="item"
             :is="compId"
           ></component>
-        </div>
-      </ElMain>
-      <ElFooter v-if="showfooter" class="flex items-end">
+        </BetterScroll>
+      </el-main>
+      <ElFooter v-if="showfooter" class="flex">
         <el-pagination
           ref="paging"
           v-model:currentPage="curPage"
@@ -32,7 +35,7 @@
           :page-size="size"
           :pager-count="11"
           layout="prev, pager, next"
-          :total="1000"
+          :total="total"
           class="flex items-center justify-center"
         >
         </el-pagination>
@@ -41,14 +44,16 @@
   </ElDrawer>
 </template>
 <script setup lang="ts">
-import { defineProps } from "@vue/runtime-core";
+import { defineProps, shallowRef, watch, watchEffect } from "@vue/runtime-core";
 import { computed, isRef, nextTick, onMounted, onUnmounted, PropType, ref } from "vue";
 
 import { ElDrawer, ElContainer, ElHeader, ElMain, ElFooter, ElPagination } from "element-plus";
+import Loading from "../../../../components/svgloading/SvgLoading.vue";
 import HistoryItem from "./components/HistoryItem.vue";
 import CommentItem from "./components/CommentItem";
 
 import type { Include } from "./type";
+import BetterScroll from "../../../../components/betterscroll/BetterScroll.vue";
 
 const props = defineProps({
   title: {
@@ -86,16 +91,17 @@ const props = defineProps({
 const curPage = ref(1);
 const paging = ref<typeof ElPagination | null>(null);
 const showfooter = ref(false);
+const loading = ref(true);
+const compId = shallowRef<typeof HistoryItem | typeof CommentItem>(CommentItem);
 
 //@ts-ignore
 const data = computed(() => props.record.allData?.value ?? props.record.allData);
-const compId = computed(() => (props.title === "历史记录" ? HistoryItem : CommentItem));
 
 const isopen = computed(() => isRef(props.record.isopen));
 const onClosed = () => props.unmountApp();
 
 const ishistory = computed(() => props.title === "历史记录");
-const containerWidth = computed(() => (ishistory.value ? "25%" : "70%"));
+const containerWidth = computed(() => (ishistory.value ? "25%" : "50%"));
 
 function showFooterRef() {
   if (!showfooter.value) {
@@ -108,6 +114,7 @@ function showFooterRef() {
 showFooterRef();
 
 let muObserve: MutationObserver | null;
+
 function setPagerClass() {
   const el = paging.value.$el as HTMLElement;
   if (!el) {
@@ -166,6 +173,30 @@ function setPagerClass() {
     childList: true,
   });
 }
+
+function loadingComp() {
+  watchEffect(() => {
+    compId.value = props.title === "历史记录" ? HistoryItem : CommentItem;
+  });
+}
+
+loadingComp();
+
+watch(
+  () => props.record,
+  (newvalue) => {
+    console.log(newvalue);
+
+    if (Object.keys(newvalue).length > 0) {
+      loading.value = false;
+    } else {
+      loading.value = true;
+    }
+  },
+  {
+    immediate: true,
+  }
+);
 
 onMounted(() => {
   nextTick(() => {

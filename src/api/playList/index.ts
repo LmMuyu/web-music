@@ -1,10 +1,4 @@
 import request from "../../utils/request";
-import stroe from "../../store";
-import LRU from "../../layout/explore/LRUCache";
-import { disposeLRU } from "./dispose";
-
-const lru = new LRU();
-let commentMusicId = 0;
 
 export function getMusicUrl(id: string) {
   return request({
@@ -71,19 +65,7 @@ export async function commentMusic(
   before?: number,
   limit: number = 20
 ) {
-  if (commentMusicId !== id) {
-    lru.clear();
-    commentMusicId = id;
-  }
-
-  const dataNode = disposeLRU(lru, offset);
-  // console.log(dataNode);
-
-  if (dataNode !== -1) {
-    return dataNode.value;
-  }
-
-  const data = await request({
+  return request({
     url: "/comment/music",
     params: {
       id,
@@ -92,11 +74,6 @@ export async function commentMusic(
       ...(before ? { before } : {}),
     },
   });
-
-  disposeLRU(lru, offset, data);
-  console.log(lru.mapAllData);
-
-  return data;
 }
 
 function urlBlob(url: string) {

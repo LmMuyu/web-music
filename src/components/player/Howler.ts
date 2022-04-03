@@ -15,7 +15,7 @@ interface staticPlaySeekMethods {
 }
 
 interface HOWLOPTIONS {
-  currentIndexBackFn: (index: number) => void;
+  currentIndexBackFn: (index: number, mid: number) => void;
   musicinfoRef: Ref<musicDetail>;
 }
 
@@ -90,7 +90,7 @@ const Howl = (options: HOWLOPTIONS, ctx: compinstance) => {
       // }
       how.setSrc(createSrc(musicdetail.id));
       resolve(true);
-      options?.currentIndexBackFn(index);
+      options?.currentIndexBackFn(index, musicdetail.id);
     });
   }
 

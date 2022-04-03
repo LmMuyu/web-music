@@ -17,11 +17,7 @@
           ></AudioAndVideoControls>
         </el-col>
         <el-col :span="12" class="flex self-center h-full">
-          <PlayMusicTime
-            :starttime="audioPlayTime"
-            :maxtime="maxTime"
-            class="w-full"
-          >
+          <PlayMusicTime :starttime="audioPlayTime" :maxtime="maxTime" class="w-full">
             <AudioSlider
               :starttime="audioPlayTime"
               :mintime="0"
@@ -75,7 +71,6 @@ import {
   computed,
   onMounted,
   getCurrentInstance,
-  watch,
 } from "vue";
 import { useStore } from "vuex";
 
@@ -203,8 +198,13 @@ function cursourEnterSlider(e: MouseEvent) {
   }
 }
 
-function currentMusicPlayIndex(index: number) {
+async function currentMusicPlayIndex(index: number, mid: number) {
   console.log(index);
+  const data = await commentMusic(mid, 1, 0, MAX_LIMIT);
+
+  if (data) {
+    commentMusicThenFn(data);
+  }
 }
 
 function currentChange(index: number) {
@@ -241,7 +241,7 @@ function openCommentList() {
     "current-change": currentChange,
     "next-click": changePageIndex,
     "prev-click": changePageIndex,
-    total: toRef(playListHistoryOptions, "total"),
+    total: toRef(playListHistoryOptions, "total").value,
     size: MAX_LIMIT,
   });
 }
@@ -256,6 +256,8 @@ const storeMid = computed<number>(store.getters["playlist/getSongId"]);
 watchEffect(async () => {
   try {
     if (storeMid.value && storeMid.value !== mid) {
+      console.log(mid);
+
       mid = storeMid.value;
       const findIndex = palylists.value.findIndex((value) => value.id === mid);
 
@@ -277,12 +279,6 @@ watchEffect(async () => {
 
       enterAudioActive();
       leaveTimeout();
-
-      const data = await commentMusic(mid, 1, 0, MAX_LIMIT);
-
-      if (data) {
-        commentMusicThenFn(data);
-      }
 
       (await dexie).put(songInfo.id, songInfo);
       setImmdPlayLists(songInfo);

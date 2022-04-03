@@ -11,21 +11,21 @@
   </div>
 </template>
 <script lang="js">
-import { defineComponent, getCurrentInstance, nextTick, onMounted, onUnmounted, ref, watchEffect } from 'vue';
+import { defineComponent, getCurrentInstance, nextTick, onBeforeMount, onMounted, onUnmounted, ref, watchEffect } from 'vue';
 import useLoadNetworkRes from "../../utils/useLoadNetworkRes"
-
 
 export default defineComponent({
   props: {
     class: String
   },
   setup(props, { expose }) {
+    const src = "https://cdn.jsdelivr.net/npm/better-scroll@2.4.2/dist/better-scroll.esm.js"
     const viewport = ref(null)
     const viewportHeight = ref(0)
-    const { loadnetworkmes, loading, instance } = useLoadNetworkRes("https://cdn.jsdelivr.net/npm/better-scroll@2.4.2/dist/better-scroll.esm.js")
+    let statusPrmosie = ref(null)
+
     const ctx = getCurrentInstance()
     let BS = null
-
 
     function disable() {
       console.log(BS);
@@ -44,72 +44,86 @@ export default defineComponent({
       }
     })
 
-    function mutationSubtree(contentport, BS) {
-      if (contentport) {
-        let timer = null
 
-        const mutation = new MutationObserver((mutationlists) => {
-          if (timer) {
-            clearTimeout(timer)
-            timer = null
+
+    useLoadNetworkRes(src).then(({ loadResult, module, message }) => {
+      betterBscroll(module.value, loadResult.value, message)
+    }, (err) => {
+      console.log(err);
+    })
+
+
+    function betterBscroll(module, loadResult, message) {
+      if (typeof loadResult === "boolean" && loadResult && module) {
+        if (!viewport.value) return
+        const BScroll = module
+        BS = new BScroll(viewport.value, { mouseWheel: true, bounce: false, click: true })
+
+        const stop = watchEffect(() => {
+          if (statusPrmosie.value && statusPrmosie.value instanceof Promise) {
+            console.log(true);
+            statusPrmosie.value.then(() => {
+              console.log("statusPrmosie then");
+              BS.refresh()
+            })
+
+            Promise.resolve(() => stop())
           }
-
-          timer = setTimeout(() => {
-            BS.refresh()
-          }, 20);
         })
 
+      } if (typeof loadResult === "boolean" && !loadResult) {
+        console.warn("better-scrol:" + message);
+      }
+    }
 
-        nextTick().then(() => {
+    function mutationSubtree(contentport) {
+      return new Promise((resolve) => {
+        console.log(contentport);
+        if (contentport) {
+          let timer = null
+          const mutation = new MutationObserver((mutationlists) => {
+            console.log(mutationlists);
+            if (timer) {
+              clearTimeout(timer)
+              timer = null
+            }
+
+            timer = setTimeout(() => {
+              resolve(true)
+            }, 20);
+          })
+
+
           mutation.observe(contentport, {
             subtree: true,
             childList: true,
             characterData: true
           })
-        })
-      }
-    }
-
-
-    function betterBscroll() {
-      const stop = watchEffect(() => {
-        if (typeof loading.value === "boolean" && loading.value && loadnetworkmes.sources) {
-          if (!viewport.value) return
-
-
-          const BScroll = instance.value
-          BS = new BScroll(viewport.value, {
-            mouseWheel: true,
-            bounce: false,
-            click: true
-          })
-
-          const content = viewport.value.children[0]
-          mutationSubtree(content, BS)
-
-          nextTick(stop)
-        } if (typeof loading.value === "boolean") {
-          console.warn(loadnetworkmes.message);
-          nextTick(() => stop())
         }
+
       })
+
     }
 
-    onMounted(() => {
-      nextTick(betterBscroll)
+
+    onBeforeMount(() => {
+      if (viewport.value) {
+        statusPrmosie.value = mutationSubtree(viewport.value.children[0])
+        const div = document.createElement("div")
+        viewport.value.children[0].appendChild(div)
+      } else {
+        console.error("无法获取viewport视口，无法实例化BScroll。viewport：", viewport.value);
+      }
     })
-
-
-    onUnmounted(() => {
-      BS.destroy()
-    })
-
 
     expose({
       disable,
       enable
     })
 
+    onUnmounted(() => {
+      BS.destroy()
+    })
 
     return {
       viewport,
