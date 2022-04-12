@@ -17,12 +17,7 @@
       </el-main>
       <el-main v-else class="relative h-full parser">
         <BetterScroll class="absolute top-0 left-0 w-full h-full">
-          <component
-            v-for="(item, index) in data"
-            :key="index"
-            :scopedData="item"
-            :is="compId"
-          ></component>
+          <component v-for="(item, index) in data" :key="index" :scopedData="item" :is="compId"></component>
         </BetterScroll>
       </el-main>
       <ElFooter v-if="showfooter" class="flex">
@@ -36,9 +31,8 @@
           :pager-count="11"
           layout="prev, pager, next"
           :total="total"
-          class="flex items-center justify-center"
-        >
-        </el-pagination>
+          class="flex justify-center"
+        ></el-pagination>
       </ElFooter>
     </ElContainer>
   </ElDrawer>
@@ -72,9 +66,9 @@ const props = defineProps({
       Include<typeof ElPagination, "prev-click" | "next-click" | "current-change">
     >,
     default: () => ({
-      "prev-click": () => {},
-      "next-click": () => {},
-      "current-change": () => {},
+      "prev-click": () => { },
+      "next-click": () => { },
+      "current-change": () => { },
     }),
   },
   size: {

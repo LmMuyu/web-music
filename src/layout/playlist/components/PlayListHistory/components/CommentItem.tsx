@@ -45,7 +45,7 @@ export default function CommentItem(props: PROPSTYPE) {
             </div>
           </ElCol>
         )}
-        <ElCol class="text-sm" span={isBeRepliedComp ? 24 : 18}>
+        <ElCol class="text-sm w-full" span={isBeRepliedComp ? 24 : 18}>
           <div>
             <span>{scopedData.user.nickname}：</span>
             <span style="color:#4F4F4F;">{scopedData.content}</span>

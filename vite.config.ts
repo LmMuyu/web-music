@@ -101,7 +101,7 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
           target: "https://netease-cloud-music-api-chi-ashy.vercel.app",
           changeOrigin: true,
           rewrite(path) {
-            console.log(path);
+            // console.log(path);
             return path;
           },
         },
