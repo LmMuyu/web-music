@@ -5,12 +5,12 @@
     </template>
     <template #fallback>
       <div class="flex justify-center items-center h-full w-full">
-        <svg-loading />
+        <loading-icon />
       </div>
     </template>
   </Suspense>
 </template>
 <script setup lang="ts">
-import SvgLoading from "../svgloading/SvgLoading.vue";
+import LoadingIcon from "../svgloading/SvgLoading.vue";
 </script>
 <style scoped lang="scss"></style>

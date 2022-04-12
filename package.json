@@ -1,6 +1,7 @@
 {
   "name": "web-music",
   "version": "0.0.0",
+  "main": "index.js",
   "author": {
     "email": "1538993458@qq.com",
     "name": "LmMuyu"
@@ -24,7 +25,6 @@
     "vuex": "^4.0.0"
   },
   "devDependencies": {
-    "vite": "2.6.2",
     "@types/howler": "^2.2.4",
     "@types/js-cookie": "^2.2.6",
     "@types/md5": "^2.3.0",
@@ -38,10 +38,10 @@
     "sass": "^1.32.8",
     "typescript": "^4.1.3",
     "typescript-styled-plugin": "^0.15.0",
-    "vite-plugin-style-import": "^0.9.0",
+    "vite": "^2.6.2",
+    "vite-plugin-style-import": "^2.0.0",
     "vite-plugin-svg-icons": "^2.0.1",
     "vue-tsc": "^0.0.8"
   },
-  "main": "index.js",
   "license": "MIT"
 }

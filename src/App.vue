@@ -7,14 +7,13 @@
 
 <script setup lang="ts">
 import { provide, ref, computed, watchEffect } from "vue";
-import { NavigationGuardNext, useRouter } from "vue-router";
+import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 
 import Audio from "./components/player/Audio.vue";
 import HtmlMain from "./layout/main/Main.vue";
 
 import { loginStateus } from "./api/app/login";
-import { promptbox } from "./components/promptBox";
 import { useWatchRoutePath } from "./utils/useWatchHost";
 
 import type { musicDetail } from "./utils/musicDetail";

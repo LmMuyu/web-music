@@ -1,33 +1,17 @@
-import vite, { CSSOptions, loadEnv } from "vite";
+import { loadEnv } from "vite";
 import styleImport from "vite-plugin-style-import";
 import rollupOptions from "./vite/rollupOptions";
 import vueJsx from "@vitejs/plugin-vue-jsx";
 import { createSvgIconsPlugin } from "vite-plugin-svg-icons";
 import createAlias from "./vite/alias";
 import vue from "@vitejs/plugin-vue";
+import { readFileSync } from "fs";
 import path from "path";
-import os from "os";
-
-// import { preloadStyleCss } from "./vite/plugins";
 
 import type { ConfigEnv, UserConfig } from "vite";
-import { readFileSync } from "fs";
 
 const privatekey = readFileSync(path.join(process.cwd(), "/public/server_key.pem"), "utf-8");
 const publiccer = readFileSync(path.join(process.cwd(), "/public/server.crt"), "utf-8");
-
-const cssOptions: CSSOptions = {
-  preprocessorOptions: {
-    css: {
-      additionalData: ['@import "./src/css/normalize.css";'],
-    },
-    scss: {
-      additionalData: ['@import "./src/index.scss";'],
-    },
-  },
-};
-
-const hostIp = os.networkInterfaces()["以太网"][1].address;
 
 const aliasList = createAlias([
   ["src/", "/src"],
@@ -39,12 +23,10 @@ const aliasList = createAlias([
   ["vue", "vue/dist/vue.esm-bundler.js"],
 ]);
 
-export default ({ command, mode }: ConfigEnv): UserConfig => {
+export default ({ mode }: ConfigEnv): UserConfig => {
   const root = process.cwd();
   const env = loadEnv(mode, root);
-  const { VITE_PROXY, VITE_PORT, VITE_HOST, VITE_REQUEST_IP } = env;
-
-  console.log(VITE_REQUEST_IP);
+  const { VITE_PORT, VITE_HOST } = env;
 
   return {
     plugins: [
@@ -68,20 +50,28 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
         ],
       }),
       createSvgIconsPlugin({
-        iconDirs: [path.join(process.cwd(), "/src/assets/xgplayerstyle/.xgplayer/skin/assets")],
+        iconDirs: [path.join(__dirname, "/src/assets")],
       }),
     ],
-    css: cssOptions,
+    css: {
+      preprocessorOptions: {
+        css: {
+          additionalData: ['@import "./src/css/normalize.css";'],
+        },
+        scss: {
+          additionalData: ['@import "./src/index.scss";'],
+        },
+      },
+    },
     resolve: {
       alias: [...aliasList],
     },
     build: {
       rollupOptions,
     },
-
     server: {
       port: Number(VITE_PORT),
-      host: "127.0.0.1",
+      host: VITE_HOST,
       https: {
         key: privatekey,
         cert: publiccer,
@@ -91,8 +81,6 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
           target: "https://music.163.com",
           changeOrigin: true,
           rewrite(path) {
-            console.log(path);
-
             path = path.replace(/^\/music/, "");
             return path;
           },
@@ -101,6 +89,8 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
           target: "https://netease-cloud-music-api-chi-ashy.vercel.app",
           changeOrigin: true,
           rewrite(path) {
+            console.log(path);
+
             // console.log(path);
             return path;
           },

@@ -18,7 +18,6 @@ import {
   defineComponent,
   getCurrentInstance,
   nextTick,
-  onBeforeMount,
   onMounted,
   onUnmounted,
   ref,
