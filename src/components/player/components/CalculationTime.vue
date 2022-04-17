@@ -1,8 +1,8 @@
 <template>
   <div class="flex justify-center items-center px-4">
-    <span class="p-1 text-xs">{{ minute }}</span>
+    <span class="p-1 text-xs">{{ playerTime[0] }}</span>
     <span class="p-1 text-xs">:</span>
-    <span class="p-1 text-xs">{{ second }}</span>
+    <span class="p-1 text-xs">{{ playerTime[1] }}</span>
   </div>
 </template>
 
@@ -10,20 +10,20 @@
 import { ref, watchEffect } from "vue";
 import filterDate from "../../../utils/filterDate";
 
+type minute = string;
+type second = string;
+
 const props = defineProps({
   time: {
     type: Number,
-    default: 0,
+    depfault: 0,
   },
 });
 
-const minute = ref([]);
-const second = ref([]);
+const playerTime = ref<[minute, second]>(["0", "0"]);
 
 watchEffect(() => {
-  const deta = filterDate(props.time).split(":");
-  minute.value = deta[0];
-  second.value = deta[1];
+  playerTime.value = filterDate(props.time).split(":") as [minute, second];
 });
 </script>
 <style scoped lang="scss"></style>

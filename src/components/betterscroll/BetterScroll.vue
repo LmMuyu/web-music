@@ -34,9 +34,9 @@ export default defineComponent({
     const src = "https://cdn.jsdelivr.net/npm/better-scroll@2.4.2/dist/better-scroll.esm.js";
     const viewport = ref(null);
     const viewportHeight = ref(0);
-    const capHeight = ref(0)
+    const capHeight = ref(0);
     let statusPrmosie = ref(null);
-    let thenStatus = ref<"pending" | "fulfilled">("pending")
+    let thenStatus = ref<"pending" | "fulfilled">("pending");
 
     const ctx = getCurrentInstance();
     let BS = null;
@@ -74,9 +74,14 @@ export default defineComponent({
         BS = new BScroll(viewport.value, { mouseWheel: true, bounce: false, click: true });
 
         const stop = watchEffect(() => {
-          if (statusPrmosie.value && statusPrmosie.value instanceof Promise && thenStatus.value === "fulfilled" && capHeight.value > 0) {
+          if (
+            statusPrmosie.value &&
+            statusPrmosie.value instanceof Promise &&
+            thenStatus.value === "fulfilled" &&
+            capHeight.value > 0
+          ) {
             statusPrmosie.value.then(() => {
-              console.log("statusPrmosie then");
+              // console.log("statusPrmosie then");
               BS.refresh();
 
               Promise.resolve(() => stop());
@@ -100,7 +105,7 @@ export default defineComponent({
             }
 
             timer = setTimeout(() => {
-              resolve(thenStatus.value = "fulfilled");
+              resolve((thenStatus.value = "fulfilled"));
             }, 20);
           });
 
@@ -117,23 +122,20 @@ export default defineComponent({
       BS.destroy();
     });
 
-
     onMounted(() => {
       if (viewport.value) {
-
-        const vnode = slots.default()[0]
+        const vnode = slots.default()[0];
         statusPrmosie.value = mutationSubtree(viewport.value.children[0]);
-        render(vnode, viewport.value.children[0])
+        render(vnode, viewport.value.children[0]);
 
         nextTick(() => {
-          const lists = viewport.value.children[0].children as HTMLElement[]
-          capHeight.value = lists[lists.length - 1].getBoundingClientRect().bottom
-        })
-
+          const lists = viewport.value.children[0].children as HTMLElement[];
+          capHeight.value = lists[lists.length - 1 - 1].getBoundingClientRect().bottom;
+        });
       } else {
         console.error("无法获取viewport视口，无法实例化BScroll。viewport：", viewport.value);
       }
-    })
+    });
 
     expose({
       disable,
@@ -143,7 +145,7 @@ export default defineComponent({
     return {
       viewport,
       viewportHeight,
-      capHeight
+      capHeight,
     };
   },
 });

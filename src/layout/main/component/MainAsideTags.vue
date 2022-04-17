@@ -68,6 +68,8 @@ function watchRetUserData() {
 
     let stop = watchEffect(() => {
       const storedata = watchData.value;
+      console.log(storedata);
+
       const userdata = storedata.data ?? {};
       const type = storedata.type ?? "";
 

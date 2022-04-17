@@ -1,19 +1,19 @@
 <template>
-  <section ref="model" class="rounded-md z-10 absolute opacity shadow" :style="nodeinfo">
-    <el-row class="p-4">
+  <section ref="model" class="rounded-md z-10 absolute -left-4 opacity shadow" :style="nodeinfo">
+    <el-row class="p-4 bordert">
       <MainInfoCard :infoData="infoData" />
     </el-row>
     <div class="whitespace-nowrap p-4 bordert">
       <button class="outline border-none text-sm font-medium" @click="updateLogout">
-        退出登录
-        <span style="color: rgb(116, 185, 255)"> @{{ userdata.nickname }} </span>
+        <span class="font-bold text-lg">退出登录</span>
+        <span style="color: #1da1f2"> @{{ userdata.nickname }} </span>
       </button>
     </div>
 
     <svg width="12" height="8" class="absolute -bottom-2 left">
       <polygon
         points="0,0 12,0 6,8"
-        style="stroke: #99ccff; stroke-width: 1px; fill: #99ccff"
+        style="stroke: #ebeef0; stroke-width: 1px; fill: #ebeef0"
       ></polygon>
     </svg>
   </section>
@@ -40,6 +40,7 @@ const nodeinfo = reactive({
   left: "",
   top: "",
   width: "",
+  background: "#F7F9FA",
 });
 
 async function updateLogout() {
@@ -54,7 +55,7 @@ const userdata = computed(() => {
 
 onMounted(() => {
   nextTick(() => {
-    nodeinfo.left = node.x + "px";
+    nodeinfo.left = "16px";
 
     const height = model.value.clientHeight;
 
@@ -102,7 +103,7 @@ onMounted(() => {
 }
 
 .bordert {
-  border-top: 1px solid #b3d5f8;
+  border-top: 1px solid #beddfc;
 }
 
 .left {

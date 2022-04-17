@@ -7,9 +7,13 @@
     :size="containerWidth"
   >
     <ElContainer class="relative w-full h-full">
-      <ElHeader height="56">
+      <ElHeader height="56" class="flex justify-between">
         <div>
           <span class="text-base">{{ title }}</span>
+        </div>
+        <div>
+          <el-button size="small" @click="showDialog">发表评论</el-button>
+          <Dialog ref="dialog" />
         </div>
       </ElHeader>
       <el-main v-if="loading" class="w-full h-full flex justify-center items-center">
@@ -17,10 +21,15 @@
       </el-main>
       <el-main v-else class="relative h-full parser">
         <BetterScroll class="absolute top-0 left-0 w-full h-full">
-          <component v-for="(item, index) in data" :key="index" :scopedData="item" :is="compId"></component>
+          <component
+            v-for="(item, index) in data"
+            :key="index"
+            :scopedData="item"
+            :is="compId"
+          ></component>
         </BetterScroll>
       </el-main>
-      <ElFooter v-if="showfooter" class="flex">
+      <ElFooter v-if="showfooter" class="flex items-start">
         <el-pagination
           ref="paging"
           v-model:currentPage="curPage"
@@ -41,13 +50,22 @@
 import { defineProps, shallowRef, watch, watchEffect } from "@vue/runtime-core";
 import { computed, isRef, nextTick, onMounted, onUnmounted, PropType, ref } from "vue";
 
-import { ElDrawer, ElContainer, ElHeader, ElMain, ElFooter, ElPagination } from "element-plus";
+import {
+  ElDrawer,
+  ElContainer,
+  ElHeader,
+  ElMain,
+  ElFooter,
+  ElPagination,
+  ElButton,
+} from "element-plus";
+import BetterScroll from "../../../../components/betterscroll/BetterScroll.vue";
+import Dialog from "./components/Dialog.vue";
 import Loading from "../../../../components/svgloading/SvgLoading.vue";
 import HistoryItem from "./components/HistoryItem.vue";
 import CommentItem from "./components/CommentItem";
 
 import type { Include } from "./type";
-import BetterScroll from "../../../../components/betterscroll/BetterScroll.vue";
 
 const props = defineProps({
   title: {
@@ -66,9 +84,9 @@ const props = defineProps({
       Include<typeof ElPagination, "prev-click" | "next-click" | "current-change">
     >,
     default: () => ({
-      "prev-click": () => { },
-      "next-click": () => { },
-      "current-change": () => { },
+      "prev-click": () => {},
+      "next-click": () => {},
+      "current-change": () => {},
     }),
   },
   size: {
@@ -87,6 +105,7 @@ const paging = ref<typeof ElPagination | null>(null);
 const showfooter = ref(false);
 const loading = ref(true);
 const compId = shallowRef<typeof HistoryItem | typeof CommentItem>(CommentItem);
+const dialog = ref(null);
 
 //@ts-ignore
 const data = computed(() => props.record.allData?.value ?? props.record.allData);
@@ -176,11 +195,13 @@ function loadingComp() {
 
 loadingComp();
 
+function showDialog() {
+  dialog.value.visibleDialog();
+}
+
 watch(
   () => props.record,
   (newvalue) => {
-    console.log(newvalue);
-
     if (Object.keys(newvalue).length > 0) {
       loading.value = false;
     } else {

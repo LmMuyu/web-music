@@ -33,5 +33,6 @@ const props = defineProps({
     default: "",
   },
 });
+
 </script>
 <style scoped lang="scss"></style>

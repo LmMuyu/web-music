@@ -140,9 +140,16 @@ const Howl = (options: HOWLOPTIONS, ctx: compinstance) => {
   function setIntervalGetSeek() {
     timeseek = setInterval(() => {
       const time = how.time_seek();
-      console.log(time);
+      // console.log("pre:" + time);
+
+      if (time === undefined) {
+        console.log("undefined");
+        return;
+      }
+
       documentTitle(twoSearch(time, lyricsmap));
       playtime.value = time ? time : playtime.value;
+      // console.log("next:" + playtime.value);
     }, 1000);
   }
 

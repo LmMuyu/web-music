@@ -2,6 +2,7 @@ import { getMusicDetail } from "../../api/playList";
 import mitt, { Emitter } from "mitt";
 import { ActionTree } from "vuex";
 import { computed, watchEffect } from "vue";
+import { follows } from "../../api/user";
 
 enum watchType {
   STOPWATCH = "stopwatch",
@@ -14,6 +15,17 @@ interface WATCHFNOPTIONS {
   watchLoginFn: (iswatchbc: boolean) => void | null;
 }
 
+class follow {
+  nickname: string;
+  uid: number;
+  avatar: string;
+  constructor({ nickname, userId, avatarUrl }) {
+    this.uid = userId;
+    this.avatar = avatarUrl;
+    this.nickname = nickname;
+  }
+}
+
 export interface STATETYPE {
   ids: number[];
   islogin: true | false;
@@ -21,6 +33,7 @@ export interface STATETYPE {
   linkes: Record<string, any>[];
   initStatus: Boolean;
   watch: WATCHFNOPTIONS;
+  follows: follow[];
 }
 
 class login {
@@ -43,6 +56,7 @@ class login {
       ids: [],
       islogin: null,
       userdata: {},
+      follows: [],
       linkes: [],
       handleCountWmap: new WeakMap(),
       initStatus: false,
@@ -86,6 +100,10 @@ class login {
       emitTypeWatchFn(state: STATETYPE, type: watchType) {
         state.watch.stopWatchFnLists.emit(type);
       },
+
+      setFollowsLists(state: STATETYPE, lists: follow[]) {
+        state.follows.push(...lists);
+      },
     };
   }
 
@@ -107,6 +125,16 @@ class login {
           }
         });
       },
+
+      async setFollows(state) {
+        //@ts-ignore
+        const { userID } = state.state.userdata.data;
+        const userFollows = await follows(Number(userID), 1);
+
+        const followLists = userFollows.data.follow.map((followuser) => new follow(followuser));
+
+        state.commit("setFollowsLists", followLists);
+      },
     };
   }
 
@@ -118,6 +146,7 @@ class login {
       getLLinkes: (state: STATETYPE) => () => state.linkes,
       getIslogin: (state: STATETYPE) => state.islogin,
       getIds: (state: STATETYPE) => state.ids,
+      getFollows: (state: STATETYPE) => () => state.follows,
     };
   }
 }

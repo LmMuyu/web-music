@@ -1,5 +1,5 @@
 import { loadEnv } from "vite";
-import styleImport from "vite-plugin-style-import";
+import { ElementPlusResolve, createStyleImportPlugin } from "vite-plugin-style-import";
 import rollupOptions from "./vite/rollupOptions";
 import vueJsx from "@vitejs/plugin-vue-jsx";
 import { createSvgIconsPlugin } from "vite-plugin-svg-icons";
@@ -36,18 +36,21 @@ export default ({ mode }: ConfigEnv): UserConfig => {
         optimize: true,
         enableObjectSlots: false,
       }),
-      styleImport({
-        libs: [
-          {
-            libraryName: "element-plus",
-            resolveStyle(name) {
-              return `element-plus/theme-chalk/${name}.css`;
-            },
-            resolveComponent(name) {
-              return `element-plus/lib/components/${name}`;
-            },
-          },
-        ],
+      // styleImport({
+      //   libs: [
+      //     {
+      //       libraryName: "element-plus",
+      //       resolveStyle(name) {
+      //         return `element-plus/theme-chalk/${name}.css`;
+      //       },
+      //       resolveComponent(name) {
+      //         return `element-plus/lib/components/${name}`;
+      //       },
+      //     },
+      //   ],
+      // }),
+      createStyleImportPlugin({
+        resolves: [ElementPlusResolve()],
       }),
       createSvgIconsPlugin({
         iconDirs: [path.join(__dirname, "/src/assets")],

@@ -39,7 +39,6 @@ export default async function useLoadNetwrokRes<R extends Ref<boolean>>(
       message: "src startWith no http/https error",
     };
   }
-  console.log(true);
 
   try {
     const data = await import(src);

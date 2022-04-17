@@ -4,6 +4,7 @@
       @mouseenter="enterAudio"
       @mouseleave="leaveAudio"
       class="flex items-center h-full w-full px-4 relative bg-white z-50 audio_shadow"
+      v-show="!isLeaveSanSecBelow"
     >
       <el-row class="flex content-center h-full w-full">
         <el-col :span="4" class="flex"><AudioSongInfoShow :musicinfo="musicinfo" /></el-col>
@@ -82,7 +83,6 @@ import { debounce } from "../../utils/debounce";
 import dexieFn from "../../common/dexie";
 import { musicPlayEndZero, sliderstyle } from "./methods";
 import AudioHow from "./Howler";
-// v-show="!isLeaveSanSecBelow"
 
 //@ts-ignore
 import AudioAndVideoControls from "./components/AudioAndVideoControls.vue";
@@ -142,9 +142,12 @@ const {
 
 const musicPosTime = seekTime();
 volume.value = setVolume() * 100;
-
 musicPlayEndZero(ctx, musicPosTime);
-const audioPlayTime = computed(() => Math.round(musicPosTime.value));
+
+const audioPlayTime = computed(() => {
+  const musicTime = Math.round(musicPosTime.value);
+  return musicTime * 1000;
+});
 
 let tiemr = null;
 let isLeaveSanSecBelow = ref<null | boolean>(null);

@@ -84,3 +84,13 @@ export function uploadCloud(formData: FormData) {
     withCredentials: true,
   });
 }
+
+export function follows(uid: number, page: number) {
+  return request({
+    url: "/user/follows",
+    params: {
+      uid,
+      limit: page * 20,
+    },
+  });
+}
