@@ -130,7 +130,7 @@ export default defineComponent({
 
         nextTick(() => {
           const lists = viewport.value.children[0].children as HTMLElement[];
-          capHeight.value = lists[lists.length - 1 - 1].getBoundingClientRect().bottom;
+          capHeight.value = lists[lists.length - 1].getBoundingClientRect().bottom;
         });
       } else {
         console.error("无法获取viewport视口，无法实例化BScroll。viewport：", viewport.value);

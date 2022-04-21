@@ -1,7 +1,6 @@
 import { Ref, ref, unref } from "vue";
 
-import type { StoreOptions, Store } from "vuex";
-import { getUserMessageList as fetchPropleLetter } from "../../api/message";
+import type { StoreOptions } from "vuex";
 
 interface STATE {
   privateLetter: Ref<record[]>;

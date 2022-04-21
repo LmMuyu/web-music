@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import { inject, onMounted, provide, ref } from "vue";
+import { onMounted, provide, ref } from "vue";
 
 import { useMinWh } from "./hooks/useMinWH";
 import { useWatchHost } from "../../utils/useWatchHost";

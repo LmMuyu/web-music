@@ -1,80 +1,90 @@
 <template>
   <ElRow class="flex h-full overflow-hidden relative border_radius">
     <ElCol :span="7" class="solide_border">
-      <MessageUser />
+      <message-user :letterList="letterList" @find-follow-mess="findFollowInfo" />
     </ElCol>
-    <ElCol class="w-full h-full absolute right-0 top-0" :span="17">
-      <!-- <MessageChatBox
-        @emitRequest="onEmitRequest"
-        v-if="privateLetter.viewMsg.length > 0"
-        :viewMsg="privateLetter.viewMsg"
-      />
-      <MessageBackground v-else /> -->
+    <ElCol class="w-full h-full absolute right-0 top-0 bg-white" :span="17">
+      <!-- <MessageChatBox @emitRequest="onEmitRequest" v-if="privateLetter.viewMsg.length > 0"
+        :viewMsg="privateLetter.viewMsg" /> -->
+      <MessageBackground />
     </ElCol>
   </ElRow>
 </template>
 <script setup lang="ts">
-import { reactive, ref } from "@vue/reactivity";
-import { useStore } from "vuex";
+import { ref } from "@vue/reactivity";
 
-import { getUserMessageList, getUserMessage } from "../../api/message";
-import { promptbox } from "../../components/promptBox";
+import { getFollowUserMessage, getSendMsgUser } from "../../api/message";
+import { FocusTheUser } from "./hook/factory";
 import LRU from "../explore/LRUCache";
+import followLetterInfo from "./hook/followLetterInfo";
+import letterDexie from "./hook/letterDexie";
 
 import MessageBackground from "./components/MessageBackground.vue";
 import MessageChatBox from "./components/MessageChatBox.vue";
 import MessageUser from "./components/MessageUser.vue";
 import { ElRow, ElCol } from "element-plus";
 
-const store = useStore();
-const lru = new LRU();
+const dexie = new letterDexie();
+const letterList = ref<FocusTheUser[]>([]);
+// const letterContent =
 
-const privateLetter = reactive({
-  main: [],
-  chatMsgs: [],
-  storeMsg: [],
+const beforePageTime = new Map<number, number[]>();
+
+// 9003
+// 1650190229575
+
+dexie.setLastTimes(9003,159441515)
+
+getSendMsgUser().then((senduser) => {
+  letterList.value = senduser.data.msgs.map((follow) => new FocusTheUser(follow));
 });
 
-const onEmitRequest = async (id: number) => {
-  const chatMsgs = privateLetter.chatMsgs;
-  const storemsg = privateLetter.storeMsg;
+async function findFollowInfo(clickFollowInfo: any) {
+  try {
+    const followMess = await getFollowUserMessage(clickFollowInfo.id);
+    const letterContent: followLetterInfo[] = followMess.data.msgs
+      .map((mse) => new followLetterInfo(mse))
+      .reverse();
 
-  if (chatMsgs[0].id === id) {
-    const result = await getUserMessage(id, chatMsgs[1].length + 5);
-    privateLetter.chatMsgs[1].push(...result.data.msgs.slice(chatMsgs.length + 1));
-
-    lru.put(id, result);
+    setBeforePageTime(clickFollowInfo.id, letterContent);
+    Promise.resolve().then(() => setLetterInfoToIndexDB(clickFollowInfo.id, letterContent));
+  } catch (error) {
+    console.error("无法请求用户私信信息==>", error);
   }
-};
+}
 
-const findViewMsg = (useroptions: Record<string, any>) => {
-  const data = lru.get(useroptions.id);
-  console.log(data);
+function setBeforePageTime(id: number, letterContent: followLetterInfo[]) {
+  const lasttimes = beforePageTime.get(id);
+  beforePageTime.set(
+    id,
+    lasttimes
+      ? [...lasttimes, letterContent[letterContent.length - 1].time]
+      : [letterContent[letterContent.length - 1].time]
+  );
+}
 
-  if (data !== -1) {
-    privateLetter.chatMsgs.push(useroptions, data.value.msgs);
-    return;
-  }
+async function setLetterInfoToIndexDB(uid: number, letterContent: followLetterInfo[]) {
+  const lasttime = letterContent[letterContent.length - 1].time;
+  const res = await dexie.setLetterInfoLists(
+    letterContent.map((value) => ({ uid, lasttime, letterinfo: value }))
+  );
+  console.log(res);
+}
 
-  if (privateLetter.storeMsg.length > 0) {
-    const msgObj = privateLetter.storeMsg.find((v) => v.config.params.uid === useroptions.id);
+function setLetterContent(letterContent: followLetterInfo[]) {}
 
-    if (!msgObj) {
-      return promptbox({
-        title: "无法找到对应用户信息",
-      });
-    }
+function getLetterIndexDBInfo(uid: number, lasttime: number) {}
 
-    lru.put(useroptions.id, msgObj);
-    privateLetter.chatMsgs.length = 0;
-    privateLetter.chatMsgs.push(useroptions, msgObj.data.msgs);
-  }
-};
+function dexieLetterInfos(uid,){
+  
+}
+
 </script>
 <style scoped lang="scss">
 .border_radius {
   box-shadow: 0 0 1px 2px #f5f6fa;
   border-radius: 8px;
+
   .solide_border {
     border-right: 1px solid #f5f6fa;
   }

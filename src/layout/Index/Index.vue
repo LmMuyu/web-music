@@ -1,6 +1,6 @@
 <template>
   <el-container class="h-full" style="background: rgb(245, 248, 255)">
-    <el-header class="bg-white" height="40px">
+    <el-header class="bg-white flex items-center" height="54px">
       <IndexHeaderModule />
     </el-header>
     <el-main class="flex flex-col scrollbar" style="padding: 16px 0 !important">

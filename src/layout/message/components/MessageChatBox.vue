@@ -2,10 +2,7 @@
   <el-container class="h-full">
     <el-header class="flex solide_border">
       <div>
-        <el-avatar
-          :size="42"
-          :src="privateLetter.propleInfo.avatarUrl"
-        ></el-avatar>
+        <el-avatar :size="42" :src="privateLetter.propleInfo.avatarUrl"></el-avatar>
       </div>
       <span class="ml-4">
         <p>{{ privateLetter.propleInfo.nickname }}</p>
@@ -21,37 +18,22 @@
         />
       </div>
     </el-main>
-    <el-footer
-      :height="`${size}px`"
-      class="flex items-cneter solide_border_top"
-    >
-      <MessageFoolterWriteBox v-model:vlaue="modelValue" />
+    <el-footer :height="`${size}px`" class="flex items-cneter solide_border_top">
+      <TextEditor />
     </el-footer>
   </el-container>
 </template>
 <script setup lang="ts">
-import {
-  computed,
-  defineProps,
-  onMounted,
-  ref,
-  nextTick,
-  defineEmits,
-  watch,
-} from "vue";
+import { computed, defineProps, onMounted, ref, nextTick, defineEmits, watch } from "vue";
 
 import { debounce } from "../../../utils/debounce";
 import { size } from "../hook/data";
 
-import MessageFoolterWriteBox from "./MessageFoolterWriteBox.vue";
 import MessageChatBoxItem from "./MessageChatBoxItem.vue";
-import {
-  ElContainer,
-  ElFooter,
-  ElHeader,
-  ElMain,
-  ElAvatar,
-} from "element-plus";
+import { ElContainer, ElFooter, ElHeader, ElMain, ElAvatar } from "element-plus";
+import TextEditor from "vue3-text-editor";
+
+import "vue3-text-editor/css/index.css";
 
 import type { PropType } from "vue";
 import type { PRIVATEPROPLEL_AND_ETTER } from "../type";
@@ -82,10 +64,7 @@ const letterList = computed<any>(() =>
     .reverse()
 );
 
-const ebounceFn = debounce(
-  () => ctxEmit("emitRequest", props.privateLetter.propleInfo.uid),
-  100
-);
+const ebounceFn = debounce(() => ctxEmit("emitRequest", props.privateLetter.propleInfo.uid), 100);
 
 const onScroll = (e: Event) => {
   const el = e.target as HTMLElement;

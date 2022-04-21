@@ -1,94 +1,66 @@
 <template>
-  <ul
-    class="overflow-auto absolute left-0 top-0 w-full h-full track"
-    ref="ulList"
-  >
-    <div class="h-full w-1 z-10 absolute top-0 bottom-0 width_track">
-      <span
-        ref="track_slider"
-        style="height: 4.5rem"
-        class="absolute top-0 left-0 width_slider"
-      >
-      </span>
-    </div>
-    <li
-      class="flex w-full py-3 px-6 cursor-pointer"
+  <better-scroll>
+    <el-row
+      class="flex w-full py-3 px-6 relative"
       v-for="(letter, index) in privateLetterList"
-      :key="letter.fromUser.userId"
-      @click.stop="
-        transitionOffset(
-          $event,
-          toPath.bind(null, index, letter.fromUser.userId)
-        ),
-          findId(
-            letter.fromUser.userId,
-            letter.fromUser.avatarUrl,
-            letter.fromUser.nickname
-          )
+      :key="letter.fromUser.uid"
+      @click.capture="
+        // transitionOffset($event, toPath.bind(null, index, letter.fromUser.uid)),
+        findId(letter.fromUser.uid, letter.fromUser.avatar, letter.fromUser.nickname)
       "
     >
-      <div style="width: 20%" class="flex items-center">
-        <ElAvatar :src="letter.fromUser.avatarUrl" />
-      </div>
-      <div style="width: 80%" class="flex flex-col justify-between">
-        <div class="w-full flex items-center justify-between">
-          <span class="text-sm" style="color: #2f4154">
-            {{ letter.fromUser.nickname }}
-          </span>
-          <span class="text-xs whitespace-nowrap">
-            {{ diffTime(letter.lastMsgTime) }}
-          </span>
-        </div>
-        <div class="w-full flex justify-between">
-          <span
-            :style="{ color: letter.newMsgCount > 0 ? '#556574' : '#a6aeb6' }"
-            style="width: 90%"
-            class="text-xs truncate text"
-            >{{ lastMsg(letter.lastMsg) }}</span
-          >
-          <div style="width: 10%">
+      <a href="javascript:void(;;)" class="absolute top-0 left-0 w-full h-full"></a>
+      <el-col :span="4" class="flex items-center">
+        <ElAvatar :src="letter.fromUser.avatar" />
+      </el-col>
+      <el-col :span="20" class="flex flex-col justify-between">
+        <div class="py-2">
+          <div class="w-full flex items-center justify-between">
+            <span class="text-sm" style="color: #2f4154">
+              {{ letter.fromUser.nickname }}
+            </span>
+            <span class="text-xs whitespace-nowrap">
+              {{ letter.lastMsgTime }}
+            </span>
+          </div>
+          <div class="w-full flex justify-between relative">
             <span
-              v-if="letter.newMsgCount > 0"
-              class="
-                flex
-                justify-center
-                items-center
-                text-sm
-                float-right
-                bg_color
-              "
-              >{{ letter.newMsgCount }}</span
+              :style="{ color: letter.newMsgCount > 0 ? '#556574' : '#a6aeb6' }"
+              class="text-xs truncate text"
+              >{{ letter.lastMsg["msg"] }}</span
             >
+            <div
+              v-if="!(letter.newMsgCount <= 0)"
+              class="flex justify-cneter items-center text-xs w-4 h-4 rounded-xl p-1 text-white"
+              style="background: #409eff"
+            >
+              <span :style="{ transform: `translateX(${spanLeft(letter.newMsgCount)})` }">
+                {{ letter.newMsgCount }}
+              </span>
+            </div>
           </div>
         </div>
-      </div>
-    </li>
-  </ul>
+      </el-col>
+    </el-row>
+  </better-scroll>
 </template>
 <script setup lang="ts">
-import {
-  computed,
-  defineProps,
-  defineEmits,
-  ref,
-  onMounted,
-  nextTick,
-} from "vue";
-import dayjs from "dayjs";
+import { computed, defineProps, defineEmits, ref, onMounted, nextTick } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import { useSlidingTrack } from "../../../utils/useSlidingTrack";
+import { FocusTheUser } from "../hook/factory";
+
+import { ElAvatar, ElRow, ElCol, ElBadge } from "element-plus";
+import BetterScroll from "../../../components/betterscroll/BetterScroll.vue";
 
 import type { PropType } from "vue";
-import type { dayAttribute } from "../../../type";
-
-import { ElAvatar } from "element-plus";
 
 const ctxEmit = defineEmits(["retNicknameInfo"]);
 
 const props = defineProps({
   privateLetterList: {
-    type: Array as PropType<any[]>,
+    type: Array as PropType<FocusTheUser[]>,
     default: () => [],
   },
 });
@@ -99,12 +71,9 @@ const route = useRoute();
 const track_slider = ref<HTMLElement | null>(null);
 const ulList = ref<HTMLElement | null>(null);
 
-const { initTrackPos, transitionOffset, getSliderTrack } = useSlidingTrack(
-  track_slider.value,
-  {
-    direction: "vertical",
-  }
-);
+const { initTrackPos, transitionOffset, getSliderTrack } = useSlidingTrack(track_slider.value, {
+  direction: "vertical",
+});
 
 const findId = (id: number, avatarUrl: string, nickname: string) =>
   ctxEmit("retNicknameInfo", { id, avatarUrl, nickname });
@@ -119,57 +88,18 @@ function toPath(index: number, uid: number) {
   });
 }
 
-const returnDateList = (dateAttribute: dayAttribute) => [
-  dateAttribute.$y,
-  dateAttribute.$M + 1,
-  dateAttribute.$D,
-  dateAttribute.$H,
-  dateAttribute.$m,
-  dateAttribute.$s,
-];
+function spanLeft(count: number) {
+  const countLen = String(count).length;
+  return countLen >= 2 ? "-4px" : "0px";
+}
 
-const lastMsg = computed(() => {
-  return function (mes: string) {
-    const lastMes = JSON.parse(mes);
-    return lastMes["msg"];
-  };
-});
+onMounted(async () => {
+  await nextTick();
 
-const diffTime = computed(() => {
-  return function (time: number) {
-    const now_one = dayjs(time) as unknown as dayAttribute;
-    const now_two = dayjs() as unknown as dayAttribute;
-
-    const now_one_list = returnDateList(now_one);
-    const now_two_list = returnDateList(now_two);
-
-    const list = now_one_list.filter((v) => !now_two_list.includes(v));
-
-    const len = list.length;
-
-    if (len === 1) {
-      return list.join("") + "秒前";
-    } else if (len === 2) {
-      return list[0] + "分前";
-    } else if (len === 3) {
-      return list[0] + "小时前";
-    } else if (len === 4) {
-      return list[0] + "天前";
-    } else if (len === 5) {
-      return `${list[0]}月${list[1]}日`;
-    } else {
-      return ` ${list[0]}年${list[1]}月${list[2]}日`;
-    }
-  };
-});
-
-onMounted(() => {
-  nextTick().then(async () => {
-    if (ulList.value && track_slider.value) {
-      getSliderTrack(track_slider.value);
-      initTrackPos(ulList.value, (route.query?.curindex as any) || 1);
-    }
-  });
+  if (ulList.value && track_slider.value) {
+    getSliderTrack(track_slider.value);
+    initTrackPos(ulList.value, (route.query?.curindex as any) || 1);
+  }
 });
 </script>
 <style scoped lang="scss">

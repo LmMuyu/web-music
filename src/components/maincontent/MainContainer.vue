@@ -5,7 +5,7 @@
         <el-main
           class="h-full absolute top-0 left-0 right-0"
           :style="paddingStyle()"
-          style="z-index: 1"
+          style="z-index: 1; padding-top: 0px"
         >
           <router-view v-slot="{ Component }">
             <keep-alive :max="3">
@@ -13,9 +13,6 @@
             </keep-alive>
           </router-view>
         </el-main>
-        <div class="absolute top-0 left-0 w-full h-5 bg-white z-10" v-if="showtiao"></div>
-        <div class="absolute top-5 left-0 bg-white w-5 h-10 z-10" v-if="showtiao"></div>
-        <div class="absolute top-5 right-0 bg-white w-5 h-10 z-10" v-if="showtiao"></div>
       </el-container>
       <div class="w-full h-full" v-else>
         <router-view v-slot="{ Component }">
@@ -72,7 +69,6 @@ const router = useRouter();
 const route = useRoute();
 
 const isDefault = ref(false);
-const showtiao = ref(true);
 
 const settConInfo = reactive<{
   left: Container;
@@ -101,23 +97,6 @@ function paddingStyle() {
       }
     : value;
 }
-
-async function showtianegatie() {
-  function negate() {
-    const meta = route.meta;
-
-    if (meta && typeof meta.showtiao !== "undefined") {
-      showtiao.value = meta.showtiao as boolean;
-      // console.log(showtiao.value);
-    }
-  }
-
-  await router.isReady();
-  useWatchRoutePath(negate);
-  negate();
-}
-
-showtianegatie();
 
 router.beforeEach((to) => {
   const matched = to.matched;
