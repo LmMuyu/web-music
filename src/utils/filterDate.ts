@@ -1,17 +1,19 @@
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import relativeTime from "dayjs/plugin/relativeTime";
-import updateLocale from "dayjs/plugin/updateLocale";
+import "dayjs/locale/zh-cn";
+
+dayjs.locale("zh-cn");
 
 dayjs.extend(duration);
 dayjs.extend(relativeTime);
-dayjs.extend(updateLocale);
-
-dayjs.updateLocale("cn", {});
 
 export default function (datetime: number, onlySec?: boolean, relativeTime?: boolean) {
+  if (relativeTime) {
+    return retRelativeTime(datetime);
+  }
+
   const time = dayjs.duration(datetime);
-  console.log(dayjs().from(dayjs(datetime)));
 
   const hours = time.hours().toString(); //时
   const min = time.minutes().toString(); //分
@@ -30,4 +32,8 @@ function onlyGetSec(h: string, m: string, s: string) {
   const sec = Number(s);
 
   return hours * 60 * 60 + min * 60 + sec + "";
+}
+
+function retRelativeTime(time: number) {
+  return dayjs(dayjs.unix(time).format("YYYY-MM-DD hh:mm:ss")).fromNow();
 }

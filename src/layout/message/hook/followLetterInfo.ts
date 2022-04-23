@@ -1,10 +1,12 @@
 import filterDate from "../../../utils/filterDate";
 import { User } from "./factory";
 
+import type { LetterMes } from "../type";
+
 export default class followLetterInfo {
   reltiveTime: string;
   fromId: number;
-  letterMes: Record<string, any>;
+  letterMes: LetterMes;
   follow: User;
   time: number;
   constructor({ id, time, msg, fromUser }) {

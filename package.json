@@ -26,6 +26,7 @@
     "vuex": "^4.0.0"
   },
   "devDependencies": {
+    "@types/better-scroll": "^1.12.4",
     "@types/howler": "^2.2.4",
     "@types/js-cookie": "^2.2.6",
     "@types/md5": "^2.3.0",

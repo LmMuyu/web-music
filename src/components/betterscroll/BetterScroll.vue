@@ -29,6 +29,10 @@ import useLoadNetworkRes from "../../utils/useLoadNetworkRes";
 export default defineComponent({
   props: {
     class: String,
+    BsOptions: {
+      type: Object,
+      default: {},
+    },
   },
   setup(props, { expose, slots }) {
     const src = "https://cdn.jsdelivr.net/npm/better-scroll@2.4.2/dist/better-scroll.esm.js";
@@ -71,7 +75,10 @@ export default defineComponent({
       if (typeof loadResult === "boolean" && loadResult && module) {
         if (!viewport.value) return;
         const BScroll = module;
-        BS = new BScroll(viewport.value, { mouseWheel: true, bounce: false, click: true });
+        BS = new BScroll(
+          viewport.value,
+          Object.assign({}, { mouseWheel: true, bounce: false, click: true }, props.BsOptions)
+        );
 
         const stop = watchEffect(() => {
           if (

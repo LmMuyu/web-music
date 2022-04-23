@@ -1,17 +1,20 @@
 import filterDate from "../../../utils/filterDate";
+import { LetterMes } from "../type";
 
 export class FocusTheUser {
   newMsgCount: number;
   lastMsgTime: string;
   userId: number;
   nickname: string;
-  lastMsg: Record<string, any>;
+  lastMsg: LetterMes;
   fromUser: User;
+  lastTime: number;
   constructor({ newMsgCount, lastMsgTime, userId, nickname, lastMsg, fromUser }) {
     this.userId = userId;
     this.nickname = nickname;
     this.newMsgCount = newMsgCount;
-    this.lastMsgTime = filterDate(lastMsgTime);
+    this.lastTime = lastMsgTime;
+    this.lastMsgTime = filterDate(lastMsgTime, null, true);
     this.lastMsg = JSON.parse(lastMsg);
     this.fromUser = new User(fromUser);
   }

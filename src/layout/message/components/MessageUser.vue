@@ -13,9 +13,8 @@
   </el-container>
 </template>
 <script setup lang="ts">
-import { PropType, ref } from "vue";
+import { PropType } from "vue";
 
-// import Trid from "../hook/trid";
 import { FocusTheUser } from "../hook/factory";
 
 import MessagePrivateLetter from "./MessagePrivateLetter.vue";
@@ -30,15 +29,6 @@ const props = defineProps({
     require: true,
   },
 });
-
-// const trid = new Trid();
-
-// watchEffect(() => {
-//   letterList.value.map((people) => {
-//     const nickname = people.fromUser.nickname;
-//     trid.insert(nickname);
-//   });
-// });
 </script>
 <style scoped lang="scss">
 .container {

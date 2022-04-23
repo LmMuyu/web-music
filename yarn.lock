@@ -452,6 +452,11 @@
   resolved "https://registry.yarnpkg.com/@trysound/sax/-/sax-0.2.0.tgz#cccaab758af56761eb7bf37af6f03f326dd798ad"
   integrity sha512-L7z9BgrNEcYyUYtF+HaEfiS5ebkh9jXqbszz7pC0hRBPaatV0XjSD3+eHrpqFemQfgwiFF0QPIarnIihIDn7OA==
 
+"@types/better-scroll@^1.12.4":
+  version "1.12.4"
+  resolved "https://registry.yarnpkg.com/@types/better-scroll/-/better-scroll-1.12.4.tgz#e5653cc3025a39c8bd29cfd0828273fca1dedca2"
+  integrity sha512-mSp1CULFPnfotPUuJC9RXG6PaVhqJt0bMbo9wXyUypteSM6o0O9pHZCqY4HQX2KqUXqwtxIvUja1q+rWf3CR7g==
+
 "@types/braces@*":
   version "3.0.0"
   resolved "https://registry.npmjs.org/@types/braces/-/braces-3.0.0.tgz"

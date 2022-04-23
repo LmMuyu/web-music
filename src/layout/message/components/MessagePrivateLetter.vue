@@ -6,7 +6,12 @@
       :key="letter.fromUser.uid"
       @click.capture="
         // transitionOffset($event, toPath.bind(null, index, letter.fromUser.uid)),
-        findId(letter.fromUser.uid, letter.fromUser.avatar, letter.fromUser.nickname)
+        sendLetterUserInfo({
+          avatar: letter.fromUser.avatar,
+          nickname: letter.fromUser.nickname,
+          uid: letter.fromUser.uid,
+          lastTime: letter.lastTime,
+        })
       "
     >
       <a href="javascript:void(;;)" class="absolute top-0 left-0 w-full h-full"></a>
@@ -45,16 +50,17 @@
   </better-scroll>
 </template>
 <script setup lang="ts">
-import { computed, defineProps, defineEmits, ref, onMounted, nextTick } from "vue";
+import { defineProps, defineEmits, ref, onMounted, nextTick } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import { useSlidingTrack } from "../../../utils/useSlidingTrack";
 import { FocusTheUser } from "../hook/factory";
 
-import { ElAvatar, ElRow, ElCol, ElBadge } from "element-plus";
+import { ElAvatar, ElRow, ElCol } from "element-plus";
 import BetterScroll from "../../../components/betterscroll/BetterScroll.vue";
 
 import type { PropType } from "vue";
+import type { SendLetterInfoEmit } from "../type";
 
 const ctxEmit = defineEmits(["retNicknameInfo"]);
 
@@ -75,8 +81,8 @@ const { initTrackPos, transitionOffset, getSliderTrack } = useSlidingTrack(track
   direction: "vertical",
 });
 
-const findId = (id: number, avatarUrl: string, nickname: string) =>
-  ctxEmit("retNicknameInfo", { id, avatarUrl, nickname });
+const sendLetterUserInfo = ({ avatar, lastTime, nickname, uid }: SendLetterInfoEmit) =>
+  ctxEmit("retNicknameInfo", { uid, avatar, nickname, lastTime });
 
 function toPath(index: number, uid: number) {
   router.push({
