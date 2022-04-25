@@ -23,8 +23,8 @@
 <script setup lang="ts">
 import { defineProps } from "vue";
 
-import { diffTime } from "../../hooks/diffTime";
-import { eventType } from "../../hooks/eventType";
+import { diffTime } from "../hooks/diffTime";
+import { eventType } from "../hooks/eventType";
 
 const props = defineProps({
   userinfo: {

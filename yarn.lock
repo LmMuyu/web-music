@@ -3529,10 +3529,10 @@ vue-tsc@^0.0.8:
   dependencies:
     unzipper latest
 
-vue3-text-editor@^1.2.1:
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/vue3-text-editor/-/vue3-text-editor-1.2.1.tgz#7c3cf8438ea644c15bbcfffcef5b71ac57bd581b"
-  integrity sha512-4vLKUefhzrQs+D2z01fYN7s+eoexDmOJcN3PQ91fGZ2hdkYM4NJQPH0tj+/86syCd9AecnZaQ+cxfyWHze5BBQ==
+vue3-text-editor@^1.2.2:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/vue3-text-editor/-/vue3-text-editor-1.2.2.tgz#61316cda69283569029589c11f9df1364ef43e9c"
+  integrity sha512-EF+a3QkEOcPSynTVuwTlMgzETRt0S0MUj/3IZZpGatJdSHD0znpSaYgP1HxMAorLwHtgFd9t7ffgEbSGYRyC5g==
 
 vue@3.2.2:
   version "3.2.2"

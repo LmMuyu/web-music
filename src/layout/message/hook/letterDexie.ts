@@ -15,6 +15,29 @@ export interface LastTime {
   lasttimes: number[];
 }
 
+interface dexieOptions {
+  collection: string;
+  storetable: string;
+  index: string;
+}
+
+export class BaseDexie<TN = string, TS = Record<string, any>> extends Dexie {
+  // [TN]: string;
+  constructor({ collection, storetable, index }: dexieOptions) {
+    super(collection);
+    this.version(1).stores({ [storetable]: index });
+    this[storetable] = this.table(storetable);
+
+    Promise.resolve().then(() => this.openDexie(storetable));
+  }
+
+  async openDexie(tablename: string) {
+    return await this.transaction("rw", this[tablename], () => {
+      console.log("dexie已打开:", this.isOpen());
+    });
+  }
+}
+
 export default class letterDexie extends Dexie {
   friends!: Table<Friend>;
   lasttimes!: Table<LastTime>;
@@ -111,7 +134,5 @@ export default class letterDexie extends Dexie {
 // //每一个用户的每一页私信的最后时间
 // class Lasttimes<T extends Record<string, any>> extends letterDexie {}
 
-// //每个用户的私信信息
-// class Friends<T extends Record<string, any>> extends letterDexie {
-  
-// }
+//每个用户的私信信息
+class Friends<T extends Record<string, any>> {}

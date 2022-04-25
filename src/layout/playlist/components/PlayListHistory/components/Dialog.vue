@@ -26,11 +26,6 @@ import { computed, nextTick, ref, watchEffect } from "vue";
 import store from "../../../../../store";
 
 import { ElDialog } from "element-plus";
-//@ts-ignore
-import TextEditor from "vue3-text-editor";
-
-//@ts-ignore
-import "vue3-text-editor/css/index.css";
 
 const dialogVisible = ref(false);
 

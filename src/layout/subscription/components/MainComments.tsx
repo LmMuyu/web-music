@@ -1,11 +1,10 @@
-import { ElAvatar } from "element-plus";
-import { defineComponent, unref } from "vue";
-
 import { comment_footerInfo } from "../methods";
 
+import { ElAvatar } from "element-plus";
+import { defineComponent, unref } from "vue";
 import MainContentFooter from "./MainContentFooter.vue";
 
-import "./css/MainComment.css";
+import "../css/MainComment.css";
 
 export default defineComponent({
   props: {
@@ -49,9 +48,7 @@ export default defineComponent({
         avatarUrl: comment.user.avatarUrl as string,
       };
 
-      const text: string = childcomment
-        ? "@" + userInfo.nickname
-        : userInfo.nickname;
+      const text: string = childcomment ? "@" + userInfo.nickname : userInfo.nickname;
 
       const beReplied: Array<Object> = comment.beReplied ?? [];
 

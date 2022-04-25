@@ -1,5 +1,5 @@
-import { postLinke } from "../../../../api/subscription";
-import { debounce } from "../../../../utils/debounce";
+import { postLinke } from "../../../api/subscription";
+import { debounce } from "../../../utils/debounce";
 
 const returnDebounce = debounce(postLinke, 200);
 

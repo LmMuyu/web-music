@@ -1,6 +1,6 @@
 <template>
   <el-container class="h-full">
-    <el-header class="flex solide_border">
+    <el-header class="flex items-center solide_border">
       <div><el-avatar :size="42" :src="letterUser.avatar"></el-avatar></div>
       <span class="ml-4">{{ letterUser.nickname }}</span>
     </el-header>
@@ -15,22 +15,19 @@
         />
       </better-scroll>
     </el-main>
-    <el-footer :height="`${size}px`" class="flex items-cneter solide_border_top">
-      <TextEditor />
+    <el-footer height="80px" class="flex items-cneter solide_border_top">
+      <div class="py-2 w-full">
+        <TextEditor />
+      </div>
     </el-footer>
   </el-container>
 </template>
 <script setup lang="ts">
 import { defineProps, ref, watch } from "vue";
-import TextEditor from "vue3-text-editor";
-
-import { size } from "../hook/data";
 
 import MessageChatBoxItem from "./MessageChatBoxItem.vue";
 import { ElContainer, ElFooter, ElHeader, ElMain, ElAvatar } from "element-plus";
 import BetterScroll from "../../../components/betterscroll/BetterScroll.vue";
-
-import "vue3-text-editor/css/index.css";
 
 import type { PropType } from "vue";
 import type followLetterInfo from "../hook/followLetterInfo";

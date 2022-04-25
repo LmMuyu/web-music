@@ -1,21 +1,26 @@
 <template>
   <nav :class="resizeClass">
-    <div>
-      <div
-        v-for="(tagNav, index) in AsideTags"
-        :key="index"
-        class="flex items-center cursor-pointer py-4 w-full icons"
-        @mouseenter="moveActive(index)"
-        @mouseleave="leaveActive(index)"
-        @click="toPath(tagNav.path, index)"
+    <div
+      v-for="(tagNav, index) in AsideTags"
+      :key="index"
+      class="flex items-center cursor-pointer py-4 w-full icons"
+      @mouseenter="moveActive(index)"
+      @mouseleave="leaveActive(index)"
+      @click="toPath(tagNav.path, index)"
+    >
+      <el-tooltip
+        :visible="!windowResize"
+        class="box-item"
+        :content="tagNav.title"
+        placement="right"
+        v-if="!windowResize"
       >
-        <el-tooltip class="box-item" :content="tagNav.title" placement="right">
-          <i class="iconfont" :class="tagNav.icon" :style="activeStyle(index)"></i>
-        </el-tooltip>
-        <p v-show="windowResize" class="text-lg px-5 text_color" :style="activeStyle(index)">
-          {{ tagNav.title }}
-        </p>
-      </div>
+        <i class="iconfont" :class="tagNav.icon" :style="activeStyle(index)"></i>
+      </el-tooltip>
+      <i class="iconfont" v-else :class="tagNav.icon" :style="activeStyle(index)"></i>
+      <p v-show="windowResize" class="text-lg px-5 text_color" :style="activeStyle(index)">
+        {{ tagNav.title }}
+      </p>
     </div>
   </nav>
 </template>
@@ -33,6 +38,8 @@ import { ElTooltip } from "element-plus";
 const router = useRouter();
 const store = useStore();
 const windowResize = inject("windowResize") as Ref<boolean>;
+
+console.log(windowResize);
 
 const { activeStyle, clickActive, moveActive, leaveActive } = new activeIndex(
   currentIndex,

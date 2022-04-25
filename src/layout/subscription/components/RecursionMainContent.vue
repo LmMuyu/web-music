@@ -26,10 +26,10 @@
 <script setup lang="ts">
 import { computed, getCurrentInstance, unref } from "@vue/runtime-core";
 
-import { musicResultDetail } from "../../../../../utils/musicDetail";
-import { eventType } from "../../hooks/eventType";
+import { musicResultDetail } from "../../../utils/musicDetail";
+import { eventType } from "../hooks/eventType";
 import { computed_footerInfo } from "../methods";
-import { onLinke } from "../../hooks/onLinke";
+import { onLinke } from "../hooks/onLinke";
 
 import MainContentImageList from "./MainContentImageList.vue";
 import MainContentFooter from "./MainContentFooter.vue";
@@ -41,26 +41,28 @@ import type { Emitter } from "mitt";
 const props = defineProps({
   event: {
     type: Object,
-    default: () => { },
+    default: () => {},
   },
 });
 
-const instance = getCurrentInstance()
+const instance = getCurrentInstance();
 
-const mitt: Emitter = instance.appContext.config.globalProperties["mittBus"]
+const mitt: Emitter = instance.appContext.config.globalProperties["mittBus"];
 
 const eventJson = computed(() => {
   const json = JSON.parse(props.event.json);
   return json;
 });
 
-const footerInfo = unref(computed_footerInfo)(props)
+const footerInfo = unref(computed_footerInfo)(props);
 
 const addNewEventJson = computed(() => {
   return {
-    msg: `<a herf="jacascript:;;" data-id="${props.event.user.userId ?? props.event.user.uid
-      }" style="color:#74b9ff" class="user hover_init cursor-pointer">@${props.event.user.nickname
-      }</a>  ${eventType.value(props.event.type)}：${eventJson.value["msg"]}`,
+    msg: `<a herf="jacascript:;;" data-id="${
+      props.event.user.userId ?? props.event.user.uid
+    }" style="color:#74b9ff" class="user hover_init cursor-pointer">@${
+      props.event.user.nickname
+    }</a>  ${eventType.value(props.event.type)}：${eventJson.value["msg"]}`,
   };
 });
 
@@ -73,9 +75,7 @@ function transferFn(...res: any) {
 function onEmitPreviewInfo(e: PointerEvent) {
   const index = (e.target as HTMLElement).getAttribute("key-index");
 
-  mitt.emit("preview", [JSON.parse(JSON.stringify(props.event.pics)), index])
+  mitt.emit("preview", [JSON.parse(JSON.stringify(props.event.pics)), index]);
 }
-
 </script>
-<style scoped lang="scss">
-</style>
+<style scoped lang="scss"></style>

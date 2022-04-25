@@ -5,7 +5,7 @@ import { useStore } from "vuex";
 import { linkeEvent } from "../methods";
 
 import type { PropType, Ref } from "vue";
-import { diffTime } from "../../hooks/diffTime";
+import { diffTime } from "../hooks/diffTime";
 
 type Options = {
   name: string;

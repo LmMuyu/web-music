@@ -14,9 +14,7 @@
           "
         ></el-avatar>
       </div>
-      <div style="width: 90%">
-        <MainContent :event="event" />
-      </div>
+      <div style="width: 90%"><main-content :event="event" /></div>
     </section>
   </div>
 </template>
@@ -24,11 +22,11 @@
 import { nextTick, getCurrentInstance, watch, reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 
-import { getSubScriptDynamic } from "../../../../api/subscription";
-import { useRefNegate } from "../../../../utils/useRefNegate";
-import { throttle } from "../../../../utils/throttle";
+import { getSubScriptDynamic } from "../../../api/subscription";
+import { useRefNegate } from "../../../utils/useRefNegate";
+import { throttle } from "../../../utils/throttle";
 
-import MainContent from "./layout/MainContent.vue";
+import MainContent from "./MainContent.vue";
 import { ElAvatar } from "element-plus";
 
 const instance = getCurrentInstance();

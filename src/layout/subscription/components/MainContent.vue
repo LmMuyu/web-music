@@ -6,45 +6,19 @@
     <header v-if="!recursion">
       <MainContentHeader :type="event.type" :userinfo="event.user" :showTime="event.showTime" />
     </header>
-    <main class="py-6">
-      <!-- musicResultDetail(eventJson.value["song"] ?? {}) -->
-      <div v-if="musicDetail"><MainContentSong :musicDetail="musicDetail" />}</div>
-      <div>
-        <MainContentImageList
-          :pics="event.pics ?? []"
-          :isMarginTop="musicDetail"
-          @preImage="previewComp"
-        />
-      </div>
-    </main>
-    <main v-if="!!eventJson.event">
-      <MainContent :event="eventJson.event" />
-    </main>
-    <footer>
-      <MainContentFooter
-        :info="footerInfo"
-        :latestLikedUsers="event.info.commentThread.latestLikedUsers ?? []"
-        @linke="linke"
-        @comment="comment"
-      />
-      <article v-if="!recursion && countRef.value">
-        <MainWriteBox @sendComment="sendComment" />
-        <MainComment :comments="commentList" />
-      </article>
-    </footer>
   </section>
 </template>
 
 <script setup lang="ts">
 import { computed, ref, unref } from "@vue/runtime-core";
 
-import { musicResultDetail } from "../../../../../utils/musicDetail";
-import { useRefNegate } from "../../../../../utils/useRefNegate";
-import preview from "../../../../../components/previewpicture";
-import { getComment } from "../../../../../api/subscription";
-import { eventType } from "../../hooks/eventType";
+import { musicResultDetail } from "../../../utils/musicDetail";
+import { useRefNegate } from "../../../utils/useRefNegate";
+import preview from "../../../components/previewpicture";
+import { getComment } from "../../../api/subscription";
+import { eventType } from "../hooks/eventType";
 import { computed_footerInfo } from "../methods";
-import { onLinke } from "../../hooks/onLinke";
+import { onLinke } from "../hooks/onLinke";
 
 import MainContentImageList from "./MainContentImageList.vue";
 import MainContentHeader from "./MainContentHeader.vue";
@@ -55,6 +29,33 @@ import MainWriteBox from "./MainWriteBox.vue";
 import MainContent from "./MainContent.vue";
 import MainComment from "./MainComments";
 import { isRef } from "vue";
+
+// <main class="py-6">
+//       <!-- musicResultDetail(eventJson.value["song"] ?? {}) -->
+//       <div v-if="musicDetail"><MainContentSong :musicDetail="musicDetail" />}</div>
+//       <div>
+//         <MainContentImageList
+//           :pics="event.pics ?? []"
+//           :isMarginTop="musicDetail"
+//           @preImage="previewComp"
+//         />
+//       </div>
+//     </main>
+//     <main v-if="!!eventJson.event">
+//       <MainContent :event="eventJson.event" />
+//     </main>
+//     <footer>
+//       <MainContentFooter
+//         :info="footerInfo"
+//         :latestLikedUsers="event.info.commentThread.latestLikedUsers ?? []"
+//         @linke="linke"
+//         @comment="comment"
+//       />
+//       <article v-if="!recursion && countRef.value">
+//         <MainWriteBox @sendComment="sendComment" />
+//         <MainComment :comments="commentList" />
+//       </article>
+//     </footer>
 
 const ctxEmit = defineEmits(["retPics"]);
 

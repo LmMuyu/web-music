@@ -1,4 +1,3 @@
-import { getMusicDetail } from "../../api/playList";
 import mitt, { Emitter } from "mitt";
 import { ActionTree } from "vuex";
 import { computed, watchEffect } from "vue";

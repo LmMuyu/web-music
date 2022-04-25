@@ -39,22 +39,8 @@ const routes: (RouteRecordRaw & {
   {
     path: "/subscription",
     name: "Subscription",
-    meta: {
-      setting: {
-        left: {
-          header: false,
-          footer: false,
-          width: 7.5,
-        },
-        right: {
-          header: false,
-          width: 2.5,
-        },
-      },
-    },
     components: {
-      section: () => import("../layout/subscription/subscriptionmain/SubscriptionMain.vue"),
-      article: () => import("../layout/subscription/subscriptionright/SubscriptionRight.vue"),
+      default: () => import("../layout/subscription/Subscription.vue"),
     },
   },
   {
