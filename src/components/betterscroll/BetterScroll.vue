@@ -8,12 +8,14 @@
       class="content absolute top-0 left-0 w-full"
       :style="{ height: capHeight + 'px' }"
       :class="class"
+      @load.capture="loadImages"
     >
       <div style="height: 1px" class="w-full absolute"></div>
     </div>
   </div>
 </template>
 <script lang="ts">
+import { elButtonGroupKey } from "element-plus";
 import {
   defineComponent,
   getCurrentInstance,
@@ -24,6 +26,7 @@ import {
   render,
   watchEffect,
 } from "vue";
+import { debounce } from "../../utils/debounce";
 import useLoadNetworkRes from "../../utils/useLoadNetworkRes";
 
 export default defineComponent({
@@ -44,6 +47,7 @@ export default defineComponent({
 
     const ctx = getCurrentInstance();
     let BS = null;
+    let mountRefreshFn: (bs) => void = null;
 
     function disable() {
       console.log(BS);
@@ -54,11 +58,40 @@ export default defineComponent({
       BS.enable();
     }
 
+    function heightAdd() {
+      const lists = viewport.value.children[0].children as HTMLElement[];
+      const totalHeight = Array.prototype.reduce.apply(lists, [
+        (pre, next) => {
+          return (pre += next.getBoundingClientRect().height);
+        },
+        0,
+      ]);
+
+      const maxHeight = Math.max(totalHeight, capHeight.value);
+      const preHeight = capHeight.value;
+      capHeight.value = maxHeight;
+
+      if (preHeight !== capHeight.value) {
+        BS ? BS.refresh() : (mountRefreshFn = (bs) => bs.refresh());
+      }
+    }
+
+    function loadImages(ev) {
+      ev.stopPropagation();
+      heightAdd();
+    }
+
     nextTick(() => {
       //@ts-ignore
       const el = ctx.parent.ctx["$el"];
+      const offsetTop = el.offsetTop;
+      const clientHeight = el.clientHeight;
+
       if (el) {
-        viewportHeight.value = el.clientHeight || document.documentElement.clientHeight;
+        viewportHeight.value =
+          clientHeight > offsetTop
+            ? clientHeight - offsetTop
+            : document.documentElement.clientHeight;
       }
     });
 
@@ -71,7 +104,7 @@ export default defineComponent({
       }
     );
 
-    function betterBscroll(module, loadResult, message) {
+    async function betterBscroll(module, loadResult, message) {
       if (typeof loadResult === "boolean" && loadResult && module) {
         if (!viewport.value) return;
         const BScroll = module;
@@ -90,11 +123,12 @@ export default defineComponent({
             statusPrmosie.value.then(() => {
               // console.log("statusPrmosie then");
               BS.refresh();
-
               Promise.resolve(() => stop());
             });
           }
         });
+
+        mountRefreshFn && mountRefreshFn(BS);
       }
       if (typeof loadResult === "boolean" && !loadResult) {
         console.warn("better-scrol:" + message);
@@ -125,23 +159,30 @@ export default defineComponent({
       });
     }
 
-    onUnmounted(() => {
-      BS.destroy();
-    });
+    function bottomPos(el: HTMLElement) {
+      return el.getBoundingClientRect().bottom;
+    }
 
-    onMounted(() => {
+    function capTotalHeight() {
+      const lists = viewport.value.children[0].children as HTMLElement[];
+      capHeight.value = bottomPos(lists[lists.length - 1]);
+    }
+
+    onMounted(async () => {
       if (viewport.value) {
         const vnode = slots.default()[0];
         statusPrmosie.value = mutationSubtree(viewport.value.children[0]);
         render(vnode, viewport.value.children[0]);
 
-        nextTick(() => {
-          const lists = viewport.value.children[0].children as HTMLElement[];
-          capHeight.value = lists[lists.length - 1].getBoundingClientRect().bottom;
-        });
+        await nextTick();
+        capTotalHeight();
       } else {
         console.error("无法获取viewport视口，无法实例化BScroll。viewport：", viewport.value);
       }
+    });
+
+    onUnmounted(() => {
+      BS.destroy();
     });
 
     expose({
@@ -153,6 +194,7 @@ export default defineComponent({
       viewport,
       viewportHeight,
       capHeight,
+      loadImages,
     };
   },
 });

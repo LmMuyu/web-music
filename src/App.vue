@@ -1,22 +1,23 @@
 <template>
   <HtmlMain />
-  <div class="absolute bottom-0 left-0 w-full" v-if="loadCompAudio">
+  <div class="absolute bottom-0 left-0 w-full">
     <Audio v-if="loadCompAudio" :songinfo="songInfo" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { provide, ref, computed, watchEffect } from "vue";
+import { provide, ref, computed, watchEffect, defineAsyncComponent } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 
-import Audio from "./components/player/Audio.vue";
 import HtmlMain from "./layout/main/Main.vue";
 
 import { loginStateus } from "./api/app/login";
 import { useWatchRoutePath } from "./utils/useWatchHost";
 
 import type { musicDetail } from "./utils/musicDetail";
+
+const Audio = defineAsyncComponent(() => import("./components/player/Audio.vue"));
 
 type linkType = "info" | "primary" | "success" | "warning" | "danger" | "default" | undefined;
 

@@ -36,18 +36,18 @@ export default function request(config: AxiosRequestConfig) {
   const instance = axios.create({
     // baseURL: "http://120.27.135.200:3000/",
     baseURL: "https://netease-cloud-music-api-chi-ashy.vercel.app/",
+    // baseURL: "http://localhost:3000",
     method: "GET",
-    headers: {
-      // Cookie: document.cookie,
-    },
     timeout: 10000,
     withCredentials: true,
-    // cancelToken,
   });
 
   if (isget) {
     setRetryCount(instance, {});
   }
+
+  //@ts-ignore
+  instance.defaults._requrl = config.url;
 
   instance.interceptors.request.use(
     (config) => {
@@ -76,7 +76,7 @@ export default function request(config: AxiosRequestConfig) {
 
   return instance(
     Object.assign({}, config, {
-      url: config.url + `?csrf_token=${!!csrf_token ? csrf_token : ""}`,
+      url: config.url + `${!!csrf_token ? "?csrf_token=" + csrf_token : ""}`,
     } as AxiosRequestConfig)
   );
 }

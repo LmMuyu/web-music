@@ -8,14 +8,14 @@
 <script setup lang="ts">
 import { computed, defineProps, ref } from "vue";
 
-import type { PropType } from "vue";
+import { Dynamic } from "../methods";
 
 const ctxEmit = defineEmits(["preImage"]);
 
 const props = defineProps({
-  pics: {
-    type: Array as PropType<any[]>,
-    default: () => [],
+  subinfo: {
+    type: Object,
+    required: true,
   },
   isMarginTop: {
     type: Boolean,
@@ -24,28 +24,9 @@ const props = defineProps({
 });
 
 const picList = ref<any[]>([]);
-const w = ref(100);
-const h = ref(100);
 
-async function toFileReader(fileList: any[]) {
-  const len = fileList.length;
-  if (len === 0) return;
-
-  switch (len) {
-    case 1:
-      w.value += w.value * 2;
-      h.value += h.value * 2;
-      break;
-    case 2:
-      w.value += w.value * 1.5;
-      h.value += h.value * 1.5;
-      break;
-  }
-
-  return fileList.map((pic) => pic.originUrl + `?param=${w.value}y${h.value}`);
-}
-
-toFileReader(props.pics).then((res) => (picList.value = res));
+const dynamics = new Dynamic(props.subinfo);
+Promise.resolve().then(() => (picList.value = dynamics.picList));
 
 function emitPreImage(e: Event) {
   const target = e.target as HTMLElement;
@@ -56,14 +37,14 @@ function emitPreImage(e: Event) {
 }
 
 const row = computed(() => {
-  return Math.ceil(props.pics.length / 3);
+  return Math.ceil(dynamics.picList.length / 3);
 });
 
 const gridstyle = computed(() => {
   return {
     display: "grid",
-    gridTemplateColumns: `repeat(3,${w.value + "px"})`,
-    gridTemplateRows: `repeat(${row.value},${h.value + "px"})`,
+    gridTemplateColumns: `repeat(3,${dynamics.w.value + "px"})`,
+    gridTemplateRows: `repeat(${row.value},${dynamics.h.value + "px"})`,
     gridGap: "5px",
   };
 });

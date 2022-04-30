@@ -18,6 +18,7 @@ interface cookieOptions {
 }
 
 let loginguo = false;
+let obtainRoutePath = "";
 
 export async function reqCode(httpRes: AxiosResponse<any>) {
   try {
@@ -42,12 +43,16 @@ export async function reqCode(httpRes: AxiosResponse<any>) {
 }
 
 async function status(httpRes: AxiosResponse<any>) {
-  const url = httpRes.config.url;
+  //@ts-ignore
+  const url = httpRes.config._requrl;
 
-  await router.isReady();
-  const route = router.currentRoute;
+  if (obtainRoutePath === "") {
+    await router.isReady();
+    const route = router.currentRoute;
+    obtainRoutePath = route.value.path;
+  }
 
-  if (url === "/login/status" && !(route.value.path.indexOf("/login") > -1) && !loginguo) {
+  if (url === "/login/status" && !(obtainRoutePath.indexOf("/login") > -1) && !loginguo) {
     loginguo = true;
     const account = httpRes.data.data.account;
     const profile = httpRes.data.data.profile;
@@ -57,7 +62,6 @@ async function status(httpRes: AxiosResponse<any>) {
     loginStatus(islogin, account, profile);
   } else if (url === "/logout") {
     loginguo = false;
-    store.commit("login/emitTypeWatchFn", "stopwatch");
     store.commit("login/switchStatus", false);
     store.commit("navRouterPushRun");
     dispatchWatchObserver(false);

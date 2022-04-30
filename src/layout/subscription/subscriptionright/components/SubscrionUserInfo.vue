@@ -1,15 +1,7 @@
 <template>
   <div class="flex flex-col py-6 bottom_solid">
-    <div class="flex">
-      <div class="px-4">
-        <ElAvatar :size="60" />
-      </div>
-      <span>
-        <p class="text-lg">看到卡</p>
-      </span>
-    </div>
-    <div class="flex py-6" style="white-space: nowrap">
-      <p class="px-4 text-sm">动态：20</p>
+    <div class="flex" style="white-space: nowrap">
+      <p class="text-sm">动态：20</p>
       <p class="px-4 text-sm">关注：20</p>
       <p class="px-4 text-sm">订阅：20</p>
     </div>
@@ -19,15 +11,31 @@
 import { useStore } from "vuex";
 
 import { ElAvatar } from "element-plus";
-import { getUserDetail } from "../../../../api/subscription";
+import { computed, reactive, watchEffect } from "vue";
+// import { getUserDetail } from "../../../../api/subscription";
 
 const store = useStore();
 
-// getUserDetail().then((worker) => {
-//   console.log(worker);
+const userInfo = computed(store.getters["login/getUserData"]);
+
+// const userdetail = reactive({
+//   uid: 0,
+//   avatar: "",
+//   nickname: "",
+//   other: {},
 // });
 
-const userInfo = store.getters["login/getUserInfo"];
+// watchEffect(() => {
+//   if (userInfo.value) {
+//     //@ts-ignore
+//     const userdata = userInfo.value.data;
+//     console.log(userdata);
+
+//     userdetail.uid = userdata.id;
+//     userdetail.avatar = userdata.avatarUrl;
+//     userdetail.nickname = userdata.nickname;
+//   }
+// });
 </script>
 <style scoped lang="scss">
 .bottom_solid {

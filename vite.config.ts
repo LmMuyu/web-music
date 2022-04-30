@@ -36,19 +36,6 @@ export default ({ mode }: ConfigEnv): UserConfig => {
         optimize: true,
         enableObjectSlots: false,
       }),
-      // styleImport({
-      //   libs: [
-      //     {
-      //       libraryName: "element-plus",
-      //       resolveStyle(name) {
-      //         return `element-plus/theme-chalk/${name}.css`;
-      //       },
-      //       resolveComponent(name) {
-      //         return `element-plus/lib/components/${name}`;
-      //       },
-      //     },
-      //   ],
-      // }),
       createStyleImportPlugin({
         resolves: [ElementPlusResolve()],
       }),
@@ -93,8 +80,6 @@ export default ({ mode }: ConfigEnv): UserConfig => {
           changeOrigin: true,
           rewrite(path) {
             console.log(path);
-
-            // console.log(path);
             return path;
           },
         },

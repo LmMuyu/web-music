@@ -112,6 +112,8 @@ export class resultOptions implements MusicDetailOption {
   dt: number;
 
   constructor(musicdata: Record<string, any>) {
+    console.log(this);
+    
     this.id = this.getID(musicdata, musicdata.type);
     this.name = this.getName(musicdata);
     this.picUrl = this.getPicUrl(musicdata);
@@ -129,6 +131,8 @@ export class resultOptions implements MusicDetailOption {
         return options[key];
       }
     }
+
+    console.log(options);
 
     return this.picUrlRecursion(options.album);
   }

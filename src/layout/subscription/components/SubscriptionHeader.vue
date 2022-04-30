@@ -4,8 +4,6 @@
     <div class="w-1/2 flex justify-end">
       <div class="w-1/2 flex">
         <div class="flex justify-center items-center rounded-full">
-          <!-- <i class="iconfont iconlnicon34 mx-1"></i>
-        <p class="h-full">写动态</p> -->
           <FontIcon icon="iconw_shuxie" title="写动态" size="30"></FontIcon>
         </div>
         <div class="flex items-center px-6">

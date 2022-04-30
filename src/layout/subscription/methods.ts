@@ -1,4 +1,5 @@
-import { computed, Ref } from "vue";
+import { computed, ref, Ref } from "vue";
+import filterDate from "../../utils/filterDate";
 
 const footerInfo = (props: any) => {
   const info = [
@@ -71,10 +72,7 @@ export const comment_footerInfo = computed(() => {
   };
 });
 
-export function linkeEvent(
-  linkedCounts: Ref<number>,
-  isLatestLinke: Ref<boolean>
-) {
+export function linkeEvent(linkedCounts: Ref<number>, isLatestLinke: Ref<boolean>) {
   return function (res: any) {
     const islinke = JSON.parse(res.config.data)["t"];
     console.log(res);
@@ -87,4 +85,55 @@ export function linkeEvent(
       isLatestLinke.value = false;
     }
   };
+}
+
+class PicLists {
+  w: Ref<number>;
+  h: Ref<number>;
+  picList: string[];
+  dpr: number;
+  constructor(pics: Array<Record<string, any>>) {
+    this.dpr = this.windowDpr();
+    this.w = ref(this.dpr);
+    this.h = ref(this.dpr);
+    this.picList = [];
+    this.toFileReader(pics).then((res) => (this.picList = res));
+  }
+
+  private async toFileReader(fileList: any[]) {
+    const len = fileList.length;
+    if (len === 0) return;
+
+    const { w, h } = this;
+
+    switch (len) {
+      case 1:
+        w.value += w.value * 2;
+        h.value += h.value * 2;
+        break;
+      case 2:
+        w.value += w.value * 1.5;
+        h.value += h.value * 1.5;
+        break;
+    }
+
+    return fileList.map((pic) => pic.pcRectangleUrl + `?param=${w.value}y${h.value}`);
+  }
+
+  private windowDpr() {
+    const width = window.outerWidth;
+    const height = window.outerHeight;
+
+    const dpr = parseFloat((width / height).toFixed(2)) * 100;
+    return dpr;
+  }
+}
+
+export class Dynamic extends PicLists {
+  relativeTime: string;
+  images: string[];
+  constructor(subinfo) {
+    super(subinfo.pics);
+    this.relativeTime = filterDate(subinfo.eventTime, null, true);
+  }
 }

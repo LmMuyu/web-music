@@ -3,7 +3,7 @@
     <div style="width: 40%" class="flex justify-center items-center h-full">
       <div class="flex justify-center w-full">
         <div class="w-3/5">
-          <div class="py-2">
+          <div class="py-3">
             <InputBox
               ref="phone"
               placeholder="手机号"
@@ -12,7 +12,7 @@
               v-model="inputLoginInfo.phone"
             />
           </div>
-          <div class="py-2 w-full">
+          <div class="py-3 w-full">
             <InputBox
               ref="pass"
               iconfont="iconmima"
@@ -37,12 +37,13 @@
 <script setup lang="ts">
 import { reactive, ref } from "@vue/reactivity";
 
-import {loginBCBus} from "../../useBroadcastChannel";
+import { loginBCBus } from "../../useBroadcastChannel";
 import { cellphone, loginCellphone } from "../../../../api/login";
 import { promptbox } from "../../../../components/promptBox";
 
 import InputBox from "./components/InputBox.vue";
 import { ElButton } from "element-plus";
+import { onUnmounted } from "vue";
 
 const inputLoginInfo = reactive({
   phone: "",
@@ -85,15 +86,18 @@ async function registerChecking() {
   const result = await cellphone(formData);
 
   if (!result.data.hasPassword) {
-    promptbox({
-      title: "手机号码未注册!",
-      mountNode: "body",
-    });
-
+    promptbox({ title: "手机号码未注册!" });
     return;
   }
 
   inputLoginInfo.isregister = result.data.hasPassword;
+}
+
+function loginInfoSetFormData(phone: string, md5: any) {
+  const formData = new FormData();
+  formData.append("phone", phone);
+  formData.append("md5_password", md5);
+  return formData;
 }
 
 async function loginBtn() {
@@ -104,14 +108,23 @@ async function loginBtn() {
     worker.postMessage(inputLoginInfo.password);
 
     worker.addEventListener("message", async (ev) => {
-      const formData = new FormData();
-      formData.append("phone", inputLoginInfo.phone);
-      formData.append("md5_password", ev.data);
+      const formData = loginInfoSetFormData(inputLoginInfo.phone, ev.data);
 
-      const loginResult = await loginCellphone(formData);
-      loginBCBus(loginResult.data);
+      try {
+        const loginResult = await loginCellphone(formData);
+        console.log(loginResult);
 
-      window.removeEventListener("keydown", keydownfn, false);
+        if (loginResult.data.code === 502) {
+          return;
+        }
+
+        loginBCBus(loginResult.data);
+
+        window.removeEventListener("keydown", keydownfn, false);
+        worker.terminate();
+      } catch (error) {
+        console.log(error);
+      }
     });
 
     worker.addEventListener("error", (err) => {
@@ -124,12 +137,17 @@ async function loginBtn() {
 }
 
 function keydownfn(e) {
+  console.log(e);
   if (e.code === "Enter") {
     loginBtn();
   }
 }
 
 window.addEventListener("keydown", keydownfn, false);
+
+onUnmounted(() => {
+  window.removeEventListener("keydown", keydownfn, false);
+});
 </script>
 <style scoped lang="scss">
 div:nth-child(1) {

@@ -1,21 +1,14 @@
 <template>
-  <div class="root line_h">
+  <span class="root line_h">
     <p
       v-html="toParseJson"
       ref="rootp"
       class="multiple_lines_omitted deep_style cursor-default"
     ></p>
-  </div>
+  </span>
 </template>
 <script setup lang="ts">
-import {
-  computed,
-  nextTick,
-  onMounted,
-  onUnmounted,
-  ref,
-  shallowRef,
-} from "@vue/runtime-core";
+import { computed, nextTick, onMounted, onUnmounted, ref, shallowRef } from "@vue/runtime-core";
 import { useRouter } from "vue-router";
 
 import type { PropType } from "vue";

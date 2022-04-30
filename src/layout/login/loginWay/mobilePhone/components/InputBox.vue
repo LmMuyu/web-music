@@ -1,5 +1,5 @@
 <template>
-  <section class="flex items-center">
+  <section class="flex items-center relative">
     <div class="flex items-center justify-center w-full">
       <div ref="inputbox" :style="returnStyleOptions" class="root flex pr-4 p-2 w-full rounded-lg">
         <div class="icon px-4" v-if="isIcon">
@@ -15,18 +15,24 @@
         />
       </div>
     </div>
-    <span v-if="isErrorInfo" class="flex items-center whitespace-nowrap text-sm icon">
-      <i style="color: #d63031" class="iconfont icondel"></i>
-      <p style="color: #d63031">{{ errorInfo }}</p>
-    </span>
+    <div class="absolute left-0 bottom-0">
+      <span
+        v-if="isErrorInfo"
+        class="flex items-center whitespace-nowrap text-sm absolute left-0 bottom-0 transform-gpu translate-y-5 icon"
+      >
+        <i style="color: #d63031" class="iconfont icondel"></i>
+        <p style="color: #d63031">{{ errorInfo }}</p>
+      </span>
+    </div>
   </section>
 </template>
 <script setup lang="ts">
 import { customRef, ref } from "@vue/reactivity";
 import { nextTick, onMounted, useAttrs } from "vue";
 
-import type { Ref } from "vue";
 import { useStyle } from "../../../hooks/useStyle";
+
+import type { Ref } from "vue";
 
 const attrs = useAttrs();
 
@@ -120,7 +126,7 @@ function showErrorInfo(info: string) {
   isErrorInfo.value = !isErrorInfo.value;
 }
 
-function methods() {
+function crcMethods() {
   this.phone_ifphonewrite = function (data: string) {
     return /^(\+(0|86|17951))?\w/g.test(data);
   };
@@ -131,15 +137,17 @@ function methods() {
     );
   };
 
-  this.pass_ifpasswordlen = function (data: string) {
-    return /\d{6,}/.test(data);
+  this.pass_ifpasswordlen6wei = function (data: string) {
+    return /^(?![0-9]+$)(?![a-z]+$)(?![A-Z]+$)(?!([^(0-9a-zA-Z)])+$).{6,20}$/.test(data);
   };
 }
 
 function strategy(data: number | string) {
+  console.log(data);
+
   if (String(data).length === 0) return;
 
-  const verifyMethods = new methods();
+  const verifyMethods = new crcMethods();
 
   for (const key in verifyMethods) {
     if (props.type === "text") {
@@ -154,8 +162,8 @@ function strategy(data: number | string) {
       }
     } else if (props.type === "password") {
       if (key.startsWith("pass") && !verifyMethods[key](data)) {
-        if (key === "pass_ifpasswordlen") {
-          showErrorInfo("请输入6位数以上的密码!");
+        if (key === "pass_ifpasswordlen6wei") {
+          showErrorInfo("请输入密码包含 数字,英文,字符中的两种以上，长度6-20密码!");
         }
 
         return false;

@@ -1,5 +1,6 @@
 import { nextTick } from "vue";
 import store from "../../store";
+import { useRoute } from "vue-router";
 
 import { setCookie } from "../../utils/request/response/result";
 import { useLocalStorage } from "../../utils/useLocalStorage";
@@ -8,7 +9,6 @@ import { ElNotification } from "element-plus";
 
 import { loginStoreSetInfo } from "./login";
 import type { USERDATA } from "../../store/type";
-import { useRoute } from "vue-router";
 
 type NottificationType = "success" | "warning" | "info" | "error";
 type ExtractPickForValue<T, K extends keyof T> = T[K];
@@ -30,6 +30,12 @@ interface ACCESS_OR_REFRESH_TOKEN {
   tokenStrObj: string;
 }
 
+const BCLists = [];
+
+function PThen() {
+  return Promise.resolve();
+}
+
 function openNotification(content: string, title?: string, type: NottificationType = "info") {
   return ElNotification.success({
     type,
@@ -40,11 +46,14 @@ function openNotification(content: string, title?: string, type: NottificationTy
 }
 
 export function mainBCBus(): Promise<USERDATA> {
-  const BC = new BroadcastChannel("login");
-
+  const BC = BCLists[0] || (new BroadcastChannel("login") && PThen().then(() => (BCLists[0] = BC)));
+  BCLists[0] = BC;
   return new Promise((resolve) => {
     BC.onmessage = function (ev) {
-      resolve(ev.data);
+      const userInfo = ev.data as USERDATA;
+      resolve(userInfo);
+      BC.postMessage("close_curr_page");
+      nextTick(() => openNotification("欢迎回来" + userInfo.nickname, null, "success"));
     };
 
     BC.onmessageerror = function () {
@@ -54,33 +63,33 @@ export function mainBCBus(): Promise<USERDATA> {
 }
 
 //登录后跨页面通信
-export function loginBCBus(userdata: any): BroadcastChannel {
-  const route = useRoute();
-  const BC = new BroadcastChannel("login");
+export function loginBCBus(userdata: any): Promise<boolean> {
+  return new Promise((resolve, reject) => {
+    const BC =
+      BCLists[1] || (new BroadcastChannel("login") && PThen().then(() => (BCLists[1] = BC)));
+    console.log(BCLists);
 
-  const closeBcWatch = () => BC.close();
-  store.commit("login/pushWatchFn", ["stopwatch", closeBcWatch]);
+    BC.onmessage = function (ev) {
+      const msg = ev.data;
+      if (msg === "close_curr_page") {
+        resolve(true);
+        window.close();
+      }
+    };
 
-  const transformData = transformUserData(userdata);
-  loginStoreSetInfo(transformData, true);
-  Promise.resolve().then(() => setCookie(userdata));
+    BC.onmessageerror = function () {
+      reject(false);
+    };
 
-  BC.postMessage(transformData);
-  setLocalStorage(userdata);
+    const transformData = transformUserData(userdata);
+    loginStoreSetInfo(transformData, true);
 
-  nextTick(() => openNotification("欢迎回来" + transformData.nickname, null, "success"));
+    //写入cookie
+    Promise.resolve().then(() => setCookie(userdata));
 
-  const path = (route && route.path) ?? "/login";
-  console.log({
-    route,
-    path,
+    BC.postMessage(transformData);
+    setLocalStorage(userdata);
   });
-
-  if (path.indexOf("/login") > -1) {
-    window.close();
-  }
-
-  return BC;
 }
 
 function setLocalStorage(tokenobj: Record<string, any>) {
@@ -101,6 +110,7 @@ function transformToken(tokenobj: Record<string, any>): ACCESS_OR_REFRESH_TOKEN 
 }
 
 export function transformUserData(userdata: any) {
+  console.log(userdata);
   const profile = userdata.profile ?? userdata;
 
   const data: USERDATA = {

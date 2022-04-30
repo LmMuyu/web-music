@@ -1,21 +1,18 @@
 <template>
-  <div v-if="countRef" ref="section" class="overflow-y-scroll relative scroll_bar h_calc">
-    <section class="flex pt-4 border_style" v-for="event in events" :key="event.id">
-      <div style="width: 10%" class="flex justify-center">
-        <el-avatar
-          class="cursor-pointer"
-          size="medium"
-          :src="event.user.avatarUrl"
-          @click="
-            router.push({
-              path: '/user/home',
-              query: { uid: event.user.userId },
-            })
-          "
-        ></el-avatar>
-      </div>
-      <div style="width: 90%"><main-content :event="event" /></div>
-    </section>
+  <div v-if="countRef" ref="section" class="relative h_calc">
+    <better-scroll>
+      <el-row class="flex pt-4" v-for="event in events" :key="event.id">
+        <el-col :span="2" class="flex justify-start">
+          <el-avatar
+            class="cursor-pointer"
+            size="medium"
+            :src="event.user.avatarUrl"
+            @click="router.push({ path: '/user/home', query: { uid: event.user.userId } })"
+          ></el-avatar>
+        </el-col>
+        <el-col :span="22"><main-content :event="event" /></el-col>
+      </el-row>
+    </better-scroll>
   </div>
 </template>
 <script setup lang="ts">
@@ -26,10 +23,10 @@ import { getSubScriptDynamic } from "../../../api/subscription";
 import { useRefNegate } from "../../../utils/useRefNegate";
 import { throttle } from "../../../utils/throttle";
 
+import BetterScroll from "../../../components/betterscroll/BetterScroll.vue";
 import MainContent from "./MainContent.vue";
-import { ElAvatar } from "element-plus";
+import { ElAvatar, ElRow, ElCol } from "element-plus";
 
-const instance = getCurrentInstance();
 const router = useRouter();
 
 const { countRef, negate } = useRefNegate(false);
@@ -94,30 +91,7 @@ function watchEvent() {
 }
 </script>
 <style scoped lang="scss">
-.border_style {
-  position: relative;
-  & ::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    height: 1px;
-    width: 100%;
-    background-color: #dfe6e9;
-  }
-}
-
 .h_calc {
   height: calc(100% - 40px);
-}
-.scroll_bar {
-  &::-webkit-scrollbar {
-    display: none;
-  }
-}
-
-.scroll_botton {
-  transition: all 0.3s cubic-bezier(0.075, 0.82, 0.165, 1);
 }
 </style>

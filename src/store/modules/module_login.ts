@@ -1,4 +1,3 @@
-import mitt, { Emitter } from "mitt";
 import { ActionTree } from "vuex";
 import { computed, watchEffect } from "vue";
 import { follows } from "../../api/user";
@@ -10,7 +9,6 @@ enum watchType {
 type loginType = "logout" | "login" | "";
 
 interface WATCHFNOPTIONS {
-  stopWatchFnLists: Emitter;
   watchLoginFn: (iswatchbc: boolean) => void | null;
 }
 
@@ -60,7 +58,6 @@ class login {
       handleCountWmap: new WeakMap(),
       initStatus: false,
       watch: {
-        stopWatchFnLists: mitt(),
         watchLoginFn: null,
       },
     };
@@ -90,14 +87,6 @@ class login {
       setWatchFn(state: STATETYPE, watchLoginFn) {
         if (typeof watchLoginFn !== "function") return;
         state.watch.watchLoginFn = watchLoginFn;
-      },
-
-      pushWatchFn(state: STATETYPE, mittops: [watchType, () => void]) {
-        state.watch.stopWatchFnLists.off(mittops[0], mittops[1]);
-      },
-
-      emitTypeWatchFn(state: STATETYPE, type: watchType) {
-        state.watch.stopWatchFnLists.emit(type);
       },
 
       setFollowsLists(state: STATETYPE, lists: follow[]) {

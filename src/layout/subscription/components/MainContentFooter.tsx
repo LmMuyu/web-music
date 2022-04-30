@@ -1,11 +1,12 @@
-<script lang="tsx">
 import { computed, defineComponent, ref, shallowRef, unref } from "vue";
 import { useStore } from "vuex";
 
 import { linkeEvent } from "../methods";
+import { diffTime } from "../hooks/diffTime";
+
+import FontIcon from "../../../components/fonticon/FontIcon.vue";
 
 import type { PropType, Ref } from "vue";
-import { diffTime } from "../hooks/diffTime";
 
 type Options = {
   name: string;
@@ -37,10 +38,14 @@ export default defineComponent({
   setup(props, { emit: ctxEmit }) {
     const store = useStore();
     const isLatestLinke = shallowRef(false);
-    const linkedCounts = ref(props.info.find((v) => v.name === "linke").count);
+    const linkedCounts = ref(retCount());
     const eventMap = new Map();
 
     eventMap.set("linke", linkeEvent(linkedCounts, isLatestLinke));
+
+    function retCount() {
+      return props.info.find((v) => v.name === "linke").count;
+    }
 
     const switchText = (name: string) => {
       let text = "";
@@ -77,10 +82,10 @@ export default defineComponent({
       return (
         <span
           ref={rootEl}
-          class="flex justify-center items-center px-4 cursor-pointer icons"
+          class="flex justify-center items-center px-4 cursor-pointer"
           onClick={!!options?.event?.emit && (() => returnEmit(options.event, rootEl))}
         >
-          <i class={`iconfont ${icon(options.icon)}`}></i>
+          <FontIcon icon={icon(options.icon)}></FontIcon>
           <p style="color: #b2bec3" class="text-sm">
             {!options.icon && switchText(options.name)}
             {unref(options.count) === 0 ? "" : `${unref(options.count)}`}
@@ -94,6 +99,8 @@ export default defineComponent({
 
       const len = props?.latestLikedUsers.length;
       const userid = store.getters["login/getUserInfo"]["userID"];
+
+      if (!userid) return console.error(userid);
 
       if (len === 0 || len === undefined) return false;
 
@@ -121,13 +128,15 @@ export default defineComponent({
       }
     });
 
-    isLatestLinke.value = isLinke.value;
+    if (typeof isLinke.value !== "boolean") {
+      isLatestLinke.value = isLinke.value as any;
+    }
 
     return () => {
       const setClass = (str_class: string) => "flex" + " " + str_class;
 
       return (
-        <section class="footer_heigth flex justify-end w-full h-full">
+        <section style="height:60px;" class="flex justify-end w-full h-full">
           <div class="flex items-center w-1/2 h-full">
             <p>{props.showTime > 0 && diffTime(props.showTime, Date.now())}</p>
           </div>
@@ -145,13 +154,3 @@ export default defineComponent({
     };
   },
 });
-</script>
-<style scoped lang="scss">
-.footer_heigth {
-  height: 60px;
-}
-
-.icons {
-  @include Iconfont(#74b9ff, 16);
-}
-</style>
