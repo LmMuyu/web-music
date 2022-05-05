@@ -25,6 +25,8 @@ export const eventType = computed(() => {
         return "发布视频";
       case 41:
         return "分享视频";
+      case 99:
+        return "分享网页";
       default:
         return "";
     }

@@ -15,19 +15,20 @@
   </div>
 </template>
 <script lang="ts">
-import { elButtonGroupKey } from "element-plus";
 import {
   defineComponent,
   getCurrentInstance,
+  h,
   nextTick,
   onMounted,
   onUnmounted,
   ref,
   render,
+  watch,
   watchEffect,
 } from "vue";
-import { debounce } from "../../utils/debounce";
 import useLoadNetworkRes from "../../utils/useLoadNetworkRes";
+import bottomLoading_H from "./bottomLoading_H";
 
 export default defineComponent({
   props: {
@@ -36,14 +37,20 @@ export default defineComponent({
       type: Object,
       default: {},
     },
+    openUpload: {
+      type: Boolean,
+      default: false,
+    },
   },
-  setup(props, { expose, slots }) {
+  emits: ["pullUpLoad"],
+  setup(props, { expose, slots, emit: ctxEmit }) {
     const src = "https://cdn.jsdelivr.net/npm/better-scroll@2.4.2/dist/better-scroll.esm.js";
     const viewport = ref(null);
     const viewportHeight = ref(0);
     const capHeight = ref(0);
     let statusPrmosie = ref(null);
     let thenStatus = ref<"pending" | "fulfilled">("pending");
+    const isPullUpLoad = ref(false);
 
     const ctx = getCurrentInstance();
     let BS = null;
@@ -60,6 +67,8 @@ export default defineComponent({
 
     function heightAdd() {
       const lists = viewport.value.children[0].children as HTMLElement[];
+      console.log(lists);
+
       const totalHeight = Array.prototype.reduce.apply(lists, [
         (pre, next) => {
           return (pre += next.getBoundingClientRect().height);
@@ -110,8 +119,14 @@ export default defineComponent({
         const BScroll = module;
         BS = new BScroll(
           viewport.value,
-          Object.assign({}, { mouseWheel: true, bounce: false, click: true }, props.BsOptions)
+          Object.assign(
+            {},
+            { mouseWheel: true, bounce: false, click: true, pullUpLoad: props.openUpload },
+            props.BsOptions
+          )
         );
+
+        props.openUpload && BS.on("pullingUp", pullingUpHandler);
 
         const stop = watchEffect(() => {
           if (
@@ -168,11 +183,46 @@ export default defineComponent({
       capHeight.value = bottomPos(lists[lists.length - 1]);
     }
 
+    async function pullingUpHandler() {
+      try {
+        isPullUpLoad.value = true;
+
+        //请求数据
+        function requestData() {
+          return new Promise((resolve, reject) => {
+            ctxEmit("pullUpLoad", [resolve, reject]);
+          });
+        }
+
+        await requestData();
+      } catch (error) {
+        console.error(error);
+      } finally {
+        BS.finishPullUp();
+        isPullUpLoad.value = false;
+      }
+    }
+
+    function afterDiv(mountpos) {
+      const div = document.createElement("div");
+      div.classList.add("h-10", "w-full");
+      mountpos.appendChild(div);
+      return div;
+    }
+
+    function watchRenderBottomLoading() {
+      const mount = afterDiv(viewport.value.children[0]);
+      watch(isPullUpLoad, (newavalue) => {
+        render(bottomLoading_H({ isPullUpLoad }), mount);
+      });
+    }
+
     onMounted(async () => {
       if (viewport.value) {
         const vnode = slots.default()[0];
         statusPrmosie.value = mutationSubtree(viewport.value.children[0]);
         render(vnode, viewport.value.children[0]);
+        watchRenderBottomLoading();
 
         await nextTick();
         capTotalHeight();
@@ -195,6 +245,7 @@ export default defineComponent({
       viewportHeight,
       capHeight,
       loadImages,
+      isPullUpLoad,
     };
   },
 });

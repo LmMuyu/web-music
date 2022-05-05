@@ -1,9 +1,9 @@
 <template>
   <el-container>
-    <el-header class="h-1/5">
+    <el-header class="h-1/5 bg-white">
       <subscrion-user-info />
     </el-header>
-    <el-main ain class="h-full p-4">
+    <el-main ain class="h-full p-4 bg-white">
       <subscrion-new-meg />
       <subscrion-topic />
     </el-main>

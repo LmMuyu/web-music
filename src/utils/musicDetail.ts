@@ -112,8 +112,6 @@ export class resultOptions implements MusicDetailOption {
   dt: number;
 
   constructor(musicdata: Record<string, any>) {
-    console.log(this);
-    
     this.id = this.getID(musicdata, musicdata.type);
     this.name = this.getName(musicdata);
     this.picUrl = this.getPicUrl(musicdata);
@@ -122,6 +120,7 @@ export class resultOptions implements MusicDetailOption {
   }
 
   picUrlRecursion(options: any) {
+    if (Object.keys(options).length === 0) return;
     let test = false;
 
     for (const key in options) {
@@ -132,9 +131,7 @@ export class resultOptions implements MusicDetailOption {
       }
     }
 
-    console.log(options);
-
-    return this.picUrlRecursion(options.album);
+    return this.picUrlRecursion(options?.album ?? {});
   }
 
   getID(options: any, type: string) {
@@ -154,8 +151,7 @@ export class resultOptions implements MusicDetailOption {
   getPicUrl(options: any) {
     const url = options?.album ? this.picUrlRecursion(options) : "";
     if (url) return url;
-
-    return options.coverUrl || options.coverImgUrl || options["al"]["picUrl"] || "";
+    return options.coverUrl || options.coverImgUrl || options?.["al"]?.["picUrl"] || "";
   }
 
   getAr(options: any) {

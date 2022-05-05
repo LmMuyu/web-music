@@ -1,5 +1,5 @@
 <template>
-  <el-container class="flex">
+  <el-container class="flex h-full">
     <el-container>
       <el-header height="44px" class="header"><subscription-header /></el-header>
       <el-main style="background-color: #fff">

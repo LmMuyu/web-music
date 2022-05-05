@@ -1,5 +1,10 @@
 <template>
-  <ul :style="gridstyle" :class="{ 'mt-6': isMarginTop }" @click.capture="emitPreImage">
+  <ul
+    :style="gridstyle"
+    :class="{ 'mt-6': isMarginTop }"
+    class="h-full"
+    @click.capture="emitPreImage"
+  >
     <li v-for="(file, index) in picList" :key="index">
       <img :src="file" class="object-fit" :key-index="index" />
     </li>

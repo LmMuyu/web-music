@@ -1,10 +1,8 @@
 <template>
   <section>
-    <span>
-      <p>热门话题</p>
-    </span>
+    <span> 热门话题 </span>
     <nav ref="nav" class="py-4">
-      <SubscrionItem :renderList="renderTopic" />
+      <subscrion-item :renderlists="renderTopic" :to-path="'/topic'" />
     </nav>
   </section>
 </template>

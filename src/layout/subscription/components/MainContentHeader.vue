@@ -10,12 +10,11 @@
   </div>
 </template>
 <script setup lang="tsx">
-import { createApp, defineProps, nextTick, ref, watch, watchEffect } from "vue";
-import { RouterLink } from "vue-router";
-import router from "../../../routes";
+import { defineProps, nextTick, onMounted, ref, watchEffect } from "vue";
 
 import filterDate from "../../../utils/filterDate";
 import { eventType } from "../hooks/eventType";
+import { routerLinkRender } from "../renderNode";
 
 const props = defineProps({
   userinfo: {
@@ -34,34 +33,21 @@ const props = defineProps({
 
 const linkComp = ref(null);
 
-function headerRouterLink(props) {
-  return () => (
-    <span class="hover relative">
-      <RouterLink
-        style="color: #74b9ff"
-        class="cursor-pointer"
-        to={{ path: "/user/home", query: { uid: props.uid } }}
-      >
-        {props.nickname}
-      </RouterLink>
-    </span>
-  );
-}
+onMounted(async () => {
+  await nextTick();
 
-watchEffect(async () => {
-  if (Object.keys(props.userinfo).length > 0) {
-    const app = createApp(
-      headerRouterLink({ nickname: props.userinfo.nickname, uid: props.userinfo.userId })
-    );
-    app.use(router);
-
-    await nextTick();
-    if (linkComp.value) {
-      app.mount(linkComp.value);
-    } else {
-      console.error(linkComp.value + `:元素为空，无法挂载`);
+  watchEffect(() => {
+    if (Object.keys(props.userinfo).length > 0) {
+      if (linkComp.value) {
+        routerLinkRender(linkComp, {
+          nickname: props.userinfo.nickname,
+          uid: props.userinfo.userId,
+        });
+      } else {
+        console.error(linkComp.value + `:元素为空，无法挂载`);
+      }
     }
-  }
+  });
 });
 </script>
 <style scoped lang="scss">

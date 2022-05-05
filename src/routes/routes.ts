@@ -125,6 +125,14 @@ const routes: (RouteRecordRaw & {
       showTags: false,
     },
   },
+  {
+    path: "/topic",
+    name: "Topic",
+    components: {
+      default: () => import("../layout/topic/Topic.vue"),
+      query: ["tid"],
+    },
+  },
 ];
 
 export default routes;

@@ -125,7 +125,7 @@ class PicLists {
     const height = window.outerHeight;
 
     const dpr = parseFloat((width / height).toFixed(2)) * 100;
-    return dpr;
+    return dpr - dpr * (1 / 3);
   }
 }
 

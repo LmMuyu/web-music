@@ -1,5 +1,6 @@
-import { useStore } from "vuex";
-import type { Store } from "vuex";
-import type { State } from "../store/type";
+import store from "../store";
 
-export const getStore = (): Store<State> => useStore();
+import type { State } from "../store/type";
+import type { Store } from "vuex";
+
+export const getStore = (): Store<State> => store;

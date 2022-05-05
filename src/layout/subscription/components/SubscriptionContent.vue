@@ -1,6 +1,6 @@
 <template>
   <div v-if="countRef" ref="section" class="relative h_calc">
-    <better-scroll>
+    <better-scroll :open-upload="true" @pull-up-load="loadData">
       <el-row class="flex pt-4" v-for="event in events" :key="event.id">
         <el-col :span="2" class="flex justify-start">
           <el-avatar
@@ -10,13 +10,15 @@
             @click="router.push({ path: '/user/home', query: { uid: event.user.userId } })"
           ></el-avatar>
         </el-col>
-        <el-col :span="22"><main-content :event="event" /></el-col>
+        <el-col :span="22">
+          <main-content :event="event" />
+        </el-col>
       </el-row>
     </better-scroll>
   </div>
 </template>
 <script setup lang="ts">
-import { nextTick, getCurrentInstance, watch, reactive, ref } from "vue";
+import { nextTick, watch, reactive, ref, watchEffect } from "vue";
 import { useRouter } from "vue-router";
 
 import { getSubScriptDynamic } from "../../../api/subscription";
@@ -24,8 +26,12 @@ import { useRefNegate } from "../../../utils/useRefNegate";
 import { throttle } from "../../../utils/throttle";
 
 import BetterScroll from "../../../components/betterscroll/BetterScroll.vue";
-import MainContent from "./MainContent.vue";
 import { ElAvatar, ElRow, ElCol } from "element-plus";
+import MainContent from "./MainContent.vue";
+
+const props = defineProps({
+  event: Array,
+});
 
 const router = useRouter();
 
@@ -45,6 +51,8 @@ let initwatch = false;
 async function friend(lasttime: number = -1) {
   try {
     const res = await getSubScriptDynamic(lasttime);
+    console.log(res);
+
     lasttime = res.data.lasttime;
     events.value.push(...res.data.event);
 
@@ -55,7 +63,32 @@ async function friend(lasttime: number = -1) {
   }
 }
 
-friend();
+if (!props.event) {
+  friend();
+} else {
+  watchEvents();
+}
+
+function watchEvents() {
+  watchEffect(() => {
+    if (props.event && props.event.length > 0) {
+      events.value = props.event;
+
+      nextTick(() => {
+        !initwatch && watchEvent();
+      });
+    }
+  });
+}
+
+async function loadData([resolve, reject]) {
+  try {
+    await friend(lasttime);
+    resolve(true);
+  } catch (error) {
+    reject(false);
+  }
+}
 
 let requestmidd = false;
 

@@ -43,3 +43,8 @@
     text-decoration: underline;
   }
 }
+
+
+.bottom_line{
+   @include Decoration_Hover
+}

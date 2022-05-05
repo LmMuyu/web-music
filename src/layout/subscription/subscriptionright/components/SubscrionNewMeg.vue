@@ -7,7 +7,7 @@
       </p>
     </div>
     <div>
-      <SubscrionItem :renderList="msgList" />
+      <SubscrionItem :renderlists="msgList" to-path="/message" />
     </div>
   </section>
 </template>
@@ -34,10 +34,8 @@ function getMsg(method: Method = "GET") {
   //       msg: JSON.parse(v.lastMsg).msg,
   //     };
   //   });
-
   //   newMsgCount.value = privatemeg.data.newMsgCount;
   // });
-
   // timer = setInterval(() => {
   //   getMsg("HEAD");
   // }, 1000 * 10);
