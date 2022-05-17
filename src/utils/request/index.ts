@@ -38,7 +38,7 @@ export default function request(config: AxiosRequestConfig) {
     baseURL: "https://netease-cloud-music-api-chi-ashy.vercel.app/",
     // baseURL: "http://localhost:3000",
     method: "GET",
-    timeout: 10000,
+    timeout: 30000,
     withCredentials: true,
   });
 

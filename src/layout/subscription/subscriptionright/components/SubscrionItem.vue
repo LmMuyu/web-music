@@ -41,6 +41,6 @@ const props = defineProps({
   },
 });
 
-console.log(props.renderlists);
+// console.log(props.renderlists);
 </script>
 <style scoped lang="scss"></style>

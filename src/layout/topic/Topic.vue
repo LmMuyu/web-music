@@ -1,32 +1,32 @@
 <template>
-  <el-container class="bg-white h-full">
-    <el-header
-      style="height: 50%"
-      :style="{ backgroundImage: `url(${topic.bgimg})`, backgroundSize: 'cover' }"
-      class="flex justify-center items-center flex-col"
-    >
-      <div class="h-2/4 flex items-center justify-center flex-col">
-        <span class="text-white text-3xl py-4 block">{{ topic.topicTitle }} </span>
-        <ul class="list-disc text-white">
-          <li v-for="(text, index) in topic.introductions" :key="index">
-            {{ text }}
-          </li>
-        </ul>
-      </div>
-      <div class="h-2/4">
-        <el-button plain size="large" style="width: 10vw; display: flex">
-          <font-icon icon="iconw_shuxie" size="30" color="rgb(116 185 255)">
-            <template #after>
-              <span style="color: rgb(116 185 255)" class="text-xl"> 写动态 </span>
-            </template>
-          </font-icon>
-        </el-button>
-      </div>
-    </el-header>
-    <el-main>
-      <subscription-content v-if="events.length > 0" :event="events"> </subscription-content>
-    </el-main>
-  </el-container>
+  <subscription-content v-if="events.length > 0" :event="events">
+    <el-container class="bg-white" style="height: 70vh">
+      <el-main>
+        <div
+          class="flex justify-center items-center flex-col w-full h-full"
+          :style="{ backgroundImage: `url(${topic.bgimg})`, backgroundSize: 'cover' }"
+        >
+          <div class="h-2/4 flex items-center justify-center flex-col">
+            <span class="text-white text-3xl py-4 block">{{ topic.topicTitle }} </span>
+            <ul class="list-disc text-white">
+              <li v-for="(text, index) in topic.introductions" :key="index">
+                {{ text }}
+              </li>
+            </ul>
+          </div>
+          <div class="h-2/4 flex items-center justify-center">
+            <el-button plain size="large" style="width: 10vw; display: flex">
+              <font-icon icon="iconw_shuxie" size="30" color="rgb(116 185 255)">
+                <template #after>
+                  <span style="color: rgb(116 185 255)" class="text-xl"> 写动态 </span>
+                </template>
+              </font-icon>
+            </el-button>
+          </div>
+        </div>
+      </el-main>
+    </el-container>
+  </subscription-content>
 </template>
 <script setup lang="ts">
 import { reactive, ref } from "vue";
@@ -34,7 +34,7 @@ import { useRoute } from "vue-router";
 
 import { topicDetail, topicHotEvent } from "../../api/topic";
 
-import { ElContainer, ElHeader, ElMain, ElButton } from "element-plus";
+import { ElContainer, ElMain, ElButton } from "element-plus";
 import FontIcon from "../../components/fonticon/FontIcon.vue";
 import SubscriptionContent from "../subscription/components/SubscriptionContent.vue";
 

@@ -164,6 +164,14 @@ function enterAudioActive() {
   tiemr = null;
 }
 
+async function initShowAudioModule() {
+  (await dexie).first().then((first) => {
+    !first && (isLeaveSanSecBelow.value = true);
+  });
+}
+
+initShowAudioModule();
+
 function enterAudio() {
   enterAudioActive();
 }

@@ -101,6 +101,8 @@ class PicLists {
   }
 
   private async toFileReader(fileList: any[]) {
+    console.log(fileList);
+
     const len = fileList.length;
     if (len === 0) return;
 
@@ -125,7 +127,7 @@ class PicLists {
     const height = window.outerHeight;
 
     const dpr = parseFloat((width / height).toFixed(2)) * 100;
-    return dpr - dpr * (1 / 3);
+    return Number((dpr - dpr * (1 / 3)).toFixed(2));
   }
 }
 

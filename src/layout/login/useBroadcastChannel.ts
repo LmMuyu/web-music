@@ -110,7 +110,7 @@ function transformToken(tokenobj: Record<string, any>): ACCESS_OR_REFRESH_TOKEN 
 }
 
 export function transformUserData(userdata: any) {
-  console.log(userdata);
+  // console.log(userdata);
   const profile = userdata.profile ?? userdata;
 
   const data: USERDATA = {

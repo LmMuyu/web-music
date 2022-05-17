@@ -7,8 +7,8 @@
       <MainContentHeader :type="eventType" :userinfo="event.user" :showTime="event.showTime" />
     </el-header>
     <el-main class="py-6" style="padding-top: 0; padding-bottom: 0">
+      <span v-text="mainContentData.msg"></span>
       <main-song v-if="mainContentData.song" :song-data="mainContentData.song" />
-      {{ mainContentData.msg }}
       <main-content-image-list :subinfo="event" @preImage="previewComp" />
       <main-website
         v-if="mainContentData.resource"
@@ -24,6 +24,7 @@
         :latestLikedUsers="event.info.commentThread.latestLikedUsers ?? []"
         @linke="linke"
         @comment="comment"
+        @forward="forward"
       />
     </el-footer>
   </el-container>
@@ -49,8 +50,9 @@ import MainContent from "./MainContent.vue";
 import MainWebsite from "./MainWebsite.vue";
 import MainComment from "./MainComments";
 import MainSong from "./MainSong.vue";
+import { useStore } from "vuex";
 
-type infoMapValue = Map<string, Record<string, string | number>[]>;
+type infoMapValue = Map<string, { query: string; id: number }>;
 type activityMap = Map<number, infoMapValue>;
 
 const ctxEmit = defineEmits(["retPics"]);
@@ -66,13 +68,12 @@ const props = defineProps({
   },
 });
 
-console.log(props.event);
-
 const footerInfo = unref(computed_footerInfo)(props);
 const { countRef, negate } = useRefNegate(false);
 const eventType = ref(Number(event.type));
 const commentList = ref([]);
 const activityInfoMap = ref<activityMap>(new Map());
+const activitySetLists = new Set<infoMapValue>();
 
 const mainContentData = reactive({
   event: null,
@@ -82,7 +83,9 @@ const mainContentData = reactive({
 });
 
 function linke(...emits: any) {
-  onLinke(props.event, emits[0], emits[1] ? 0 : 1);
+  console.log(emits);
+
+  // onLinke(props.event, emits[0], emits[1] ? 0 : 1);
 }
 
 async function comment() {
@@ -92,6 +95,8 @@ async function comment() {
   commentList.value = result.data.comments;
   negate();
 }
+
+function forward() {}
 
 function previewComp(preindex: number) {
   const pics = props.event.pics;
@@ -104,7 +109,8 @@ const runDataKeyFn: Record<string, (...arg) => void> = {
   },
   msg(mess: string) {
     if (mess) {
-      mainContentData.msg = mess;
+      const textMsg = patcRouterLink(mess);
+      mainContentData.msg = textMsg;
     }
   },
   event(eventdata: any) {
@@ -117,11 +123,10 @@ const runDataKeyFn: Record<string, (...arg) => void> = {
 
 function jsonTransform() {
   const parseTojson = JSON.parse(props.event.json);
-  console.log(parseTojson);
 
   Object.keys(mainContentData).forEach((mainkey) => {
     if (Object.prototype.hasOwnProperty.call(parseTojson, mainkey)) {
-      runDataKeyFn[mainkey].call(null, parseTojson[mainkey]);
+      runDataKeyFn[mainkey].apply(null, [parseTojson[mainkey], parseTojson]);
 
       if (mainkey === "resource") {
         eventType.value = 99;
@@ -130,7 +135,49 @@ function jsonTransform() {
   });
 }
 
-jsonTransform();
+activityInfos();
+
+function sliceTextStr(msg: string, start: number, end: number) {
+  const sliceLink = msg.slice(start, end);
+  activitySetLists.forEach((map) => {
+    if (map.has(sliceLink)) {
+      msg = msg.replace(
+        `#${sliceLink}#`,
+        `
+        <router-link to="/topic?tid=${
+          map.get(sliceLink).id
+        }&topictitle=${sliceLink}">#${sliceLink}#</router-link>
+      `
+      );
+    }
+  });
+
+  return msg;
+}
+
+function patcRouterLink(msg: string) {
+  const len = msg.length;
+
+  for (let i = 0; i < len; i++) {
+    const str = msg[i];
+    if (str === "#") {
+      let j = ++i;
+
+      while (j < len) {
+        const endstr = msg[j];
+        if (endstr === "#") {
+          msg = sliceTextStr(msg, i, j);
+          break;
+        }
+        j++;
+      }
+    } else {
+      continue;
+    }
+  }
+
+  return msg;
+}
 
 function activityInfos() {
   if (!props?.event?.bottomActivityInfos) {
@@ -148,8 +195,7 @@ function activityInfos() {
       const index = target.indexOf("?");
       if (index != -1) {
         const splitStrArr = target.slice(index + 1).split("=");
-
-        return splitStrArr;
+        return splitStrArr[0];
       } else {
         console.warn("无法截取，index为：" + index);
       }
@@ -160,42 +206,40 @@ function activityInfos() {
 
       if (index != -1) {
         const splitStrArr = target.slice(index + 1).split("/");
-
-        return splitStrArr;
+        return splitStrArr[1];
       }
     },
   };
 
   bottomActivityInfos.forEach((activeInfo) => {
     const methodName = typeMethods[activeInfo.type];
-    console.log(methodName);
 
     if (activeInfo.target && methodName) {
-      const [page, id] = activeityInfoMethods[`type${methodName}`](activeInfo?.target ?? "");
-      // setActiveInfos(activeInfo, page, id);
+      const query = activeityInfoMethods[`type${methodName}`](activeInfo?.target ?? "");
+      setActiveInfos(activeInfo, query, activeInfo.id);
     } else {
       console.warn(activeInfo.target + "===" + methodName);
     }
   });
+
+  jsonTransform();
 }
 
-activityInfos();
+function setActiveInfos(activeInfo: any, query: string, id: number) {
+  activityInfoMap.value.has(activeInfo.type)
+    ? activityInfoMap.value.get(activeInfo.type)
+    : activityInfoMap.value.set(activeInfo.type, new Map([[activeInfo.name, { query, id }]]));
 
-function setActiveInfos(activeInfo: any, page: string, id: number) {
-  if (activityInfoMap.value.has(activeInfo.type)) {
-    const activityInfoKey = activityInfoMap.value.get(activeInfo.type);
+  const rootkeyMap = activityInfoMap.value.get(activeInfo.type);
+  activitySetLists.add(rootkeyMap);
 
-    if (activityInfoKey.has(activeInfo.name.trim())) {
-      activityInfoKey.get(activeInfo.name.trim()).push({ page, id });
-      activityInfoMap.value.set(activeInfo.type, activityInfoKey);
-    } else {
-      activityInfoKey.set(activeInfo.name.trim(), [{ page, id }]);
-    }
+  if (!rootkeyMap.has(activeInfo.name)) {
+    rootkeyMap.set(activeInfo.name, { query, id });
+    activityInfoMap.value.set(activeInfo.type, rootkeyMap);
+
+    return true;
   } else {
-    activityInfoMap.value.set(
-      activeInfo.type,
-      new Map().set(activeInfo.name.trim(), [{ page, id }])
-    );
+    return true;
   }
 }
 

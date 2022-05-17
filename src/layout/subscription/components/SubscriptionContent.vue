@@ -1,7 +1,8 @@
-<template>
-  <div v-if="countRef" ref="section" class="relative h_calc">
-    <better-scroll :open-upload="true" @pull-up-load="loadData">
-      <el-row class="flex pt-4" v-for="event in events" :key="event.id">
+<template :root="true">
+  <div v-if="countRef" ref="section" class="relative h_calc" :class="class">
+    <better-scroll :open-upload="true" :item-len="events.length" @pull-up-load="loadData">
+      <slot></slot>
+      <el-row class="flex pt-4" v-for="event in events" :event_id="event.id" :key="event.id">
         <el-col :span="2" class="flex justify-start">
           <el-avatar
             class="cursor-pointer"
@@ -31,6 +32,11 @@ import MainContent from "./MainContent.vue";
 
 const props = defineProps({
   event: Array,
+  class: String,
+  isPullUpData: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 const router = useRouter();
@@ -47,16 +53,18 @@ const scrollInfo = reactive({
 });
 
 let initwatch = false;
+let watchStop = null;
 
-async function friend(lasttime: number = -1) {
+async function friend(requestTime: number = -1) {
   try {
-    const res = await getSubScriptDynamic(lasttime);
-    console.log(res);
-
+    const res = await getSubScriptDynamic(requestTime);
     lasttime = res.data.lasttime;
     events.value.push(...res.data.event);
 
+    console.log(events.value);
+
     !initwatch && watchEvent();
+    return true;
   } catch (err) {
     //导航到404页面
     console.log(err);
@@ -70,7 +78,12 @@ if (!props.event) {
 }
 
 function watchEvents() {
-  watchEffect(() => {
+  if (watchStop) {
+    watchStop();
+    watchStop = null;
+  }
+
+  watchStop = watchEffect(() => {
     if (props.event && props.event.length > 0) {
       events.value = props.event;
 
@@ -82,6 +95,9 @@ function watchEvents() {
 }
 
 async function loadData([resolve, reject]) {
+  if (!props.isPullUpData) return;
+  console.log(lasttime);
+
   try {
     await friend(lasttime);
     resolve(true);
@@ -100,14 +116,11 @@ function viewScroll(e: Event) {
 
   if (percentage >= 90 && !requestmidd) {
     requestmidd = true;
-
     friend(lasttime);
   }
 }
 
 function watchEvent() {
-  console.log("watchEvent");
-
   initwatch = true;
   const stop = watch(countRef, () => {
     nextTick().then(() => {

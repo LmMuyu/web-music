@@ -1,8 +1,5 @@
 <template>
   <section style="height: 60px" class="flex justify-end w-full h-full">
-    <div class="flex items-center w-1/2 h-full">
-      <p>{{ props.showTime > 0 && diffTime(props.showTime, Date.now()) }}</p>
-    </div>
     <div class="flex items-center justify-end w-1/2 h-full">
       <div
         :class="props.recursion ? setClass('items-end text-sm pb-2') : setClass('items-center ')"
@@ -12,7 +9,7 @@
           :key="index"
           :ref="(ref) => unref(subInfoEls).push(ref)"
           class="flex justify-center items-center px-4 cursor-pointer"
-          @click="!!options?.event?.emit && returnEmit(options.event, subInfoEls[index])"
+          @click="!!options?.event?.emit && returnEmit(options.event)"
         >
           <FontIcon v-if="!!options.icon" :icon="icon(options.icon)"></FontIcon>
           <p style="color: #b2bec3" class="text-sm">
@@ -32,6 +29,7 @@ import { diffTime } from "../hooks/diffTime";
 import { getStore } from "../../../utils/getStore";
 
 import FontIcon from "../../../components/fonticon/FontIcon.vue";
+import Loading from "../../../components/svgloading/SvgLoading.vue";
 
 import type { PropType, Ref } from "vue";
 
@@ -42,7 +40,7 @@ type Options = {
   icon?: string[] | string;
 };
 
-const ctxEmit = defineEmits(["linke", "comment"]);
+const ctxEmit = defineEmits(["linke", "comment", "forward"]);
 
 const props = defineProps({
   info: {
@@ -93,18 +91,13 @@ const switchText = (name: string) => {
   return text;
 };
 
-const returnEmit = (event: Record<any, any>, el: Ref<HTMLElement | null>) =>
-  ctxEmit(
-    event.emit_name,
-    eventMap.get(event.emit_name),
-    event.emit_name === "linke" && isLatestLinke.value,
-    el
-  );
+const returnEmit = (event: Record<any, any>) => {
+  ctxEmit(event.emit_name, eventMap.get(event.emit_name));
+};
 
 const icon = (icons: string | string[] | undefined) => {
   if (!icons) return "";
   const icon = Array.isArray(icons) ? (isLinke ? icons[0] : icons[1]) : icons;
-
   return icon;
 };
 
@@ -120,7 +113,6 @@ const isLinke = computed(() => {
   if (!userid) return console.error(userid);
 
   if (len === 0 || len === undefined) return false;
-
   if (len === 1) {
     const isEqual = props.latestLikedUsers[0]["s"] === userid;
 

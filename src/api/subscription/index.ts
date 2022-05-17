@@ -6,16 +6,12 @@ export function getSubScriptDynamic(lasttime: number = -1) {
     url: "/event",
     params: {
       lasttime,
-      pagesize: 5,
+      pagesize: 6,
     },
   });
 }
 
-export async function postLinke(
-  threadId: string,
-  successFn: Function,
-  t: 0 | 1
-) {
+export async function postLinke(threadId: string, successFn: Function, t: 0 | 1) {
   const res = await request({
     method: "post",
     url: "/resource/like",

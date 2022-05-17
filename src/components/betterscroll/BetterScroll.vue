@@ -41,6 +41,10 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+    itemLen: {
+      type: Number,
+      required: true,
+    },
   },
   emits: ["pullUpLoad"],
   setup(props, { expose, slots, emit: ctxEmit }) {
@@ -51,10 +55,12 @@ export default defineComponent({
     let statusPrmosie = ref(null);
     let thenStatus = ref<"pending" | "fulfilled">("pending");
     const isPullUpLoad = ref(false);
+    let isMountOneUpLoadIcon = false;
 
     const ctx = getCurrentInstance();
     let BS = null;
     let mountRefreshFn: (bs) => void = null;
+    let mutation = null;
 
     function disable() {
       console.log(BS);
@@ -67,7 +73,6 @@ export default defineComponent({
 
     function heightAdd() {
       const lists = viewport.value.children[0].children as HTMLElement[];
-      console.log(lists);
 
       const totalHeight = Array.prototype.reduce.apply(lists, [
         (pre, next) => {
@@ -154,11 +159,19 @@ export default defineComponent({
       return new Promise((resolve) => {
         if (contentport) {
           let timer = null;
-          const mutation = new MutationObserver((mutationlists) => {
+          if (mutation) {
+            mutation.disconnect();
+            mutation.takeRecords();
+            mutation = null;
+          }
+
+          mutation = new MutationObserver((mutationlists) => {
             if (timer) {
               clearTimeout(timer);
               timer = null;
             }
+
+            // console.log(mutationlists);
 
             timer = setTimeout(() => {
               resolve((thenStatus.value = "fulfilled"));
@@ -175,11 +188,14 @@ export default defineComponent({
     }
 
     function bottomPos(el: HTMLElement) {
-      return el.getBoundingClientRect().bottom;
+      const height = el.getBoundingClientRect().bottom;
+      return height;
     }
 
+    //计算滑动总高度
     function capTotalHeight() {
       const lists = viewport.value.children[0].children as HTMLElement[];
+      // console.log(Array.from(lists).forEach((node) => console.log(node.getBoundingClientRect())));
       capHeight.value = bottomPos(lists[lists.length - 1]);
     }
 
@@ -213,22 +229,42 @@ export default defineComponent({
     function watchRenderBottomLoading() {
       const mount = afterDiv(viewport.value.children[0]);
       watch(isPullUpLoad, (newavalue) => {
+        console.log(newavalue);
+
         render(bottomLoading_H({ isPullUpLoad }), mount);
       });
     }
 
-    onMounted(async () => {
+    function templateHVnode(slotss) {
+      return h(
+        defineComponent({
+          render: () => slotss,
+        })
+      );
+    }
+
+    async function renderNode() {
       if (viewport.value) {
-        const vnode = slots.default()[0];
+        const appContext = ctx.appContext;
+        const slotss = slots.default.call(appContext);
+
+        render(templateHVnode(slotss), viewport.value.children[0]);
         statusPrmosie.value = mutationSubtree(viewport.value.children[0]);
-        render(vnode, viewport.value.children[0]);
-        watchRenderBottomLoading();
+
+        !isMountOneUpLoadIcon && watchRenderBottomLoading();
+        isMountOneUpLoadIcon = true;
 
         await nextTick();
         capTotalHeight();
       } else {
         console.error("无法获取viewport视口，无法实例化BScroll。viewport：", viewport.value);
       }
+    }
+
+    watch(() => props.itemLen, renderNode);
+
+    onMounted(async () => {
+      renderNode();
     });
 
     onUnmounted(() => {

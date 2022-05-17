@@ -39,7 +39,7 @@ const router = useRouter();
 const store = useStore();
 const windowResize = inject("windowResize") as Ref<boolean>;
 
-console.log(windowResize);
+// console.log(windowResize);
 
 const { activeStyle, clickActive, moveActive, leaveActive } = new activeIndex(
   currentIndex,

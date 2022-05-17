@@ -112,7 +112,7 @@ async function loginBtn() {
 
       try {
         const loginResult = await loginCellphone(formData);
-        console.log(loginResult);
+        // console.log(loginResult);
 
         if (loginResult.data.code === 502) {
           return;
@@ -137,7 +137,7 @@ async function loginBtn() {
 }
 
 function keydownfn(e) {
-  console.log(e);
+  // console.log(e);
   if (e.code === "Enter") {
     loginBtn();
   }
