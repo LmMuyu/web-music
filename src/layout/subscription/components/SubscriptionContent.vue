@@ -61,8 +61,6 @@ async function friend(requestTime: number = -1) {
     lasttime = res.data.lasttime;
     events.value.push(...res.data.event);
 
-    console.log(events.value);
-
     !initwatch && watchEvent();
     return true;
   } catch (err) {
@@ -95,15 +93,15 @@ function watchEvents() {
 }
 
 async function loadData([resolve, reject]) {
-  if (!props.isPullUpData) return;
-  console.log(lasttime);
+  resolve(true);
+  // if (!props.isPullUpData) return  resolve(true );
 
-  try {
-    await friend(lasttime);
-    resolve(true);
-  } catch (error) {
-    reject(false);
-  }
+  // try {
+  //   await friend(lasttime);
+  //   resolve(true);
+  // } catch (error) {
+  //   reject(false);
+  // }
 }
 
 let requestmidd = false;

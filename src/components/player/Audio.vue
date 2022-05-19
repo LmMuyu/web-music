@@ -155,7 +155,7 @@ let isLeaveSanSecBelow = ref<null | boolean>(null);
 function leaveTimeout() {
   tiemr = setTimeout(() => {
     isLeaveSanSecBelow.value = true;
-  }, 3000);
+  }, 1500);
 }
 
 function enterAudioActive() {

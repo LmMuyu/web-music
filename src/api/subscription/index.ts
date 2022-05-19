@@ -6,7 +6,7 @@ export function getSubScriptDynamic(lasttime: number = -1) {
     url: "/event",
     params: {
       lasttime,
-      pagesize: 6,
+      pagesize: 15,
     },
   });
 }
@@ -50,7 +50,7 @@ export function getTopic() {
   return request({
     url: "/hot/topic",
     params: {
-      limit: 5,
+      limit: 10,
     },
   });
 }

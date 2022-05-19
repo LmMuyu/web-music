@@ -86,7 +86,7 @@ export class musicDetail {
     const infos = this.singerInfo as singer[];
 
     function createSpanTag(next: singer) {
-      return `<p class="cursor-pointer text_hover" style="color:#b2bec3" user-id="${next.id}" >${next.name}</p>`;
+      return `<p class="cursor-pointer text_hover bottom_line" style="color:#b2bec3" user-id="${next.id}" >${next.name}</p>`;
     }
 
     const str = `
@@ -151,7 +151,13 @@ export class resultOptions implements MusicDetailOption {
   getPicUrl(options: any) {
     const url = options?.album ? this.picUrlRecursion(options) : "";
     if (url) return url;
-    return options.coverUrl || options.coverImgUrl || options?.["al"]?.["picUrl"] || "";
+    return (
+      (options.xInfo && getAvatarImage(options.xInfo)) ||
+      options.coverUrl ||
+      options.coverImgUrl ||
+      options?.["al"]?.["picUrl"] ||
+      ""
+    );
   }
 
   getAr(options: any) {
@@ -171,7 +177,9 @@ export class resultOptions implements MusicDetailOption {
   }
 }
 
-export function musicResultDetail(data: Object | musicDetail) {
+export function musicResultDetail(data: Object | musicDetail, source?: Object) {
+  console.log(data);
+  
   if (isType(data) !== "Object" || Object.keys(data).length <= 0) {
     return undefined;
   }
@@ -180,7 +188,25 @@ export function musicResultDetail(data: Object | musicDetail) {
   if (data.isMusicDetail) {
     return data;
   }
-
   const options = new resultOptions(data);
+  const url = source && getAvatarImage(source);
+
+  if (source && url) {
+    options.picUrl = url;
+  }
+
   return new musicDetail(options);
+}
+
+function getAvatarImage(source) {
+  let key = "";
+  const isavatar = Object.keys(source).some((value) => {
+    const avatarkey = value.match(/img\d+x\d+/);
+    if (!!avatarkey) {
+      key = avatarkey[0];
+    }
+    return !!avatarkey;
+  });
+
+  return isavatar ? source[key] : undefined;
 }

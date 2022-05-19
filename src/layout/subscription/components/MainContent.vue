@@ -6,8 +6,8 @@
     <el-header>
       <MainContentHeader :type="eventType" :userinfo="event.user" :showTime="event.showTime" />
     </el-header>
-    <el-main class="py-6" style="padding-top: 0; padding-bottom: 0">
-      <span v-text="mainContentData.msg"></span>
+    <el-main class="py-6" style="padding-top: 0; padding-bottom: 0" v-if="hiddenMain">
+      <span class="cursor-text text-sm font-medium" ref="content_text"></span>
       <main-song v-if="mainContentData.song" :song-data="mainContentData.song" />
       <main-content-image-list :subinfo="event" @preImage="previewComp" />
       <main-website
@@ -15,10 +15,10 @@
         :resource="mainContentData.resource"
       ></main-website>
     </el-main>
-    <!-- <el-main v-if="mainContentData.event">
-      <MainContent :event="mainContentData.event" />
-    </el-main> -->
-    <el-footer>
+    <el-main v-if="mainContentData.event && !hiddenMain">
+      <MainContent :event="mainContentData.event" :recursion="true" />
+    </el-main>
+    <el-footer height="40px">
       <main-content-footer
         :info="footerInfo"
         :latestLikedUsers="event.info.commentThread.latestLikedUsers ?? []"
@@ -31,13 +31,13 @@
 </template>
 
 <script setup lang="tsx">
-import { reactive, ref, unref } from "@vue/runtime-core";
+import { onMounted, reactive, ref, unref } from "@vue/runtime-core";
 
 import { musicResultDetail } from "../../../utils/musicDetail";
 import { useRefNegate } from "../../../utils/useRefNegate";
 import preview from "../../../components/previewpicture";
 import { getComment } from "../../../api/subscription";
-import { computed_footerInfo } from "../methods";
+import { computed_footerInfo, msgRender } from "../methods";
 import { onLinke } from "../hooks/onLinke";
 
 import { ElContainer, ElHeader, ElMain, ElFooter } from "element-plus";
@@ -74,18 +74,38 @@ const eventType = ref(Number(event.type));
 const commentList = ref([]);
 const activityInfoMap = ref<activityMap>(new Map());
 const activitySetLists = new Set<infoMapValue>();
+const content_text = ref(null);
 
 const mainContentData = reactive({
   event: null,
   song: null,
   msg: null,
   resource: null,
+  program: null,
 });
 
 function linke(...emits: any) {
   console.log(emits);
-
   // onLinke(props.event, emits[0], emits[1] ? 0 : 1);
+}
+
+function withoutNull() {
+  const hiddenMain = ref(false);
+
+  for (const key in mainContentData) {
+    const k = key as keyof typeof mainContentData;
+
+    if (k === "event") {
+      continue;
+    }
+
+    if (mainContentData[k] !== null) {
+      hiddenMain.value = true;
+      break;
+    }
+  }
+
+  return hiddenMain;
 }
 
 async function comment() {
@@ -103,6 +123,17 @@ function previewComp(preindex: number) {
   const previewcomp = new preview(pics, preindex);
 }
 
+function programData(data) {
+  const song = data.mainSong && musicResultDetail(data.mainSong, data);
+  // nicknameFalse(data, song);
+  return { song };
+}
+
+function nicknameFalse(data, song) {
+  console.log(song);
+  console.log(data);
+}
+
 const runDataKeyFn: Record<string, (...arg) => void> = {
   song(data: any) {
     mainContentData.song = musicResultDetail(data);
@@ -110,7 +141,7 @@ const runDataKeyFn: Record<string, (...arg) => void> = {
   msg(mess: string) {
     if (mess) {
       const textMsg = patcRouterLink(mess);
-      mainContentData.msg = textMsg;
+      mainContentData.msg = msgRender.bind(null, textMsg);
     }
   },
   event(eventdata: any) {
@@ -119,10 +150,15 @@ const runDataKeyFn: Record<string, (...arg) => void> = {
   resource(data: any) {
     mainContentData.resource = data;
   },
+  program(data: any) {
+    const { song } = programData(data);
+    song && (mainContentData.song = song);
+  },
 };
 
 function jsonTransform() {
   const parseTojson = JSON.parse(props.event.json);
+  // console.log(parseTojson);
 
   Object.keys(mainContentData).forEach((mainkey) => {
     if (Object.prototype.hasOwnProperty.call(parseTojson, mainkey)) {
@@ -136,15 +172,20 @@ function jsonTransform() {
 }
 
 activityInfos();
+jsonTransform();
+const hiddenMain = withoutNull();
+// console.log(props.event);
 
 function sliceTextStr(msg: string, start: number, end: number) {
   const sliceLink = msg.slice(start, end);
+  // console.log(sliceLink);
+
   activitySetLists.forEach((map) => {
     if (map.has(sliceLink)) {
       msg = msg.replace(
         `#${sliceLink}#`,
         `
-        <router-link to="/topic?tid=${
+        <router-link  class="bottom_line" style="color: rgb(116, 185, 255);" to="/topic?tid=${
           map.get(sliceLink).id
         }&topictitle=${sliceLink}">#${sliceLink}#</router-link>
       `
@@ -221,8 +262,6 @@ function activityInfos() {
       console.warn(activeInfo.target + "===" + methodName);
     }
   });
-
-  jsonTransform();
 }
 
 function setActiveInfos(activeInfo: any, query: string, id: number) {
@@ -242,6 +281,12 @@ function setActiveInfos(activeInfo: any, query: string, id: number) {
     return true;
   }
 }
+
+onMounted(() => {
+  if (content_text.value) {
+    mainContentData.msg(content_text.value);
+  }
+});
 
 // const newEventJson = computed(() => {
 //   return props.recursion

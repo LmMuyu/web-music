@@ -1,5 +1,5 @@
 <template>
-  <section class="w-full my-6 flex items-center p-2" style="background-color: #f5f5f5">
+  <section class="w-full my-6 flex items-center px-2" style="background-color: #f5f5f5">
     <div class="h-full relative">
       <el-image
         :src="songData.picUrl"

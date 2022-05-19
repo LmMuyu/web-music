@@ -48,7 +48,7 @@ export default defineComponent({
   },
   emits: ["pullUpLoad"],
   setup(props, { expose, slots, emit: ctxEmit }) {
-    const src = "https://cdn.jsdelivr.net/npm/better-scroll@2.4.2/dist/better-scroll.esm.js";
+    const src = "https://cdnjs.cloudflare.com/ajax/libs/better-scroll/2.4.2/better-scroll.esm.js";
     const viewport = ref(null);
     const viewportHeight = ref(0);
     const capHeight = ref(0);
@@ -245,8 +245,7 @@ export default defineComponent({
 
     async function renderNode() {
       if (viewport.value) {
-        const appContext = ctx.appContext;
-        const slotss = slots.default.call(appContext);
+        const slotss = slots.default.call(slots);
 
         render(templateHVnode(slotss), viewport.value.children[0]);
         statusPrmosie.value = mutationSubtree(viewport.value.children[0]);

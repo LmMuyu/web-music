@@ -1,5 +1,5 @@
 <template>
-  <section style="height: 60px" class="flex justify-end w-full h-full">
+  <section class="flex justify-end w-full h-full">
     <div class="flex items-center justify-end w-1/2 h-full">
       <div
         :class="props.recursion ? setClass('items-end text-sm pb-2') : setClass('items-center ')"
@@ -92,7 +92,7 @@ const switchText = (name: string) => {
 };
 
 const returnEmit = (event: Record<any, any>) => {
-  ctxEmit(event.emit_name, eventMap.get(event.emit_name));
+  ctxEmit(event.emit_name, [eventMap.get(event.emit_name)]);
 };
 
 const icon = (icons: string | string[] | undefined) => {

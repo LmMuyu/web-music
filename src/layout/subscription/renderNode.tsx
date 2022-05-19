@@ -24,10 +24,10 @@ export function headerRouterLink(
     const idkey = ifIdkey(props);
 
     return (
-      <span class="hover relative" key={props["id"] || props["uid"] || curKeyIndex++}>
+      <span class="bottom_line relative" key={props["id"] || props["uid"] || curKeyIndex++}>
         <RouterLink
           style={{ color: "#74b9ff", ...props.style }}
-          class={`cursor-pointer ${props.class}`}
+          class={`cursor-pointer  ${props.class}`}
           to={{
             path: idkey === "uid" ? "/user/home" : "/playlist",
             query: { [idkey]: props[idkey] },

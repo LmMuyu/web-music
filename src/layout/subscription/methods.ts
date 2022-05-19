@@ -1,5 +1,6 @@
-import { computed, ref, Ref } from "vue";
+import { computed, createApp, defineComponent, ref, Ref } from "vue";
 import filterDate from "../../utils/filterDate";
+import router from "../../routes";
 
 const footerInfo = (props: any) => {
   const info = [
@@ -75,7 +76,6 @@ export const comment_footerInfo = computed(() => {
 export function linkeEvent(linkedCounts: Ref<number>, isLatestLinke: Ref<boolean>) {
   return function (res: any) {
     const islinke = JSON.parse(res.config.data)["t"];
-    console.log(res);
 
     if (islinke === 1 && res.data.code === 200) {
       linkedCounts.value += 1;
@@ -97,29 +97,34 @@ class PicLists {
     this.w = ref(this.dpr);
     this.h = ref(this.dpr);
     this.picList = [];
-    this.toFileReader(pics).then((res) => (this.picList = res));
+    this.toFileReader(pics);
   }
 
   private async toFileReader(fileList: any[]) {
-    console.log(fileList);
-
     const len = fileList.length;
-    if (len === 0) return;
+    if (len === 0) return [];
 
     const { w, h } = this;
 
     switch (len) {
       case 1:
-        w.value += w.value * 2;
-        h.value += h.value * 2;
+        w.value = w.value * 2;
+        h.value = h.value * 2;
         break;
       case 2:
-        w.value += w.value * 1.5;
-        h.value += h.value * 1.5;
+        w.value = w.value * 1.5;
+        h.value = h.value * 1.5;
         break;
     }
 
-    return fileList.map((pic) => pic.pcRectangleUrl + `?param=${w.value}y${h.value}`);
+    this.w = w;
+    this.h = h;
+
+    this.picList.push(
+      ...fileList.map(
+        (pic) => pic.pcRectangleUrl + `?param=${Math.floor(w.value)}y${Math.floor(h.value)}`
+      )
+    );
   }
 
   private windowDpr() {
@@ -138,4 +143,11 @@ export class Dynamic extends PicLists {
     super(subinfo.pics);
     this.relativeTime = filterDate(subinfo.eventTime, null, true);
   }
+}
+
+export function msgRender(msg: string, mount: HTMLElement) {
+  const comp = defineComponent({ template: msg });
+  const app = createApp(comp);
+  app.use(router);
+  app.mount(mount);
 }

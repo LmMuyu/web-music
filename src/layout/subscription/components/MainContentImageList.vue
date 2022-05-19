@@ -6,15 +6,14 @@
       class="h-full"
       @click.capture="emitPreImage"
     >
-      <li v-for="(file, index) in picList" :key="index">
-        <img :src="file" class="object-fit" :key-index="index" />
+      <li v-for="(file, index) in dynamics.picList" :key="index">
+        <img :src="file" class="object-cover w-full h-full" :key-index="index" />
       </li>
     </ul>
   </div>
 </template>
 <script setup lang="ts">
 import { computed, defineProps, reactive, ref } from "vue";
-import { isType } from "../../../utils/methods";
 
 import { Dynamic } from "../methods";
 
@@ -34,8 +33,7 @@ const props = defineProps({
 const picList = ref<any[]>([]);
 
 const dynamics = new Dynamic(props.subinfo);
-
-Promise.resolve().then(() => (picList.value = dynamics.picList));
+picList.value = dynamics.picList;
 
 function emitPreImage(e: Event) {
   const target = e.target as HTMLElement;
@@ -59,28 +57,20 @@ const gridstyle = computed(() => {
 });
 
 const absoluteBox = computed(() => {
-  debugger;
+  // debugger;
   const style = reactive({
     width: 0 + "px",
     height: 0 + "px",
   });
 
   const gap = 5;
+  let imgCount = picList.value.length;
+  let wgapCount = imgCount > 3 ? 2 : imgCount - 1;
+  const boxwidth = dynamics.w.value * (wgapCount + 1) + gap * wgapCount;
+  const boxHeight = dynamics.h.value * row.value + gap * (row.value >= 1 ? row.value - 1 : 0);
 
-  Promise.resolve().then(() => {
-    if (isType(picList.value) === "Array") {
-      let imgCount = picList.value.length;
-      let wgapCount = imgCount > 3 ? 2 : imgCount - 1;
-      const boxwidth = dynamics.w.value * (wgapCount + 1) + gap * wgapCount;
-      const boxHeight = dynamics.h.value * (row.value - 1) + gap * (row.value - 1);
-
-      console.log(boxwidth);
-      console.log(boxHeight);
-
-      style.height = Math.abs(boxHeight) + "px";
-      style.width = Math.abs(boxwidth) + "px";
-    }
-  });
+  style.height = Math.abs(boxHeight) + "px";
+  style.width = Math.abs(boxwidth) + "px";
 
   return style;
 });
