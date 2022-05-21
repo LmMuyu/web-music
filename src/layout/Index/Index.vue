@@ -41,6 +41,11 @@ const playList = ref([]);
 
 function requestThenFn(value: AxiosResponse<any>) {
   let url = value.config.url;
+
+  if (!url) {
+    return;
+  }
+
   const index = value.config.url.indexOf("?");
 
   if (index > -1) {

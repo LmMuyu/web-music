@@ -3,6 +3,7 @@ import { relativeTime } from "../../../utils/relativeTime";
 import { uploadCloud } from "../../../api/user";
 
 import { ElNotification } from "element-plus";
+import { pool_async } from "../../../utils/poolasync";
 
 const MAXUPLOADCOUNT = 3;
 
@@ -26,6 +27,21 @@ export function uploadCloudDisk(data: Record<string, any>): TITLEOPTIONS {
   };
 }
 
+function sliceFile(file: File) {
+  const MAX_SIZE = 1024 * 1024 * 3;
+  const limit = Math.ceil(file.size / MAX_SIZE);
+  const bloblists = [];
+
+  for (let i = 0; i < limit; i++) {
+    const blob = file.slice(MAX_SIZE * i, MAX_SIZE * (i + 1));
+    bloblists.push(blob);
+  }
+
+  return bloblists;
+}
+
+pool_async;
+
 export function musicUploadToCloudDisk(files: FileList, backcall: any) {
   let uploadCount = {};
   const options = {
@@ -34,19 +50,32 @@ export function musicUploadToCloudDisk(files: FileList, backcall: any) {
   };
 
   Array.from(files).map((file) => {
+    const bloblists = sliceFile(file);
+    console.log(bloblists);
+
+    const newfile = new File(bloblists.splice(0, 1), file.name, {
+      type: file.type,
+    });
+
+    console.log(newfile);
+
     const formdata = new FormData();
-    formdata.append("songFile", file);
+    formdata.append("songFile", newfile);
+
+    function retThen(res) {
+      console.log(res);
+
+      ElNotification({
+        type: "success",
+        message: `${file.name}文件上传成功`,
+        ...options,
+      });
+
+      backcall(res);
+    }
 
     uploadCloud(formdata)
-      .then((res) => {
-        ElNotification({
-          type: "success",
-          message: `${file.name}文件上传成功`,
-          ...options,
-        });
-
-        backcall(res);
-      })
+      .then(retThen)
       .catch((err) => {
         uploadCount[file.name] ? (uploadCount[file.name] += 1) : (uploadCount[file.name] = 1);
 

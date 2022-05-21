@@ -164,7 +164,9 @@ onMounted(() => {
       ".el-input__inner",
       `
       border:none;
-      padding:0;
+      padding:0px;
+      padding-right:16px;
+      text-align:center;
       ${textCssText}
       `
     );

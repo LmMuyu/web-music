@@ -116,22 +116,22 @@ export class resultOptions implements MusicDetailOption {
     this.name = this.getName(musicdata);
     this.picUrl = this.getPicUrl(musicdata);
     this.ar = this.getAr(musicdata);
-    this.dt = musicdata.dt;
+    this.dt = musicdata?.dt || musicdata.duration || 0;
   }
 
-  picUrlRecursion(options: any) {
-    if (Object.keys(options).length === 0) return;
+  picUrlRecursion(album: any) {
+    if (Object.keys(album).length === 0) return;
     let test = false;
 
-    for (const key in options) {
+    for (const key in album) {
       test = /img\d+[x | y]\d+/.test(key);
 
       if (test) {
-        return options[key];
+        return album[key];
       }
     }
 
-    return this.picUrlRecursion(options?.album ?? {});
+    return album.picUrl ? album.picUrl : "";
   }
 
   getID(options: any, type: string) {
@@ -149,7 +149,8 @@ export class resultOptions implements MusicDetailOption {
   }
 
   getPicUrl(options: any) {
-    const url = options?.album ? this.picUrlRecursion(options) : "";
+    const url = options?.album ? this.picUrlRecursion(options?.album) : "";
+
     if (url) return url;
     return (
       (options.xInfo && getAvatarImage(options.xInfo)) ||
@@ -177,16 +178,14 @@ export class resultOptions implements MusicDetailOption {
   }
 }
 
-export function musicResultDetail(data: Object | musicDetail, source?: Object) {
-  console.log(data);
-  
+export function musicResultDetail(data: Object | musicDetail, source?: Object): musicDetail {
   if (isType(data) !== "Object" || Object.keys(data).length <= 0) {
     return undefined;
   }
 
   //@ts-ignore
   if (data.isMusicDetail) {
-    return data;
+    return data as musicDetail;
   }
   const options = new resultOptions(data);
   const url = source && getAvatarImage(source);

@@ -130,5 +130,7 @@ export function sliceurl(url: string) {
 
   if (index > -1) {
     return url.slice(0, index);
+  } else {
+    return url;
   }
 }

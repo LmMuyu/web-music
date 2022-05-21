@@ -78,6 +78,7 @@ export function uploadCloud(formData: FormData) {
     method: "post",
     url: `/upclouddisk/cloud?time=${Date.now()}`,
     data: formData,
+    timeout: 1000 * 30,
     headers: {
       "Content-Type": "multipart/form-data",
     },
