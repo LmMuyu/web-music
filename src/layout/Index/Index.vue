@@ -3,18 +3,16 @@
     <el-header class="bg-white flex items-center" height="54px">
       <IndexHeaderModule />
     </el-header>
-    <el-main class="flex flex-col scrollbar" style="padding: 16px 0 !important">
-      <keep-alive>
-        <AsayncSuspense>
-          <IndexBanner :banner-data="bannerImages" />
-          <IndexRecommended />
-          <IndexDiscover />
-          <IndexRecentlyAlbums />
-          <IndexHotsong />
-          <IndexFeaturedSinger />
-          <IndexHotPlaylists :playList="playList" />
-        </AsayncSuspense>
-      </keep-alive>
+    <el-main class="flex flex-col h-full scrollbar" style="padding: 16px 0 !important">
+      <AsayncSuspense>
+        <IndexBanner :banner-data="bannerImages" />
+        <IndexRecommended />
+        <IndexDiscover />
+        <IndexRecentlyAlbums />
+        <IndexHotsong />
+        <IndexFeaturedSinger />
+        <IndexHotPlaylists :playList="playList" />
+      </AsayncSuspense>
     </el-main>
   </el-container>
 </template>
@@ -32,6 +30,7 @@ import IndexHeaderModule from "./components/IndexHeaderModule.vue";
 import IndexHotPlaylists from "./components/IndexHotPlaylists.vue";
 import IndexRecentlyAlbums from "./components/IndexRecentlyAlbums.vue";
 import IndexFeaturedSinger from "./components/IndexFeaturedSinger.vue";
+import BetterScroll from "../../components/betterscroll/BetterScroll.vue";
 
 import type { AxiosResponse } from "axios";
 

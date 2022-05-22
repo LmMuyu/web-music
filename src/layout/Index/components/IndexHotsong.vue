@@ -55,7 +55,7 @@ function addNewSong(id: number) {
 }
 
 function allCount() {
-  return Math.ceil(newTopSongs.value.length / (SLICE_COUNT * 2));
+  return Math.floor(newTopSongs.value.length / (SLICE_COUNT * 2));
 }
 
 function currentPage(curpaeg: number) {

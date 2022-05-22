@@ -10,6 +10,7 @@
       :class="class"
       @load.capture="loadImages"
     >
+      <slot v-if="!openHRender"></slot>
       <div style="height: 1px" class="w-full absolute"></div>
     </div>
   </div>
@@ -44,6 +45,10 @@ export default defineComponent({
     itemLen: {
       type: Number,
       required: true,
+    },
+    openHRender: {
+      type: Boolean,
+      default: true,
     },
   },
   emits: ["pullUpLoad"],
@@ -141,7 +146,6 @@ export default defineComponent({
             capHeight.value > 0
           ) {
             statusPrmosie.value.then(() => {
-              // console.log("statusPrmosie then");
               BS.refresh();
               Promise.resolve(() => stop());
             });
@@ -171,8 +175,6 @@ export default defineComponent({
               timer = null;
             }
 
-            // console.log(mutationlists);
-
             timer = setTimeout(() => {
               resolve((thenStatus.value = "fulfilled"));
             }, 20);
@@ -195,8 +197,10 @@ export default defineComponent({
     //计算滑动总高度
     function capTotalHeight() {
       const lists = viewport.value.children[0].children as HTMLElement[];
-      // console.log(Array.from(lists).forEach((node) => console.log(node.getBoundingClientRect())));
+      console.log(lists);
+
       capHeight.value = bottomPos(lists[lists.length - 1]);
+      console.log(capHeight.value);
     }
 
     async function pullingUpHandler() {
@@ -244,10 +248,14 @@ export default defineComponent({
     }
 
     async function renderNode() {
-      if (viewport.value) {
-        const slotss = slots.default.call(slots);
+      props.openHRender && (await nextTick());
 
-        render(templateHVnode(slotss), viewport.value.children[0]);
+      if (viewport.value) {
+        if (props.openHRender) {
+          const slotss = slots.default.call(null, ctx.appContext);
+          render(templateHVnode(slotss), viewport.value.children[0]);
+        }
+
         statusPrmosie.value = mutationSubtree(viewport.value.children[0]);
 
         !isMountOneUpLoadIcon && watchRenderBottomLoading();

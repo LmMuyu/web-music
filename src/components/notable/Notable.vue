@@ -21,11 +21,12 @@
   <div class="w-full flex justify-end">
     <el-pagination
       :page-size="1"
-      :current-page="currindex + 1"
+      :current-page="currindex === 0 ? currindex + 1 : currindex"
       layout="prev, pager, next"
       :total="pagecount"
       :background="false"
       @update:current-page="currPageIndex"
+      ref="pagination"
     />
   </div>
 </template>
@@ -43,7 +44,6 @@ const props = defineProps({
   },
 });
 
-
 const hidden = ref(true);
 const group = ref(null);
 const leaveTrx = ref("0px");
@@ -52,6 +52,24 @@ const currindex = ref(0);
 const widthView = ref(0);
 const direc = ref<"left" | "right" | "">("");
 let pre = 0;
+const pagination = ref<typeof ElPagination>(null);
+
+let isChangeStyle = true;
+
+function runNumberStylecss(index: number) {
+  if (index >= 5 && index <= 9) {
+    if (isChangeStyle) {
+      paginationQuick();
+      isChangeStyle = false;
+    }
+  }
+
+  if (index < 5 || index > 9) {
+    if (!isChangeStyle) {
+      isChangeStyle = true;
+    }
+  }
+}
 
 function groupWidth(group: HTMLElement) {
   return {
@@ -65,11 +83,14 @@ function isDirection(pre, cur) {
   return value < 0 ? "left" : "right";
 }
 
-function currPageIndex(index) {
+async function currPageIndex(index) {
   const direction = isDirection(pre, index);
   direc.value = direction;
   pre = index;
   currindex.value = index;
+
+  await nextTick();
+  runNumberStylecss(index);
 }
 
 function beforeLeave() {}
@@ -95,12 +116,38 @@ watch(direc, async (direction) => {
   hidden.value = false;
 });
 
+function paginationQuick() {
+  //@ts-ignore
+  const el = pagination.value.$el as HTMLElement;
+  const quickbtn = ["btn-quicknext", "btn-quickprev"];
+
+  quickbtn.forEach((attriclass) => {
+    const quickdian = el.querySelector(`.${attriclass}`);
+
+    if (quickdian) {
+      (quickdian as HTMLElement).style.cssText = `
+        display:flex;
+        justify-content:center;
+        align-items:center;
+       `;
+    }
+  });
+
+  (el.querySelector(".el-pager") as HTMLElement).style.cssText = `
+    display:flex;
+   `;
+}
+
 onMounted(async () => {
   await nextTick();
 
   if (group.value) {
     const { height, width } = groupWidth(group.value);
     widthView.value = Number(width);
+  }
+
+  if (pagination.value) {
+    paginationQuick();
   }
 });
 </script>
