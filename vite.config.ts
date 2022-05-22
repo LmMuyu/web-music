@@ -7,6 +7,9 @@ import createAlias from "./vite/alias";
 import vue from "@vitejs/plugin-vue";
 import { readFileSync } from "fs";
 import path from "path";
+import AutoImport from "unplugin-auto-import/vite";
+import Components from "unplugin-vue-components/vite";
+import { ElementPlusResolver } from "unplugin-vue-components/resolvers";
 
 import type { ConfigEnv, UserConfig } from "vite";
 
@@ -28,7 +31,11 @@ export default ({ mode }: ConfigEnv): UserConfig => {
   const env = loadEnv(mode, root);
   const { VITE_PORT, VITE_HOST } = env;
 
+  const basePath = mode === "produrtion" ? "/dist" : "/";
+  const isPro = mode === "production";
+
   return {
+    base: basePath,
     plugins: [
       vue(),
       vueJsx({
@@ -36,12 +43,25 @@ export default ({ mode }: ConfigEnv): UserConfig => {
         optimize: true,
         enableObjectSlots: false,
       }),
-      createStyleImportPlugin({
-        resolves: [ElementPlusResolve()],
-      }),
+
       createSvgIconsPlugin({
         iconDirs: [path.join(__dirname, "/src/assets")],
       }),
+
+      ...(isPro
+        ? [
+            AutoImport({
+              resolvers: [ElementPlusResolver()],
+            }),
+            Components({
+              resolvers: [ElementPlusResolver()],
+            }),
+          ]
+        : [
+            createStyleImportPlugin({
+              resolves: [ElementPlusResolve()],
+            }),
+          ]),
     ],
     css: {
       preprocessorOptions: {
@@ -58,6 +78,17 @@ export default ({ mode }: ConfigEnv): UserConfig => {
     },
     build: {
       rollupOptions,
+      minify: "terser",
+      terserOptions: {
+        compress: {
+          drop_console: true, //清除console
+          drop_debugger: true, //清除debugger
+        },
+        output: {
+          comments: true, //c
+        },
+      },
+      sourcemap: true,
     },
     server: {
       port: Number(VITE_PORT),
@@ -85,7 +116,6 @@ export default ({ mode }: ConfigEnv): UserConfig => {
         },
       },
     },
-
     optimizeDeps: {
       exclude: ["vue-demi"],
     },

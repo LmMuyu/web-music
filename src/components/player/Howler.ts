@@ -254,7 +254,9 @@ const Howl = (options: HOWLOPTIONS, ctx: compinstance) => {
     }
   }
 
+  console.log(import.meta.env.MODE);
   function setmaplyrics(lrc: string) {
+
     const lrcworker = new Worker("src/worker/lrc.js");
     lyricsmap.clear();
 

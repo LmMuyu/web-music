@@ -1,8 +1,6 @@
 import type { RouteRecordRaw } from "vue-router";
 import type { META } from "./type/type";
 
-// name=section name=article
-
 const routes: (RouteRecordRaw & {
   meta?: META;
 })[] = [
