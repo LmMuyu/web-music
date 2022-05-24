@@ -16,6 +16,7 @@ import { loginStateus } from "./api/app/login";
 import { useWatchRoutePath } from "./utils/useWatchHost";
 
 import type { musicDetail } from "./utils/musicDetail";
+import { META } from "./routes/type/type";
 
 const Audio = defineAsyncComponent(() => import("./components/player/Audio.vue"));
 
@@ -40,11 +41,17 @@ function stopLoadAudioComp() {
 
 const loadCompAudio = stopLoadAudioComp();
 
+function showContainerMainHidden(meta: META) {
+  store.commit("setMainHidden", !!meta.mainhidden);
+}
+
 //全局路由限制
 router.beforeEach(async (to, from, next) => {
   const pathList = ["/message", "/subscription"];
   const islogin = await loginStateus();
   const meta = to.meta;
+
+  showContainerMainHidden(meta);
 
   const logoutnvaindex = meta.isnavindex;
 

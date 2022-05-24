@@ -19,6 +19,7 @@ export interface META {
   query?: string[];
   params?: string[];
   isnavindex?: boolean;
+  mainhidden?: boolean;
 }
 
 export interface Route {

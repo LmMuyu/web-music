@@ -9,4 +9,8 @@ export default {
   getMainTagsShow(state: State) {
     return state.mainTagsShow;
   },
+
+  getMainHidden(state: State) {
+    return () => state.mainHidden;
+  },
 };

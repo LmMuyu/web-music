@@ -6,7 +6,7 @@
   >
     <div
       class="content absolute top-0 left-0 w-full"
-      :style="{ height: capHeight + 'px' }"
+      :style="{ height: capHeight + 'px', ...style }"
       :class="class"
       @load.capture="loadImages"
     >
@@ -34,6 +34,7 @@ import bottomLoading_H from "./bottomLoading_H";
 export default defineComponent({
   props: {
     class: String,
+    style: Object,
     BsOptions: {
       type: Object,
       default: {},

@@ -1,41 +1,43 @@
 <template>
-  <div class="flex flex-wrap">
-    <filterBtnItem
-      v-for="(tag, index) in beforeCatlist"
-      :tag="tag.name"
-      :key="index"
-    ></filterBtnItem>
-  </div>
-  <div class="flex flex-wrap items-center">
-    <ElTag
-      class="m-2"
-      v-for="selectTag in slectAllSection"
-      :key="selectTag.id"
-      closable
-      @close="removeSelectTag(selectTag.id)"
-      >{{ selectTag.name }}
-    </ElTag>
-    <ElButton type="danger" size="small" v-if="ifSelectList" @click="closeAll">清空</ElButton>
-  </div>
-  <transition name="fade" mode="out-in">
-    <div v-if="showAllBtnItem">
-      <el-container v-for="(efories, index) in categories" :key="index">
-        <el-aside width="100px" class="flex justify-center items-center">{{ efories }}</el-aside>
-        <el-main>
-          <div class="flex flex-wrap">
-            <filterBtnItem
-              v-for="(tag, index) in playlistTags(index)"
-              :is-in-all-main="true"
-              :key="index"
-              :tag="tag.name"
-              :default-active="tag.defaultactive ?? false"
-            >
-            </filterBtnItem>
-          </div>
-        </el-main>
-      </el-container>
+  <div class="px-3">
+    <div class="flex flex-wrap">
+      <filterBtnItem
+        v-for="(tag, index) in beforeCatlist"
+        :tag="tag.name"
+        :key="index"
+      ></filterBtnItem>
     </div>
-  </transition>
+    <div class="flex flex-wrap items-center">
+      <ElTag
+        class="m-2"
+        v-for="selectTag in slectAllSection"
+        :key="selectTag.id"
+        closable
+        @close="removeSelectTag(selectTag.id)"
+        >{{ selectTag.name }}
+      </ElTag>
+      <ElButton type="danger" size="small" v-if="ifSelectList" @click="closeAll">清空</ElButton>
+    </div>
+    <transition name="fade" mode="out-in">
+      <div v-if="showAllBtnItem">
+        <el-container v-for="(efories, index) in categories" :key="index">
+          <el-aside width="100px" class="flex justify-center items-center">{{ efories }}</el-aside>
+          <el-main>
+            <div class="flex flex-wrap">
+              <filterBtnItem
+                v-for="(tag, index) in playlistTags(index)"
+                :is-in-all-main="true"
+                :key="index"
+                :tag="tag.name"
+                :default-active="tag.defaultactive ?? false"
+              >
+              </filterBtnItem>
+            </div>
+          </el-main>
+        </el-container>
+      </div>
+    </transition>
+  </div>
 </template>
 <script setup lang="tsx">
 import { ref, unref, defineComponent, Ref, computed } from "vue";

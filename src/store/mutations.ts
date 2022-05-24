@@ -56,4 +56,8 @@ export default {
 
     state.navRouterPush = playload;
   },
+
+  setMainHidden(state: State, playload) {
+    state.mainHidden = playload;
+  },
 };

@@ -1,9 +1,11 @@
 <template>
   <div class="bg-white h-full">
     <FilterBtnCollections @withTagData="getWithTagData" />
-    <filter-cat-data v-if="!loadDataing" :catPlaylists="catPlaylists" />
-    <div class="h-full flex justify-center items-center" v-else>
-      <svg-loading></svg-loading>
+    <div class="container_height">
+      <filter-cat-data v-if="!loadDataing" :catPlaylists="catPlaylists" />
+      <div class="h-full flex justify-center items-center" v-else>
+        <svg-loading></svg-loading>
+      </div>
     </div>
   </div>
 </template>
@@ -37,11 +39,13 @@ function toDealWithTopPlaylist(catData: any) {
     lru.put(data.cat, data.playlists);
     // console.log(lru.toviewCache);
   }
-  loadDataing.value = true;
+  loadDataing.value = false;
   catPlaylists.value = data.playlists ?? data;
 }
 
 function getWithTagData(tag: string) {
+  if (tag === "· · ·") return;
+
   const data = lru.get(tag);
 
   if (data !== -1) {
@@ -56,8 +60,12 @@ function getWithTagData(tag: string) {
     isfetch = true;
   }
 
-  loadDataing.value = false;
+  loadDataing.value = true;
   _topPlaylist(tag);
 }
 </script>
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.container_height {
+  height: calc(100% - 88px);
+}
+</style>

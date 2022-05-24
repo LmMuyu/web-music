@@ -20,7 +20,7 @@
         <i v-if="isPlayIcon" class="iconfont iconbofang2"></i>
       </div>
     </div>
-    <div class="px-1 h-full hover_opacity">
+    <div class="px-1 h-auto hover_opacity">
       <span v-if="!!playitem.playCount" class="text_icon flex items-center py-1 text-sm">
         <i class="iconfont iconbofang1 text-sm"></i>
         <p class="ml-2 text-sm">{{ fromPlayCount(playitem.playCount) }}</p>

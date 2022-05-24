@@ -11,6 +11,7 @@ export interface State {
   mainTagsShow: boolean;
   unmountList: Emitter;
   navRouterPush: () => any | null;
+  mainHidden:boolean
 }
 
 export interface ALLTOKEN {

@@ -19,6 +19,7 @@ const store = createStore<State>({
       mainTagsShow: true,
       unmountList: mitt(),
       navRouterPush: null,
+      mainHidden: false,
     };
   },
   getters,

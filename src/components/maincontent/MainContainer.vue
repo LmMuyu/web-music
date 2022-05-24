@@ -2,7 +2,11 @@
   <div class="flex h-full w-full" style="background: hsl(220, 50%, 98%)">
     <div v-if="isDefault" class="w-full">
       <el-container v-if="isLoginComp" class="h-full">
-        <el-main class="h-full" style="z-index: 1; padding-top: 0px">
+        <el-main
+          class="h-full"
+          :class="hidden ? 'overflow-hidden' : 'overflow-auto'"
+          style="z-index: 1; padding-top: 0px"
+        >
           <router-view v-slot="{ Component }">
             <keep-alive :max="3">
               <component :is="Component"></component>
@@ -54,6 +58,7 @@
 import { computed } from "@vue/runtime-core";
 import { useRoute, useRouter } from "vue-router";
 import { reactive, ref } from "vue";
+import { useStore } from "vuex";
 
 import { useWatchHost, useWatchRoutePath } from "../../utils/useWatchHost";
 
@@ -63,6 +68,7 @@ import type { Container, META } from "../../routes/type/type";
 
 const router = useRouter();
 const route = useRoute();
+const store = useStore();
 
 const isDefault = ref(false);
 
@@ -134,6 +140,8 @@ const shieldContainer = computed(() => {
     return state + "" === "false" ? state : true;
   };
 });
+
+const hidden = computed(store.getters["getMainHidden"]);
 </script>
 
 <style scoped lang="scss">

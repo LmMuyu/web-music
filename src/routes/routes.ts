@@ -84,6 +84,9 @@ const routes: (RouteRecordRaw & {
   {
     path: "/explore",
     name: "Explore",
+    meta: {
+      mainhidden: true,
+    },
     components: {
       default: () => import("../layout/explore/Explore.vue"),
     },
