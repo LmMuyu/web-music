@@ -34,8 +34,8 @@ export const AsideTags = [
   {
     index: "tag_6",
     icon: "icongengduo-copy",
-    title: "更多",
-    path: "/index",
+    title: "设置",
+    path: "/setting",
   },
 ];
 

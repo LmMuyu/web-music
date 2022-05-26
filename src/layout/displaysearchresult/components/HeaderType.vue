@@ -1,5 +1,9 @@
 <template>
-  <div class="w-full h-full inline-flex items-center justify-between" @click="selectType">
+  <div
+    class="w-full h-full inline-flex items-center justify-between"
+    style="border-bottom: 1px solid rgba(113 119 144 / 25%)"
+    @click="selectType"
+  >
     <span
       v-for="(type, key, index) in keyword"
       :key="key"

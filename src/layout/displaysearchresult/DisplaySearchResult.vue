@@ -1,9 +1,13 @@
 <template>
-  <ElContainer class="w-full h-full">
-    <ElHeader class="bg-white" height="40px">
+  <ElContainer class="w-full h-full bg-white">
+    <ElHeader height="40px">
       <HeaderType :keyword="typekeyword" @selectType="selectKeyword" />
     </ElHeader>
-    <ElMain class="relative pt-4" style="padding: 0 !important">
+    <ElMain
+      class="relative pt-4"
+      :class="hidden && 'overflow-hidden'"
+      style="padding: 0 !important"
+    >
       <AsayncSuspense>
         <component :is="componentId" :data="searchtype.data"></component>
       </AsayncSuspense>
@@ -11,7 +15,7 @@
   </ElContainer>
 </template>
 <script setup lang="ts">
-import { reactive, ref, shallowRef } from "vue";
+import { reactive, ref, shallowRef, watch } from "vue";
 import { useRoute } from "vue-router";
 
 import { cloudSearch } from "../../api/displaysearchreult";
@@ -29,7 +33,8 @@ import { musicDetail } from "../../utils/musicDetail";
 
 const route = useRoute();
 const currentPage = ref(1);
-const componentId = shallowRef(DisplaySongSearch);
+const componentId = shallowRef(null);
+const hidden = ref(false);
 
 const searchtype = reactive({
   data: [],
@@ -189,5 +194,21 @@ function searchResultLists(type: string, resultdata: Object) {
 
   return list;
 }
+
+const stopWatchComp = watch(componentId, (comp) => {
+  console.log(comp);
+  if (comp == DisplaySongSearch) {
+    if (componentId.value) {
+      componentId.value = DisplaySongSearch;
+      hidden.value = true;
+    } else {
+      hidden.value = false;
+    }
+  }
+});
+
+swithCoponent("单曲");
+
+//生命周期
 </script>
 <style scoped lang="scss"></style>

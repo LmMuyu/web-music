@@ -11,7 +11,7 @@
       @load.capture="loadImages"
     >
       <slot v-if="!openHRender"></slot>
-      <div style="height: 1px" class="w-full absolute"></div>
+      <div :internal="true" style="height: 1px" class="w-full absolute"></div>
     </div>
   </div>
 </template>
@@ -28,6 +28,7 @@ import {
   watch,
   watchEffect,
 } from "vue";
+import { debounce } from "../../utils/debounce";
 import useLoadNetworkRes from "../../utils/useLoadNetworkRes";
 import bottomLoading_H from "./bottomLoading_H";
 
@@ -67,6 +68,7 @@ export default defineComponent({
     let BS = null;
     let mountRefreshFn: (bs) => void = null;
     let mutation = null;
+    let imgLoadBeforHeight = 0;
 
     function disable() {
       console.log(BS);
@@ -77,12 +79,57 @@ export default defineComponent({
       BS.enable();
     }
 
+    const BSRefresh = () => (BS ? BS.refresh() : (mountRefreshFn = (bs) => bs.refresh()));
+
+    function excludeEl(el: HTMLElement) {
+      return el.hasAttribute("internal");
+    }
+
+    function isHClassAndHCalss(el: HTMLElement): [string, boolean] {
+      const isExcludeEl = excludeEl(el);
+      if (isExcludeEl) return ["", true];
+
+      const classlists = Array.prototype.slice.call(el.classList, 0) as string[];
+      let index = 0;
+      const ishclass = classlists.every((value, i) => {
+        if (value.startsWith("h")) {
+          return value[1] === "-" ? (index = i) && false : true;
+        } else {
+          return true;
+        }
+      });
+
+      return [classlists[index], ishclass];
+    }
+
+    function removeClassHGetToH(el: HTMLElement, hclass: string) {
+      el.removeAttribute(hclass);
+    }
+
+    function nodestyle(el: HTMLElement) {
+      const height = el.style.height;
+      // console.log(height);
+    }
+
     function heightAdd() {
       const lists = viewport.value.children[0].children as HTMLElement[];
 
       const totalHeight = Array.prototype.reduce.apply(lists, [
         (pre, next) => {
-          return (pre += next.getBoundingClientRect().height);
+          const oneheight = next.getBoundingClientRect().height;
+          const [hclass, ishclass] = isHClassAndHCalss(next);
+          nodestyle(next)
+
+          let twoheight = 0;
+          if (!ishclass) {
+            removeClassHGetToH(next, hclass);
+            BSRefresh();
+            twoheight = next.getBoundingClientRect().height;
+          }
+
+          const height = Math.max(oneheight, twoheight);
+
+          return (pre += height);
         },
         0,
       ]);
@@ -92,7 +139,7 @@ export default defineComponent({
       capHeight.value = maxHeight;
 
       if (preHeight !== capHeight.value) {
-        BS ? BS.refresh() : (mountRefreshFn = (bs) => bs.refresh());
+        BSRefresh();
       }
     }
 
@@ -198,10 +245,7 @@ export default defineComponent({
     //计算滑动总高度
     function capTotalHeight() {
       const lists = viewport.value.children[0].children as HTMLElement[];
-      console.log(lists);
-
       capHeight.value = bottomPos(lists[lists.length - 1]);
-      console.log(capHeight.value);
     }
 
     async function pullingUpHandler() {
@@ -227,6 +271,7 @@ export default defineComponent({
     function afterDiv(mountpos) {
       const div = document.createElement("div");
       div.classList.add("h-10", "w-full");
+      div.setAttribute("internal", "true");
       mountpos.appendChild(div);
       return div;
     }
@@ -249,7 +294,7 @@ export default defineComponent({
     }
 
     async function renderNode() {
-      props.openHRender && (await nextTick());
+      !props.openHRender && (await nextTick());
 
       if (viewport.value) {
         if (props.openHRender) {

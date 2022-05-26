@@ -134,6 +134,13 @@ const routes: (RouteRecordRaw & {
       query: ["tid"],
     },
   },
+  {
+    path:"/setting", 
+    name:"Setting",
+    components:{
+      default:() => import ("../layout/setting/Setting.vue") 
+    }
+  }
 ];
 
 export default routes;

@@ -1,11 +1,13 @@
 <template>
-  <div class="flex h-full w-full" style="background: hsl(220, 50%, 98%)">
+  <div class="flex h-full w-full" style="background: #e5e7eb">
     <div v-if="isDefault" class="w-full">
       <el-container v-if="isLoginComp" class="h-full">
         <el-main
           class="h-full"
-          :class="hidden ? 'overflow-hidden' : 'overflow-auto'"
           style="z-index: 1; padding-top: 0px"
+          :style="{
+            overflow: hidden ? 'hidden' : 'auto',
+          }"
         >
           <router-view v-slot="{ Component }">
             <keep-alive :max="3">

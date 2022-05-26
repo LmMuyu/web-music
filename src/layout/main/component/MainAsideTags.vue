@@ -1,6 +1,6 @@
 <template>
   <el-container ref="asidetags" class="h-full">
-    <el-header class="flex items-center justify-center">44444</el-header>
+    <el-header class="flex items-center justify-center"> Web Music </el-header>
     <el-main>
       <MainTag />
     </el-main>

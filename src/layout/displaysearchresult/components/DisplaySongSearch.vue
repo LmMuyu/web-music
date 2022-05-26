@@ -1,5 +1,5 @@
 <template>
-  <BetterScroll>
+  <BetterScroll :item-len="Infinity" :open-h-render="false">
     <detail-song
       v-for="(item, index) in data"
       class="py-2"
