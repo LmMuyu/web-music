@@ -1,13 +1,16 @@
 <template>
   <IndexModuleHeadTitle v-if="!donreferto" title="最近的专辑" />
   <div :class="donreferto && 'h-full'" class="overflow-hidden w-full betterscroll">
-    <better-scroll v-if="donreferto" class="container">
-      <card-exhibition
-        v-for="(album, index) in outsidealbums"
-        :key="index"
-        :keyindex="index"
-        :data="album"
-      />
+    <better-scroll v-if="donreferto" :open-h-render="!donreferto" :item-len="Infinity">
+      <div class="grid grid-cols-4">
+        <card-exhibition
+          v-for="(album, index) in outsidealbums"
+          :key="index"
+          :keyindex="index"
+          :data="album"
+          class="pt-4"
+        />
+      </div>
     </better-scroll>
     <div class="flex" v-else>
       <card-exhibition
@@ -54,14 +57,6 @@ watchEffect(async () => {
 .fide-enter-from,
 .fide-leave-to {
   opacity: 0;
-}
-
-.betterscroll {
-  &:deep(.container) {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 16px 16px;
-  }
 }
 
 .clapm {

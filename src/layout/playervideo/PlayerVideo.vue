@@ -1,5 +1,5 @@
 <template>
-  <el-container class="w-full h-full ">
+  <el-container class="w-full h-full">
     <el-container>
       <el-container class="h-full relative scrollltrack">
         <el-main style="width: 69.5vw" class="h-full absolute top-0 left-0 scrollltrack">
@@ -10,7 +10,7 @@
             </div>
             <video-info :videoinfo="videoinfo" />
             <CommentArea />
-            <div class="py-10">  </div>
+            <div class="py-10"></div>
           </better-scroll>
         </el-main>
       </el-container>

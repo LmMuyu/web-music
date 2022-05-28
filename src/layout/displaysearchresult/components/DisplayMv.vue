@@ -1,15 +1,16 @@
 <template>
   <div class="betterscoll">
-    <BetterScroll class="container">
-      <CardExhibition
-        v-for="(mv, index) in mvdata"
-        :key="index"
-        :data="mv"
-        :keyindex="index"
-        path="/video"
-        target="_blank"
-      >
-      </CardExhibition>
+    <BetterScroll :item-len="Infinity" :open-h-render="false">
+      <div class="grid grid-cols-4">
+        <CardExhibition
+          v-for="(mv, index) in mvdata"
+          :key="index"
+          :data="mv"
+          :keyindex="index"
+          path="/video"
+        >
+        </CardExhibition>
+      </div>
     </BetterScroll>
   </div>
 </template>
@@ -34,12 +35,4 @@ watchEffect(() => {
   }
 });
 </script>
-<style scoped lang="scss">
-.betterscoll {
-  &:deep(.container) {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px 16px;
-  }
-}
-</style>
+<style scoped lang="scss"></style>

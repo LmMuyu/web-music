@@ -46,7 +46,7 @@ export default defineComponent({
     },
     itemLen: {
       type: Number,
-      required: true,
+      default: Infinity,
     },
     openHRender: {
       type: Boolean,
@@ -118,7 +118,7 @@ export default defineComponent({
         (pre, next) => {
           const oneheight = next.getBoundingClientRect().height;
           const [hclass, ishclass] = isHClassAndHCalss(next);
-          nodestyle(next)
+          nodestyle(next);
 
           let twoheight = 0;
           if (!ishclass) {

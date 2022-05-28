@@ -5,7 +5,9 @@
     </ElHeader>
     <ElMain
       class="relative pt-4"
-      :class="hidden && 'overflow-hidden'"
+      :style="{
+        overflow: hidden ? 'hidden' : 'auto',
+      }"
       style="padding: 0 !important"
     >
       <AsayncSuspense>
@@ -15,7 +17,7 @@
   </ElContainer>
 </template>
 <script setup lang="ts">
-import { reactive, ref, shallowRef, watch } from "vue";
+import { onUnmounted, reactive, ref, shallowRef, watch } from "vue";
 import { useRoute } from "vue-router";
 
 import { cloudSearch } from "../../api/displaysearchreult";
@@ -63,6 +65,32 @@ const typekeyword = {
   2000: "声音",
 };
 
+//工具函数
+
+class hiddenComps {
+  private comps: any[];
+  constructor() {
+    this.comps = [DisplaySongSearch, DisplayMv];
+  }
+
+  someApply(comp) {
+    return this.comps.some((includecomp) => includecomp == comp);
+  }
+}
+
+const isHiddenComp = (comp) => new hiddenComps().someApply(comp);
+
+//模块函数
+const stopWatchComp = watch(componentId, (comp) => {
+  if (isHiddenComp(comp)) {
+    if (componentId.value) {
+      hidden.value = true;
+    }
+  } else {
+    hidden.value = false;
+  }
+});
+
 function mappingmap(keyword: typeof typekeyword) {
   const keytovalue = new Map(),
     valuetokey = new Map();
@@ -103,7 +131,6 @@ async function swithCoponent(type: string) {
 
   if (component) {
     componentId.value = component;
-    console.log(componentId.value);
   }
 }
 
@@ -195,20 +222,9 @@ function searchResultLists(type: string, resultdata: Object) {
   return list;
 }
 
-const stopWatchComp = watch(componentId, (comp) => {
-  console.log(comp);
-  if (comp == DisplaySongSearch) {
-    if (componentId.value) {
-      componentId.value = DisplaySongSearch;
-      hidden.value = true;
-    } else {
-      hidden.value = false;
-    }
-  }
-});
-
-swithCoponent("单曲");
-
 //生命周期
+onUnmounted(() => {
+  stopWatchComp();
+});
 </script>
 <style scoped lang="scss"></style>

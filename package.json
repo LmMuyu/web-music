@@ -24,7 +24,8 @@
     "vue": "3.2.2",
     "vue-router": "4",
     "vue3-text-editor": "^1.2.2",
-    "vuex": "^4.0.0"
+    "vuex": "^4.0.0",
+    "xgplayer": "^2.31.6"
   },
   "devDependencies": {
     "@types/better-scroll": "^1.12.4",

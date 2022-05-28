@@ -1,3 +1,6 @@
+import xgplayer from "xgplayer";
+import "../assets/.xgplayer/skin";
+
 import { isType } from "../utils/methods";
 
 type EventKey =
@@ -47,7 +50,7 @@ export default class playerVideo implements Partial<OPTIONS> {
 
   constructor(url: string, mountel: HTMLElement, options?: Partial<OPTIONS>) {
     //@ts-ignore
-    this.xgplayer = window.Player;
+    this.xgplayer = xgplayer;
     this.url = url;
     this.mountel = mountel;
     this.autoplay = options?.autoplay ?? false;
