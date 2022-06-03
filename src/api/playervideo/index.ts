@@ -33,3 +33,30 @@ export function timelineVideo(offset: number = 0) {
     },
   });
 }
+
+export function getVideoComment(
+  id: string,
+  offset: number = 1,
+  before: number = null,
+  limit: number = 20
+) {
+  return request({
+    url: "/comment/video",
+    params: {
+      id,
+      limit,
+      offset: offset * limit,
+      before: before && before,
+    },
+  });
+}
+
+export function followUser(uid: number, t: number) {
+  return request({
+    url: "/follow",
+    params: {
+      id: uid,
+      t,
+    },
+  });
+}

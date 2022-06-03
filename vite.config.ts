@@ -45,7 +45,10 @@ export default ({ mode }: ConfigEnv): UserConfig => {
       }),
 
       createSvgIconsPlugin({
-        iconDirs: [path.join(__dirname, "/src/assets")],
+        iconDirs: [
+          path.join(__dirname, "/src/assets"),
+          path.join(process.cwd(), "/src/assets/.xgplayer/skin/assets"),
+        ],
       }),
 
       ...(isPro

@@ -1,7 +1,5 @@
-import xgplayer from "xgplayer";
-import "../assets/.xgplayer/skin";
-
 import { isType } from "../utils/methods";
+// https://github.com/sampotts/plyr
 
 type EventKey =
   | "durationchange"
@@ -50,7 +48,7 @@ export default class playerVideo implements Partial<OPTIONS> {
 
   constructor(url: string, mountel: HTMLElement, options?: Partial<OPTIONS>) {
     //@ts-ignore
-    this.xgplayer = xgplayer;
+    this.xgplayer = window.Player;
     this.url = url;
     this.mountel = mountel;
     this.autoplay = options?.autoplay ?? false;
@@ -104,6 +102,8 @@ export default class playerVideo implements Partial<OPTIONS> {
 
         this.dispatchOnEvent();
       } catch (error) {
+        console.log(error);
+
         this.isStanceSources = false;
         console.log("实例化xgplayer失败");
       }

@@ -7,6 +7,7 @@ import hover from "./directives/hover";
 import TextEditor from "vue3-text-editor";
 import lazy from "./directives/lazy-loading";
 import AsayncSuspense from "./components/suspense/AsayncSuspense.vue";
+import "virtual:svg-icons-register";
 
 import "element-plus/theme-chalk/el-icon.css";
 import "vue3-text-editor/css/index.css";
