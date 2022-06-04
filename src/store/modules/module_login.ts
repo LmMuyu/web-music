@@ -12,7 +12,7 @@ interface WATCHFNOPTIONS {
   watchLoginFn: (iswatchbc: boolean) => void | null;
 }
 
-class follow {
+export class follow {
   nickname: string;
   uid: number;
   avatar: string;
@@ -31,6 +31,7 @@ export interface STATETYPE {
   initStatus: Boolean;
   watch: WATCHFNOPTIONS;
   follows: follow[];
+  userId: number;
 }
 
 class login {
@@ -51,6 +52,7 @@ class login {
   private createState() {
     return {
       ids: [],
+      userId: 0,
       islogin: null,
       userdata: {},
       follows: [],
@@ -92,6 +94,10 @@ class login {
       setFollowsLists(state: STATETYPE, lists: follow[]) {
         state.follows.push(...lists);
       },
+
+      setUserId(state: STATETYPE, id: number) {
+        state.userId = id;
+      },
     };
   }
 
@@ -116,11 +122,14 @@ class login {
 
       async setFollows(state) {
         //@ts-ignore
-        const { userID } = state.state.userdata.data;
-        const userFollows = await follows(Number(userID), 1);
-
+        const userInfoOruserId = state.state.userdata?.data || state.state.userId;
+        const userFollows = await follows(
+          typeof userInfoOruserId === "number"
+            ? userInfoOruserId
+            : Number((userInfoOruserId as any).userID),
+          1
+        );
         const followLists = userFollows.data.follow.map((followuser) => new follow(followuser));
-
         state.commit("setFollowsLists", followLists);
       },
     };

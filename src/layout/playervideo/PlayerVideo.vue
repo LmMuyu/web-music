@@ -8,17 +8,12 @@
               <div ref="video" class="xgplayer-skin-customplay"></div>
             </div>
             <video-info :videoinfo="videoinfo" />
-            <CommentArea
-              v-if="Object.keys(videoinfo).length > 0"
-              :video-and-user-info="videoinfo"
-            />
-            <div class="py-10"></div>
           </better-scroll>
         </el-main>
       </el-container>
     </el-container>
     <el-aside style="width: 30.5vw" class="h-full">
-      <el-main class="h-full" style="padding: 16px 0 !important">
+      <el-main class="h-full" style="padding: 0px !important ; padding: 20px 20px 20px 0">
         <asaync-suspense>
           <better-scroll>
             <video-lists />
@@ -41,10 +36,14 @@ import VideoLists from "./components/VideoLists.vue";
 import VideoInfo from "./components/VideoInfo.vue";
 import BetterScroll from "../../components/betterscroll/BetterScroll.vue";
 import AsayncSuspense from "../../components/suspense/AsayncSuspense.vue";
-import CommentArea from "../../components/commentarea/CommentArea.vue";
+
+enum REQUEST_TYPE {
+  MV = "mv",
+  VIDEO = "video",
+}
 
 const route = useRoute();
-const mvid = Number(route.query.id);
+const videoId = Number(route.query.id);
 
 const ratio = ref([]);
 const mvurl = ref("");
@@ -55,7 +54,7 @@ let poster = "";
 //@ts-ignore
 const videoinfo = ref<VIDEO_INFO>({});
 
-mvVideoDetail(mvid)
+mvVideoDetail(videoId)
   .then((sources) => sources.data)
   .then(async (videodata) => {
     console.log(videodata);
@@ -94,6 +93,8 @@ function playerVideoFn() {
     }
   });
 }
+
+function playType() {}
 
 onMounted(async () => {
   playerVideoFn();

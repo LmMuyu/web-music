@@ -4,6 +4,9 @@ import { uploadCloud } from "../../../api/user";
 
 import { ElNotification } from "element-plus";
 import { pool_async } from "../../../utils/poolasync";
+import store from "../../../store";
+import { computed } from "vue";
+import { follow } from "../../../store/modules/module_login";
 
 const MAXUPLOADCOUNT = 3;
 
@@ -94,4 +97,11 @@ export function musicUploadToCloudDisk(files: FileList, backcall: any) {
         }
       });
   });
+}
+
+export function isFollow(id: number) {
+  if (!id) return;
+  
+  const follows = computed(store.getters["login/getFollows"]);
+  return !!(follows.value as follow[]).find((follow) => follow.uid === id);
 }

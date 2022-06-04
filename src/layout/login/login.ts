@@ -8,6 +8,9 @@ export function loginStoreSetInfo(data: any, status: boolean) {
 }
 
 export async function loginStatus(serveIslogin: boolean, account: any, profile: any) {
+  // if (serveIslogin) {
+  //   store.dispatch("login/setFollows");
+  // }
   await dispatchWatchObserver(serveIslogin);
   if (serveIslogin) {
     const data = transformUserData(profile);

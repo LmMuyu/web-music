@@ -37,7 +37,7 @@ const loginUserData = reactive({
 const windowResize = inject("windowResize");
 
 store.commit("login/setWatchFn", (islogin) => {
-  console.log(islogin);
+  // console.log(islogin);
   //登录islogin为true 没登录islogin为false
   if (!islogin) {
     mainBCBus().then(logindata); //接受登录后的用户信息
@@ -55,7 +55,6 @@ function serLoginUserData(userdata: USERINFO | { userdata: USERINFO }) {
   //@ts-ignore
   userdata = userdata?.userdata ?? userdata;
   // console.log(userdata);
-
   loginUserData.tramsformButton = Object.keys(userdata).length > 0 ? true : false;
   loginUserData.userdata = userdata;
 }

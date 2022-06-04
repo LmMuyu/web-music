@@ -13,19 +13,19 @@
   </div>
   <div class="w-full" style="border: 1px solid #e5e5e5"></div>
   <div class="py-4">
-    <div class="flex">
-      <div class="px-4 flex" v-for="(nicknameinfo, index) in videoinfo.artistNames" :key="index">
-        <el-avatar :src="nicknameinfo.img1v1Url" :size="48"> </el-avatar>
-        <div class="pl-4">
-          <router-link :to="{ path: '/user/home', query: { uid: nicknameinfo.id } }">
-            <span class="block nickname"> {{ nicknameinfo.name }} </span>
-          </router-link>
-        </div>
-      </div>
+    <div class="flex justify-around">
+      <video-author
+        v-if="Object.keys(videoinfo).length > 0"
+        :videoAndUserInfo="videoinfo"
+      ></video-author>
+      <subscribe
+        @follow="subscribeFollow"
+        :subscribe="isFollow(videoinfo.artistNames[0].id)"
+        :authorid="videoinfo.artistNames[0].id"
+      ></subscribe>
     </div>
-    <div class="pl-20">
+    <div class="pl-20" v-if="videoinfo.title">
       <div
-        v-if="videoinfo.title"
         ref="titlebox"
         style="color: rgba(24, 24, 27, 1)"
         class="text-sm"
@@ -45,10 +45,19 @@
 <script setup lang="ts">
 import { nextTick, onMounted, PropType, ref } from "vue";
 
-import { ElAvatar } from "element-plus";
+import { isFollow } from "../../user/hooks";
+
+import FontIcon from "../../../components/fonticon/FontIcon.vue";
+import VideoAuthor from "../../../components/commentarea/CommentArea.vue";
+import Subscribe from "../../../components/subscribe/Subscribe.vue";
 
 import type { VIDEO_INFO } from "../";
-import FontIcon from "../../../components/fonticon/FontIcon.vue";
+import { followUser } from "../../../api/playervideo";
+
+enum FollowInfo {
+  "yesFollow",
+  "noFollow",
+}
 
 const props = defineProps({
   videoinfo: {
@@ -67,6 +76,16 @@ console.log(props.videoinfo);
 function anAllAndPackupTitle() {
   anAllTitle.value = !anAllTitle.value;
   watchTitleBoxHeight.value = !watchTitleBoxHeight.value;
+}
+
+async function subscribeFollow([follow, followid]) {
+  console.log(follow, followid);
+
+  const followRes = await followUser(
+    follow as FollowInfo.noFollow | FollowInfo.yesFollow,
+    followid
+  );
+  console.log(followRes);
 }
 
 onMounted(async () => {
