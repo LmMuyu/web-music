@@ -18,32 +18,27 @@
         v-if="Object.keys(videoinfo).length > 0"
         :videoAndUserInfo="videoinfo"
       ></video-author>
-      <subscribe
-        @follow="subscribeFollow"
-        :subscribe="isFollow(videoinfo.artistNames[0].id)"
-        :authorid="videoinfo.artistNames[0].id"
-      ></subscribe>
+      <subscribe @follow="subscribeFollow" :subscribe="subscribe" :authorid="authorid"></subscribe>
     </div>
     <div class="pl-20" v-if="videoinfo.title">
       <div
         ref="titlebox"
-        style="color: rgba(24, 24, 27, 1)"
+        style="color: rgba(24, 24, 27, 1); width: 40vw"
         class="text-sm"
         :class="watchTitleBoxHeight && 'linex'"
       >
         {{ videoinfo.title }}
       </div>
-      <div v-if="!anAllTitle" class="py-2 text-sm">
-        <a @click="anAllAndPackupTitle" style="color: #409eff" href="javascript:void(;;)">展开</a>
-      </div>
-      <div v-else="anAllTitle" class="py-2 text-sm">
-        <a @click="anAllAndPackupTitle" style="color: #409eff" href="javascript:void(;;)">收起</a>
+      <div class="py-2 text-sm">
+        <a @click="anAllAndPackupTitle" style="color: #409eff" href="javascript:void(;;)">
+          {{ anAllTitle ? "展开" : "收起" }}
+        </a>
       </div>
     </div>
   </div>
 </template>
 <script setup lang="ts">
-import { nextTick, onMounted, PropType, ref } from "vue";
+import { computed, nextTick, PropType, ref, watchEffect } from "vue";
 
 import { isFollow } from "../../user/hooks";
 
@@ -53,6 +48,7 @@ import Subscribe from "../../../components/subscribe/Subscribe.vue";
 
 import type { VIDEO_INFO } from "../";
 import { followUser } from "../../../api/playervideo";
+import { promptbox } from "../../../components/promptBox";
 
 enum FollowInfo {
   "yesFollow",
@@ -69,9 +65,38 @@ const props = defineProps({
 const watchTitleBoxHeight = ref(false);
 const anAllTitle = ref(false);
 const titlebox = ref(null);
-let linexPreHeight = ref(0);
+const subscribe = ref(false);
 
-console.log(props.videoinfo);
+class followReslut {
+  handler: ((code: number, next: () => void) => void)[];
+  index: number;
+  msg: string;
+  constructor(code: number, msg: string) {
+    this.handler = [this.code201, this.code200];
+    this.index = 0;
+    this.msg = msg;
+
+    this.dispatch(code, this.index);
+  }
+
+  dispatch(code: number, index: number) {
+    if (index > this.handler.length) return;
+    const that = this;
+    return this.handler[this.index].call(that, code, () => this.dispatch(code, ++this.index));
+  }
+
+  code201(code: number, next: () => void) {
+    if (code !== 201) return next();
+    subscribe.value = false;
+    promptbox({ title: this.msg, delay: 2500 });
+  }
+
+  code200(code: number, next: () => void) {
+    if (code !== 200) return next();
+    subscribe.value = true;
+    promptbox({ title: this.msg, delay: 2500 });
+  }
+}
 
 function anAllAndPackupTitle() {
   anAllTitle.value = !anAllTitle.value;
@@ -79,26 +104,41 @@ function anAllAndPackupTitle() {
 }
 
 async function subscribeFollow([follow, followid]) {
-  console.log(follow, followid);
-
   const followRes = await followUser(
     follow as FollowInfo.noFollow | FollowInfo.yesFollow,
     followid
   );
-  console.log(followRes);
+  new followReslut(followRes.data.code, followRes.data.msg);
 }
 
-onMounted(async () => {
-  await nextTick();
-  if (titlebox.value) {
-    const beforeOffsetHeight = titlebox.value.offsetHeight;
-    beforeOffsetHeight && (linexPreHeight.value = beforeOffsetHeight);
-    watchTitleBoxHeight.value = true;
+function setSubscribe() {
+  watchEffect(() => {
+    if (props.videoinfo?.artistNames?.[0].id) {
+      subscribe.value = isFollow(props.videoinfo?.artistNames?.[0].id);
+    }
+  });
+}
 
+setSubscribe();
+
+const authorid = computed(() => {
+  return props.videoinfo?.artistNames?.[0].id || 0;
+});
+
+defineExpose({
+  async tranBoxheight() {
     await nextTick();
-    const afterOffsetHeight = titlebox.value.offsetHeight;
-    afterOffsetHeight && afterOffsetHeight > linexPreHeight.value && (anAllTitle.value = true);
-  }
+    if (titlebox.value) {
+      //没加省略号之前高度
+      const beforeOffsetHeight = titlebox.value.offsetHeight;
+      watchTitleBoxHeight.value = false;
+
+      await nextTick();
+      //加省略号之后高度
+      const afterOffsetHeight = titlebox.value.offsetHeight;
+      afterOffsetHeight && beforeOffsetHeight > afterOffsetHeight && (anAllTitle.value = false);
+    }
+  },
 });
 </script>
 <style scoped lang="scss">

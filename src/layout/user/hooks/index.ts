@@ -100,8 +100,8 @@ export function musicUploadToCloudDisk(files: FileList, backcall: any) {
 }
 
 export function isFollow(id: number) {
-  if (!id) return;
-  
+  if (!id) return false;
+
   const follows = computed(store.getters["login/getFollows"]);
   return !!(follows.value as follow[]).find((follow) => follow.uid === id);
 }

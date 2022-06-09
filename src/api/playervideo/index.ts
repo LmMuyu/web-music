@@ -60,3 +60,12 @@ export function followUser(uid: number, t: number) {
     },
   });
 }
+
+export function simiMv(mvid: number) {
+  return request({
+    url: "/simi/mv",
+    params: {
+      mvid,
+    },
+  });
+}

@@ -53,7 +53,7 @@ export default defineComponent({
       default: true,
     },
   },
-  emits: ["pullUpLoad"],
+  emits: ["pullUpLoad", "hook:update"],
   setup(props, { expose, slots, emit: ctxEmit }) {
     const src = "https://cdnjs.cloudflare.com/ajax/libs/better-scroll/2.4.2/better-scroll.esm.js";
     const viewport = ref(null);
@@ -146,6 +146,7 @@ export default defineComponent({
     function loadImages(ev) {
       ev.stopPropagation();
       heightAdd();
+      ctxEmit("hook:update");
     }
 
     nextTick(() => {
