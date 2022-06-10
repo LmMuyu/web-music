@@ -76,7 +76,7 @@ import {
 import { useStore } from "vuex";
 
 import { openDrawer } from "../../layout/playlist/components/PlayListHistory";
-import { commentMusic, getMusicDetail } from "../../api/playList";
+import { getMusicDetail } from "../../api/playList";
 import { useLocalStorage } from "../../utils/useLocalStorage";
 import { musicDetail } from "../../utils/musicDetail";
 import { debounce } from "../../utils/debounce";
@@ -92,6 +92,7 @@ import AudioSlider from "./components/AudioSlider.vue";
 import { ElSlider, ElRow, ElCol } from "element-plus";
 import VolumeIcon from "./components/VolumeIcon.vue";
 import FontIcon from "../fonticon/FontIcon.vue";
+import { VideoComments } from ".";
 
 const props = defineProps({
   songinfo: {
@@ -104,18 +105,16 @@ const store = useStore();
 
 let mid = 0;
 let isclick = true;
-let currPage = 1;
 const volume = ref(0);
 const historyData = ref([]);
 const showSlider = ref(false);
-const comments = ref([]);
 const COMMENT_LEN = 40;
-const musicinfo = ref<musicDetail>();
 const MAX_LIMIT = COMMENT_LEN;
-const timeTable = new Map();
-const playListHistoryOptions = reactive({ total: 0, time: 0 });
+const musicinfo = ref<musicDetail>();
 const islock = ref(false);
 const ctx = getCurrentInstance();
+
+const VideoCommentModule = new VideoComments("music");
 
 const dexie = dexieFn();
 const {
@@ -134,7 +133,7 @@ const {
   playSeek: seekTime,
 } = AudioHow(
   {
-    currentIndexBackFn: currentMusicPlayIndex,
+    currentIndexBackFn: VideoCommentModule.currentMusicPlayIndex,
     musicinfoRef: musicinfo,
   },
   getCurrentInstance()
@@ -182,12 +181,6 @@ function leaveAudio() {
   }
 }
 
-function setTimeTable(page: number, time: number) {
-  if (!timeTable.has(page)) {
-    timeTable.set(page, time);
-  }
-}
-
 function onLock() {
   islock.value = !islock.value;
 }
@@ -209,50 +202,12 @@ function cursourEnterSlider(e: MouseEvent) {
   }
 }
 
-async function currentMusicPlayIndex(index: number, mid: number) {
-  console.log(index);
-  const data = await commentMusic(mid, 1, 0, MAX_LIMIT);
-
-  if (data) {
-    commentMusicThenFn(data);
-  }
-}
-
-function currentChange(index: number) {
-  if (index === currPage) {
-    return;
-  }
-  commentMusic(mid, index, timeTable.get(index - 1)).then(commentMusicThenFn);
-}
-
-function changePageIndex(index: number) {
-  if (index === currPage) {
-    return;
-  }
-
-  commentMusic(mid, index, timeTable.get(index - 1) ?? 0).then(commentMusicThenFn);
-}
-
-function commentMusicThenFn({ config, data: comment }) {
-  playListHistoryOptions.total = comment.total;
-  playListHistoryOptions.time = comment.comments[comment.comments.length - 1].time;
-
-  if (config.params.offset + 1 === 1 && comment.hotComments.length > 0) {
-    const diff = COMMENT_LEN - comment.hotComments.length;
-    comments.value = [...comment.hotComments, ...comment.comments.slice(0, diff)];
-    return;
-  }
-
-  comments.value = comment.comments;
-  setTimeTable(1, playListHistoryOptions.time);
-}
-
 function openCommentList() {
-  openDrawer(comments, "评论", {
-    "current-change": currentChange,
-    "next-click": changePageIndex,
-    "prev-click": changePageIndex,
-    total: toRef(playListHistoryOptions, "total").value,
+  openDrawer(VideoCommentModule.comments, "评论", {
+    "current-change": VideoCommentModule.currentChange,
+    "next-click": VideoCommentModule.changePageIndex,
+    "prev-click": VideoCommentModule.changePageIndex,
+    total: toRef(VideoCommentModule.playListHistoryOptions, "total").value,
     size: MAX_LIMIT,
   });
 }

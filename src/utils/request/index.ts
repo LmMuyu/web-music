@@ -7,6 +7,7 @@ import useRequest from "./request";
 import type { AxiosRequestConfig } from "axios";
 import jsCookie from "js-cookie";
 import { sliceurl } from "./response/result";
+import { isType } from "../methods";
 
 interface CONFIG_DEFAULT {
   defaults?: {
@@ -25,12 +26,29 @@ function setRetryCount(
   instance.defaults.retrydelay = delay ?? 500;
 }
 
+function filterParams(params: Object) {
+  if (isType(params) !== "Object") {
+    throw new Error("请求参数params不是object");
+  }
+
+  let filterParam = {};
+
+  for (const key in params) {
+    if (params[key] !== null) {
+      filterParam[key] = params[key];
+    }
+  }
+
+  return filterParam;
+}
+
 export default function request(config: AxiosRequestConfig) {
   // const cancelToken = httpCancelToken({
   //   url: config.url,
   //   query: config.params,
   //   params: config.data,
   // });
+  config.params = config.params && filterParams(config.params);
   const isget = (config.method ?? "GET").toLocaleUpperCase() === "GET";
 
   const instance = axios.create({

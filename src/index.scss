@@ -44,7 +44,15 @@
   }
 }
 
+.bottom_line {
+  @include Decoration_Hover;
+}
 
-.bottom_line{
-   @include Decoration_Hover
+@mixin Dlinexx($linecount: 3) {
+  .dlinexx {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: $linecount;
+    overflow: hidden;
+  }
 }

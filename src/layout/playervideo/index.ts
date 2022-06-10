@@ -18,6 +18,7 @@ export interface VIDEO_INFO {
   playcount: string;
   createtime: number;
   duration: string;
+  cover: string;
   commentCount: number;
   otherinfo: {
     step: number;
@@ -37,6 +38,7 @@ export function videoinfodata(data: any): VIDEO_INFO {
     createtime: 0,
     duration: "",
     commentCount: 0,
+    cover: "",
     otherinfo: {
       step: 0,
       linke: 0,
@@ -53,6 +55,7 @@ export function videoinfodata(data: any): VIDEO_INFO {
   videoinfo.commentCount = data.commentCount;
   videoinfo.poster = data.picUrl ?? "";
   videoinfo.vid = data.id;
+  videoinfo.cover = data.cover;
 
   return videoinfo;
 }

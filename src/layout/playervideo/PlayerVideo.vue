@@ -8,6 +8,13 @@
               <div ref="video" class="xgplayer-skin-customplay"></div>
             </div>
             <video-info ref="compvideo" :videoinfo="videoinfo" />
+            <play-video-comments
+              v-if="mvCommentModule.comments.length > 0"
+              title="精彩评论"
+              :record="mvCommentModule.comments"
+              :size="10"
+              :total="mvCommentModule.comments.length"
+            />
           </better-scroll>
         </el-main>
       </el-container>
@@ -16,16 +23,8 @@
       <el-main class="h-full" style="padding: 0px !important ; padding: 20px 20px 20px 0">
         <asaync-suspense>
           <better-scroll :item-len="simiMvLists.length" :open-h-render="false">
-            <card-exhibition
-              v-for="simimv in simiMvLists"
-              :key="simimv.id"
-              :keyindex="simimv.id"
-              :data="simimv"
-              path="/video"
-              class=""
-            ></card-exhibition>
-
-            <video-lists v-for="simimv in simiMvLists" :key="simimv.id"> </video-lists>
+            <video-lists v-for="simimv in simiMvLists" :key="simimv.id" :mvorvideo="simimv">
+            </video-lists>
           </better-scroll>
         </asaync-suspense>
       </el-main>
@@ -44,13 +43,9 @@ import { ElContainer, ElMain, ElAside } from "element-plus";
 import VideoInfo from "./components/VideoInfo.vue";
 import BetterScroll from "../../components/betterscroll/BetterScroll.vue";
 import AsayncSuspense from "../../components/suspense/AsayncSuspense.vue";
-import CardExhibition from "../../components/cardexhibition/CardExhibition.vue";
 import VideoLists from "./components/VideoLists.vue";
-
-enum REQUEST_TYPE {
-  MV = "mv",
-  VIDEO = "video",
-}
+import PlayVideoComments from "../playlist/components/PlayListHistory/PlayListHistory.vue";
+import { VideoComments } from "../../components/player";
 
 const route = useRoute();
 const videoId = Number(route.query.id);
@@ -65,12 +60,12 @@ let poster = "";
 
 //@ts-ignore
 const videoinfo = ref<VIDEO_INFO>({});
+const mvCommentModule = new VideoComments("mv");
 
 mvVideoDetail(videoId)
   .then((sources) => sources.data)
   .then(async (videodata) => {
     // console.log(videodata);
-
     const id = videodata.data.id;
     const brs = videodata.data.brs;
     const r = brs[brs.length - 1];
@@ -86,7 +81,7 @@ mvVideoDetail(videoId)
   });
 
 simiMv(videoId).then((simimv) => {
-  simiMvLists.value = simimv.data.mvs;
+  simiMvLists.value = simimv.data.mvs.map((mv) => videoinfodata(mv));
 });
 
 function mvPlayPath(data: Record<string, any>) {
@@ -122,6 +117,10 @@ async function update() {
     }, 0);
   }
 }
+
+mvCommentModule.currentMusicPlayIndex(null, videoId).then((comments) => {
+  console.log(comments);
+});
 
 onMounted(async () => {
   playerVideoFn();

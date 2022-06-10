@@ -1,8 +1,8 @@
 <template>
-  <el-row class="flex items-start my-2 px-2" v-for="(mvorvideo, index) in videolists" :key="index">
+  <el-row class="flex items-start my-2 px-2">
     <el-col :span="10">
       <div class="relative" style="height: 15vh">
-        <el-image class="w-full h-full" fit="fill" :src="mvorvideo.poster"> </el-image>
+        <el-image class="w-full h-full" fit="fill" :src="mvorvideo.cover"> </el-image>
         <span class="absolute right-2 bottom-2 z-10 duration time_text">
           {{ mvorvideo.duration }}
         </span>
@@ -13,10 +13,10 @@
         ></router-link>
       </div>
     </el-col>
-    <el-col :span="14" class="flex flex-col justify-start px-2">
-      <span class="videoname"> {{ mvorvideo.videoname }} </span>
-      <span class="nickname"> {{ mvorvideo.nickname }} </span>
-      <div class="inline-flex items-center videoinfo">
+    <el-col :span="14" class="flex flex-col justify-between h-full px-2">
+      <span class="videoname py-1 dlinexx"> {{ mvorvideo.videoname }} </span>
+      <span class="nickname py-1"> {{ mvorvideo.nickname }} </span>
+      <div class="inline-flex items-center videoinfo py-1">
         <font-icon class="videoinfo" icon="iconbofang1">
           <template #after>
             <span>{{ mvorvideo.playcount }} </span>
@@ -29,38 +29,23 @@
   </el-row>
 </template>
 <script setup lang="ts">
-import { ref } from "vue";
+import { PropType } from "vue";
 import { useRoute } from "vue-router";
 
-import { videoinfodata, VIDEO_INFO } from "..";
-import { personalizedMv, timelineVideo } from "../../../api/playervideo";
+import { VIDEO_INFO } from "..";
 
 import { ElImage, ElRow, ElCol } from "element-plus";
 import FontIcon from "../../../components/fonticon/FontIcon.vue";
 
+const props = defineProps({
+  mvorvideo: {
+    type: Object as PropType<VIDEO_INFO>,
+    default: () => {},
+  },
+});
+
 const route = useRoute();
-const videolists = ref<VIDEO_INFO[]>([]);
-let videooffset = 10;
-
 const typefnstr = (route.query.type ?? "mv") as string;
-
-function recommend(type: string) {
-  const typefn = {
-    mv: personalizedMv,
-    video: timelineVideo,
-  };
-
-  return typefn[type] ?? typefn.mv;
-}
-
-try {
-  const sources = await recommend(typefnstr)(videooffset);
-  console.log(sources);
-
-  videolists.value = sources.data.result.map((data) => videoinfodata(data));
-} catch (error) {
-  console.log(error);
-}
 </script>
 <style scoped lang="scss">
 @mixin Text_Css($size, $lhight, $weight: 500) {
@@ -93,4 +78,6 @@ try {
   background: #000000;
   border-radius: 2px;
 }
+
+@include Dlinexx(2);
 </style>

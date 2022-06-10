@@ -63,10 +63,11 @@ export async function commentMusic(
   id: number,
   offset: number = 1,
   before?: number,
-  limit: number = 20
+  limit: number = 20,
+  type: "music" | "mv" = "music"
 ) {
   return request({
-    url: "/comment/music",
+    url: "/comment/" + type,
     params: {
       id,
       limit,

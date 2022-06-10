@@ -69,3 +69,12 @@ export function simiMv(mvid: number) {
     },
   });
 }
+
+export function commentMv(id: number) {
+  return request({
+    url: "/comment/mv",
+    params: {
+      id,
+    },
+  });
+}
