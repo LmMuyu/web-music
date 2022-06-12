@@ -6,24 +6,40 @@
     @mouseleave="showTimeIndex = null"
     ref="scrollNode"
   >
-    <span
+    <div
       v-for="(musicItem, index) in musicItemList"
       :key="musicItem.playTime"
       class="flex items-center py-3"
     >
-      <p
+      <transition
+        v-if="showTimeIndex == index"
+        enter-active-class="active"
+        enter-to-class="enterTo"
+        leave-active-class="active"
+        leave-to-class="leaveTo"
+      >
+        <span class="ml-4">{{ musicItem.originTime }}</span>
+        <div class="bgrad"></div>
+      </transition>
+      <span
         class="text-sm text-left cursor-pointer text_color"
         :lycplaytime="musicItem.originTime"
         :node_id="musicItem.playTime"
         :keyid="index"
       >
         {{ musicItem.lyc }}
-      </p>
+      </span>
 
-      <transition v-if="showTimeIndex == index" name="feide">
-        <p class="ml-4">-{{ musicItem.originTime }}</p>
+      <transition
+        v-if="showTimeIndex == index"
+        enter-active-class="active"
+        enter-to-class="enterTo"
+        leave-active-class="active"
+        leave-to-class="leaveTo"
+      >
+        >
       </transition>
-    </span>
+    </div>
   </div>
 </template>
 <script setup lang="ts">
@@ -40,6 +56,8 @@ const props = defineProps({
     required: true,
   },
 });
+
+console.log(props.musicItemList);
 
 const showTimeIndex = ref(null);
 const scrollNode = ref<HTMLElement | null>(null);
@@ -61,22 +79,24 @@ const musicTextContainerStyle = computed(() => {
 div {
   transition: all 0.1s linear;
 }
-.feide-enter-active,
-.feide-leave-active {
+
+.active {
   transition: all 0.2s ease;
 }
 
-.feide-enter-from,
-.feide-leave-to {
-  opacity: 0;
+.enterTo {
+  opacity: 1;
 }
 
-.feide-enter-to,
-.feide-leave-from {
-  opacity: 1;
+.leaveTo {
+  opacity: 0;
 }
 
 .text_color:hover {
   color: #3a3a59;
+}
+
+.bgrad{
+  background-image: linear-gradient(left,);
 }
 </style>

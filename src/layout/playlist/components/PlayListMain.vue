@@ -1,5 +1,5 @@
 <template>
-  <section
+  <el-container
     :style="{
       backgroundImage: `url('${backgroundurl}')`,
       backgroundRepeat: 'no-repeat',
@@ -11,18 +11,15 @@
     class="flex h-full relative"
   >
     <back-mark />
-    <main class="w-full flex drop_filter">
-      <div></div>
+    <el-main class="w-full flex drop_filter">
       <div class="p-4">
-        <div class="flex relative py-4">
-          <div class="flex items-center text-xl w-full hover">
-            <p class="headercolor">歌手:</p>
-            <span
-              style="color: #1f2937"
-              class="text-xl ml-3 cursor-pointer singer-color"
-              v-html="singerName"
-            ></span>
-          </div>
+        <div class="flex items-center w-full hover relative py-4">
+          <span class="headercolor">歌手:</span>
+          <span
+            style="color: #1f2937"
+            class="text-xl ml-3 cursor-pointer singer-color"
+            v-html="singerName"
+          ></span>
           <div class="absolute right-0 w-full bottom_hover" style="height: 3px; bottom: 25%"></div>
         </div>
         <div class="relative lycs_music">
@@ -39,12 +36,12 @@
             @scroll="lyricThrottle"
             ref="lyricNode"
           >
-            <PlayLycs :musicItemList="[...musicItemList.values()]" />
+            <play-lycs :musicItemList="[]" />
           </div>
         </div>
       </div>
-    </main>
-  </section>
+    </el-main>
+  </el-container>
 </template>
 <script setup lang="ts">
 import fastdom from "fastdom";
@@ -59,6 +56,7 @@ import { lyricNodeRect, clientHeight } from "../hooks/data";
 
 import PlayLycs from "./PLayLycs.vue";
 import BackMark from "./BackMark.vue";
+import { ElContainer, ElMain } from "element-plus";
 
 import type { MatchItem } from "../type";
 

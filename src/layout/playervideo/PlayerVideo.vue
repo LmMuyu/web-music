@@ -3,17 +3,19 @@
     <el-container>
       <el-container class="h-full relative scrollltrack">
         <el-main style="width: 69.5vw" class="h-full absolute top-0 left-0 scrollltrack">
-          <better-scroll @hook:update="update" :open-h-render="false" class="h-full">
+          <better-scroll ref="better" @hook:update="update" :open-h-render="false" class="h-full">
             <div class="root" ref="videobox" style="height: 84vh">
               <div ref="video" class="xgplayer-skin-customplay"></div>
             </div>
             <video-info ref="compvideo" :videoinfo="videoinfo" />
-            <play-video-comments
-              v-if="mvCommentModule.comments.length > 0"
+            <player-commtent-container
               title="精彩评论"
-              :record="mvCommentModule.comments"
               :size="10"
-              :total="mvCommentModule.comments.length"
+              :total="commentModuleInfo.total"
+              :data="commentModuleInfo.comments"
+              :comp-id="COMP.Comment"
+              :loading="false"
+              :renderBS="false"
             />
           </better-scroll>
         </el-main>
@@ -32,7 +34,7 @@
   </el-container>
 </template>
 <script setup lang="ts">
-import { nextTick, onMounted, ref, watchEffect } from "vue";
+import { nextTick, onMounted, onUnmounted, reactive, ref, watch, watchEffect } from "vue";
 import { useRoute } from "vue-router";
 
 import playerVideo from "../../common/videoplayer";
@@ -44,8 +46,12 @@ import VideoInfo from "./components/VideoInfo.vue";
 import BetterScroll from "../../components/betterscroll/BetterScroll.vue";
 import AsayncSuspense from "../../components/suspense/AsayncSuspense.vue";
 import VideoLists from "./components/VideoLists.vue";
-import PlayVideoComments from "../playlist/components/PlayListHistory/PlayListHistory.vue";
+import PlayerCommtentContainer from "../playlist/components/PlayListHistory/components/CommtentContainer.vue";
 import { VideoComments } from "../../components/player";
+
+enum COMP {
+  "Comment" = "Comment",
+}
 
 const route = useRoute();
 const videoId = Number(route.query.id);
@@ -56,11 +62,16 @@ const video = ref(null);
 const videobox = ref(null);
 const simiMvLists = ref([]);
 const compvideo = ref<any>(null);
+const better = ref(null);
 let poster = "";
 
 //@ts-ignore
 const videoinfo = ref<VIDEO_INFO>({});
 const mvCommentModule = new VideoComments("mv");
+const commentModuleInfo = reactive({
+  comments: [],
+  total: 0,
+});
 
 mvVideoDetail(videoId)
   .then((sources) => sources.data)
@@ -118,12 +129,24 @@ async function update() {
   }
 }
 
-mvCommentModule.currentMusicPlayIndex(null, videoId).then((comments) => {
-  console.log(comments);
+mvCommentModule.currentMusicPlayIndex(null, videoId);
+
+let stop = watch(mvCommentModule.comments, async (lists) => {
+  commentModuleInfo.comments.push(...lists);
+  commentModuleInfo.total = lists.length;
+  console.log(commentModuleInfo);
+
+  await nextTick();
+  better.value.scrollHeightRefresh();
 });
 
 onMounted(async () => {
   playerVideoFn();
+});
+
+onUnmounted(() => {
+  stop();
+  stop = null;
 });
 </script>
 <style scoped lang="scss">

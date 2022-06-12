@@ -25,7 +25,7 @@ const playListMainInfo = reactive({
   backgroundurl: "",
 });
 
-const songInfo = computed<musicDetail>(store.getters("playlist/getSongInfo"));
+const songInfo = computed<musicDetail>(store.getters["playlist/getSongInfo"]);
 
 watchEffect(() => {
   if (Object.keys(songInfo.value).length > 0) {

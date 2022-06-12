@@ -1,4 +1,5 @@
 import { reactive, ref } from "@vue/runtime-dom";
+import { Ref } from "vue";
 import { commentMusic } from "../../api/playList";
 import { isType } from "../../utils/methods";
 
@@ -12,7 +13,7 @@ export class VideoComments {
   timeTable: Map<any, any>;
   playListHistoryOptions: { total: number; time: number };
   mid: number;
-  comments: any;
+  comments: Ref<any[]>;
   type: CommentsType;
   commentMusicThen: ({ config, data: comment }: { config: any; data: any }) => void;
   constructor(type: CommentsType) {
@@ -71,9 +72,11 @@ export class VideoComments {
     const data = await commentMusic(mid, 1, 0, this.MAX_LIMIT, this.type);
     this.mid = mid;
 
-    if (data) {
-      this.commentMusicThen(data);
-      return this.comments;
-    }
+    return Promise.resolve().then(() => {
+      if (data) {
+        isType(this.commentMusicThen) === "Function" && this.commentMusicThen(data);
+        return this.comments;
+      }
+    });
   }
 }

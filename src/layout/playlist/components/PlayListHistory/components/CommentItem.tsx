@@ -40,14 +40,23 @@ export default function CommentItem(props: PROPSTYPE) {
       <ElRow class={"py-1"}>
         {!isBeRepliedComp && (
           <ElCol span={2} class="flex">
-            <div>
+            <div class={"relative"}>
               <ElAvatar src={scopedData.user.avatarUrl} size={"medium"}></ElAvatar>
+              <router-link
+                to={{ path: "/user/home", query: { uid: scopedData.user.userId } }}
+                class={"absolute w-full h-full left-0 top-0"}
+              ></router-link>
             </div>
           </ElCol>
         )}
         <ElCol class="text-sm w-full" span={isBeRepliedComp ? 24 : 18}>
           <div>
-            <span>{scopedData.user.nickname}：</span>
+            <router-link
+              class={"bottom_line"}
+              to={{ path: "/user/home", query: { uid: scopedData.user.userId } }}
+            >
+              {scopedData.user.nickname}：
+            </router-link>
             <span style="color:#4F4F4F;">{scopedData.content}</span>
           </div>
           {scopedData.beReplied && scopedData.beReplied.length > 0 && (

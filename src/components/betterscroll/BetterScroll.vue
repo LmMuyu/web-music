@@ -328,6 +328,9 @@ export default defineComponent({
     expose({
       disable,
       enable,
+      scrollHeightRefresh() {
+        BSRefresh();
+      },
     });
 
     return {
