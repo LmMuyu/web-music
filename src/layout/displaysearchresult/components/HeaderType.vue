@@ -18,20 +18,32 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, watchEffect } from "vue";
 
 import { activeIndex } from "../../../utils/activeIndex";
 
 const ctxEmits = defineEmits(["selectType"]);
 
 const props = defineProps({
-  keyword: {
+  keywordlists: {
     type: Object,
     required: true,
   },
+  type: String,
 });
 
-const { activeStyle, clickActive, moveActive, leaveActive } = new activeIndex(null, null, {
+const defaultIndex = ref(0);
+
+const keyword = keywordLists();
+
+watchEffect(() => {
+  if (props.type) {
+  }
+  const findIndex = Object.keys(keyword.value).findIndex((key) => key === props.type);
+  findIndex !== -1 && (defaultIndex.value = findIndex);
+});
+
+const { activeStyle, clickActive, moveActive, leaveActive } = new activeIndex(defaultIndex, null, {
   enterColor: "#7cbcfc66",
   initColor: "#fff",
 });
@@ -39,14 +51,12 @@ const { activeStyle, clickActive, moveActive, leaveActive } = new activeIndex(nu
 function keywordLists() {
   const keywords = {};
 
-  for (const key in props.keyword) {
-    keywords[props.keyword[key]] = key;
+  for (const key in props.keywordlists) {
+    keywords[props.keywordlists[key]] = key;
   }
 
   return ref(keywords);
 }
-
-const keyword = keywordLists();
 
 function selectType(e) {
   const textContent = e.target.textContent;

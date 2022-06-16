@@ -14,11 +14,11 @@ import { useRoute, useRouter } from "vue-router";
 import { computed, Ref, ref, watch, watchEffect } from "vue";
 
 import { hotSearch } from "../../../api/index";
+import { useWatchRoutePath } from "../../../utils/useWatchHost";
 
 import IndexSearch from "../../../components/search/Search.vue";
 import IndexNavTag from "../navTag/NavTag.vue";
 import { ElRow, ElCol } from "element-plus";
-import { useWatchRoutePath } from "../../../utils/useWatchHost";
 
 const router = useRouter();
 
@@ -37,19 +37,32 @@ function watchModel(negateRef: Ref<boolean>) {
 
   window.addEventListener("keydown", keyDownEvent, false);
 
+  function inputKeyword(): string {
+    const searchValue = value.value.trim();
+    if (searchValue === "") {
+      return keyword.value.first ? keyword.value.first : "";
+    }
+
+    return searchValue;
+  }
+
   watchEffect(() => {
     negateRef.value = value.value !== "" ? true : false;
 
     if (negateRef.value && isToPage) {
       isToPage = false;
 
-      router.push({
-        path: "/searchres",
-        query: {
-          keyword: encodeURIComponent(value.value.trim()),
-          type: encodeURIComponent("单曲"),
-        },
-      });
+      const searchKeyword = inputKeyword();
+
+      if (searchKeyword !== "") {
+        router.push({
+          path: "/searchres",
+          query: {
+            keyword: searchKeyword,
+            type: "单曲",
+          },
+        });
+      }
     }
   });
 

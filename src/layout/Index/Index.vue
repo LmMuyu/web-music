@@ -30,7 +30,6 @@ import IndexHeaderModule from "./components/IndexHeaderModule.vue";
 import IndexHotPlaylists from "./components/IndexHotPlaylists.vue";
 import IndexRecentlyAlbums from "./components/IndexRecentlyAlbums.vue";
 import IndexFeaturedSinger from "./components/IndexFeaturedSinger.vue";
-import BetterScroll from "../../components/betterscroll/BetterScroll.vue";
 
 import type { AxiosResponse } from "axios";
 
