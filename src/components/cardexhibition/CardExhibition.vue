@@ -9,7 +9,7 @@
       <img
         :src="(data.picUrl ?? data.cover) + '?param=224y176'"
         :alt="data.commentThreadId"
-        class="object-contain w-full h-full"
+        class="object-cover w-full h-full"
       />
     </div>
     <div class="flex flex-col p-8">

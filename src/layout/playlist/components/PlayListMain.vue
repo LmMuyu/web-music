@@ -10,36 +10,42 @@
     ref="sectionNode"
     class="flex h-full relative"
   >
-    <back-mark />
     <el-main class="w-full flex drop_filter">
-      <div class="p-4">
-        <div class="flex items-center w-full hover relative py-4">
-          <span class="headercolor">歌手:</span>
-          <span
-            style="color: #1f2937"
-            class="text-xl ml-3 cursor-pointer singer-color"
-            v-html="singerName"
-          ></span>
-          <div class="absolute right-0 w-full bottom_hover" style="height: 3px; bottom: 25%"></div>
-        </div>
-        <div class="relative lycs_music">
-          <div ref="trackNode" class="absolute top-0 right-0 bottom-0 w-1 h-full">
+      <el-row>
+        <el-col :span="14"></el-col>
+        <el-col :span="10">
+          <div class="flex items-center w-full hover relative py-4">
+            <span class="headercolor">歌手:</span>
             <span
-              class="absolute left-0 w-1 h-8 transition"
-              :style="{ top: scrollBarTop + 'px' }"
-              style="background-color: #3a3a59"
+              style="color: #1f2937"
+              class="text-xl ml-3 cursor-pointer singer-color"
+              v-html="singerName"
             ></span>
+            <div
+              class="absolute right-0 w-full bottom_hover"
+              style="height: 3px; bottom: 25%"
+            ></div>
           </div>
-          <div
-            class="flex flex-col overflow-y-scroll relative sliderTrack"
-            style="height: 30rem"
-            @scroll="lyricThrottle"
-            ref="lyricNode"
-          >
-            <play-lycs :musicItemList="[]" />
+          <div class="relative lycs_music">
+            <div
+              class="flex flex-col overflow-y-scroll relative sliderTrack"
+              style="height: 30rem"
+              @scroll="lyricThrottle"
+              ref="lyricNode"
+            >
+              <play-lycs v-if="lycsLists.length > 0" :musicItemList="lycsLists" />
+            </div>
+
+            <div ref="trackNode" class="absolute top-0 right-0 bottom-0 w-1 h-full">
+              <span
+                class="absolute left-0 w-1 h-8 transition"
+                :style="{ top: scrollBarTop + 'px' }"
+                style="background-color: #3a3a59"
+              ></span>
+            </div>
           </div>
-        </div>
-      </div>
+        </el-col>
+      </el-row>
     </el-main>
   </el-container>
 </template>
@@ -55,8 +61,7 @@ import { conversionItem, lyricThrottle } from "../hooks/methods";
 import { lyricNodeRect, clientHeight } from "../hooks/data";
 
 import PlayLycs from "./PLayLycs.vue";
-import BackMark from "./BackMark.vue";
-import { ElContainer, ElMain } from "element-plus";
+import { ElContainer, ElMain, ElRow, ElCol } from "element-plus";
 
 import type { MatchItem } from "../type";
 
@@ -80,20 +85,22 @@ const lyricNode = ref<null | HTMLElement>(null);
 const trackNode = ref<null | HTMLElement>(null);
 const sectionNode = ref<null | HTMLElement>(null);
 const musicItemList = ref<Map<number, any>>(new Map());
+const lycsLists = ref([]);
 
 const trackSliderMaxH = ref(0);
 const sliderH = ref(0);
 
-const trackItemH = computed(() => {
-  return (trackSliderMaxH.value - sliderH.value) / 100;
-});
-
-const newTop = computed(() => {
-  return lyricNodeRect.scrollShiHeight / lyricNodeRect.scrollHeight;
+const weizX = computed(() => {
+  return Number(
+    (
+      trackSliderMaxH.value /
+      (lyricNodeRect.scrollHeight + sliderH.value - trackSliderMaxH.value)
+    ).toFixed(3)
+  );
 });
 
 const scrollBarTop = computed(() => {
-  const y = Math.floor(newTop.value * 100) * trackItemH.value;
+  const y = lyricNodeRect.scrollShiHeight * weizX.value;
   if (useType(y) === "Null") return 0;
   return y;
 });
@@ -102,7 +109,7 @@ function lycSplice(iterator: IterableIterator<RegExpMatchArray>) {
   while (true) {
     const matchItem: { groups: MatchItem } = iterator.next().value;
     if (!matchItem) {
-      return;
+      break;
     }
 
     matchItem.groups.lyc = matchItem.groups.lyc.replace(/(\[.+\])?/, "");
@@ -110,6 +117,8 @@ function lycSplice(iterator: IterableIterator<RegExpMatchArray>) {
     const conMusicItem = conversionItem(matchItem.groups);
     musicItemList.value.set(conMusicItem.playTime, conMusicItem);
   }
+
+  lycsLists.value = [...musicItemList.value.values()];
 }
 
 getLyrics(musicid).then(({ data }) => {
@@ -154,7 +163,7 @@ async function childrenMapNode(childrenList: HTMLElement[]) {
     musicItemList.value.set(nodeid, musicItem);
   }
 
-  setScrollHeight(height);
+  // setScrollHeight(height);
 }
 
 const nickname = computed(() => props.singerName.split("/").join("——"));
@@ -163,6 +172,7 @@ onMounted(() => {
   nextTick().then(() => {
     lyricNodeRect.offsetHeight = lyricNode.value.offsetHeight;
     trackSliderMaxH.value = trackNode.value.clientHeight;
+
     sliderH.value = (trackNode.value.firstChild as HTMLElement).offsetHeight;
 
     function disconnect() {

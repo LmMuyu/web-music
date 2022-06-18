@@ -12,9 +12,8 @@
         :class="isPlayIcon && 'play_icon'"
       >
         <router-link
-          :to="{ path: playitem.topath ?? '/playlist', query: { id: playitem.id } }"
+          :to="{ path: playitem.topath || playitem.path || to, query: routerQuery(playitem) }"
           class="absolute top-0 bottom-0 left-0 right-0 w-full h-full"
-          target="_blank"
           :itemid="playitem.id"
         ></router-link>
         <i v-if="isPlayIcon" class="iconfont iconbofang2"></i>
@@ -48,6 +47,10 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  to: {
+    type: String,
+    default: "/playlist",
+  },
 });
 
 function imgsrc(url: string) {
@@ -56,6 +59,19 @@ function imgsrc(url: string) {
 
   const imgsize = `?param=${xsize}y${ysize}`;
   return url + imgsize;
+}
+
+function routerQuery(item) {
+  if (item?.topath) {
+    return { id: item.id };
+  } else if (item.path) {
+    return {
+      uid: item.id,
+      isself: true,
+    };
+  } else {
+    return { id: item.id };
+  }
 }
 </script>
 <style scoped lang="scss">

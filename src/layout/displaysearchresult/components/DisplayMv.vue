@@ -1,7 +1,7 @@
 <template>
   <div class="betterscoll">
     <BetterScroll :item-len="Infinity" :open-h-render="false">
-      <div class="grid grid-cols-4">
+      <div class="grid grid-cols-4  pt-4 px-6 h-full">
         <CardExhibition
           v-for="(mv, index) in mvdata"
           :key="index"

@@ -20,6 +20,7 @@ const store = createStore<State>({
       unmountList: mitt(),
       navRouterPush: null,
       mainHidden: false,
+      controlAudioCompIf: true,
     };
   },
   getters,

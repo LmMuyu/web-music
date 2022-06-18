@@ -148,16 +148,26 @@ const audioPlayTime = computed(() => {
   return musicTime * 1000;
 });
 
+const controlAudioCompIf = computed(store.getters["getControlAudioCompIf"]);
+
 let tiemr = null;
 let isLeaveSanSecBelow = ref<null | boolean>(null);
 
 function leaveTimeout() {
+  if (!controlAudioCompIf.value) {
+    return;
+  }
+
   tiemr = setTimeout(() => {
     isLeaveSanSecBelow.value = true;
   }, 1500);
 }
 
 function enterAudioActive() {
+  if (!controlAudioCompIf.value) {
+    return;
+  }
+
   isLeaveSanSecBelow.value = false;
   clearTimeout(tiemr);
   tiemr = null;
@@ -176,6 +186,10 @@ function enterAudio() {
 }
 
 function leaveAudio() {
+  if (!controlAudioCompIf) {
+    return;
+  }
+
   if (!islock.value) {
     leaveTimeout();
   }

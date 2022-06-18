@@ -13,4 +13,8 @@ export default {
   getMainHidden(state: State) {
     return () => state.mainHidden;
   },
+
+  getControlAudioCompIf(state: State) {
+    return () => state.controlAudioCompIf;
+  },
 };

@@ -27,6 +27,8 @@ const playListMainInfo = reactive({
 
 const songInfo = computed<musicDetail>(store.getters["playlist/getSongInfo"]);
 
+store.commit("setControlAudioCompIf", false);
+
 watchEffect(() => {
   if (Object.keys(songInfo.value).length > 0) {
     playListMainInfo.backgroundurl = songInfo.value.picUrl;

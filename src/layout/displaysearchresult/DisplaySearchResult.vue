@@ -19,6 +19,7 @@
           @click-refresh="() => selectKeyword(type)"
           :is="componentId"
           :data="searchtype.data"
+          :artistlist="singerLists"
         ></component>
       </AsayncSuspense>
     </ElMain>
@@ -36,17 +37,19 @@ import AsayncSuspense from "../../components/suspense/AsayncSuspense.vue";
 import DisplaySongSearch from "./components/DisplaySongSearch.vue";
 import Loading from "../../components/svgloading/SvgLoading.vue";
 import LoadError from "../../components/loaderror/LoadError.vue";
-import DisplaySinger from "./components/DisplaySinger.vue";
+import SingerArtist from "../user/home/components/HomeArtist.vue";
 import DisplayAlbum from "./components/DisplayAlbum.vue";
 import DisplayMv from "./components/DisplayMv.vue";
 
 import LRU from "../explore/LRUCache";
 import { musicDetail } from "../../utils/musicDetail";
+import { transformArtistData } from "../user/home/hooks/Home";
 
 const route = useRoute();
 const currentPage = ref(1);
 const componentId = shallowRef(Loading);
 const hidden = ref(false);
+const liststype = new Map();
 
 const searchtype = reactive({
   data: [],
@@ -59,6 +62,7 @@ let requestType = null;
 const keyword = ref(route.query.keyword as string);
 const type = ref(route.query.type as string);
 const router = useRouter();
+const singerLists = ref([]);
 let frist = false;
 
 const typekeyword = {
@@ -72,6 +76,12 @@ const typekeyword = {
 };
 
 //工具函数
+
+const findTypeKey = (map: Map<string, string>, type: string) =>
+  map.has(type) ? map.get(type) : -1;
+const setTypeKey = (map: Map<string, string>, type: string, value: string) => map.set(type, value);
+const delTypeKey = (map: Map<string, string>, type: string) => map.has(type) && map.delete(type);
+
 class hiddenComps {
   private comps: any[];
   constructor() {
@@ -121,9 +131,9 @@ function musicSongs(data: any[]) {
 
 function musicSinger(data: any[]) {
   searchtype.type = "歌手";
-  searchtype.data = data;
-
-  componentId.value = DisplaySinger;
+  singerLists.value = data.map((singer) => transformArtistData(singer));
+  console.log(singerLists.value);
+  componentId.value = SingerArtist;
 }
 
 function musicAlbum(data: any[]) {
@@ -157,23 +167,32 @@ function selectKeyword(selecttype: string) {
   const key = selecttype + "_" + currentPage.value;
   requestType = selecttype;
 
-  const data = lru.get(key);
-  if (data !== -1) {
-    searchResult({ data }, true);
+  const lrudata = lru.get(key);
+
+  routerPush(selecttype);
+  if (lrudata !== -1) {
+    searchResult(lrudata.value, true);
     return;
   }
 
-  routerPush(selecttype);
+  delTypeKey(liststype, requestType);
   componentId.value = Loading;
-  cloudSearch(keyword.value, classift).then(searchResult);
+  cloudSearch(keyword.value, classift).then((res) => searchResult(res.data.result));
 }
 
 selectKeyword(type.value);
 
-async function searchResult(res: any, isget?: boolean) {
+async function searchResult(resultdata: any[], isget?: boolean) {
   try {
-    const resultdata = res.data.result;
-    const lists = searchResultLists(requestType, resultdata);
+    const litstype = findTypeKey(liststype, requestType);
+    const lists = searchResultLists(
+      requestType,
+      litstype === -1
+        ? resultdata
+        : {
+            [litstype]: resultdata,
+          }
+    );
 
     if (!lists) {
       throw new Error("lists:为undefined");
@@ -197,20 +216,24 @@ function searchResultLists(type: string, resultdata: Object) {
     case "单曲":
       list = resultdata["songs"];
       musicSongs(list);
-
+      setTypeKey(liststype, requestType, "songs");
       break;
     case "歌手":
       list = resultdata["artists"];
       musicSinger(list);
+      setTypeKey(liststype, requestType, "artists");
       break;
     case "专辑":
       list = resultdata["albums"];
       countpages.value = resultdata["albumCount"];
+      setTypeKey(liststype, requestType, "albums");
+
       musicAlbum(list);
       break;
     case "MV":
       list = resultdata["mvs"];
       countpages.value = resultdata["mvCount"];
+      setTypeKey(liststype, requestType, "mvs");
       musicMv(list);
       break;
     default:
@@ -225,14 +248,14 @@ onUnmounted(() => {
   stopWatchComp();
 });
 
-onBeforeRouteLeave(() => {
-  componentId.value = Loading;
+onBeforeRouteLeave((grouproute) => {
+  if (grouproute.path === route.path) {
+    componentId.value = Loading;
+  }
 });
 
 onBeforeRouteUpdate((route) => {
   const query = route.query;
-  console.log(query);
-
   type.value = query.type as string;
   keyword.value = query.keyword as string;
 });

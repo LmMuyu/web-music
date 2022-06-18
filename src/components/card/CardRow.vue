@@ -6,12 +6,12 @@
         :playitem="transformPlayitem(playitem)"
         v-if="!topath"
       />
-      <router-link v-else :to="topath">
-        <play-col-item
-          :is-play-icon="playitem?.isPlayIcon ?? true"
-          :playitem="transformPlayitem(playitem)"
-        />
-      </router-link>
+      <play-col-item
+        v-else
+        :is-play-icon="playitem?.isPlayIcon ?? true"
+        :playitem="transformPlayitem(playitem)"
+        :to="topath"
+      />
     </div>
   </div>
 </template>

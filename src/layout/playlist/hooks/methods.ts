@@ -1,9 +1,8 @@
 import { distance, gainValue, lyricNodeRect, clientHeight, index } from "./data";
 import { promptbox } from "../../../components/promptBox";
-import { reactive, Ref } from "@vue/reactivity";
+import { Ref } from "@vue/reactivity";
 import { userRecord } from "../../../api/playList";
 
-import type { UserInfo } from "../../../store/type";
 import type { MatchItem, MatchItemList } from "../type";
 import { useStorage } from "../../../utils/useStorage";
 import { throttle } from "../../../utils/throttle";
@@ -24,13 +23,6 @@ export function conversionItem(matchItem: MatchItem): MatchItem {
   };
 }
 
-const position = { y: 0 };
-const point = { y: 0 };
-const height = reactive({
-  scrollHeight: 0,
-  offsetHeight: 0,
-});
-
 export function _setScrollHeight(scrollH: number) {
   lyricNodeRect.scrollShiHeight = scrollH;
 }
@@ -40,22 +32,7 @@ export const lyricThrottle = throttle(lyricScroll, 16.6);
 export function lyricScroll(event: Event) {
   const el = event.target as HTMLElement;
   const disty = el.scrollTop;
-
-  const delety = disty - point.y;
-  if (delety > 0 && disty < point.y) {
-    return;
-  }
-
-  point.y = disty;
-
-  const newY = ((point.y + delety) / 2) * 0.01;
-  newMovePos(newY);
   _setScrollHeight(disty);
-}
-
-function newMovePos(newY: number) {
-  distance.value = newY;
-  position.y = newY;
 }
 
 function Gain(ctx: AudioContext, gainvalue: Ref<number>): Promise<GainNode> {
@@ -111,7 +88,7 @@ export const Ability = () => {
 };
 
 export async function recordData(record: string, recordData: Ref<Object>) {
-  const recording: UserInfo = JSON.parse(record);
+  const recording = JSON.parse(record);
 
   const result = await userRecord(recording.userID, "0");
 

@@ -41,8 +41,14 @@ export default {
     });
   },
 
+  pubMitt(state: State, playload) {},
+
   subUnmountList(state: State, subtype: string, callback: Function, ...args: any) {
     state.unmountList.emit(subtype, [callback, args]);
+  },
+
+  subMitt(state: State, ...args: any) {
+    state.unmountList.emit(args[0], args[1]);
   },
 
   navRouterPushRun(state: State) {
@@ -59,5 +65,9 @@ export default {
 
   setMainHidden(state: State, playload) {
     state.mainHidden = playload;
+  },
+
+  setControlAudioCompIf(state: State, playload: boolean) {
+    state.controlAudioCompIf = playload;
   },
 };

@@ -52,6 +52,7 @@ import HomeLLikeMusic from "./components/HomeLLikeMusic.vue";
 import HomeHeadSelect from "./components/HomeHeadSelect.vue";
 import HomeLLinkeLists from "./components/HomeLLinkeLists.vue";
 import HomeCloudDisk from "./components/HomeCloudDisk.vue";
+import { transformArtistData } from "./hooks/Home";
 
 const route = useRoute();
 const store = useStore();
@@ -164,25 +165,6 @@ function loginInfo(): Promise<{
     console.error("状态码:" + error.data.status);
   }
 })();
-
-function transformArtistData(artist: any) {
-  return {
-    coverImgUrl: artist.picUrl,
-    name: artist.name,
-    path: "/user/home",
-    isPlayIcon: false,
-    id: artist.id,
-    style: {
-      name: `
-      font-weight:bold;
-      color:#606266;
-      font-size:18px;
-      `,
-    },
-    xsize: 512,
-    ysize: 512,
-  };
-}
 </script>
 <style scoped lang="scss">
 .flexdir {

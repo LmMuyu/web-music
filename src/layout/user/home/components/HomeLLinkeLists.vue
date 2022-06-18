@@ -18,7 +18,7 @@
 </template>
 <script setup lang="tsx">
 import { ElImage } from "element-plus";
-import { PropType, watchEffect } from "vue";
+import { PropType } from "vue";
 
 const props = defineProps({
   linkeLists: {
