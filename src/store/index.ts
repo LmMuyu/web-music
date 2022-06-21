@@ -21,6 +21,7 @@ const store = createStore<State>({
       navRouterPush: null,
       mainHidden: false,
       controlAudioCompIf: true,
+      scrollMap: new Map(),
     };
   },
   getters,

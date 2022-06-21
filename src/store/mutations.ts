@@ -1,4 +1,4 @@
-import type { State } from "./type";
+import type { PlayAudioInfo, State } from "./type";
 import type { MusicDetailOption } from "../utils/musicDetail";
 import type { RouteLocationNormalized } from "vue-router";
 
@@ -41,13 +41,16 @@ export default {
     });
   },
 
-  pubMitt(state: State, playload) {},
+  pubMitt(state: State, playload) {
+    state.unmountList.on(playload[0], playload[1]);
+    console.log(state.unmountList.all);
+  },
 
   subUnmountList(state: State, subtype: string, callback: Function, ...args: any) {
     state.unmountList.emit(subtype, [callback, args]);
   },
 
-  subMitt(state: State, ...args: any) {
+  subMitt(state: State, args: any) {
     state.unmountList.emit(args[0], args[1]);
   },
 
@@ -69,5 +72,9 @@ export default {
 
   setControlAudioCompIf(state: State, playload: boolean) {
     state.controlAudioCompIf = playload;
+  },
+
+  setPathScrollMap(state: State, playload: [string, Record<"x" | "y", number>]) {
+    state.scrollMap.set(playload[0], playload[1]);
   },
 };

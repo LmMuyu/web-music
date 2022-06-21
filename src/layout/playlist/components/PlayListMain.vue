@@ -33,7 +33,12 @@
               @scroll="lyricThrottle"
               ref="lyricNode"
             >
-              <play-lycs v-if="lycsLists.length > 0" :musicItemList="lycsLists" />
+              <play-lycs
+                v-if="lycsLists.length > 0"
+                @transiateYPos="transiateYPos"
+                :musicItemList="lycsLists"
+                :slideScrollTop="sliderH"
+              />
             </div>
 
             <div ref="trackNode" class="absolute top-0 right-0 bottom-0 w-1 h-full">
@@ -53,7 +58,7 @@
 import fastdom from "fastdom";
 import { onMounted } from "vue";
 import { useRoute } from "vue-router";
-import { computed, nextTick, ref, shallowRef } from "@vue/runtime-core";
+import { computed, nextTick, ref, shallowRef, watchEffect } from "@vue/runtime-core";
 
 import { useType } from "../../../hooks";
 import { getLyrics } from "../../../api/playList";
@@ -64,6 +69,7 @@ import PlayLycs from "./PLayLycs.vue";
 import { ElContainer, ElMain, ElRow, ElCol } from "element-plus";
 
 import type { MatchItem } from "../type";
+import { useStore } from "vuex";
 
 const props = defineProps({
   musicName: {
@@ -80,12 +86,13 @@ const props = defineProps({
   },
 });
 
-const musicid = useRoute().query.id as string;
+let musicid = useRoute().query.id as string;
 const lyricNode = ref<null | HTMLElement>(null);
 const trackNode = ref<null | HTMLElement>(null);
 const sectionNode = ref<null | HTMLElement>(null);
 const musicItemList = ref<Map<number, any>>(new Map());
 const lycsLists = ref([]);
+const store = useStore();
 
 const trackSliderMaxH = ref(0);
 const sliderH = ref(0);
@@ -121,17 +128,28 @@ function lycSplice(iterator: IterableIterator<RegExpMatchArray>) {
   lycsLists.value = [...musicItemList.value.values()];
 }
 
+function compareMusic() {
+  const songId = computed(store.getters["playlist/getSongId"]);
+
+  const stop = watchEffect(() => {
+    if (songId.value === 0) {
+      store.commit("playlist/setSongId", musicid);
+
+      Promise.resolve().then(() => {
+        stop();
+      });
+    }
+  });
+}
+
+compareMusic();
+
 getLyrics(musicid).then(({ data }) => {
   const lyrics = data.lrc.lyric as string;
   const lrcReg = /\[(?<playTime>.+)\]\s?(?<lyc>.+)/g;
-
   const iterator = lyrics.matchAll(lrcReg);
   lycSplice(iterator);
 });
-
-function setScrollHeight(height: number) {
-  lyricNodeRect.scrollHeight = height - lyricNodeRect.offsetHeight;
-}
 
 async function childrenMapNode(childrenList: HTMLElement[]) {
   const len = childrenList ? childrenList.length : 0;
@@ -164,6 +182,14 @@ async function childrenMapNode(childrenList: HTMLElement[]) {
   }
 
   // setScrollHeight(height);
+}
+
+function transiateYPos(disty: number) {
+  console.log(disty);
+
+  if (disty != undefined) {
+    lyricNodeRect.scrollShiHeight = disty;
+  }
 }
 
 const nickname = computed(() => props.singerName.split("/").join("——"));

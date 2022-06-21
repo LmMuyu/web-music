@@ -59,16 +59,25 @@ import { distance, lyricNodeRect } from "../hooks/data";
 import FontIcon from "../../../components/fonticon/FontIcon.vue";
 
 import type { MatchItem } from "../type";
+import { useStore } from "vuex";
+
+const ctxEmit = defineEmits(["transiateYPos"]);
 
 const props = defineProps({
   musicItemList: {
     type: Array as PropType<MatchItem[]>,
     required: true,
   },
+  slideScrollTop: {
+    type: Number,
+    required: true,
+  },
 });
 
 const showTimeIndex = ref(null);
 const scrollNode = ref<HTMLElement | null>(null);
+const store = useStore();
+let frist = 0;
 
 function showCurTimeEvent(e: Event) {
   const target = e.target as HTMLElement;
@@ -76,19 +85,25 @@ function showCurTimeEvent(e: Event) {
   showTimeIndex.value = curIndex;
 }
 
-function distanceTranslateY() {
-  setInterval(() => {
-    distance.value += 44;
-  }, 1000);
+function lyctime(lyctime: number) {
+  console.log(lyctime);
+
+  const maxTransiateYHeight = lyricNodeRect.scrollHeight - props.slideScrollTop;
+  const trnsiateY = lyctime * frist;
+  if (maxTransiateYHeight > trnsiateY) {
+    return;
+  }
+
+  distance.value = trnsiateY;
+  ctxEmit("transiateYPos", trnsiateY);
 }
 
-// distanceTranslateY()
+store.commit("pubMitt", ["seek_time", lyctime]);
 
 function selectLycs(e: Event) {
   const target = e.target as HTMLElement;
 
   if (target.hasAttribute("lycs-key")) {
-  
   } else {
     console.log("找不到lycs-key");
   }
@@ -103,7 +118,8 @@ const musicTextContainerStyle = computed(() => {
 onMounted(async () => {
   await nextTick();
   lyricNodeRect.scrollHeight = scrollNode.value.scrollHeight;
-  console.log("PLayLycs" + lyricNodeRect.scrollHeight);
+  // console.log("PLayLycs" + lyricNodeRect.scrollHeight);
+  frist = scrollNode.value.children[0].clientHeight;
 });
 </script>
 <style scoped lang="scss">

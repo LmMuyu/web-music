@@ -13,6 +13,7 @@ export interface State {
   navRouterPush: () => any | null;
   mainHidden: boolean;
   controlAudioCompIf: boolean;
+  scrollMap: Map<string, Record<"x" | "y", number>>;
 }
 
 export interface ALLTOKEN {
@@ -31,4 +32,8 @@ export interface USERDATA {
   nickname: string;
   avatarUrl: string;
   userinfoData?: Record<string, any>;
+}
+
+export interface PlayAudioInfo {
+  mid: number;
 }

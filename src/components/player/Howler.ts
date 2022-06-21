@@ -1,5 +1,6 @@
 import { ComponentInternalInstance, Ref, ref, watchEffect, WatchStopHandle } from "vue";
 import { getLyrics, getMusicDetail } from "../../api/playList";
+import store from "../../store";
 import filterDate from "../../utils/filterDate";
 import { isType } from "../../utils/methods";
 import { musicDetail } from "../../utils/musicDetail";
@@ -84,10 +85,6 @@ const Howl = (options: HOWLOPTIONS, ctx: compinstance) => {
       if (!musicdetail.id) return;
 
       musicFoundation(musicdetail);
-      // if (islogin) {
-      //   how.setSrc(fetchServeBlobData(id));
-      // } else {
-      // }
       how.setSrc(createSrc(musicdetail.id));
       resolve(true);
       options?.currentIndexBackFn(index, musicdetail.id);
@@ -149,19 +146,20 @@ const Howl = (options: HOWLOPTIONS, ctx: compinstance) => {
 
       documentTitle(twoSearch(time, lyricsmap));
       playtime.value = time ? time : playtime.value;
-      // console.log("next:" + playtime.value);
     }, 1000);
   }
 
-  function documentTitle(lrctime: number) {
+  function documentTitle(lycTimeList: [number, number]) {
     // console.log(lrctime);
-    const lrc = lyricsmap.get(lrctime);
+    store.commit("subMitt", ["seek_time", lycTimeList[1]]);
+    const lrc = lyricsmap.get(lycTimeList[0]);
+    console.log(lrc);
 
     if (lrc) {
       const musicdetail = options.musicinfoRef.value;
       document.title = `${musicdetail.name}-${lrc}`;
     } else {
-      console.warn(lrctime + ":" + lrc);
+      console.warn(lycTimeList + ":" + lrc);
     }
   }
 
@@ -256,7 +254,6 @@ const Howl = (options: HOWLOPTIONS, ctx: compinstance) => {
 
   console.log(import.meta.env.MODE);
   function setmaplyrics(lrc: string) {
-
     const lrcworker = new Worker("src/worker/lrc.js");
     lyricsmap.clear();
 

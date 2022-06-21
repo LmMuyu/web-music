@@ -62,7 +62,6 @@
 </template>
 <script setup lang="ts">
 import {
-  reactive,
   ref,
   nextTick,
   toRef,
@@ -81,7 +80,7 @@ import { useLocalStorage } from "../../utils/useLocalStorage";
 import { musicDetail } from "../../utils/musicDetail";
 import { debounce } from "../../utils/debounce";
 import dexieFn from "../../common/dexie";
-import { musicPlayEndZero, sliderstyle } from "./methods";
+import { musicPlayEndZero, sliderstyle, watchMusicinfo } from "./methods";
 import AudioHow from "./Howler";
 
 //@ts-ignore
@@ -113,6 +112,8 @@ const MAX_LIMIT = COMMENT_LEN;
 const musicinfo = ref<musicDetail>();
 const islock = ref(false);
 const ctx = getCurrentInstance();
+let tiemr = null;
+let isLeaveSanSecBelow = ref<null | boolean>(null);
 
 const VideoCommentModule = new VideoComments("music");
 
@@ -150,8 +151,11 @@ const audioPlayTime = computed(() => {
 
 const controlAudioCompIf = computed(store.getters["getControlAudioCompIf"]);
 
-let tiemr = null;
-let isLeaveSanSecBelow = ref<null | boolean>(null);
+watchEffect(() => {
+  if (controlAudioCompIf.value === false) {
+    isLeaveSanSecBelow.value = controlAudioCompIf.value;
+  }
+});
 
 function leaveTimeout() {
   if (!controlAudioCompIf.value) {

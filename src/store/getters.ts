@@ -17,4 +17,8 @@ export default {
   getControlAudioCompIf(state: State) {
     return () => state.controlAudioCompIf;
   },
+
+  getPathScrollMap(state: State) {
+    return state.scrollMap;
+  },
 };

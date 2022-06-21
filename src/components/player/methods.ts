@@ -81,30 +81,42 @@ function spliceMusicLits(songlists: musicDetail[], first: musicDetail) {
   return indexDBMusicLists;
 }
 
-export function twoSearch(value: number, lyricsmap: Map<number, string>) {
+export function twoSearch(value: number, lyricsmap: Map<number, string>): [number, number] {
   const showTimelists = [...lyricsmap.keys()];
 
   let start = 0;
   let end = showTimelists.length - 1;
   let showtime = 0;
+  let path = "";
 
   while (start <= end) {
     const mid = Math.floor((start + end) / 2);
     const listvalue = showTimelists[mid];
 
     if (listvalue === value) {
-      return value;
+      return [value, mid];
     } else if (value > listvalue) {
       start = mid + 1;
+      path = "start";
     } else {
       end = mid - 1;
+      path = "end";
     }
 
     showtime = listvalue;
   }
 
+  if (start === end) {
+    if (path === "start") {
+      return [showTimelists[start - 1], start - 1];
+    } else {
+      return [showTimelists[end + 1], end + 1];
+    }
+  }
+
   const index = showTimelists.indexOf(showtime);
-  return showTimelists[index > 0 ? index - 1 : index];
+  const timeindex = index > 0 ? index - 1 : index;
+  return [showTimelists[timeindex], timeindex];
 }
 
 export function watchMusicinfo(watchSources: Ref<musicDetail>, maxTime: Ref<number>) {
