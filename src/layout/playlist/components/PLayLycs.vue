@@ -13,7 +13,7 @@
       class="flex items-center py-3 relative"
       :lycs-key="musicItem.indexId"
     >
-      <div class="flex items-center">
+      <div class="flex items-center w-full relative">
         <transition
           v-if="showTimeIndex == index"
           enter-active-class="active"
@@ -21,20 +21,22 @@
           leave-active-class="active"
           leave-to-class="leaveTo"
         >
-          <div class="flex items-center transform -translate-x-full absolute left-0">
+          <div class="flex items-center absolute left-0">
             <span class="ml-4 text-sm">{{ musicItem.originTime }}</span>
             <div class="left_line"></div>
           </div>
         </transition>
-        <span
-          class="text-sm text-left cursor-pointer whitespace-nowrap text_color"
-          :lycplaytime="musicItem.originTime"
-          :node_id="musicItem.playTime"
-          :lycs-key="musicItem.indexId"
-          :keyid="index"
-        >
-          {{ musicItem.lyc }}
-        </span>
+        <div class="flex justify-center w-full">
+          <span
+            class="text-sm text-left cursor-pointer whitespace-nowrap text_color"
+            :lycplaytime="musicItem.originTime"
+            :node_id="musicItem.playTime"
+            :lycs-key="musicItem.indexId"
+            :keyid="index"
+          >
+            {{ musicItem.lyc }}
+          </span>
+        </div>
         <transition
           v-if="showTimeIndex == index"
           enter-active-class="active"
@@ -42,7 +44,7 @@
           leave-active-class="active"
           leave-to-class="leaveTo"
         >
-          <div class="flex items-center">
+          <div class="flex items-center absolute right-0">
             <div class="right_line"></div>
             <font-icon size="16" icon="iconmore"></font-icon>
           </div>
@@ -86,7 +88,7 @@ function showCurTimeEvent(e: Event) {
 }
 
 function lyctime(lyctime: number) {
-  console.log(lyctime);
+  // console.log(lyctime);
 
   const maxTransiateYHeight = lyricNodeRect.scrollHeight - props.slideScrollTop;
   const trnsiateY = lyctime * frist;
@@ -124,7 +126,7 @@ onMounted(async () => {
 </script>
 <style scoped lang="scss">
 @mixin LineBorder() {
-  width: 20px;
+  width: 100px;
   height: 0;
   border: 1px solid #3a3a59;
   background-image: linear-gradient(left);
@@ -146,8 +148,12 @@ div {
   opacity: 0;
 }
 
+.text_color {
+  color: #606266;
+}
+
 .text_color:hover {
-  color: #3a3a59;
+  color: #000;
 }
 
 .left_line {

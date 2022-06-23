@@ -10,22 +10,31 @@
     ref="sectionNode"
     class="flex h-full relative"
   >
-    <el-main class="w-full flex drop_filter">
+    <div class="drop_filter"></div>
+    <el-header class="flex flex-col justify-center items-center header">
+      <div v-if="ifhidden">
+        <span class="text-xl py-4 cursor-pointer z-10" style="color: #303133">
+          {{ musicName }}
+        </span>
+        <div class="flex items-center justify-center transform-gpu">
+          <span style="color: #1f2937" v-html="singerName" class="text-sm z-10"></span>
+          <span> - </span>
+          <span style="color: #1f2937" class="text-sm"> {{ musicName }} </span>
+        </div>
+      </div>
+
+      <transition
+        enterFromClass="musicname_center_from"
+        enterToClass="musicname_center_to"
+        enterActiveClass="musicname_center_active"
+      >
+        <span v-if="!ifhidden" style="color: #303133" class="text-sm z-10">{{ musicName }}</span>
+      </transition>
+    </el-header>
+    <el-main class="w-full flex">
       <el-row>
-        <el-col :span="14"></el-col>
+        <el-col :span="14"> </el-col>
         <el-col :span="10">
-          <div class="flex items-center w-full hover relative py-4">
-            <span class="headercolor">歌手:</span>
-            <span
-              style="color: #1f2937"
-              class="text-xl ml-3 cursor-pointer singer-color"
-              v-html="singerName"
-            ></span>
-            <div
-              class="absolute right-0 w-full bottom_hover"
-              style="height: 3px; bottom: 25%"
-            ></div>
-          </div>
           <div class="relative lycs_music">
             <div
               class="flex flex-col overflow-y-scroll relative sliderTrack"
@@ -51,25 +60,41 @@
           </div>
         </el-col>
       </el-row>
+      <div class="w-full flex">
+        <div class="flex-1"></div>
+        <div style="flex: 2">
+          <div class="w-full h-32"></div>
+          <div ref="comments">
+            <ContainerComments :mid="Number(musicid)" />
+          </div>
+        </div>
+        <div class="flex-1"></div>
+      </div>
     </el-main>
   </el-container>
 </template>
 <script setup lang="ts">
 import fastdom from "fastdom";
+import { useStore } from "vuex";
 import { onMounted } from "vue";
 import { useRoute } from "vue-router";
-import { computed, nextTick, ref, shallowRef, watchEffect } from "@vue/runtime-core";
+import { computed, nextTick, onUnmounted, ref, shallowRef, watchEffect } from "@vue/runtime-core";
 
 import { useType } from "../../../hooks";
 import { getLyrics } from "../../../api/playList";
 import { conversionItem, lyricThrottle } from "../hooks/methods";
 import { lyricNodeRect, clientHeight } from "../hooks/data";
 
+import { ElContainer, ElMain, ElRow, ElCol, ElHeader } from "element-plus";
 import PlayLycs from "./PLayLycs.vue";
-import { ElContainer, ElMain, ElRow, ElCol } from "element-plus";
 
 import type { MatchItem } from "../type";
-import { useStore } from "vuex";
+
+import { createAsComponent } from "../../../utils/createAsComponent";
+
+const ContainerComments = createAsComponent(
+  () => import("./PlayListHistory/components/Comments.vue")
+);
 
 const props = defineProps({
   musicName: {
@@ -93,6 +118,9 @@ const sectionNode = ref<null | HTMLElement>(null);
 const musicItemList = ref<Map<number, any>>(new Map());
 const lycsLists = ref([]);
 const store = useStore();
+const ifhidden = ref(true);
+const comments = ref(null);
+const observerlists = [];
 
 const trackSliderMaxH = ref(0);
 const sliderH = ref(0);
@@ -192,9 +220,20 @@ function transiateYPos(disty: number) {
   }
 }
 
+function watchCommentsTree(commentnode: HTMLElement) {
+  const mutation = new IntersectionObserver((mutation) => {
+    const node = mutation[0];
+    ifhidden.value = !node.isIntersecting;
+  });
+
+  mutation.observe(commentnode);
+
+  observerlists.push(mutation);
+}
+
 const nickname = computed(() => props.singerName.split("/").join("——"));
 
-onMounted(() => {
+onMounted(async () => {
   nextTick().then(() => {
     lyricNodeRect.offsetHeight = lyricNode.value.offsetHeight;
     trackSliderMaxH.value = trackNode.value.clientHeight;
@@ -216,6 +255,15 @@ onMounted(() => {
 
     mutation.observe(lyricNode.value, { attributes: true, childList: true, subtree: true });
   });
+
+  await nextTick();
+  watchCommentsTree(comments.value);
+});
+
+onUnmounted(() => {
+  observerlists.forEach((observe) => {
+    console.log(observe.disconnect());
+  });
 });
 </script>
 
@@ -234,7 +282,31 @@ section {
   }
 
   & > .drop_filter {
-    backdrop-filter: blur(30px) saturate(180%);
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    line-height: 2;
+    margin: auto;
+    border-radius: 5px;
+    background: rgb(245, 247, 250, 0.9);
+    box-shadow: 3px 3px 6px 3px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      filter: blur(20px);
+      z-index: -1;
+      margin: -30px;
+    }
   }
 }
 
@@ -264,5 +336,17 @@ section {
   border-radius: 8px 8px 8px 8px;
   -moz-border-radius: 8px 8px 8px 8px;
   -webkit-border-radius: 8px 8px 8px 8px;
+}
+
+.musicname_center_from {
+  transform: translate3d(0, 40px, 10px);
+}
+
+.musicname_center_to {
+  transform: translate3d(0, 0, 0);
+}
+
+.musicname_center_active {
+  transition: all 0.5s ease;
 }
 </style>

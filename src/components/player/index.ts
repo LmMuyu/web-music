@@ -1,7 +1,6 @@
 import { reactive, ref } from "@vue/runtime-dom";
-import { Ref } from "vue";
+import { Ref, watchEffect } from "vue";
 import { commentMusic } from "../../api/playList";
-import { isType } from "../../utils/methods";
 
 type CommentsType = "music" | "mv";
 
@@ -15,7 +14,7 @@ export class VideoComments {
   mid: number;
   comments: Ref<any[]>;
   type: CommentsType;
-  commentMusicThen: ({ config, data: comment }: { config: any; data: any }) => void;
+  commentMusicThen: Ref<({ config, data: comment }: { config: any; data: any }) => void>;
   constructor(type: CommentsType) {
     this.currPage = 1;
     this.initmap = false;
@@ -26,7 +25,7 @@ export class VideoComments {
     this.type = type;
 
     this.playListHistoryOptions = reactive({ total: 0, time: 0 });
-    this.commentMusicThen = this.commentMusicThenFn;
+    this.commentMusicThen = ref(this.commentMusicThenFn);
   }
 
   currentChange(index: number) {
@@ -34,7 +33,7 @@ export class VideoComments {
       return;
     }
     commentMusic(this.mid, index, this.timeTable.get(index - 1), null, this.type).then(
-      this.commentMusicThen
+      this.commentMusicThen.value.bind(this)
     );
   }
 
@@ -44,7 +43,7 @@ export class VideoComments {
     }
 
     commentMusic(this.mid, index, this.timeTable.get(index - 1) ?? 0, null, this.type).then(
-      this.commentMusicThen
+      this.commentMusicThen.value.bind(this)
     );
   }
 
@@ -72,11 +71,14 @@ export class VideoComments {
     const data = await commentMusic(mid, 1, 0, this.MAX_LIMIT, this.type);
     this.mid = mid;
 
-    return Promise.resolve().then(() => {
-      if (data) {
-        isType(this.commentMusicThen) === "Function" && this.commentMusicThen(data);
-        return this.comments;
-      }
+    return new Promise((resolve) => {
+      watchEffect(() => {
+        if (this.commentMusicThen.value) {
+          console.log("coomments");
+          this.commentMusicThen.value.call(this, data);
+          resolve(this.comments);
+        }
+      });
     });
   }
 }

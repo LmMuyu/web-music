@@ -9,7 +9,7 @@
         <Dialog ref="dialog" />
       </div>
     </ElHeader>
-    <el-main v-if="loading" class="w-full h-full flex justify-center items-center">
+    <el-main v-if="comploading" class="w-full h-full flex justify-center items-center">
       <loading></loading>
     </el-main>
     <el-main v-else class="relative h-full parser">
@@ -23,14 +23,14 @@
       </BetterScroll>
       <div v-else>
         <component
-          v-for="(item, index) in data"
+          v-for="(item, index) in unref(data)"
           :key="index"
           :scopedData="item"
           :is="selectComp"
         ></component>
       </div>
     </el-main>
-    <ElFooter v-if="showfooter" class="flex items-start">
+    <ElFooter v-if="showfooter" class="flex items-center justify-center">
       <el-pagination
         ref="paging"
         v-model:currentPage="curPage"
@@ -38,9 +38,8 @@
         @next-click="on['next-click']"
         @prev-click="on['prev-click']"
         :page-size="size"
-        :pager-count="11"
+        :total="totalpage"
         layout="prev, pager, next"
-        :total="total"
         class="flex justify-center"
       ></el-pagination>
     </ElFooter>
@@ -48,7 +47,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref, PropType, nextTick, onMounted, onUnmounted } from "@vue/runtime-core";
+import {
+  ref,
+  PropType,
+  nextTick,
+  onMounted,
+  onUnmounted,
+  watch,
+  unref,
+  Ref,
+  watchEffect,
+} from "@vue/runtime-core";
 
 import { ElContainer, ElHeader, ElMain, ElFooter, ElButton, ElPagination } from "element-plus";
 import BetterScroll from "../../../../../components/betterscroll/BetterScroll.vue";
@@ -68,7 +77,7 @@ const props = defineProps({
     default: true,
   },
   data: {
-    type: Array,
+    type: Array as unknown as PropType<Ref<any[]>>,
     required: true,
   },
   title: {
@@ -76,7 +85,7 @@ const props = defineProps({
     default: "历史记录",
   },
   compId: {
-    type: String as unknown as PropType<COMP.Comment | COMP.History>,
+    type: String as unknown as PropType<"History" | "Comment">,
     required: true,
   },
   size: {
@@ -89,14 +98,14 @@ const props = defineProps({
   },
   loading: {
     type: Boolean,
-    required: true,
+    default: true,
   },
   on: {
     type: Object as PropType<any>,
     default: () => ({
-      "prev-click": () => {},
-      "next-click": () => {},
-      "current-change": () => {},
+      "prev-click": (index: number) => {},
+      "next-click": (index: number) => {},
+      "current-change": (index: number) => {},
     }),
   },
 });
@@ -107,6 +116,8 @@ const selectComp = ref<typeof CommentItem | typeof HistoryItem>(CommentItem);
 const showfooter = ref(false);
 const paging = ref<typeof ElPagination | null>(null);
 let muObserve: MutationObserver | null;
+const comploading = ref(props.loading);
+const totalpage = ref(1);
 
 function switchComp(compid: string) {
   if (compid === COMP.Comment) {
@@ -186,6 +197,21 @@ function setPagerClass() {
     childList: true,
   });
 }
+
+function watchData() {
+  const stop = watch(props.data, () => {
+    comploading.value = false;
+    Promise.resolve().then(stop);
+  });
+}
+
+watchData();
+
+watchEffect(() => {
+  if (props.total) {
+    totalpage.value = props.total;
+  }
+});
 
 onMounted(() => {
   nextTick(() => {

@@ -22,12 +22,7 @@ export default function CommentItem(props: PROPSTYPE) {
     return (
       <div class="flex flex-col">
         <div class="w-full">
-          <div
-            style={{
-              backgroundColor: "#FFFFE0",
-            }}
-            class="py-2"
-          >
+          <div class="my-2" style="background-color: #EBEEF5">
             {beRepliedList(scopedData.beReplied)}
           </div>
         </div>
@@ -43,28 +38,36 @@ export default function CommentItem(props: PROPSTYPE) {
             <div class={"relative"}>
               <ElAvatar src={scopedData.user.avatarUrl} size={"medium"}></ElAvatar>
               <router-link
-                to={{ path: "/user/home", query: { uid: scopedData.user.userId } }}
+                to={{ path: "/user/home", query: { uid: scopedData.user.userId, isself: true } }}
                 class={"absolute w-full h-full left-0 top-0"}
               ></router-link>
             </div>
           </ElCol>
         )}
-        <ElCol class="text-sm w-full" span={isBeRepliedComp ? 24 : 18}>
+        <ElCol
+          class={(isBeRepliedComp ? "p-2" : "") + "text-sm w-full "}
+          span={isBeRepliedComp ? 24 : 18}
+        >
           <div>
             <router-link
               class={"bottom_line"}
-              to={{ path: "/user/home", query: { uid: scopedData.user.userId } }}
+              to={{ path: "/user/home", query: { uid: scopedData.user.userId, isself: true } }}
+              style={{ color: isBeRepliedComp && "#409EFF" }}
             >
-              {scopedData.user.nickname}：
+              {(isBeRepliedComp ? "@" : "") + scopedData.user.nickname}：
             </router-link>
-            <span style="color:#4F4F4F;">{scopedData.content}</span>
+            <span style="color:#4F4F4F;" class="text-sm">
+              {scopedData.content}
+            </span>
           </div>
           {scopedData.beReplied && scopedData.beReplied.length > 0 && (
             <div>{<ChildBeReplied />}</div>
           )}
-          <div class="py-2">
-            <span class="text-xs">{scopedData.timeStr}</span>
-          </div>
+          {!isBeRepliedComp && (
+            <div class="py-2">
+              <span class="text-xs">{scopedData.timeStr}</span>
+            </div>
+          )}
         </ElCol>
       </ElRow>
     </>

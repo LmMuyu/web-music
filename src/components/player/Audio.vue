@@ -35,11 +35,11 @@
               </el-slider>
             </div>
           </div>
-          <div @click="openRightDrawer" class="flex items-center px-4">
+          <div @click="() => {}" class="flex items-center px-4">
             <font-icon icon="iconindent" size="24"></font-icon>
           </div>
           <div class="px-4">
-            <font-icon @click.captrue="openCommentList" icon="iconpinglun_huabanfuben" size="24">
+            <font-icon @click.captrue="() => {}" icon="iconpinglun_huabanfuben" size="24">
             </font-icon>
           </div>
           <div class="px-4">
@@ -80,7 +80,7 @@ import { useLocalStorage } from "../../utils/useLocalStorage";
 import { musicDetail } from "../../utils/musicDetail";
 import { debounce } from "../../utils/debounce";
 import dexieFn from "../../common/dexie";
-import { musicPlayEndZero, sliderstyle, watchMusicinfo } from "./methods";
+import { musicPlayEndZero, sliderstyle } from "./methods";
 import AudioHow from "./Howler";
 
 //@ts-ignore
@@ -121,7 +121,6 @@ const dexie = dexieFn();
 const {
   isplay,
   pause,
-  stop,
   play,
   maxTime,
   palylists,
@@ -134,7 +133,6 @@ const {
   playSeek: seekTime,
 } = AudioHow(
   {
-    currentIndexBackFn: VideoCommentModule.currentMusicPlayIndex,
     musicinfoRef: musicinfo,
   },
   getCurrentInstance()
@@ -208,8 +206,6 @@ function inputValue(pos: number) {
   setseek(pos);
 }
 
-const openRightDrawer = () => openDrawer(historyData);
-
 const mouseEvent = debounce(cursourEnterSlider);
 
 function cursourEnterSlider(e: MouseEvent) {
@@ -218,16 +214,6 @@ function cursourEnterSlider(e: MouseEvent) {
   } else {
     isclick = true;
   }
-}
-
-function openCommentList() {
-  openDrawer(VideoCommentModule.comments, "评论", {
-    "current-change": VideoCommentModule.currentChange,
-    "next-click": VideoCommentModule.changePageIndex,
-    "prev-click": VideoCommentModule.changePageIndex,
-    total: toRef(VideoCommentModule.playListHistoryOptions, "total").value,
-    size: MAX_LIMIT,
-  });
 }
 
 function windowClick() {
