@@ -1,4 +1,7 @@
 import { ElAvatar, ElCol, ElRow } from "element-plus";
+import { unref } from "vue";
+import MainContentFooter from "../../../../subscription/components/MainContentFooter.vue";
+import { computed_footerInfo } from "../../../../subscription/methods";
 
 type record = Record<string, any>;
 
@@ -8,6 +11,7 @@ interface PROPSTYPE {
 }
 
 export default function CommentItem(props: PROPSTYPE) {
+  const footerInfo = unref(computed_footerInfo)(props);
   const { scopedData, isBeRepliedComp } = props;
 
   function beRepliedList(commentList: any[]) {
@@ -68,6 +72,8 @@ export default function CommentItem(props: PROPSTYPE) {
               <span class="text-xs">{scopedData.timeStr}</span>
             </div>
           )}
+
+          {/* <MainContentFooter icon={footerInfo} /> */}
         </ElCol>
       </ElRow>
     </>

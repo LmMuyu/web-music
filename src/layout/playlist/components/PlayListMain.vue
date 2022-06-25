@@ -11,15 +11,15 @@
     class="flex h-full relative"
   >
     <div class="drop_filter"></div>
-    <el-header class="flex flex-col justify-center items-center header">
+    <el-header class="flex flex-col justify-center items-center header z-10">
       <div v-if="ifhidden">
-        <span class="text-xl py-4 cursor-pointer z-10" style="color: #303133">
+        <span class="text-xl py-2 cursor-pointer z-10" style="color: black">
           {{ musicName }}
         </span>
-        <div class="flex items-center justify-center transform-gpu">
-          <span style="color: #1f2937" v-html="singerName" class="text-sm z-10"></span>
+        <div style="transform: translate3d(-13%, 0, 0)" class="flex items-center justify-center">
+          <span v-html="singerName" class="text-sm z-10"></span>
           <span> - </span>
-          <span style="color: #1f2937" class="text-sm"> {{ musicName }} </span>
+          <span style="color: #b2bec3" class="text-sm"> {{ musicName }} </span>
         </div>
       </div>
 
@@ -33,8 +33,8 @@
     </el-header>
     <el-main class="w-full flex">
       <el-row>
-        <el-col :span="14"> </el-col>
-        <el-col :span="10">
+        <el-col :span="8"> </el-col>
+        <el-col :span="13">
           <div class="relative lycs_music">
             <div
               class="flex flex-col overflow-y-scroll relative sliderTrack"
@@ -45,6 +45,7 @@
               <play-lycs
                 v-if="lycsLists.length > 0"
                 @transiateYPos="transiateYPos"
+                @selectlycs="clickScrollTop"
                 :musicItemList="lycsLists"
                 :slideScrollTop="sliderH"
               />
@@ -59,6 +60,7 @@
             </div>
           </div>
         </el-col>
+        <el-col :span="3"> </el-col>
       </el-row>
       <div class="w-full flex">
         <div class="flex-1"></div>
@@ -183,16 +185,6 @@ async function childrenMapNode(childrenList: HTMLElement[]) {
   const len = childrenList ? childrenList.length : 0;
   clientHeight.value = (lyricNode.value && lyricNode.value.clientHeight) || 0;
 
-  function getClientHeight(el: HTMLElement): Promise<number> {
-    return new Promise((resolve) => {
-      fastdom.measure(() => {
-        const height = el.clientHeight;
-        resolve(height);
-      });
-    });
-  }
-
-  let height = 0;
   for (let i = 0; i < len; i++) {
     const el = childrenList![i] as HTMLElement;
 
@@ -200,16 +192,9 @@ async function childrenMapNode(childrenList: HTMLElement[]) {
     const indexId = +el.getAttribute("keyid")!;
     const musicItem = musicItemList.value.get(nodeid)!;
 
-    height += await getClientHeight(el);
-
-    musicItem.node = shallowRef(el);
     musicItem.indexId = indexId;
-    musicItem.top = height;
-
     musicItemList.value.set(nodeid, musicItem);
   }
-
-  // setScrollHeight(height);
 }
 
 function transiateYPos(disty: number) {
@@ -232,6 +217,18 @@ function watchCommentsTree(commentnode: HTMLElement) {
 }
 
 const nickname = computed(() => props.singerName.split("/").join("——"));
+
+function clickScrollTop(e: HTMLElement) {
+  if (!e) return;
+
+  const ct = e.clientTop;
+  console.log(ct);
+
+  console.log(lyricNodeRect.scrollHeight);
+
+  const scrollTotalHeight = lyricNodeRect.scrollHeight;
+  // const viewHeight =
+}
 
 onMounted(async () => {
   nextTick().then(() => {

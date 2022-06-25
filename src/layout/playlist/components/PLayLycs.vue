@@ -22,11 +22,11 @@
           leave-to-class="leaveTo"
         >
           <div class="flex items-center absolute left-0">
-            <span class="ml-4 text-sm">{{ musicItem.originTime }}</span>
+            <span class="text-sm">{{ musicItem.originTime }}</span>
             <div class="left_line"></div>
           </div>
         </transition>
-        <div class="flex justify-center w-full">
+        <div class="flex justify-center w-full" :lycs-key="musicItem.indexId" :keyid="index">
           <span
             class="text-sm text-left cursor-pointer whitespace-nowrap text_color"
             :lycplaytime="musicItem.originTime"
@@ -45,8 +45,10 @@
           leave-to-class="leaveTo"
         >
           <div class="flex items-center absolute right-0">
-            <div class="right_line"></div>
-            <font-icon size="16" icon="iconmore"></font-icon>
+            <div class="right_line transform-gpu translate-x-2"></div>
+            <div style="width: 45px">
+              <font-icon size="16" icon="iconmore"></font-icon>
+            </div>
           </div>
         </transition>
       </div>
@@ -54,6 +56,7 @@
   </div>
 </template>
 <script setup lang="ts">
+import { useStore } from "vuex";
 import { nextTick, onMounted, PropType, computed, unref, ref } from "vue";
 
 import { distance, lyricNodeRect } from "../hooks/data";
@@ -61,9 +64,8 @@ import { distance, lyricNodeRect } from "../hooks/data";
 import FontIcon from "../../../components/fonticon/FontIcon.vue";
 
 import type { MatchItem } from "../type";
-import { useStore } from "vuex";
 
-const ctxEmit = defineEmits(["transiateYPos"]);
+const ctxEmit = defineEmits(["transiateYPos", "selectlycs"]);
 
 const props = defineProps({
   musicItemList: {
@@ -83,8 +85,11 @@ let frist = 0;
 
 function showCurTimeEvent(e: Event) {
   const target = e.target as HTMLElement;
+
   const curIndex = target.getAttribute("keyid");
-  showTimeIndex.value = curIndex;
+  if (curIndex && curIndex !== null) {
+    showTimeIndex.value = curIndex;
+  }
 }
 
 function lyctime(lyctime: number) {
@@ -106,6 +111,7 @@ function selectLycs(e: Event) {
   const target = e.target as HTMLElement;
 
   if (target.hasAttribute("lycs-key")) {
+    ctxEmit("selectlycs", e.target as HTMLElement);
   } else {
     console.log("找不到lycs-key");
   }
@@ -120,16 +126,14 @@ const musicTextContainerStyle = computed(() => {
 onMounted(async () => {
   await nextTick();
   lyricNodeRect.scrollHeight = scrollNode.value.scrollHeight;
-  // console.log("PLayLycs" + lyricNodeRect.scrollHeight);
   frist = scrollNode.value.children[0].clientHeight;
 });
 </script>
 <style scoped lang="scss">
-@mixin LineBorder() {
-  width: 100px;
-  height: 0;
-  border: 1px solid #3a3a59;
-  background-image: linear-gradient(left);
+@mixin LineBorder($target: right) {
+  width: 80px;
+  height: 1px;
+  background-image: linear-gradient(to $target, #606266 35%, #cdd0d6, #f0f2f5);
 }
 
 div {
@@ -161,6 +165,6 @@ div {
 }
 
 .right_line {
-  @include LineBorder;
+  @include LineBorder(left);
 }
 </style>

@@ -25,13 +25,11 @@
 import { computed, ref, shallowRef, unref } from "vue";
 
 import { linkeEvent } from "../methods";
-import { diffTime } from "../hooks/diffTime";
 import { getStore } from "../../../utils/getStore";
 
 import FontIcon from "../../../components/fonticon/FontIcon.vue";
-import Loading from "../../../components/svgloading/SvgLoading.vue";
 
-import type { PropType, Ref } from "vue";
+import type { PropType } from "vue";
 
 type Options = {
   name: string;
@@ -68,7 +66,7 @@ const eventMap = new Map();
 const subInfoEls = [];
 
 function retCount() {
-  return props.info.find((v) => v.name === "linke").count;
+  return props.info.find((v) => v.name === "linke")?.count || 0;
 }
 
 eventMap.set("linke", linkeEvent(linkedCounts, isLatestLinke));
@@ -108,9 +106,8 @@ const isLinke = computed(() => {
 
   const len = props?.latestLikedUsers.length;
   //@ts-ignore
-  const userid = userData.value.data.userID;
-
-  if (!userid) return console.error(userid);
+  const userid = userData.value?.data?.userID;
+  if (!userid) return console.warn("mainContentFooter:userid");
 
   if (len === 0 || len === undefined) return false;
   if (len === 1) {

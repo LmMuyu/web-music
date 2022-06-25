@@ -1,7 +1,7 @@
 import type { Ref } from "@vue/reactivity";
 
 export interface MatchItem {
-  top: number;
+  top?: number;
   lyc: string;
   indexId: number;
   playTime: number;

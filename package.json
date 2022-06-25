@@ -2,10 +2,7 @@
   "name": "web-music",
   "version": "0.0.0",
   "main": "index.js",
-  "author": {
-    "email": "1538993458@qq.com",
-    "name": "LmMuyu"
-  },
+  "author": "LmMuyu <1538993458@qq.com>",
   "scripts": {
     "start": "vite --mode development",
     "build": "vite build --mode produrtion",
@@ -53,5 +50,6 @@
     "vite-plugin-svg-icons": "^2.0.1",
     "vue-tsc": "^0.0.8"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "repository": "git@github.com:LmMuyu/web-music.git"
 }

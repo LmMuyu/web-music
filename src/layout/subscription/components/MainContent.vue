@@ -48,9 +48,7 @@ import MainContentText from "./MainContentText.vue";
 // import MainWriteBox from "./MainWriteBox.vue";
 import MainContent from "./MainContent.vue";
 import MainWebsite from "./MainWebsite.vue";
-import MainComment from "./MainComments";
 import MainSong from "./MainSong.vue";
-import { useStore } from "vuex";
 
 type infoMapValue = Map<string, { query: string; id: number }>;
 type activityMap = Map<number, infoMapValue>;
@@ -287,18 +285,6 @@ onMounted(() => {
     mainContentData.msg(content_text.value);
   }
 });
-
-// const newEventJson = computed(() => {
-//   return props.recursion
-//     ? {
-//         msg: `<a herf="jacascript:void(;;)" data-id="${
-//           props.event.user.userId ?? props.event.user.uid
-//         }" style="color:#74b9ff" class="user hover_init cursor-pointer">@${
-//           props.event.user.nickname
-//         }</a>  ${eventType.value(props.event.type)}：${parseJson.value["msg"]}`,
-//       }
-//     : {};
-// });
 </script>
 
 <style scoped lang="scss"></style>
