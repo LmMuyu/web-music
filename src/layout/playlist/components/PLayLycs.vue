@@ -1,12 +1,13 @@
 <template>
   <div
     class="pointer-events-auto relative transform-gpu transition-all px-14"
-    :style="musicTextContainerStyle"
+    ref="scrollNode"
     @mouseover="showCurTimeEvent"
     @mouseleave="showTimeIndex = null"
-    ref="scrollNode"
     @click="selectLycs"
+    :style="musicTextContainerStyle"
   >
+
     <div
       v-for="(musicItem, index) in musicItemList"
       :key="musicItem.playTime"
@@ -26,7 +27,12 @@
             <div class="left_line"></div>
           </div>
         </transition>
-        <div class="flex justify-center w-full" :lycs-key="musicItem.indexId" :keyid="index">
+        <div
+          class="flex justify-center w-full"
+          :lycs-key="musicItem.indexId"
+          scrollnode="true"
+          :keyid="index"
+        >
           <span
             class="text-sm text-left cursor-pointer whitespace-nowrap text_color"
             :lycplaytime="musicItem.originTime"
@@ -108,7 +114,11 @@ function lyctime(lyctime: number) {
 store.commit("pubMitt", ["seek_time", lyctime]);
 
 function selectLycs(e: Event) {
-  const target = e.target as HTMLElement;
+  let target = e.target as HTMLElement;
+
+  if (!target.hasAttribute("scrollnode")) {
+    target = target.parentElement;
+  }
 
   if (target.hasAttribute("lycs-key")) {
     ctxEmit("selectlycs", e.target as HTMLElement);
@@ -119,7 +129,7 @@ function selectLycs(e: Event) {
 
 const musicTextContainerStyle = computed(() => {
   return {
-    transform: `translate(0,${-unref(distance)}px) translateZ(0)`,
+    transform: `translate3d(0,${-distance.value}px,0)`,
   };
 });
 

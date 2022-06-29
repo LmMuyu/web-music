@@ -32,10 +32,10 @@
       </transition>
     </el-header>
     <el-main class="w-full flex">
-      <el-row>
+      <el-row style="height: 100vh">
         <el-col :span="8"> </el-col>
         <el-col :span="13">
-          <div class="relative lycs_music">
+          <div ref="container_lycs" class="relative lycs_music">
             <div
               class="flex flex-col overflow-y-scroll relative sliderTrack"
               style="height: 30rem"
@@ -62,15 +62,10 @@
         </el-col>
         <el-col :span="3"> </el-col>
       </el-row>
-      <div class="w-full flex">
-        <div class="flex-1"></div>
-        <div style="flex: 2">
-          <div class="w-full h-32"></div>
-          <div ref="comments">
-            <ContainerComments :mid="Number(musicid)" />
-          </div>
+      <div class="w-full flex justify-center">
+        <div ref="comments" class="w-1/2">
+          <ContainerComments :mid="Number(musicid)" />
         </div>
-        <div class="flex-1"></div>
       </div>
     </el-main>
   </el-container>
@@ -80,19 +75,18 @@ import fastdom from "fastdom";
 import { useStore } from "vuex";
 import { onMounted } from "vue";
 import { useRoute } from "vue-router";
-import { computed, nextTick, onUnmounted, ref, shallowRef, watchEffect } from "@vue/runtime-core";
+import { computed, nextTick, onUnmounted, ref, watchEffect, shallowRef } from "@vue/runtime-core";
 
 import { useType } from "../../../hooks";
 import { getLyrics } from "../../../api/playList";
-import { conversionItem, lyricThrottle } from "../hooks/methods";
 import { lyricNodeRect, clientHeight } from "../hooks/data";
+import { conversionItem, lyricThrottle } from "../hooks/methods";
+import { createAsComponent } from "../../../utils/createAsComponent";
 
 import { ElContainer, ElMain, ElRow, ElCol, ElHeader } from "element-plus";
 import PlayLycs from "./PLayLycs.vue";
 
 import type { MatchItem } from "../type";
-
-import { createAsComponent } from "../../../utils/createAsComponent";
 
 const ContainerComments = createAsComponent(
   () => import("./PlayListHistory/components/Comments.vue")
@@ -114,15 +108,16 @@ const props = defineProps({
 });
 
 let musicid = useRoute().query.id as string;
-const lyricNode = ref<null | HTMLElement>(null);
-const trackNode = ref<null | HTMLElement>(null);
-const sectionNode = ref<null | HTMLElement>(null);
+const lyricNode = shallowRef<null | HTMLElement>(null);
+const trackNode = shallowRef<null | HTMLElement>(null);
+const sectionNode = shallowRef<null | HTMLElement>(null);
 const musicItemList = ref<Map<number, any>>(new Map());
 const lycsLists = ref([]);
 const store = useStore();
 const ifhidden = ref(true);
 const comments = ref(null);
 const observerlists = [];
+const container_lycs = shallowRef(null);
 
 const trackSliderMaxH = ref(0);
 const sliderH = ref(0);
@@ -198,8 +193,6 @@ async function childrenMapNode(childrenList: HTMLElement[]) {
 }
 
 function transiateYPos(disty: number) {
-  console.log(disty);
-
   if (disty != undefined) {
     lyricNodeRect.scrollShiHeight = disty;
   }
@@ -221,13 +214,14 @@ const nickname = computed(() => props.singerName.split("/").join("——"));
 function clickScrollTop(e: HTMLElement) {
   if (!e) return;
 
-  const ct = e.clientTop;
-  console.log(ct);
+  const { top: lyTop } = e.getBoundingClientRect();
+  const { top: clTop } = container_lycs.value.getBoundingClientRect();
 
-  console.log(lyricNodeRect.scrollHeight);
+  const scrollTotalHeight = lyricNodeRect.scrollHeight - lyricNodeRect.offsetHeight;
 
-  const scrollTotalHeight = lyricNodeRect.scrollHeight;
-  // const viewHeight =
+  if (scrollTotalHeight && lyTop && clTop && lyTop - clTop <= scrollTotalHeight) {
+    lyricNodeRect.scrollShiHeight = lyTop - clTop;
+  }
 }
 
 onMounted(async () => {

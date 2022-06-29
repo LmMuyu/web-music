@@ -3,9 +3,10 @@ import { promptbox } from "../../../components/promptBox";
 import { Ref } from "@vue/reactivity";
 import { userRecord } from "../../../api/playList";
 
-import type { MatchItem, MatchItemList } from "../type";
 import { useStorage } from "../../../utils/useStorage";
 import { throttle } from "../../../utils/throttle";
+
+import type { MatchItem, MatchItemList } from "../type";
 
 export function conversionItem(matchItem: MatchItem): MatchItem {
   const str = String(matchItem.playTime);
@@ -29,9 +30,18 @@ export function _setScrollHeight(scrollH: number) {
 
 export const lyricThrottle = throttle(lyricScroll, 16.6);
 
+let prev = 0;
+
 export function lyricScroll(event: Event) {
   const el = event.target as HTMLElement;
   const disty = el.scrollTop;
+
+  const diffy = disty - prev;
+  prev = disty;
+
+  distance.value += diffy;
+  console.log(distance.value);
+
   _setScrollHeight(disty);
 }
 
