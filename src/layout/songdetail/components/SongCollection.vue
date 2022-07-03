@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <DetailSong
+  <div class="pt-4">
+    <song-item
       class="py-2 cursor-pointer"
       v-for="(track, index) in playlistTracks"
       :key="index"
@@ -13,7 +13,7 @@
 <script setup lang="tsx">
 import { PropType } from "vue";
 import { useStore } from "vuex";
-import DetailSong from "../../../components/detailsongs/DetailSong.vue";
+import SongItem from "../../../components/detailsongs/DetailSong.vue";
 import { musicDetail } from "../../../utils/musicDetail";
 
 const props = defineProps({

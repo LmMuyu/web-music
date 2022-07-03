@@ -12,12 +12,13 @@
         />
       </div>
     </better-scroll>
-    <div class="flex" v-else>
+    <div class="flex w-full justify-between" v-else>
       <card-exhibition
         v-for="(album, index) in albums.slice(0, 4)"
         :key="index"
         :keyindex="index"
         :data="album"
+        class="w-56"
       />
     </div>
   </div>

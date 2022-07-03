@@ -7,7 +7,6 @@
     @click="selectLycs"
     :style="musicTextContainerStyle"
   >
-
     <div
       v-for="(musicItem, index) in musicItemList"
       :key="musicItem.playTime"
@@ -82,6 +81,7 @@ const props = defineProps({
     type: Number,
     required: true,
   },
+  puremusic: Boolean,
 });
 
 const showTimeIndex = ref(null);
@@ -90,6 +90,8 @@ const store = useStore();
 let frist = 0;
 
 function showCurTimeEvent(e: Event) {
+  if (props.puremusic) return;
+
   const target = e.target as HTMLElement;
 
   const curIndex = target.getAttribute("keyid");

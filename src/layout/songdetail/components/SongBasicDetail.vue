@@ -39,14 +39,25 @@
         <span class="boxtext text-left text-sm" v-html="playlist.titile"></span>
       </div>
       <div class="flex items-center">
-        <el-button size="small" type="primary" :plain="true">播放</el-button>
-        <el-button size="small" :plain="true">播放</el-button>
+        <el-button size="small" type="primary" :plain="true">播放全部</el-button>
+
+        <el-button
+          @click="shouChuang"
+          size="small"
+          class="flex justify-center items-center"
+          :plain="true"
+        >
+          <font-icon icon="iconxihuan"> </font-icon>
+          <span> 收藏 </span>
+        </el-button>
       </div>
     </el-col>
   </el-row>
 </template>
 <script setup lang="ts">
-import { ElImage, ElRow, ElCol, ElButton, ElTag } from "element-plus";
+import { ElImage, ElRow, ElCol, ElButton, ElTag, ElMessage } from "element-plus";
+import { useStore } from "vuex";
+import FontIcon from "../../../components/fonticon/FontIcon.vue";
 
 const props = defineProps({
   playlist: {
@@ -54,6 +65,14 @@ const props = defineProps({
     required: true,
   },
 });
+
+const store = useStore();
+function shouChuang() {
+  if (store && store.getters["login/getIslogin"]) {
+  } else {
+    return ElMessage.error("请先登录！");
+  }
+}
 </script>
 <style scoped lang="scss">
 .boxtext {

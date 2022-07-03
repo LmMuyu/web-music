@@ -31,7 +31,7 @@
         <span v-if="!ifhidden" style="color: #303133" class="text-sm z-10">{{ musicName }}</span>
       </transition>
     </el-header>
-    <el-main class="w-full flex">
+    <el-main ref="container_main" class="w-full flex">
       <el-row style="height: 100vh">
         <el-col :span="8"> </el-col>
         <el-col :span="13">
@@ -48,6 +48,7 @@
                 @selectlycs="clickScrollTop"
                 :musicItemList="lycsLists"
                 :slideScrollTop="sliderH"
+                :puremusic="puremusic"
               />
             </div>
 
@@ -63,7 +64,7 @@
         <el-col :span="3"> </el-col>
       </el-row>
       <div class="w-full flex justify-center">
-        <div ref="comments" class="w-1/2">
+        <div ref="comments" class="h-auto w-1/2">
           <ContainerComments :mid="Number(musicid)" />
         </div>
       </div>
@@ -71,7 +72,6 @@
   </el-container>
 </template>
 <script setup lang="ts">
-import fastdom from "fastdom";
 import { useStore } from "vuex";
 import { onMounted } from "vue";
 import { useRoute } from "vue-router";
@@ -107,7 +107,9 @@ const props = defineProps({
   },
 });
 
-let musicid = useRoute().query.id as string;
+const route = useRoute();
+let musicid = route.query.id as string;
+const toScrollComments = route.params.toscroll;
 const lyricNode = shallowRef<null | HTMLElement>(null);
 const trackNode = shallowRef<null | HTMLElement>(null);
 const sectionNode = shallowRef<null | HTMLElement>(null);
@@ -118,6 +120,8 @@ const ifhidden = ref(true);
 const comments = ref(null);
 const observerlists = [];
 const container_lycs = shallowRef(null);
+const container_main = ref(null);
+const puremusic = ref(false);
 
 const trackSliderMaxH = ref(0);
 const sliderH = ref(0);
@@ -170,6 +174,8 @@ function compareMusic() {
 compareMusic();
 
 getLyrics(musicid).then(({ data }) => {
+  if (data.qfy && data.sfy) puremusic.value = true;
+
   const lyrics = data.lrc.lyric as string;
   const lrcReg = /\[(?<playTime>.+)\]\s?(?<lyc>.+)/g;
   const iterator = lyrics.matchAll(lrcReg);
@@ -209,8 +215,6 @@ function watchCommentsTree(commentnode: HTMLElement) {
   observerlists.push(mutation);
 }
 
-const nickname = computed(() => props.singerName.split("/").join("——"));
-
 function clickScrollTop(e: HTMLElement) {
   if (!e) return;
 
@@ -221,6 +225,18 @@ function clickScrollTop(e: HTMLElement) {
 
   if (scrollTotalHeight && lyTop && clTop && lyTop - clTop <= scrollTotalHeight) {
     lyricNodeRect.scrollShiHeight = lyTop - clTop;
+  }
+}
+
+function containerMainToScroll(toscroll: boolean | string, commentNode: HTMLElement) {
+  if (toscroll === true || toscroll === "true") {
+    const toTopPos = commentNode.scrollTop;
+
+    if (toTopPos) {
+      (container_main.value.$el as any).scrollTop = toTopPos + "px";
+    } else {
+      throw new Error("toTopPos：" + toTopPos);
+    }
   }
 }
 
@@ -249,6 +265,7 @@ onMounted(async () => {
 
   await nextTick();
   watchCommentsTree(comments.value);
+  containerMainToScroll(toScrollComments as string, comments.value);
 });
 
 onUnmounted(() => {

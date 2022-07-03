@@ -1,16 +1,12 @@
 import { nextTick } from "vue";
-import store from "../../store";
-import { useRoute } from "vue-router";
 
 import { setCookie } from "../../utils/request/response/result";
 import { useLocalStorage } from "../../utils/useLocalStorage";
-
-import { ElNotification } from "element-plus";
-
+import openNotification from "../../utils/element/notification";
 import { loginStoreSetInfo } from "./login";
+
 import type { USERDATA } from "../../store/type";
 
-type NottificationType = "success" | "warning" | "info" | "error";
 type ExtractPickForValue<T, K extends keyof T> = T[K];
 
 export type USERINFO = USERDATA;
@@ -34,15 +30,6 @@ const BCLists = [];
 
 function PThen() {
   return Promise.resolve();
-}
-
-function openNotification(content: string, title?: string, type: NottificationType = "info") {
-  return ElNotification.success({
-    type,
-    message: content,
-    showClose: false,
-    ...(title ? { title } : {}),
-  });
 }
 
 export function mainBCBus(): Promise<USERDATA> {

@@ -40,8 +40,6 @@ export function lyricScroll(event: Event) {
   prev = disty;
 
   distance.value += diffy;
-  console.log(distance.value);
-
   _setScrollHeight(disty);
 }
 
@@ -87,7 +85,6 @@ export function lycHighlightPos(top: number, itemlist: MatchItemList, curNodePos
     const curIndex = curNodePos - index.value;
 
     const item = lists[curIndex];
-
     distance.value = item.top;
   }
 }

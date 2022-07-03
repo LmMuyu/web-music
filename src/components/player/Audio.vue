@@ -5,6 +5,7 @@
       @mouseleave="leaveAudio"
       class="flex items-center h-full w-full px-4 relative bg-white z-50 audio_shadow"
       v-show="!isLeaveSanSecBelow"
+      ref="audioSlider"
     >
       <el-row class="flex content-center h-full w-full">
         <el-col :span="4" class="flex"><AudioSongInfoShow :musicinfo="musicinfo" /></el-col>
@@ -29,18 +30,23 @@
         </el-col>
         <el-col :span="4" class="flex items-center">
           <div class="flex px-4">
-            <volume-icon :volume="volume"></volume-icon>
-            <div v-show="showSlider" class="w-full audio_slider">
-              <el-slider @mousemove="mouseEvent" @mouseleave="mouseEvent" v-model="volume">
-              </el-slider>
-            </div>
+            <volume-icon @click="openVolume" :volume="volume"></volume-icon>
+            <teleport to="#volume">
+              <div :style="sliderPos" class="w-9 h-full absolute z-10">
+                <el-slider height="100px" vertical v-model="volume" ref="volumecontrol">
+                </el-slider>
+              </div>
+            </teleport>
           </div>
           <div @click="() => {}" class="flex items-center px-4">
             <font-icon icon="iconindent" size="24"></font-icon>
           </div>
           <div class="px-4">
-            <font-icon @click.captrue="() => {}" icon="iconpinglun_huabanfuben" size="24">
-            </font-icon>
+            <router-link
+              :to="{ path: '/playlist', params: { toscroll: true }, query: { id: storeMid } }"
+            >
+              <font-icon icon="iconpinglun_huabanfuben" size="24"> </font-icon>
+            </router-link>
           </div>
           <div class="px-4">
             <font-icon
@@ -64,21 +70,19 @@
 import {
   ref,
   nextTick,
-  toRef,
-  onUnmounted,
   PropType,
   watchEffect,
   computed,
   onMounted,
   getCurrentInstance,
+  reactive,
+  watch,
 } from "vue";
 import { useStore } from "vuex";
 
-import { openDrawer } from "../../layout/playlist/components/PlayListHistory";
 import { getMusicDetail } from "../../api/playList";
 import { useLocalStorage } from "../../utils/useLocalStorage";
 import { musicDetail } from "../../utils/musicDetail";
-import { debounce } from "../../utils/debounce";
 import dexieFn from "../../common/dexie";
 import { musicPlayEndZero, sliderstyle } from "./methods";
 import AudioHow from "./Howler";
@@ -91,7 +95,6 @@ import AudioSlider from "./components/AudioSlider.vue";
 import { ElSlider, ElRow, ElCol } from "element-plus";
 import VolumeIcon from "./components/VolumeIcon.vue";
 import FontIcon from "../fonticon/FontIcon.vue";
-import { VideoComments } from ".";
 
 const props = defineProps({
   songinfo: {
@@ -103,19 +106,19 @@ const props = defineProps({
 const store = useStore();
 
 let mid = 0;
-let isclick = true;
 const volume = ref(0);
-const historyData = ref([]);
-const showSlider = ref(false);
-const COMMENT_LEN = 40;
-const MAX_LIMIT = COMMENT_LEN;
 const musicinfo = ref<musicDetail>();
 const islock = ref(false);
 const ctx = getCurrentInstance();
+const audioSlider = ref(null);
+const sliderPos = reactive({
+  top: -window.innerHeight + "px",
+  left: -window.innerWidth + "px",
+});
+const volumecontrol = ref<typeof ElSlider | null>(null);
+let volumeControlStatus: "enter" | "remove" = "enter";
 let tiemr = null;
 let isLeaveSanSecBelow = ref<null | boolean>(null);
-
-const VideoCommentModule = new VideoComments("music");
 
 const dexie = dexieFn();
 const {
@@ -155,6 +158,12 @@ watchEffect(() => {
   }
 });
 
+function volumeProcessing() {
+  watch(volume, (volume) => setVolume(volume / 100));
+}
+
+volumeProcessing();
+
 function leaveTimeout() {
   if (!controlAudioCompIf.value) {
     return;
@@ -169,8 +178,11 @@ function enterAudioActive() {
   if (!controlAudioCompIf.value) {
     return;
   }
-
   isLeaveSanSecBelow.value = false;
+  clearAudioControlTimeout();
+}
+
+function clearAudioControlTimeout() {
   clearTimeout(tiemr);
   tiemr = null;
 }
@@ -206,30 +218,13 @@ function inputValue(pos: number) {
   setseek(pos);
 }
 
-const mouseEvent = debounce(cursourEnterSlider);
-
-function cursourEnterSlider(e: MouseEvent) {
-  if (e.type === "mousedown") {
-    isclick = false;
-  } else {
-    isclick = true;
-  }
-}
-
-function windowClick() {
-  if (isclick && !showSlider.value) {
-    showSlider.value = false;
-  }
-}
-
 const storeMid = computed<number>(store.getters["playlist/getSongId"]);
 watchEffect(async () => {
   try {
     if (storeMid.value && storeMid.value !== mid) {
-      console.log(mid);
-
       mid = storeMid.value;
       const findIndex = palylists.value.findIndex((value) => value.id === mid);
+      console.log(mid);
 
       //点击播放，查询看一下有没有在播放在列表中，有就将它插入到列表最前
       if (findIndex > -1) {
@@ -269,17 +264,51 @@ watchEffect(() => {
   }
 });
 
+function openVolume(e: Event & { clientX: number }) {
+  if (volumeControlStatus === "remove") {
+    openControl(-window.innerHeight + "px", -window.innerWidth + "px");
+
+    return;
+  }
+
+  const volume = (e.target as unknown as HTMLElement).getBoundingClientRect();
+
+  const vx = volume.left;
+  const vw = volume.width;
+  const audioTool = audioSlider.value as HTMLElement;
+  const { offsetHeight, offsetWidth } = volumecontrol.value.$el as HTMLElement;
+
+  if (vx && audioTool && vw && offsetHeight && offsetWidth) {
+    const aty = audioTool.getBoundingClientRect();
+
+    if (aty.top) {
+      openControl(
+        aty.top - offsetHeight - 5 + "px",
+        vx - (offsetHeight * 0.15 + vw * 0.2) * 0.5 + "px"
+      );
+    }
+  } else {
+    console.error(vx, audioTool, vw, offsetHeight, offsetWidth);
+  }
+}
+
+function openControl(top: string, left: string) {
+  volumeControlStatus = volumeControlStatus === "enter" ? "remove" : "enter";
+  sliderPos.top = top;
+  sliderPos.left = left;
+}
+
 onMounted(() =>
   nextTick().then(() => {
     sliderstyle();
     leaveTimeout();
-    document.documentElement.addEventListener("click", windowClick, false);
+    // document.documentElement.addEventListener("click", windowClick, false);
   })
 );
 
-onUnmounted(() => {
-  document.documentElement.removeEventListener("click", windowClick, false);
-});
+// onUnmounted(() => {
+//   document.documentElement.removeEventListener("click", windowClick, false);
+// });
 </script>
 <style scoped lang="scss">
 @include Iconfont(#2d3436, 20);

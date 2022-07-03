@@ -1,10 +1,6 @@
 <template>
   <ElCarousel>
-    <ElCarouselItem
-      v-for="banner in bannerData"
-      :key="banner.encodeId"
-      class="relative"
-    >
+    <ElCarouselItem v-for="banner in bannerData" :key="banner.encodeId" class="relative">
       <img :src="banner.imageUrl" alt="" class="w-full h-full object-cover" />
       <span
         class="position text-xs text-white p-1 rounded-tl-md"
@@ -12,6 +8,17 @@
       >
         {{ banner.typeTitle }}
       </span>
+      <router-link
+        class="absolute left-0 top-0 w-full h-full z-10"
+        :to="{ path: '/playlist', query: { id: banner.targetId } }"
+        v-if="!banner.url"
+      ></router-link>
+      <a
+        v-else
+        :href="banner.url"
+        class="absolute left-0 top-0 w-full h-full z-10"
+        target="_blank"
+      ></a>
     </ElCarouselItem>
   </ElCarousel>
 </template>
