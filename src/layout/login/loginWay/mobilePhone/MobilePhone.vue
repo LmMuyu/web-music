@@ -1,37 +1,30 @@
 <template>
-  <div class="flex items-center w-full h-full">
-    <div style="width: 40%" class="flex justify-center items-center h-full">
-      <div class="flex justify-center w-full">
-        <div class="w-3/5">
-          <div class="py-3">
-            <InputBox
-              ref="phone"
-              placeholder="手机号"
-              :is-icon="true"
-              @change="registerChecking"
-              v-model="inputLoginInfo.phone"
-            />
-          </div>
-          <div class="py-3 w-full">
-            <InputBox
-              ref="pass"
-              iconfont="iconmima"
-              type="password"
-              placeholder="密码"
-              v-model="inputLoginInfo.password"
-            />
-          </div>
-          <div class="py-2 w-full flex flex-col items-center">
-            <el-button class="rounded-lg w-full" type="primary" @click="loginBtn">登录</el-button>
-            <span class="flex justify-end py-4">
-              <a href="javascript:;;" class="text-sm px-4">注册</a>
-              <a href="javscript:;;" class="text-sm px-4">忘记密码?</a>
-            </span>
-          </div>
-        </div>
+  <div class="flex flex-col items-center justify-center w-full h-full bg-white">
+    <div class="w-auto">
+      <InputBox
+        ref="phone"
+        class="py-2"
+        placeholder="手机号"
+        :is-icon="true"
+        @change="registerChecking"
+        v-model="inputLoginInfo.phone"
+      />
+      <InputBox
+        class="py-2"
+        ref="pass"
+        iconfont="iconmima"
+        type="password"
+        placeholder="密码"
+        v-model="inputLoginInfo.password"
+      />
+      <div class="py-2 flex flex-col items-center w-full">
+        <el-button class="rounded-lg w-full" type="primary" @click="loginBtn">登录</el-button>
+        <span class="flex justify-end py-4">
+          <a href="javascript:;;" class="text-sm px-4">注册</a>
+          <a href="javscript:;;" class="text-sm px-4">忘记密码?</a>
+        </span>
       </div>
     </div>
-    <div style="width: 60%" class="h-full py-2 bgimage"></div>
   </div>
 </template>
 <script setup lang="ts">
@@ -44,6 +37,7 @@ import { promptbox } from "../../../../components/promptBox";
 import InputBox from "./components/InputBox.vue";
 import { ElButton } from "element-plus";
 import { onUnmounted } from "vue";
+import { RouteLocationNormalizedLoaded, useRoute, useRouter } from "vue-router";
 
 const inputLoginInfo = reactive({
   phone: "",
@@ -55,6 +49,8 @@ let prephone = "";
 
 const phone = ref();
 const pass = ref();
+const route = useRoute();
+const router = useRouter();
 
 const showErrorInfo = (box: any, message: string) => box.value["showErrorInfo"]?.(message);
 
@@ -100,6 +96,20 @@ function loginInfoSetFormData(phone: string, md5: any) {
   return formData;
 }
 
+function fanhuigo(route: RouteLocationNormalizedLoaded): boolean | Function {
+  const topath = route.query.path;
+  const id = route.query.id;
+
+  if (topath && id) {
+    return router.replace.bind(router, {
+      path: topath as string,
+      query: { id },
+    });
+  }
+
+  return false;
+}
+
 async function loginBtn() {
   const isCheckRes = checkingInput();
 
@@ -118,7 +128,20 @@ async function loginBtn() {
           return;
         }
 
-        loginBCBus(loginResult.data);
+        const gofnc = fanhuigo(route);
+
+        loginBCBus(
+          loginResult.data,
+          typeof gofnc === "boolean"
+            ? {
+                gopage: false,
+                sourcess: null,
+              }
+            : {
+                gopage: true,
+                sourcess: gofnc,
+              }
+        );
 
         window.removeEventListener("keydown", keydownfn, false);
         worker.terminate();
@@ -152,23 +175,5 @@ onUnmounted(() => {
 <style scoped lang="scss">
 div:nth-child(1) {
   background-color: #fff;
-}
-
-.bgimage {
-  position: relative;
-  background-image: url("https://images.pexels.com/photos/991012/pexels-photo-991012.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940");
-
-  &::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    -webkit-box-shadow: 0px 0px 10px 0px rgba(234, 234, 234, 1);
-    -moz-box-shadow: 0px 0px 10px 0px rgba(234, 234, 234, 1);
-    box-shadow: 0px 0px 10px 0px rgba(234, 234, 234, 1);
-  }
 }
 </style>

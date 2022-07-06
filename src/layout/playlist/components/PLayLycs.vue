@@ -5,68 +5,71 @@
     @mouseover="showCurTimeEvent"
     @mouseleave="showTimeIndex = null"
     @click="selectLycs"
-    :style="musicTextContainerStyle"
   >
-    <div
-      v-for="(musicItem, index) in musicItemList"
-      :key="musicItem.playTime"
-      class="flex items-center py-3 relative"
-      :lycs-key="musicItem.indexId"
-    >
-      <div class="flex items-center w-full relative">
-        <transition
-          v-if="showTimeIndex == index"
-          enter-active-class="active"
-          enter-to-class="enterTo"
-          leave-active-class="active"
-          leave-to-class="leaveTo"
-        >
-          <div class="flex items-center absolute left-0">
-            <span class="text-sm">{{ musicItem.originTime }}</span>
-            <div class="left_line"></div>
-          </div>
-        </transition>
-        <div
-          class="flex justify-center w-full"
-          :lycs-key="musicItem.indexId"
-          scrollnode="true"
-          :keyid="index"
-        >
-          <span
-            class="text-sm text-left cursor-pointer whitespace-nowrap text_color"
-            :lycplaytime="musicItem.originTime"
-            :node_id="musicItem.playTime"
+    <BetterScroll :scrollFn="lyricThrottle" :openHRender="false" :itemLen="musicItemList.length">
+      <div
+        v-for="(musicItem, index) in musicItemList"
+        :key="musicItem.playTime"
+        class="flex items-center py-3 relative"
+        :lycs-key="musicItem.indexId"
+      >
+        <div class="flex items-center w-full relative">
+          <transition
+            v-if="showTimeIndex == index"
+            enter-active-class="active"
+            enter-to-class="enterTo"
+            leave-active-class="active"
+            leave-to-class="leaveTo"
+          >
+            <div class="flex items-center absolute left-0">
+              <span class="text-sm">{{ musicItem.originTime }}</span>
+              <div class="left_line"></div>
+            </div>
+          </transition>
+          <div
+            class="flex justify-center w-full"
             :lycs-key="musicItem.indexId"
+            scrollnode="true"
             :keyid="index"
           >
-            {{ musicItem.lyc }}
-          </span>
-        </div>
-        <transition
-          v-if="showTimeIndex == index"
-          enter-active-class="active"
-          enter-to-class="enterTo"
-          leave-active-class="active"
-          leave-to-class="leaveTo"
-        >
-          <div class="flex items-center absolute right-0">
-            <div class="right_line transform-gpu translate-x-2"></div>
-            <div style="width: 45px">
-              <font-icon size="16" icon="iconmore"></font-icon>
-            </div>
+            <span
+              class="text-sm text-left cursor-pointer whitespace-nowrap text_color"
+              :lycplaytime="musicItem.originTime"
+              :node_id="musicItem.playTime"
+              :lycs-key="musicItem.indexId"
+              :keyid="index"
+            >
+              {{ musicItem.lyc }}
+            </span>
           </div>
-        </transition>
+          <transition
+            v-if="showTimeIndex == index"
+            enter-active-class="active"
+            enter-to-class="enterTo"
+            leave-active-class="active"
+            leave-to-class="leaveTo"
+          >
+            <div class="flex items-center absolute right-0">
+              <div class="right_line transform-gpu translate-x-2"></div>
+              <div style="width: 45px">
+                <font-icon size="16" icon="iconmore"></font-icon>
+              </div>
+            </div>
+          </transition>
+        </div>
       </div>
-    </div>
+    </BetterScroll>
   </div>
 </template>
 <script setup lang="ts">
 import { useStore } from "vuex";
-import { nextTick, onMounted, PropType, computed, unref, ref } from "vue";
+import { nextTick, onMounted, PropType, ref } from "vue";
 
 import { distance, lyricNodeRect } from "../hooks/data";
+import { lyricThrottle } from "../hooks/methods";
 
 import FontIcon from "../../../components/fonticon/FontIcon.vue";
+import BetterScroll from "../../../components/betterscroll/BetterScroll.vue";
 
 import type { MatchItem } from "../type";
 
@@ -128,12 +131,6 @@ function selectLycs(e: Event) {
     console.log("找不到lycs-key");
   }
 }
-
-const musicTextContainerStyle = computed(() => {
-  return {
-    transform: `translate3d(0,${-distance.value}px,0)`,
-  };
-});
 
 onMounted(async () => {
   await nextTick();

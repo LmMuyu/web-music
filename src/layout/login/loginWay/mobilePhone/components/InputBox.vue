@@ -1,5 +1,5 @@
 <template>
-  <section class="flex items-center relative">
+  <section :class="class" class="flex items-center relative">
     <div class="flex items-center justify-center w-full">
       <div ref="inputbox" :style="returnStyleOptions" class="root flex pr-4 p-2 w-full rounded-lg">
         <div class="icon px-4" v-if="isIcon">
@@ -60,6 +60,7 @@ const props = defineProps({
     type: String,
     default: "",
   },
+  class: String,
 });
 
 const inputbox = ref<HTMLElement | null>(null);
@@ -143,8 +144,6 @@ function crcMethods() {
 }
 
 function strategy(data: number | string) {
-  console.log(data);
-
   if (String(data).length === 0) return;
 
   const verifyMethods = new crcMethods();

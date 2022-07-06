@@ -38,7 +38,7 @@
               </div>
             </teleport>
           </div>
-          <div @click="() => {}" class="flex items-center px-4">
+          <div @click="OpenHistory" class="flex items-center px-4">
             <font-icon icon="iconindent" size="24"></font-icon>
           </div>
           <div class="px-4">
@@ -95,6 +95,7 @@ import AudioSlider from "./components/AudioSlider.vue";
 import { ElSlider, ElRow, ElCol } from "element-plus";
 import VolumeIcon from "./components/VolumeIcon.vue";
 import FontIcon from "../fonticon/FontIcon.vue";
+import { openDrawer } from "../../layout/playlist/components/PlayListHistory";
 
 const props = defineProps({
   songinfo: {
@@ -224,7 +225,6 @@ watchEffect(async () => {
     if (storeMid.value && storeMid.value !== mid) {
       mid = storeMid.value;
       const findIndex = palylists.value.findIndex((value) => value.id === mid);
-      console.log(mid);
 
       //点击播放，查询看一下有没有在播放在列表中，有就将它插入到列表最前
       if (findIndex > -1) {
@@ -296,6 +296,12 @@ function openControl(top: string, left: string) {
   volumeControlStatus = volumeControlStatus === "enter" ? "remove" : "enter";
   sliderPos.top = top;
   sliderPos.left = left;
+}
+
+async function OpenHistory() {
+  const songs = await (await (await dexie).getAllSong()).map((music) => music.songinfo);
+
+  openDrawer(songs);
 }
 
 onMounted(() =>

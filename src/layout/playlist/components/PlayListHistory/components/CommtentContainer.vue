@@ -5,8 +5,8 @@
         <span class="text-base">{{ title }}</span>
       </div>
       <div>
-        <el-button size="small" @click="dialog.visibleDialog()">发表评论</el-button>
-        <Dialog ref="dialog" />
+        <el-button size="small" @click="pubComment">发表评论</el-button>
+        <Dialog ref="dialog" @editorContent="props.on['send-content']" />
       </div>
     </ElHeader>
     <el-main v-if="comploading" class="w-full h-full flex justify-center items-center">
@@ -53,18 +53,27 @@ import {
   nextTick,
   onMounted,
   onUnmounted,
-  watch,
   unref,
-  Ref,
   watchEffect,
+  watch,
 } from "@vue/runtime-core";
 
-import { ElContainer, ElHeader, ElMain, ElFooter, ElButton, ElPagination } from "element-plus";
+import {
+  ElContainer,
+  ElHeader,
+  ElMain,
+  ElFooter,
+  ElButton,
+  ElPagination,
+  ElMessage,
+} from "element-plus";
 import BetterScroll from "../../../../../components/betterscroll/BetterScroll.vue";
 import Loading from "../../../../../components/svgloading/SvgLoading.vue";
 import Dialog from "../components/Dialog.vue";
 import HistoryItem from "./HistoryItem.vue";
 import CommentItem from "./CommentItem";
+import { useStore } from "vuex";
+import { useRouter } from "vue-router";
 
 enum COMP {
   "History" = "History",
@@ -77,7 +86,7 @@ const props = defineProps({
     default: true,
   },
   data: {
-    type: Array as unknown as PropType<Ref<any[]>>,
+    type: Array,
     required: true,
   },
   title: {
@@ -106,7 +115,12 @@ const props = defineProps({
       "prev-click": (index: number) => {},
       "next-click": (index: number) => {},
       "current-change": (index: number) => {},
+      "send-content": (content: string) => {},
     }),
+  },
+  shutDialog: {
+    type: Boolean,
+    default: true,
   },
 });
 
@@ -118,6 +132,8 @@ const paging = ref<typeof ElPagination | null>(null);
 let muObserve: MutationObserver | null;
 const comploading = ref(props.loading);
 const totalpage = ref(1);
+const store = useStore();
+const router = useRouter();
 
 function switchComp(compid: string) {
   if (compid === COMP.Comment) {
@@ -198,14 +214,40 @@ function setPagerClass() {
   });
 }
 
-function watchData() {
-  const stop = watch(props.data, () => {
+const stop = watchEffect(() => {
+  if (props.data.length > 0) {
     comploading.value = false;
     Promise.resolve().then(stop);
-  });
+  }
+});
+
+function pubComment() {
+  const islogin = store.getters["login/getIslogin"];
+  if (islogin) {
+    dialog.value.visibleDialog();
+  } else {
+    ElMessage({
+      type: "error",
+      message: "请先登录，再发表评论！",
+    });
+    router.push({
+      path: "/login",
+      query: {
+        path: router.currentRoute.value.path,
+        id: router.currentRoute.value.query.id,
+      },
+    });
+  }
 }
 
-watchData();
+watch(
+  () => props.shutDialog,
+  (shut) => {
+    if (shut === false) {
+      dialog.value.hiddenDialog();
+    }
+  }
+);
 
 watchEffect(() => {
   if (props.total) {

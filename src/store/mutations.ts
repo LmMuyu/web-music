@@ -43,7 +43,6 @@ export default {
 
   pubMitt(state: State, playload) {
     state.unmountList.on(playload[0], playload[1]);
-    console.log(state.unmountList.all);
   },
 
   subUnmountList(state: State, subtype: string, callback: Function, ...args: any) {

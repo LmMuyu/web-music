@@ -1,14 +1,24 @@
-import { AxiosRequestConfig } from "axios";
 import request from "../../utils/request";
 
-export function getQrKey(config: AxiosRequestConfig) {
-  return request(config);
+export function getQrKey() {
+  return request({ url: "/login/qr/key" });
 }
 
-export function getQrCreate(config: AxiosRequestConfig) {
-  return request(config);
+export function getQrCreate(key: string) {
+  return request({
+    url: "/login/qr/create",
+    params: {
+      key,
+      qrimg: true,
+    },
+  });
 }
 
-export function checkStatus(config: AxiosRequestConfig) {
-  return request(config);
+export function checkStatus(key: string) {
+  return request({
+    url: "/login/qr/check",
+    params: {
+      key,
+    },
+  });
 }

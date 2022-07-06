@@ -1,7 +1,7 @@
 <template>
   <el-container class="relative w-full h-full overflow-y-scroll bg-white song_container">
     <el-main class="absolute left-0 top-0 right-0">
-      <SongBasicDetail :playlist="playlistDetail" />
+      <SongBasicDetail @playerAll="playerAll" :playlist="playlistDetail" />
       <SongCollection :playlist-tracks="detailLists" />
       <div v-if="loadGengdDuo && loadBtn" class="w-full pb-8 flex justify-center">
         <el-button class="flex items-center justify-center" @click="loadSong">
@@ -18,23 +18,25 @@ import { useRoute } from "vue-router";
 import { useStore } from "vuex";
 
 import { songDetail, songDetailAll } from "../../api/songdetail";
-import { musicResultDetail } from "../../utils/musicDetail";
+import { musicDetail, musicResultDetail } from "../../utils/musicDetail";
 import transformSongDetails from "./utils/transformSongDetails";
 
 import { ElButton, ElContainer, ElMain, ElMessage } from "element-plus";
 import SongBasicDetail from "./components/SongBasicDetail.vue";
 import SongCollection from "./components/SongCollection.vue";
 import Loading from "../../components/svgloading/SvgLoading.vue";
+import dexie from "../../common/dexie";
 
 const route = useRoute();
 const store = useStore();
 
-const detailLists = ref([]);
+const detailLists = ref<musicDetail[]>([]);
 const playlistDetail = ref({});
 const loadBtn = ref(false);
 let offset = 1;
 let first = true;
 const loadmore = ref(true);
+const mydexie = dexie();
 
 const songTrasf = (detaillist) => {
   const key = Object.prototype.hasOwnProperty.call(detaillist.data, "playlist")
@@ -69,6 +71,12 @@ function loadSong() {
 }
 
 songDetail(route.query.id as unknown as number).then(songTrasf);
+
+async function playerAll() {
+  const db = await mydexie;
+  const musiclists = detailLists.value;
+  db.put(null, null, musiclists, true);
+}
 
 const loadGengdDuo = computed(() => {
   const islogin = store.getters["login/getIslogin"];

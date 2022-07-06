@@ -54,7 +54,14 @@ export default async function () {
       if (has) return;
 
       if (bulk) {
-        const puts = putlists.map((value) => ({
+        const songlists = await getAllSong();
+
+        const filterlists = putlists.filter((song) => {
+          const res = songlists.find((md) => md.mid === song.id);
+          return res ? false : true;
+        });
+
+        const puts = filterlists.map((value) => ({
           mid: value.id,
           songinfo: value,
         }));

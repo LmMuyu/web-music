@@ -26,21 +26,22 @@ interface ACCESS_OR_REFRESH_TOKEN {
   tokenStrObj: string;
 }
 
-const BCLists = [];
-
-function PThen() {
-  return Promise.resolve();
+interface GoBeforePage {
+  gopage: boolean;
+  sourcess: Function;
 }
 
 export function mainBCBus(): Promise<USERDATA> {
-  const BC = BCLists[0] || (new BroadcastChannel("login") && PThen().then(() => (BCLists[0] = BC)));
-  BCLists[0] = BC;
+  let BC = new BroadcastChannel("login");
+
   return new Promise((resolve) => {
     BC.onmessage = function (ev) {
       const userInfo = ev.data as USERDATA;
-      resolve(userInfo);
       BC.postMessage("close_curr_page");
+      BC.close();
+      BC = null;
       nextTick(() => openNotification("欢迎回来" + userInfo.nickname, null, "success"));
+      resolve(userInfo);
     };
 
     BC.onmessageerror = function () {
@@ -50,17 +51,21 @@ export function mainBCBus(): Promise<USERDATA> {
 }
 
 //登录后跨页面通信
-export function loginBCBus(userdata: any): Promise<boolean> {
+export function loginBCBus(userdata: any, gobeforepage: GoBeforePage): Promise<boolean> {
   return new Promise((resolve, reject) => {
-    const BC =
-      BCLists[1] || (new BroadcastChannel("login") && PThen().then(() => (BCLists[1] = BC)));
-    console.log(BCLists);
+    let BC = new BroadcastChannel("login");
 
     BC.onmessage = function (ev) {
       const msg = ev.data;
-      if (msg === "close_curr_page") {
+      if (msg == "close_curr_page") {
+        if (gobeforepage.gopage) {
+          gobeforepage.sourcess();
+        } else {
+          window.close();
+        }
+        BC.close();
+        BC = null;
         resolve(true);
-        window.close();
       }
     };
 

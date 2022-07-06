@@ -28,7 +28,6 @@ import {
   watch,
   watchEffect,
 } from "vue";
-import { debounce } from "../../utils/debounce";
 import useLoadNetworkRes from "../../utils/useLoadNetworkRes";
 import bottomLoading_H from "./bottomLoading_H";
 
@@ -52,6 +51,7 @@ export default defineComponent({
       type: Boolean,
       default: true,
     },
+    scrollFn: Function,
   },
   emits: ["pullUpLoad", "hook:update"],
   setup(props, { expose, slots, emit: ctxEmit }) {
@@ -68,7 +68,6 @@ export default defineComponent({
     let BS = null;
     let mountRefreshFn: (bs) => void = null;
     let mutation = null;
-    let imgLoadBeforHeight = 0;
 
     function disable() {
       console.log(BS);
@@ -186,6 +185,11 @@ export default defineComponent({
         );
 
         props.openUpload && BS.on("pullingUp", pullingUpHandler);
+        console.log(5555);
+        
+        BS.on("scroll", (position) => {
+          console.log(position.x, position.y);
+        });
 
         const stop = watchEffect(() => {
           if (

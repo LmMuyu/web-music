@@ -1,4 +1,4 @@
-import { ComponentInternalInstance, Ref, ref, watchEffect, WatchStopHandle } from "vue";
+import { ComponentInternalInstance, computed, Ref, ref, watchEffect, WatchStopHandle } from "vue";
 import { getLyrics, getMusicDetail } from "../../api/playList";
 import store from "../../store";
 import filterDate from "../../utils/filterDate";
@@ -51,7 +51,6 @@ const Howl = (options: HOWLOPTIONS, ctx: compinstance) => {
       },
       onPause() {
         console.log("pause");
-
         isplay.value = false;
       },
       onPlayerror(err) {
@@ -206,8 +205,6 @@ const Howl = (options: HOWLOPTIONS, ctx: compinstance) => {
     return (currIndex = index > -1 ? index : 0);
   }
 
-  function moveMusicFirst(songinfo: musicDetail) {}
-
   function watchImmediatelyPlayMusics() {
     let isonewatch = true;
     watchEffect(async () => {
@@ -224,7 +221,26 @@ const Howl = (options: HOWLOPTIONS, ctx: compinstance) => {
       }
     });
   }
-  function watchLaterPlayQueue() {}
+  function watchLaterPlayQueue() {
+    const musiclists = computed<musicDetail[]>(store.getters["playlist/getMusiclists"]);
+    watchEffect(() => {
+      if (musiclists.value.length > 0) {
+        duplicateRemoval(musiclists.value);
+        setImmdPlayLists(musiclists.value);
+      }
+    });
+  }
+
+  function duplicateRemoval(musiclists: musicDetail[]) {
+    musiclists.map((music) => {
+      const index = palylists.value.findIndex((song) => music.id === song.id);
+
+      if (index === -1) return music;
+      palylists.value.splice(index, 1);
+    });
+  }
+
+  watchLaterPlayQueue();
 
   function musicFoundation(musicdetail: musicDetail) {
     if (musicdetail !== options.musicinfoRef.value) {

@@ -39,7 +39,9 @@
         <span class="boxtext text-left text-sm" v-html="playlist.titile"></span>
       </div>
       <div class="flex items-center">
-        <el-button size="small" type="primary" :plain="true">播放全部</el-button>
+        <el-button size="small" type="primary" @click="ctxEmit('playerAll')" :plain="true"
+          >播放全部</el-button
+        >
 
         <el-button
           @click="shouChuang"
@@ -58,6 +60,8 @@
 import { ElImage, ElRow, ElCol, ElButton, ElTag, ElMessage } from "element-plus";
 import { useStore } from "vuex";
 import FontIcon from "../../../components/fonticon/FontIcon.vue";
+
+const ctxEmit = defineEmits(["playerAll"]);
 
 const props = defineProps({
   playlist: {

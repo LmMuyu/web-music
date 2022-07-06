@@ -33,13 +33,12 @@
     </el-header>
     <el-main ref="container_main" class="w-full flex">
       <el-row style="height: 100vh">
-        <el-col :span="8"> </el-col>
+        <el-col :span="10"> </el-col>
         <el-col :span="13">
           <div ref="container_lycs" class="relative lycs_music">
             <div
               class="flex flex-col overflow-y-scroll relative sliderTrack"
               style="height: 30rem"
-              @scroll="lyricThrottle"
               ref="lyricNode"
             >
               <play-lycs
@@ -61,7 +60,7 @@
             </div>
           </div>
         </el-col>
-        <el-col :span="3"> </el-col>
+        <el-col :span="1"> </el-col>
       </el-row>
       <div class="w-full flex justify-center">
         <div ref="comments" class="h-auto w-1/2">

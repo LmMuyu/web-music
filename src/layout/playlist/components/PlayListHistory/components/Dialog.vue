@@ -27,6 +27,8 @@ import store from "../../../../../store";
 
 import { ElDialog } from "element-plus";
 
+const ctxEmit = defineEmits(["editorContent"]);
+
 const dialogVisible = ref(false);
 
 function handleClose(done: () => void) {
@@ -34,7 +36,9 @@ function handleClose(done: () => void) {
 }
 
 function editorContent(content: string) {
-  console.log(content);
+  if (content) {
+    ctxEmit("editorContent", content);
+  }
 }
 
 const follows = computed(() => {
@@ -58,6 +62,10 @@ watchEffect(async () => {
 defineExpose({
   visibleDialog() {
     dialogVisible.value = true;
+  },
+
+  hiddenDialog() {
+    dialogVisible.value = false;
   },
 });
 </script>
