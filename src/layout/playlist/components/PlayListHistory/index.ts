@@ -5,6 +5,8 @@ import PlayListHistory from "./PlayListHistory.vue";
 import type { App } from "@vue/runtime-dom";
 import type { ElPagination } from "element-plus";
 import type { Include, OPTIONS } from "./type";
+import store from "../../../../store";
+import router from "../../../../routes";
 
 let app: App<Element> | null = null;
 let div: HTMLDivElement | null = null;
@@ -13,7 +15,8 @@ let root: Element | null = null;
 export function openDrawer<T extends any[] | Ref<any[]>>(
   recordData: T,
   title = "历史记录",
-  options?: OPTIONS & Include<typeof ElPagination, "prev-click" | "next-click" | "current-change">
+  options?: OPTIONS &
+    Partial<Include<typeof ElPagination, "prev-click" | "next-click" | "current-change">>
 ) {
   const open = (function () {
     const isopen = ref(false);
@@ -37,6 +40,7 @@ export function openDrawer<T extends any[] | Ref<any[]>>(
     div = document.createElement("div");
     root = document.querySelector("body");
     root?.appendChild(div);
+    plugin(app, [store, router]);
     app.mount(div);
 
     return () => (isopen.value = false);
@@ -53,4 +57,8 @@ export function unmountApp() {
       root = div = app = null;
     }
   });
+}
+
+function plugin(app: App, plugins: any[]) {
+  plugins.forEach((plugin) => app.use(plugin));
 }

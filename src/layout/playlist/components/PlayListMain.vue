@@ -40,6 +40,7 @@
               class="flex flex-col overflow-y-scroll relative sliderTrack"
               style="height: 30rem"
               ref="lyricNode"
+              @scroll="lyricThrottle"
             >
               <play-lycs
                 v-if="lycsLists.length > 0"
@@ -48,6 +49,7 @@
                 :musicItemList="lycsLists"
                 :slideScrollTop="sliderH"
                 :puremusic="puremusic"
+                :rootstyle="transformStyle"
               />
             </div>
 
@@ -78,7 +80,7 @@ import { computed, nextTick, onUnmounted, ref, watchEffect, shallowRef } from "@
 
 import { useType } from "../../../hooks";
 import { getLyrics } from "../../../api/playList";
-import { lyricNodeRect, clientHeight } from "../hooks/data";
+import { lyricNodeRect, clientHeight, distance } from "../hooks/data";
 import { conversionItem, lyricThrottle } from "../hooks/methods";
 import { createAsComponent } from "../../../utils/createAsComponent";
 
@@ -238,6 +240,24 @@ function containerMainToScroll(toscroll: boolean | string, commentNode: HTMLElem
     }
   }
 }
+
+const transformStyle = computed(() => {
+  let movey = 0;
+
+  const totalH = lyricNodeRect.scrollHeight - lyricNodeRect.offsetHeight;
+
+  if (distance.value > totalH) {
+    const diffy = totalH - distance.value;
+    distance.value -= distance.value - diffy;
+    movey = distance.value;
+  } else {
+    movey = distance.value;
+  }
+
+  return {
+    transform: `translate3d(0,-${movey}px,0)`,
+  };
+});
 
 onMounted(async () => {
   nextTick().then(() => {

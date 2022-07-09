@@ -32,17 +32,15 @@ export const lyricThrottle = throttle(lyricScroll, 16.6);
 
 let prev = 0;
 
-export function lyricScroll(y: number) {
-  console.log(y);
+export function lyricScroll(event: Event) {
+  const el = event.target as HTMLElement;
+  const disty = el.scrollTop;
 
-  // const el = event.target as HTMLElement;
-  // const disty = el.scrollTop;
+  const diffy = disty - prev;
+  prev = disty;
 
-  // const diffy = disty - prev;
-  // prev = disty;
-
-  // distance.value += diffy;
-  // _setScrollHeight(disty);
+  distance.value += diffy;
+  _setScrollHeight(disty);
 }
 
 function Gain(ctx: AudioContext, gainvalue: Ref<number>): Promise<GainNode> {

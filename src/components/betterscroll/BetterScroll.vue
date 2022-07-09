@@ -185,7 +185,6 @@ export default defineComponent({
         );
 
         props.openUpload && BS.on("pullingUp", pullingUpHandler);
-        console.log(5555);
         
         BS.on("scroll", (position) => {
           console.log(position.x, position.y);

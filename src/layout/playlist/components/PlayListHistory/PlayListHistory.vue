@@ -1,5 +1,5 @@
 <template>
-  <ElDrawer
+  <el-drawer
     @closed="onClosed"
     :showClose="false"
     :withHeader="false"
@@ -14,11 +14,12 @@
       :on="on"
       :title="title"
       :data="data"
+      :renderBS="false"
     />
-  </ElDrawer>
+  </el-drawer>
 </template>
 <script setup lang="ts">
-import { defineProps, shallowRef, watch, watchEffect } from "@vue/runtime-core";
+import { defineProps, onUnmounted, shallowRef, watch, watchEffect } from "@vue/runtime-core";
 import { computed, isRef, PropType, ref } from "vue";
 
 import { ElDrawer, ElPagination } from "element-plus";
@@ -51,6 +52,7 @@ const props = defineProps({
       "prev-click": () => {},
       "next-click": () => {},
       "current-change": () => {},
+      "send-content": () => {},
     }),
   },
   size: {
@@ -69,6 +71,7 @@ const compId = shallowRef<COMP.History | COMP.Comment>(COMP.Comment);
 
 //@ts-ignore
 const data = computed(() => props.record.allData?.value ?? props.record.allData);
+console.log(data.value);
 
 const isopen = computed(() => isRef(props.record.isopen));
 const onClosed = () => props.unmountApp();
@@ -76,27 +79,22 @@ const onClosed = () => props.unmountApp();
 const ishistory = computed(() => props.title === "历史记录");
 const containerWidth = computed(() => (ishistory.value ? "25%" : "50%"));
 
-function loadingComp() {
-  watchEffect(() => {
-    compId.value = props.title === "历史记录" ? COMP.History : COMP.Comment;
-  });
-}
+const stop = watchEffect(() => {
+  compId.value = props.title === "历史记录" ? COMP.History : COMP.Comment;
+});
 
-loadingComp();
-
-watch(
+const watcrec = watch(
   () => props.record,
-  (newvalue) => {
-    if (Object.keys(newvalue).length > 0) {
-      loading.value = false;
-    } else {
-      loading.value = true;
-    }
-  },
+  (newvalue) => (loading.value = Object.keys(newvalue).length > 0 ? false : true),
   {
     immediate: true,
   }
 );
+
+onUnmounted(() => {
+  stop();
+  watcrec();
+});
 </script>
 
 <style scoped lang="scss">

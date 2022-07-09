@@ -73,21 +73,6 @@ const Howl = (options: HOWLOPTIONS, ctx: compinstance) => {
     }
   }
 
-  function createSrc(id: number) {
-    return `https://music.163.com/song/media/outer/url?id=${id}.mp3`;
-  }
-
-  function playSrcSet(index: number) {
-    return new Promise(async (resolve) => {
-      const musicdetail = palylists.value[index];
-      if (!musicdetail.id) return;
-
-      musicFoundation(musicdetail);
-      how.setSrc(createSrc(musicdetail.id));
-      resolve(true);
-    });
-  }
-
   function nextMusic() {
     currIndex += 1;
     if (currIndex > palylists.value.length - 1) {
@@ -108,6 +93,35 @@ const Howl = (options: HOWLOPTIONS, ctx: compinstance) => {
     playSrcSet(currIndex);
   }
 
+  function againPlayIndexPos(mid: number) {
+    const index = palylists.value.findIndex((music) => music.id === mid);
+
+    if (index > -1) {
+      playtime.value = 0;
+      playSrcSet(index);
+
+      return true;
+    }
+
+    return false;
+  }
+
+  function createSrc(id: number) {
+    return `https://music.163.com/song/media/outer/url?id=${id}.mp3`;
+  }
+
+  function playSrcSet(index: number) {
+    return new Promise(async (resolve) => {
+      const musicdetail = palylists.value[index];
+      if (!musicdetail.id) return;
+
+      musicFoundation(musicdetail);
+      how.setSrc(createSrc(musicdetail.id));
+      store.commit("playlist/setSongId", musicdetail.id); //将第一首歌曲id写入stroe
+      resolve(true);
+    });
+  }
+
   const playSeek: staticPlaySeekMethods = function playSeek() {
     if (timeseek !== null) return;
     if (!how.playing) return playtime;
@@ -115,6 +129,8 @@ const Howl = (options: HOWLOPTIONS, ctx: compinstance) => {
     if (!ismove) {
       playtime.value = how.time_seek() ?? playtime.value;
     }
+
+    playSeek.clear();
 
     stopWatch = watchEffect(() => {
       isplay.value ? setIntervalGetSeek() : playSeek.clear();
@@ -303,6 +319,7 @@ const Howl = (options: HOWLOPTIONS, ctx: compinstance) => {
     setImmdPlayLists,
     initCurrentIndex,
     filterDurationTime,
+    againPlayIndexPos,
   };
 };
 

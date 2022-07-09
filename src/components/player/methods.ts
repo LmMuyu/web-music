@@ -1,5 +1,6 @@
 import { ComponentInternalInstance, ref, Ref, watch } from "vue";
 import dexieInstance from "../../common/dexie";
+import store from "../../store";
 import { musicDetail } from "../../utils/musicDetail";
 import { useLocalStorage } from "../../utils/useLocalStorage";
 
@@ -51,6 +52,7 @@ export async function setIndexDBAAllDataToHowlLists(
     throw new Error("firstSong:null");
   }
 
+  store.commit("playlist/setSongId", firstSong.id); //将第一首歌曲id写入stroe
   const splicelists = spliceMusicLits(songlists, firstSong);
   unshitfMusicLists(splicelists);
   watchMusics(); //开启watchEffect来监听后续写入播放数组里面的音乐信息

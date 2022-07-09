@@ -31,7 +31,6 @@ const recommendSongs = ref([]);
 
 getRecommend(3).then((res) => {
   recommendSongs.value = res.data.result;
-  console.log(recommendSongs.value);
 });
 </script>
 <style scoped lang="scss"></style>

@@ -96,6 +96,7 @@ import { ElSlider, ElRow, ElCol } from "element-plus";
 import VolumeIcon from "./components/VolumeIcon.vue";
 import FontIcon from "../fonticon/FontIcon.vue";
 import { openDrawer } from "../../layout/playlist/components/PlayListHistory";
+import playerLists from "./playerlists";
 
 const props = defineProps({
   songinfo: {
@@ -135,6 +136,7 @@ const {
   initCurrentIndex,
   volume: setVolume,
   playSeek: seekTime,
+  againPlayIndexPos,
 } = AudioHow(
   {
     musicinfoRef: musicinfo,
@@ -224,11 +226,9 @@ watchEffect(async () => {
   try {
     if (storeMid.value && storeMid.value !== mid) {
       mid = storeMid.value;
-      const findIndex = palylists.value.findIndex((value) => value.id === mid);
 
-      //点击播放，查询看一下有没有在播放在列表中，有就将它插入到列表最前
-      if (findIndex > -1) {
-        palylists.value.unshift(...palylists.value.splice(findIndex, 1));
+      const isIngPlay = againPlayIndexPos(mid);
+      if (isIngPlay) {
         return;
       }
 
@@ -298,23 +298,21 @@ function openControl(top: string, left: string) {
   sliderPos.left = left;
 }
 
+const playerlist = new playerLists();
 async function OpenHistory() {
-  const songs = await (await (await dexie).getAllSong()).map((music) => music.songinfo);
-
-  openDrawer(songs);
+  if (playerlist.mounting) {
+    playerlist.unmount();
+  } else {
+    playerlist.mount();
+  }
 }
 
 onMounted(() =>
   nextTick().then(() => {
     sliderstyle();
     leaveTimeout();
-    // document.documentElement.addEventListener("click", windowClick, false);
   })
 );
-
-// onUnmounted(() => {
-//   document.documentElement.removeEventListener("click", windowClick, false);
-// });
 </script>
 <style scoped lang="scss">
 @include Iconfont(#2d3436, 20);

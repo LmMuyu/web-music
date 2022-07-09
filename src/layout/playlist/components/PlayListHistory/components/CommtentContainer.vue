@@ -4,7 +4,7 @@
       <div>
         <span class="text-base">{{ title }}</span>
       </div>
-      <div>
+      <div v-if="commentMod">
         <el-button size="small" @click="pubComment">发表评论</el-button>
         <Dialog ref="dialog" @editorContent="props.on['send-content']" />
       </div>
@@ -14,12 +14,9 @@
     </el-main>
     <el-main v-else class="relative h-full parser">
       <BetterScroll v-if="renderBS" class="absolute top-0 left-0 w-full h-full">
-        <component
-          v-for="(item, index) in data"
-          :key="index"
-          :scopedData="item"
-          :is="compId"
-        ></component>
+        <div v-for="(item, index) in data" :key="index">
+          <component :scopedData="item" :is="compId"></component>
+        </div>
       </BetterScroll>
       <div v-else>
         <component
@@ -56,6 +53,7 @@ import {
   unref,
   watchEffect,
   watch,
+  shallowRef,
 } from "@vue/runtime-core";
 
 import {
@@ -122,11 +120,15 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  commentMod: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 const dialog = ref(null);
 const curPage = ref(1);
-const selectComp = ref<typeof CommentItem | typeof HistoryItem>(CommentItem);
+const selectComp = shallowRef<typeof CommentItem | typeof HistoryItem>(CommentItem);
 const showfooter = ref(false);
 const paging = ref<typeof ElPagination | null>(null);
 let muObserve: MutationObserver | null;
@@ -146,11 +148,7 @@ function switchComp(compid: string) {
 switchComp(props.compId);
 
 function showFooterRef() {
-  if (!showfooter.value) {
-    showfooter.value = true;
-  } else {
-    showfooter.value = false;
-  }
+  showfooter.value = !showfooter.value ? true : false;
 }
 
 showFooterRef();
@@ -217,7 +215,7 @@ function setPagerClass() {
 const stop = watchEffect(() => {
   if (props.data.length > 0) {
     comploading.value = false;
-    Promise.resolve().then(stop);
+    Promise.resolve().then(() => stop());
   }
 });
 

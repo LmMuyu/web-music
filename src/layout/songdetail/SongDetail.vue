@@ -75,7 +75,8 @@ songDetail(route.query.id as unknown as number).then(songTrasf);
 async function playerAll() {
   const db = await mydexie;
   const musiclists = detailLists.value;
-  db.put(null, null, musiclists, true);
+
+  db.setFirst(musiclists[0]);
 }
 
 const loadGengdDuo = computed(() => {

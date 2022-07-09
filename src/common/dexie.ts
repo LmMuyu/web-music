@@ -1,4 +1,4 @@
-import { Dexie, Table } from "dexie";
+import { Dexie, Table, Transaction } from "dexie";
 import { musicDetail } from "../utils/musicDetail";
 
 interface MusicSong {
@@ -20,7 +20,7 @@ class musicSongList extends Dexie {
 
 const dexieMusiclist = new musicSongList();
 
-function dexieTransaction() {
+function dexieTransaction(): Promise<Transaction> {
   return new Promise((resolve, reject) => {
     dexieMusiclist.transaction("rw", dexieMusiclist.songlist, resolve).catch(reject);
   });
@@ -50,8 +50,10 @@ export default async function () {
       putlists?: musicDetail[],
       bulk?: boolean
     ) {
-      const { has } = await idWhere(mid);
-      if (has) return;
+      if (mid) {
+        const { has } = await idWhere(mid);
+        if (has) return;
+      }
 
       if (bulk) {
         const songlists = await getAllSong();
@@ -66,7 +68,7 @@ export default async function () {
           songinfo: value,
         }));
 
-        return table.bulkPut(puts);
+        return puts.forEach((song) => table.put(song));
       } else {
         return table.put({ mid, songinfo });
       }
