@@ -57,16 +57,18 @@ const routes: (RouteRecordRaw & {
       },
       showtiao: false,
       query: ["uid", "isself"],
+      //issinger:boolean
+      params: ["issinger"],
     },
     children: [
       {
         path: "home",
-        name: "Home",
+        name: "UserHome",
         component: () => import("../layout/user/home/Home.vue"),
       },
       {
         path: "songs",
-        name: "Songs",
+        name: "UserSongs",
         component: () => import("../layout/user/songs/Songs.vue"),
       },
     ],
@@ -135,12 +137,12 @@ const routes: (RouteRecordRaw & {
     },
   },
   {
-    path:"/setting", 
-    name:"Setting",
-    components:{
-      default:() => import ("../layout/setting/Setting.vue") 
-    }
-  }
+    path: "/setting",
+    name: "Setting",
+    components: {
+      default: () => import("../layout/setting/Setting.vue"),
+    },
+  },
 ];
 
 export default routes;

@@ -4,7 +4,7 @@
       <IndexHeaderModule />
     </el-header>
     <el-main class="flex flex-col h-full scrollbar" style="padding: 16px 0 !important">
-      <AsayncSuspense>
+      <AsayncSuspense class="px-2">
         <IndexBanner :banner-data="bannerImages" />
         <IndexRecommended />
         <IndexDiscover />

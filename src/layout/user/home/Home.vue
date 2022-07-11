@@ -1,15 +1,18 @@
 <template>
   <ElContainer class="h-full bg-white">
-    <ElHeader height="100" class="flex items-center py-4">
-      <div v-if="Object.keys(userinfo).length > 0" class="flex py-2">
+    <ElHeader :height="issinger ? '200px' : '100px'" class="flex items-center py-4">
+      <div v-if="Object.keys(userinfo).length > 0 && !issinger" class="flex py-2">
         <ElAvatar size="medium" :src="userinfo.avatarUrl" />
         <div>
           <span class="text-2xl px-2"> {{ userinfo.nickname }}的音乐库 </span>
         </div>
       </div>
+      <div v-else class="w-full">
+        <HomeSingerInfo :singerinfo="userinfo" />
+      </div>
     </ElHeader>
     <ElMain class="container_main">
-      <div class="flex" style="height: 30vh">
+      <div v-if="!issinger" class="flex" style="height: 30vh">
         <div class="w-1/3">
           <HomeLLikeMusic :linkelen="linkeLen" @playermusic="playermusic"></HomeLLikeMusic>
         </div>
@@ -17,8 +20,13 @@
           <HomeLLinkeLists :linkeLists="linkeLists" />
         </div>
       </div>
+
       <div>
-        <HomeHeadSelect @songs="selectViewComps" @selectTag="selectViewComps" />
+        <HomeHeadSelect
+          @songs="selectViewComps"
+          @selectTag="selectViewComps"
+          :issinger="issinger"
+        />
       </div>
       <div>
         <keep-alive>
@@ -43,16 +51,25 @@ import { useStore } from "vuex";
 import { getMusicDetail } from "../../../api/playList";
 import { musicDetail } from "../../../utils/musicDetail";
 import HomeLLinkeListsPlay from "./hooks/HomeLLinkeListsPlay";
-import { obtainUserPlayList, llikelist, subArtist, getCloud } from "../../../api/user";
+import {
+  obtainUserPlayList,
+  llikelist,
+  subArtist,
+  getCloud,
+  artistdetail,
+  singerAlbum,
+} from "../../../api/user";
+import { transformArtistData } from "./hooks/Home";
+import { albumDateil, SingetInfo } from "./hooks/singer";
 
-import { ElContainer, ElMain, ElHeader, ElAvatar } from "element-plus";
 import HomeArtist from "./components/HomeArtist.vue";
 import HomeSongList from "./components/HomeSongList.vue";
+import HomeCloudDisk from "./components/HomeCloudDisk.vue";
 import HomeLLikeMusic from "./components/HomeLLikeMusic.vue";
 import HomeHeadSelect from "./components/HomeHeadSelect.vue";
+import HomeSingerInfo from "./components/HomeSingerInfo.vue";
 import HomeLLinkeLists from "./components/HomeLLinkeLists.vue";
-import HomeCloudDisk from "./components/HomeCloudDisk.vue";
-import { transformArtistData } from "./hooks/Home";
+import { ElContainer, ElMain, ElHeader, ElAvatar } from "element-plus";
 
 const route = useRoute();
 const store = useStore();
@@ -65,6 +82,7 @@ const cloudDiskData = ref([]);
 const userinfo = ref<any>({});
 const songlist = ref<any[]>([]);
 const linkeLists = ref<musicDetail[]>([]);
+const issinger = ref(ifIsSinger(route.params.issinger));
 const contentComps = shallowRef<any>(HomeSongList);
 const selectTag = ref<"all" | "linke" | "sub" | "">("all");
 
@@ -128,43 +146,64 @@ function loginInfo(): Promise<{
 }
 
 (async function () {
-  const { islogin, stopWatch } = await loginInfo();
-  stopWatch();
-
   try {
-    if (islogin) {
-      getCloud().then((cloud) => {
-        cloudDiskData.value.push(cloud.data);
+    if (!issinger.value) {
+      const { islogin, stopWatch } = await loginInfo();
+      stopWatch();
+
+      if (islogin) {
+        getCloud().then((cloud) => {
+          cloudDiskData.value.push(cloud.data);
+        });
+      }
+
+      subArtist().then((sub) => {
+        artistlist.value = sub.data.data.map((artist) => transformArtistData(artist));
+      });
+
+      obtainUserPlayList(uid.value)
+        .then(async (sub) => {
+          if (sub.data.playlist.length > 0) {
+            songlist.value.push(...sub.data.playlist);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+
+      const likelist = await llikelist(uid.value);
+
+      ids.value.push(...likelist.data.ids);
+      linkeLen.value = ids.value.length;
+      const strids = ids.value.join(",");
+
+      getMusicDetail(strids).then((sources) => {
+        linkeLists.value = sources.data.songs.map((song) => new musicDetail(song));
+      });
+    } else {
+      artistdetail(Number(uid.value)).then((singer) => {
+        userinfo.value = new SingetInfo(singer.data.data);
+      });
+
+      singerAlbum(Number(uid.value)).then((albums) => {
+        // songlist.value.push(albums.data.hotAlbums.map((album) => new albumDateil(album)));
       });
     }
-
-    subArtist().then((sub) => {
-      artistlist.value = sub.data.data.map((artist) => transformArtistData(artist));
-    });
-
-    obtainUserPlayList(uid.value)
-      .then(async (sub) => {
-        if (sub.data.playlist.length > 0) {
-          songlist.value.push(...sub.data.playlist);
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-
-    const likelist = await llikelist(uid.value);
-
-    ids.value.push(...likelist.data.ids);
-    linkeLen.value = ids.value.length;
-    const strids = ids.value.join(",");
-
-    getMusicDetail(strids).then((sources) => {
-      linkeLists.value = sources.data.songs.map((song) => new musicDetail(song));
-    });
   } catch (error) {
     console.error("状态码:" + error.data.status);
   }
 })();
+
+function ifIsSinger(issinger) {
+  if (issinger === undefined) {
+    return false;
+  }
+
+  if (issinger === "true") {
+    return true;
+  }
+  return false;
+}
 </script>
 <style scoped lang="scss">
 .flexdir {

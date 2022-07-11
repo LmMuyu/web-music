@@ -43,7 +43,7 @@
           </div>
           <div class="px-4">
             <router-link
-              :to="{ path: '/playlist', params: { toscroll: true }, query: { id: storeMid } }"
+              :to="{ name: 'Playlist', params: { toscroll: true }, query: { id: storeMid } }"
             >
               <font-icon icon="iconpinglun_huabanfuben" size="24"> </font-icon>
             </router-link>

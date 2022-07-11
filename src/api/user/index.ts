@@ -95,3 +95,23 @@ export function follows(uid: number, page: number) {
     },
   });
 }
+
+export function artistdetail(id: number) {
+  return request({
+    url: "/artist/detail",
+    params: {
+      id,
+    },
+  });
+}
+
+export function singerAlbum(id: number, limit: number = 20, offset: number = 1) {
+  return request({
+    url: "/artist/album",
+    params: {
+      id,
+      limit,
+      offset: offset - 1,
+    },
+  });
+}

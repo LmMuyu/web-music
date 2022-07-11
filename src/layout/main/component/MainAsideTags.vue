@@ -4,7 +4,7 @@
     <el-main>
       <MainTag />
     </el-main>
-    <el-footer ref="footer" class="flex items-center justify-center px-4 pb-4">
+    <el-footer height="150px" ref="footer" class="flex itmes-start justify-center px-4 pb-4">
       <MainAsideCard v-if="loginUserData.tramsformButton" :infoData="loginUserData.userdata" />
       <ButtonEnter v-else-if="windowResize" />
       <AvatarEnter v-else />
@@ -82,6 +82,8 @@ function watchRetUserData() {
 
       //有登录信息
       if (Object.keys(userdata).length > 0 && type && type === "login") {
+        console.log(userdata);
+
         dispposeUserInfo(userdata);
         //退出登录
       } else if (type && type === "logout") {

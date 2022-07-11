@@ -14,11 +14,18 @@
     >
       <el-row class="p-4" style="color: #545499">
         <el-col :span="10">
-          <el-avatar shape="square" :size="60" :src="item.picUrl + '?param=60y60'"> </el-avatar>
+          <router-link :to="routerLinkTemp(item.id)">
+            <el-avatar shape="square" :size="60" :src="item.picUrl + '?param=60y60'"> </el-avatar>
+          </router-link>
         </el-col>
-        <el-col :span="10" style="color: #7474ad" class="flex flex-col items-center justify-center">
-          <span> {{ item.name }} </span>
-          <span class="text-sm leading-6"> {{ item.musicSize }} 首歌曲 </span>
+        <el-col :span="10" style="color: #7474ad" class="relative">
+          <router-link
+            :to="routerLinkTemp(item.id)"
+            class="absolute top-0 left-0 w-full h-full flex flex-col justify-center"
+          >
+            <span> {{ item.name }} </span>
+            <span class="text-sm leading-6"> {{ item.musicSize }} 首歌曲 </span>
+          </router-link>
         </el-col>
         <el-col :span="4" class="flex justify-center">
           <font-icon icon="iconxihuan" color="#7474ad" size="18"></font-icon>
@@ -52,5 +59,18 @@ function artistRandom(artists: any[]) {
 }
 const serveArtists = (await artistList()).data.artists;
 artists.value = artistRandom(serveArtists);
+
+function routerLinkTemp(id: number) {
+  return {
+    name: "UserHome",
+    query: {
+      uid: id,
+      isself: true,
+    },
+    params: {
+      issinger: true,
+    },
+  };
+}
 </script>
 <style scoped lang="scss"></style>

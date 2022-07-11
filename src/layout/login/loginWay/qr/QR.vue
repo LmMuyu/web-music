@@ -1,10 +1,10 @@
 <template>
-  <div>
+  <div class="h-full flex items-center justify-center">
     <el-image class="w-44 h-44" :src="qrbase64img"></el-image>
   </div>
 </template>
 <script setup lang="ts">
-import { ref } from "vue";
+import { onUnmounted, ref } from "vue";
 import { getQrKey, checkStatus, getQrCreate } from "../../../../api/login/qrCodeLogin";
 import { ElImage } from "element-plus";
 
@@ -24,7 +24,7 @@ getQrKey()
 
     if (qrimg) {
       qrbase64img.value = qrimg;
-      checkTimeoutQr();
+      // checkTimeoutQr();
     }
   })
   .catch((err) => {
@@ -41,11 +41,16 @@ function clearTime() {
 function checkTimeoutQr() {
   timer = setTimeout(async () => {
     const res = await checkStatus(unikey);
-    console.log(res);
+    // console.log(res);
 
     clearTime();
     checkTimeoutQr();
   }, 1000);
 }
+
+onUnmounted(() => {
+  console.log("clear");
+  clearTime();
+});
 </script>
 <style scoped lang="scss"></style>

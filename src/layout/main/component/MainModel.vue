@@ -1,6 +1,6 @@
 <template>
-  <section ref="model" class="rounded-md z-10 absolute -left-4 opacity shadow" :style="nodeinfo">
-    <el-row class="p-4 bordert">
+  <section ref="model" class="rounded-md z-10 absolute opacity shadow" :style="nodeinfo">
+    <el-row class="p-2 bordert">
       <MainInfoCard :infoData="infoData" />
     </el-row>
     <div class="whitespace-nowrap p-4 bordert">
@@ -13,7 +13,7 @@
     <svg width="12" height="8" class="absolute -bottom-2 left">
       <polygon
         points="0,0 12,0 6,8"
-        style="stroke: #ebeef0; stroke-width: 1px; fill: #ebeef0"
+        style="stroke: #ebedf0; stroke-width: 1px; fill: #ebeef0"
       ></polygon>
     </svg>
   </section>
@@ -28,6 +28,10 @@ import { useStore } from "vuex";
 import { logout } from "../../../api/app/login";
 import { computed } from "vue";
 
+const props = defineProps({
+  moduleInfoCard: Object,
+});
+
 const attrs = useAttrs();
 const ctxEmit = defineEmits(["logout"]);
 const store = useStore();
@@ -35,12 +39,11 @@ const store = useStore();
 const infoData = attrs["infoData"];
 const model = ref(null);
 
-const node = store.getters["maintags/getPosInfo"];
 const nodeinfo = reactive({
   left: "",
   top: "",
   width: "",
-  background: "#F7F9FA",
+  background: "#FAFAFA",
 });
 
 async function updateLogout() {
@@ -55,15 +58,11 @@ const userdata = computed(() => {
 
 onMounted(() => {
   nextTick(() => {
-    nodeinfo.left = "16px";
+    const prerect = model.value.getBoundingClientRect();
 
-    const height = model.value.clientHeight;
-
-    let y = parseInt(node.y);
-    y = y - height;
-
-    nodeinfo.top = y + "px";
-    nodeinfo.width = node.width + "px";
+    nodeinfo.top = props.moduleInfoCard.y - prerect.height + "px";
+    nodeinfo.width = props.moduleInfoCard.width + "px";
+    nodeinfo.left = props.moduleInfoCard.x + "px";
 
     nextTick(() => {
       const rect = model.value.getBoundingClientRect();

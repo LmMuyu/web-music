@@ -1,6 +1,12 @@
 <template>
-  <component ref="model" :infoData="infoData" :is="modelComp" @logout="updateModelStatus" />
-  <ElRow class="w-full cursor-pointer">
+  <component
+    ref="model"
+    :moduleInfoCard="moduleInfoCard"
+    :infoData="infoData"
+    :is="modelComp"
+    @logout="updateModelStatus"
+  />
+  <ElRow ref="infocard" class="w-full cursor-pointer">
     <MainInfoCard :infoData="infoData" />
     <ElCol :span="4" class="flex items-center justify-end icons">
       <i class="iconfont icongengduo-copy" openModel="copy" @click="openLoginModel"></i>
@@ -8,7 +14,7 @@
   </ElRow>
 </template>
 <script setup lang="ts">
-import { defineAsyncComponent, defineProps, onMounted, shallowRef } from "@vue/runtime-core";
+import { defineAsyncComponent, defineProps, reactive, shallowRef } from "@vue/runtime-core";
 import { ref } from "vue";
 import { useStore } from "vuex";
 
@@ -27,6 +33,14 @@ const store = useStore();
 
 const modelComp = shallowRef();
 const model = ref<HTMLElement | null>(null);
+const infocard = shallowRef(null);
+
+const moduleInfoCard = reactive({
+  x: 0,
+  y: 0,
+  width: 0,
+  height: 0,
+});
 
 function updateModelStatus() {
   if (modelComp.value) {
@@ -39,6 +53,7 @@ function updateModelStatus() {
 }
 
 function openLoginModel() {
+  infoCardModulePosInfo();
   updateModelStatus();
 }
 
@@ -66,7 +81,15 @@ function modelCompEvent(e: MouseEvent) {
   }
 }
 
-onMounted(() => {});
+function infoCardModulePosInfo() {
+  //@ts-ignore
+  const el = infocard.value.$el as HTMLElement;
+  const posinfo = el.getBoundingClientRect();
+  moduleInfoCard.x = posinfo.x;
+  moduleInfoCard.y = posinfo.y;
+  moduleInfoCard.width = posinfo.width;
+  moduleInfoCard.height = posinfo.height;
+}
 </script>
 
 <style scoped lang="scss">

@@ -39,7 +39,7 @@
         </div>
       </el-col>
       <el-col :span="3">
-        <div class="w-4/5 h-full cursor-pointer" @click="ctxEmit('newSong')">
+        <div v-if="!issinger" class="w-4/5 h-full cursor-pointer" @click="ctxEmit('newSong')">
           <div class="flex items-center h-full w-full px-2 hover_backcolor">
             <div v-if="!isSelectCloud" class="flex items-center justify-center">
               <font-icon icon="iconjia"></font-icon>
@@ -69,6 +69,10 @@ import { ElSelect, ElOption, ElOptionGroup, ElRow, ElCol } from "element-plus";
 import FontIcon from "../../../../components/fonticon/FontIcon.vue";
 
 const ctxEmit = defineEmits(["songs", "selectTag", "newSong"]);
+
+const props = defineProps({
+  issinger: Boolean,
+});
 
 const noSelectCssText = "font-weight: bold;";
 const yesSelectCssText = "font-weight: bolder;";

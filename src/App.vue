@@ -81,8 +81,8 @@ router.beforeEach(async (to, from, next) => {
   const rquery = to.query as any;
 
   const has = Object.prototype.hasOwnProperty;
-  function everykey(querys, mquerys) {
-    return mquerys.every((key) => has.call(querys, key) && querys[key] !== null);
+  function everykey(q, m) {
+    return m.every((key) => has.call(q, key) && q[key] !== null);
   }
 
   //@ts-ignore
