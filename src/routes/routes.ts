@@ -56,9 +56,8 @@ const routes: (RouteRecordRaw & {
         },
       },
       showtiao: false,
-      query: ["uid", "isself"],
       //issinger:boolean
-      params: ["issinger"],
+      query: ["uid", "isself", "issinger"],
     },
     children: [
       {

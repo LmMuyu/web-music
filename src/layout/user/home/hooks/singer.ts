@@ -93,16 +93,18 @@ export const singerModuleInfo = {
 };
 
 export class albumDateil {
-  aid: 0;
-  picUrl: string;
+  id: 0;
+  coverImgUrl: string;
   albumname: string;
   createtime: string;
+
   alias: [];
 
   constructor(data: any) {
-    this.aid = data.id;
-    this.picUrl = data.picUrl;
-    this.createtime = formatTime(data.publishTime);
+    this.id = data.id;
+    this.albumname = data.name;
+    this.coverImgUrl = data.picUrl;
+    this.createtime = formatTime(data.publishTime, "ymd");
     this.alias = data.alias;
   }
 }

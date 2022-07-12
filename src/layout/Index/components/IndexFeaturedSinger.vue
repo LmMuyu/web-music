@@ -28,7 +28,14 @@
           </router-link>
         </el-col>
         <el-col :span="4" class="flex justify-center">
-          <font-icon icon="iconxihuan" color="#7474ad" size="18"></font-icon>
+          <font-icon
+            @click="
+              store.dispatch('login/follow', { uid: item.accountId, backcall: followBackCall })
+            "
+            icon="iconxihuan"
+            color="#7474ad"
+            size="18"
+          ></font-icon>
         </el-col>
       </el-row>
     </div>
@@ -39,12 +46,20 @@ import { ref } from "vue";
 
 import { artistList } from "../../../api/index";
 import { margin_right } from "../hook";
+import { useStore } from "vuex";
 
 import FontIcon from "../../../components/fonticon/FontIcon.vue";
 import { ElRow, ElCol, ElAvatar } from "element-plus";
 import HeadTitle from "./IndexModuleHeadTitle.vue";
 
+import type { follow } from "../../../store/modules/module_login";
+
+const store = useStore();
 const artists = ref([]);
+
+function followBackCall(follow: follow) {
+  console.log(follow);
+}
 
 function artistRandom(artists: any[]) {
   const songlists = artists.slice(0);
@@ -54,7 +69,6 @@ function artistRandom(artists: any[]) {
     const randomCount = Math.floor(Math.random() * (len - 1));
     [songlists[i], songlists[randomCount]] = [songlists[randomCount], songlists[i]];
   }
-
   return songlists;
 }
 const serveArtists = (await artistList()).data.artists;
@@ -66,8 +80,6 @@ function routerLinkTemp(id: number) {
     query: {
       uid: id,
       isself: true,
-    },
-    params: {
       issinger: true,
     },
   };

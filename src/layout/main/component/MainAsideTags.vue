@@ -5,7 +5,9 @@
       <MainTag />
     </el-main>
     <el-footer height="150px" ref="footer" class="flex itmes-start justify-center px-4 pb-4">
-      <MainAsideCard v-if="loginUserData.tramsformButton" :infoData="loginUserData.userdata" />
+      <div v-if="loginUserData.tramsformButton" class="w-full h-3/4">
+        <MainAsideCard :infoData="loginUserData.userdata" />
+      </div>
       <ButtonEnter v-else-if="windowResize" />
       <AvatarEnter v-else />
     </el-footer>

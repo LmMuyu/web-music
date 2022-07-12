@@ -26,11 +26,16 @@
       </span>
       <span class="black">
         <p :style="playitem?.style?.name ?? ''" class="text-left cursor-pointer text-sm fotn_title">
-          {{ playitem.name }}
+          <router-link
+            :to="{ path: playitem.topath || playitem.path || to, query: routerQuery(playitem) }"
+          >
+            {{ playitem.name || playitem.albumname }}
+          </router-link>
         </p>
         <p :style="playitem?.style?.subtitle ?? ''" v-if="playitem.subtitle">
           {{ playitem.subtitle }}
         </p>
+        <p class="text-xs py-2" style="colos: #f0f2f5">{{ playitem?.createtime ?? "" }}</p>
       </span>
     </div>
   </section>

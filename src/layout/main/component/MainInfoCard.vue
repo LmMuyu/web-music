@@ -1,5 +1,5 @@
 <template>
-  <ElCol :span="8" class="flex items-center">
+  <ElCol :span="10" class="flex justify-center items-center">
     <ElAvatar :src="infoData?.avatarUrl" :size="48"></ElAvatar>
   </ElCol>
   <ElCol :span="6">

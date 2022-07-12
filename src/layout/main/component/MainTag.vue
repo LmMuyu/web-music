@@ -56,6 +56,7 @@ const toPath = (path: string, index: number) => {
     query: {
       uid: userdata.userID,
       isself: 1,
+      issinger: "false",
     },
   });
 };

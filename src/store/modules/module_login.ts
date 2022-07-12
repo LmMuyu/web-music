@@ -1,6 +1,7 @@
 import { ActionTree } from "vuex";
 import { computed, watchEffect } from "vue";
-import { follows } from "../../api/user";
+import { follows, userAccount } from "../../api/user";
+import { followUser } from "../../api/playervideo";
 
 enum watchType {
   STOPWATCH = "stopwatch",
@@ -98,6 +99,10 @@ class login {
       setUserId(state: STATETYPE, id: number) {
         state.userId = id;
       },
+
+      setAccount(state: STATETYPE, account) {
+        console.log(account);
+      },
     };
   }
 
@@ -131,6 +136,28 @@ class login {
         );
         const followLists = userFollows.data.follow.map((followuser) => new follow(followuser));
         state.commit("setFollowsLists", followLists);
+      },
+
+      async follow(state, { uid, backcall }) {
+        const islogin = state.state.islogin;
+        const follows = state.state.follows;
+
+        if (islogin) {
+          const isfollow = follows.findIndex((follow) => follow.uid === uid);
+          const resFollow = await followUser(uid, isfollow === -1 ? 1 : 0);
+          console.log(resFollow);
+
+          if (resFollow.data.code === 200) {
+            // state.commit("setFollowsLists", [uid]);
+          }
+
+          backcall?.(resFollow);
+        }
+      },
+
+      async account(state) {
+        const account = await userAccount();
+        state.commit("setAccount", account.data);
       },
     };
   }

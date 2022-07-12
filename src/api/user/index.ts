@@ -115,3 +115,27 @@ export function singerAlbum(id: number, limit: number = 20, offset: number = 1) 
     },
   });
 }
+
+export function simiSinger(id: number) {
+  return request({
+    url: "/simi/artist",
+    params: {
+      id,
+    },
+  });
+}
+
+export function artistMv(id: number) {
+  return request({
+    url: "/artist/mv",
+    params: {
+      id,
+    },
+  });
+}
+
+export function userAccount() {
+  return request({
+    url: "/user/account",
+  });
+}

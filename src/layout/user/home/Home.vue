@@ -20,7 +20,6 @@
           <HomeLLinkeLists :linkeLists="linkeLists" />
         </div>
       </div>
-
       <div>
         <HomeHeadSelect
           @songs="selectViewComps"
@@ -35,6 +34,7 @@
             :selectTag="selectTag"
             :artistlist="artistlist"
             :cloudDiskData="cloudDiskData"
+            :albums="albums"
             :is="contentComps"
           ></Component>
         </keep-alive>
@@ -58,10 +58,12 @@ import {
   getCloud,
   artistdetail,
   singerAlbum,
+  simiSinger,
 } from "../../../api/user";
 import { transformArtistData } from "./hooks/Home";
 import { albumDateil, SingetInfo } from "./hooks/singer";
 
+import HomeAlbum from "./components/HomeAlbum.vue";
 import HomeArtist from "./components/HomeArtist.vue";
 import HomeSongList from "./components/HomeSongList.vue";
 import HomeCloudDisk from "./components/HomeCloudDisk.vue";
@@ -69,27 +71,35 @@ import HomeLLikeMusic from "./components/HomeLLikeMusic.vue";
 import HomeHeadSelect from "./components/HomeHeadSelect.vue";
 import HomeSingerInfo from "./components/HomeSingerInfo.vue";
 import HomeLLinkeLists from "./components/HomeLLinkeLists.vue";
+
 import { ElContainer, ElMain, ElHeader, ElAvatar } from "element-plus";
 
 const route = useRoute();
 const store = useStore();
 
-const uid = ref(route.query.uid as string);
 const ids = ref([]);
+const albums = ref([]);
 const linkeLen = ref(0);
 const artistlist = ref([]);
 const cloudDiskData = ref([]);
 const userinfo = ref<any>({});
 const songlist = ref<any[]>([]);
 const linkeLists = ref<musicDetail[]>([]);
-const issinger = ref(ifIsSinger(route.params.issinger));
+const uid = ref(route.query.uid as string);
 const contentComps = shallowRef<any>(HomeSongList);
+const issinger = ref(ifIsSinger(route.query.issinger));
 const selectTag = ref<"all" | "linke" | "sub" | "">("all");
 
 const { playermusic } = HomeLLinkeListsPlay(linkeLists);
 
 function selectViewComps(select: string) {
-  switch (select) {
+  const fSelect = filterSelect(select);
+  console.log(fSelect);
+  if (fSelect === -1) {
+    throw new Error("select错误");
+  }
+
+  switch (fSelect) {
     case "全部歌单":
       contentComps.value = HomeSongList;
       selectTag.value = "all";
@@ -108,6 +118,10 @@ function selectViewComps(select: string) {
       return;
     case "云盘":
       contentComps.value = HomeCloudDisk;
+      selectTag.value = "";
+      return;
+    case "专辑":
+      contentComps.value = HomeAlbum;
       selectTag.value = "";
       return;
   }
@@ -185,8 +199,12 @@ function loginInfo(): Promise<{
         userinfo.value = new SingetInfo(singer.data.data);
       });
 
-      singerAlbum(Number(uid.value)).then((albums) => {
-        // songlist.value.push(albums.data.hotAlbums.map((album) => new albumDateil(album)));
+      singerAlbum(Number(uid.value)).then((albumlists) => {
+        albums.value.push(...albumlists.data.hotAlbums.map((album) => new albumDateil(album)));
+      });
+
+      simiSinger(Number(uid.value)).then((simi) => {
+        artistlist.value = simi.data.artists.map((artist) => transformArtistData(artist));
       });
     }
   } catch (error) {
@@ -203,6 +221,22 @@ function ifIsSinger(issinger) {
     return true;
   }
   return false;
+}
+
+function filterSelect(select: string) {
+  const hashTableArr = ["专辑", "艺人", "MV", "云盘"];
+
+  const singerHashTable = {
+    相似艺人: "艺人",
+  };
+
+  if (Object.prototype.hasOwnProperty.call(singerHashTable, select)) {
+    return singerHashTable[select];
+  } else if (hashTableArr.indexOf(select) > -1) {
+    return select;
+  } else {
+    return -1;
+  }
 }
 </script>
 <style scoped lang="scss">

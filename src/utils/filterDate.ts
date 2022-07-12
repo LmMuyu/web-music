@@ -39,6 +39,6 @@ function retRelativeTime(time: number) {
   return dayjs(dayjs.unix(time).format("YYYY-MM-DD hh:mm:ss")).fromNow();
 }
 
-export function formatTime(time: number) {
-  return dayjs(time).format("YYYY-MM-DD hh:mm:ss");
+export function formatTime(time: number, format: "ymd" | "ymd_hms") {
+  return dayjs(time).format(`YYYY-MM-DD${format === "ymd_hms" ? " hh:mm:ss" : ""}`);
 }

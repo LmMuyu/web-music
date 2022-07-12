@@ -35,8 +35,8 @@
           </el-button>
         </el-col>
       </el-row>
-      <div class="flex items-center">
-        <div class="px-2 text-sm" v-for="(_, key) in singerModuleInfo" :key="key">
+      <div class="flex items-center py-4">
+        <div class="pr-4 text-xs" v-for="(_, key) in singerModuleInfo" :key="key">
           {{ singerModuleInfo[key] }}数：{{ singerinfo.artist?.[key] }}
         </div>
       </div>

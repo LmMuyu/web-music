@@ -7,10 +7,10 @@
         v-if="!topath"
       />
       <play-col-item
-        v-else
         :is-play-icon="playitem?.isPlayIcon ?? true"
         :playitem="transformPlayitem(playitem)"
         :to="topath"
+        v-else
       />
     </div>
   </div>

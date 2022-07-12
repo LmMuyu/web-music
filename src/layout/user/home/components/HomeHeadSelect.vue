@@ -18,25 +18,27 @@
         </el-select>
       </el-col>
       <el-col :span="18" class="flex">
-        <div
-          class="cursor-pointer px-2"
-          style="width: 10%"
-          v-for="(selecttag, index) in select.tagstr"
-          :key="index"
-        >
-          <div
-            @click="currSelectTag(selecttag, index)"
-            class="flex items-center h-full px-2 hover_backcolor"
-            :style="currenSelectIndex === index ? currentBackColor : ''"
+        <el-row class="w-full">
+          <el-col
+            class="cursor-pointer px-2"
+            v-for="(selecttag, index) in select.tagstr"
+            :key="index"
+            :span="tagDynamicSpan.get(selecttag)"
           >
-            <span
-              :style="currenSelectIndex === index ? textCssText : currentTextCssText"
-              class="w-full text-center"
-              style="line-height: 16px; vertical-align: middle"
-              >{{ selecttag }}</span
+            <div
+              @click="currSelectTag(selecttag, index)"
+              class="flex items-center h-full px-2 hover_backcolor"
+              :style="currenSelectIndex === index ? currentBackColor : ''"
             >
-          </div>
-        </div>
+              <span
+                :style="currenSelectIndex === index ? textCssText : currentTextCssText"
+                class="w-full text-center"
+                style="line-height: 16px; vertical-align: middle"
+                >{{ selecttag }}</span
+              >
+            </div>
+          </el-col>
+        </el-row>
       </el-col>
       <el-col :span="3">
         <div v-if="!issinger" class="w-4/5 h-full cursor-pointer" @click="ctxEmit('newSong')">
@@ -90,6 +92,7 @@ const currentBackColor = `
 
 const currenSelectIndex = ref<null | number>(null);
 const isSelectCloud = ref(false);
+const tagDynamicSpan = ref<Map<string, number>>(hashTagSpan());
 
 const select = reactive({
   select: "全部歌单",
@@ -117,7 +120,7 @@ const select = reactive({
       ],
     },
   ],
-  tagstr: ["专辑", "艺人", "MV", "云盘"],
+  tagstr: pushTags(),
 });
 
 function currSelectTag(selecttag: string, index: number) {
@@ -151,6 +154,37 @@ function openInputFile() {
       console.log(res);
     });
   });
+}
+
+function pushTags() {
+  const defaultTags = ["专辑", "艺人", "MV", "云盘"];
+
+  if (props.issinger) {
+    const yirsindex = defaultTags.indexOf("艺人");
+    const yunpanindex = defaultTags.indexOf("云盘");
+    defaultTags[yirsindex] = "相似艺人";
+    defaultTags.splice(yunpanindex, 1);
+  }
+
+  return defaultTags;
+}
+
+function hashTagSpan() {
+  const tags = pushTags();
+  const spanMap = new Map();
+  const defaultSpan = 3;
+  const defaultTextSize = 2;
+
+  tags.forEach((tag) => {
+    if (tag.length > defaultTextSize) {
+      const tagspanlen = defaultSpan + (tag.length - defaultTextSize);
+      spanMap.set(tag, tagspanlen);
+    } else {
+      spanMap.set(tag, defaultSpan);
+    }
+  });
+
+  return spanMap;
 }
 
 onMounted(() => {

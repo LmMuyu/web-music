@@ -63,7 +63,7 @@
   <div
     v-if="isLeaveSanSecBelow"
     @mouseenter="enterAudio"
-    class="w-full h-6 absolute bottom-0 left-0"
+    class="w-full h-4 absolute bottom-0 left-0 z-10"
   ></div>
 </template>
 <script setup lang="ts">
