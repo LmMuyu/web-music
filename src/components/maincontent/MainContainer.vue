@@ -4,7 +4,7 @@
       <el-container v-if="isLoginComp" class="h-full">
         <el-main
           class="h-full"
-          style="z-index: 1; padding-top: 0px"
+          style="z-index: 1; padding-top: 0px; padding-bottom: 0px"
           :style="{
             overflow: hidden ? 'hidden' : 'auto',
           }"

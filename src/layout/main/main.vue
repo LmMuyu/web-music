@@ -1,6 +1,6 @@
 <template>
   <div class="flex h-full overflow-y-hidden">
-    <div v-if="isTagShow" class="float-left w-1/5 h-full right_border">
+    <div v-if="isTagShow" class="float-left w-1/6 h-full right_border">
       <div class="h-full" :style="{ minHeight: minheight + 'px' }">
         <keep-alive>
           <index-aside-tags />
@@ -9,7 +9,7 @@
     </div>
     <div
       class="overflow-hidden h-full relative"
-      :class="[isTagShow ? 'w-4/5' : 'w-full']"
+      :class="[isTagShow ? 'w-5/6' : 'w-full']"
       :style="{ minWidth: minwidth + 'px' }"
     >
       <MainContainer></MainContainer>

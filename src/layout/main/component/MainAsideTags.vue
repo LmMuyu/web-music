@@ -84,8 +84,6 @@ function watchRetUserData() {
 
       //有登录信息
       if (Object.keys(userdata).length > 0 && type && type === "login") {
-        console.log(userdata);
-
         dispposeUserInfo(userdata);
         //退出登录
       } else if (type && type === "logout") {

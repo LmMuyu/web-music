@@ -1,29 +1,33 @@
 <template>
   <ElRow :class="class">
-    <ElCol :span="10" class="flex">
-      <div>
-        <router-link :to="{ path: '/playlist', query: { id: track.id } }" class="blockpx-4">
-          <ElImage
-            :lazy="true"
-            shape="square"
-            :src="track.picUrl + '?param=32y32'"
-            class="w-10 h-10 rounded-md"
-          />
-        </router-link>
-      </div>
-      <div class="flex flex-col w-full px-2">
-        <router-link :to="{ path: '/playlist', query: { id: track.id } }" class="block">
-          {{ track.name }}
-        </router-link>
-        <span class="text-sm" v-html="track.nickName"></span>
-      </div>
+    <ElCol :span="8" class="flex items-center">
+      <span class="px-2">
+        {{ String(index + 1).padStart(2, "0") }}
+      </span>
+      <router-link :to="{ path: '/playlist', query: { id: track.id } }" class="block px-4">
+        <ElImage
+          :lazy="true"
+          shape="square"
+          :src="track.picUrl + '?param=32y32'"
+          class="w-8 h-8 rounded-md"
+        />
+      </router-link>
+      <router-link :to="{ path: '/playlist', query: { id: track.id } }" class="block px-2">
+        {{ track.name }}
+      </router-link>
     </ElCol>
-    <ElCol :span="10" class="flex items-center text-sm">
+    <el-col class="flex justify-center flex-col w-full px-2" :span="6">
+      <span class="text-sm" v-html="track.nickName"></span>
+    </el-col>
+    <ElCol :span="6" class="flex items-center justify-center text-sm">
       <router-link :to="{ path: '/playlist', query: { id: track.id } }" class="block w-full">
         {{ track.name }}
       </router-link>
     </ElCol>
-    <ElCol :span="4" class="flex items-center">
+    <el-col :span="2" class="flex items-center justify-center text-sm">
+      {{ filterDate(track.dt) }}
+    </el-col>
+    <ElCol :span="2" class="flex items-center justify-center">
       <font-icon
         @click="playmusic(track.id)"
         :icon="songid === track.id ? 'iconpause' : 'iconbofang1'"
@@ -33,7 +37,9 @@
 </template>
 <script setup lang="ts">
 import { useStore } from "vuex";
-import { computed, PropType } from "vue";
+import { computed, onUnmounted, PropType } from "vue";
+
+import filterDate from "../../utils/filterDate";
 
 import { ElRow, ElCol, ElImage } from "element-plus";
 import FontIcon from "../fonticon/FontIcon.vue";
@@ -61,5 +67,9 @@ const songid = computed(store.getters["playlist/getSongId"]);
 function playmusic(id: number) {
   store.commit("playlist/setSongId", id);
 }
+
+onUnmounted(() => {
+  props.track.stop();
+});
 </script>
 <style scoped lang="scss"></style>

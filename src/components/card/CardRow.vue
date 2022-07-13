@@ -4,21 +4,22 @@
       <play-col-item
         :is-play-icon="playitem?.isPlayIcon ?? true"
         :playitem="transformPlayitem(playitem)"
-        v-if="!topath"
+        v-if="!topath && slotDefault"
       />
       <play-col-item
         :is-play-icon="playitem?.isPlayIcon ?? true"
         :playitem="transformPlayitem(playitem)"
         :to="topath"
-        v-else
+        v-else-if="slotDefault && topath"
       />
+      <slot name="default" :custom="{ playitem, index }"></slot>
     </div>
   </div>
 </template>
 <script setup lang="ts">
 import PlayColItem from "./CardColItem.vue";
 
-import type { PropType } from "vue";
+import { PropType, ref, useSlots } from "vue";
 
 const ctxEmit = defineEmits(["mutationSetName"]);
 
@@ -37,6 +38,14 @@ const props = defineProps({
   },
   topath: String,
 });
+
+const slot = useSlots();
+
+const slotDefault = ref(watchSlot());
+
+function watchSlot() {
+  return slot.default ? false : true;
+}
 
 function transformPlayitem(playlist: any) {
   if (props.topath && !playlist.topath) {

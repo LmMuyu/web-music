@@ -1,7 +1,7 @@
 <template>
   <el-row class="flex w-full bg-white">
     <el-col :span="12">
-      <IndexNavTag @loadComps="loadComps" />
+      <index-nav-tag @loadComps="loadComps" />
     </el-col>
     <el-col :span="6"></el-col>
     <el-col :span="6">

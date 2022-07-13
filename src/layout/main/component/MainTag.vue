@@ -1,45 +1,47 @@
 <template>
-  <nav :class="resizeClass">
-    <div
+  <nav>
+    <el-row
       v-for="(tagNav, index) in AsideTags"
       :key="index"
-      class="flex items-center cursor-pointer py-4 w-full icons"
+      class="cursor-pointer py-4 w-full icons"
       @mouseenter="moveActive(index)"
       @mouseleave="leaveActive(index)"
       @click="toPath(tagNav.path, index)"
     >
-      <el-tooltip
-        :visible="!windowResize"
-        class="box-item"
-        :content="tagNav.title"
-        placement="right"
-        v-if="!windowResize"
-      >
-        <i class="iconfont" :class="tagNav.icon" :style="activeStyle(index)"></i>
-      </el-tooltip>
-      <i class="iconfont" v-else :class="tagNav.icon" :style="activeStyle(index)"></i>
-      <p v-show="windowResize" class="text-lg px-5 text_color" :style="activeStyle(index)">
-        {{ tagNav.title }}
-      </p>
-    </div>
+      <el-col :span="8" class="flex items-center justify-end">
+        <el-tooltip
+          :visible="!windowResize"
+          class="box-item"
+          :content="tagNav.title"
+          placement="right"
+          v-if="!windowResize"
+        >
+          <i class="iconfont" :class="tagNav.icon" :style="activeStyle(index)"></i>
+        </el-tooltip>
+        <i class="iconfont" v-else :class="tagNav.icon" :style="activeStyle(index)"></i>
+      </el-col>
+      <el-col :span="16">
+        <p v-show="windowResize" class="text-lg px-5 text_color" :style="activeStyle(index)">
+          {{ tagNav.title }}
+        </p>
+      </el-col>
+    </el-row>
   </nav>
 </template>
 
 <script setup lang="ts">
 import { useStore } from "vuex";
-import { computed, inject, Ref } from "vue";
+import { inject, Ref } from "vue";
 import { useRouter } from "vue-router";
 
 import { currentIndex, moveIndex, AsideTags } from "../hooks/data";
 import { activeIndex } from "../../../utils/activeIndex";
 
-import { ElTooltip } from "element-plus";
+import { ElTooltip, ElRow, ElCol } from "element-plus";
 
 const router = useRouter();
 const store = useStore();
 const windowResize = inject("windowResize") as Ref<boolean>;
-
-// console.log(windowResize);
 
 const { activeStyle, clickActive, moveActive, leaveActive } = new activeIndex(
   currentIndex,
@@ -64,14 +66,6 @@ const toPath = (path: string, index: number) => {
 const activeTag = (to: any) => {
   currentIndex.value = AsideTags.findIndex((value) => to.path.indexOf(value.path) > -1);
 };
-
-const resizeClass = computed(() => {
-  if (windowResize.value) {
-    return "pl-14";
-  } else {
-    return "flex justify-center items-center";
-  }
-});
 
 router.beforeEach((to) => activeTag(to));
 </script>

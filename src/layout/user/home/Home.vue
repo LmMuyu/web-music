@@ -14,7 +14,11 @@
     <ElMain class="container_main">
       <div v-if="!issinger" class="flex" style="height: 30vh">
         <div class="w-1/3">
-          <HomeLLikeMusic :linkelen="linkeLen" @playermusic="playermusic"></HomeLLikeMusic>
+          <HomeLLikeMusic
+            :id="songlist?.[0]?.id ?? 0"
+            :linkelen="linkeLen"
+            @playermusic="playermusic"
+          ></HomeLLikeMusic>
         </div>
         <div class="w-2/3">
           <HomeLLinkeLists :linkeLists="linkeLists" />
@@ -36,6 +40,7 @@
             :cloudDiskData="cloudDiskData"
             :albums="albums"
             :is="contentComps"
+            :videos="timelineVideo"
           ></Component>
         </keep-alive>
       </div>
@@ -59,11 +64,14 @@ import {
   artistdetail,
   singerAlbum,
   simiSinger,
+  albumSublist,
+  mvSublist,
 } from "../../../api/user";
 import { transformArtistData } from "./hooks/Home";
 import { albumDateil, SingetInfo } from "./hooks/singer";
 
 import HomeAlbum from "./components/HomeAlbum.vue";
+import HomeVideo from "./components/HomeVideo.vue";
 import HomeArtist from "./components/HomeArtist.vue";
 import HomeSongList from "./components/HomeSongList.vue";
 import HomeCloudDisk from "./components/HomeCloudDisk.vue";
@@ -83,6 +91,7 @@ const linkeLen = ref(0);
 const artistlist = ref([]);
 const cloudDiskData = ref([]);
 const userinfo = ref<any>({});
+const timelineVideo = ref([]);
 const songlist = ref<any[]>([]);
 const linkeLists = ref<musicDetail[]>([]);
 const uid = ref(route.query.uid as string);
@@ -122,6 +131,10 @@ function selectViewComps(select: string) {
       return;
     case "专辑":
       contentComps.value = HomeAlbum;
+      selectTag.value = "";
+      return;
+    case "视频":
+      contentComps.value = HomeVideo;
       selectTag.value = "";
       return;
   }
@@ -169,6 +182,14 @@ function loginInfo(): Promise<{
         getCloud().then((cloud) => {
           cloudDiskData.value.push(cloud.data);
         });
+
+        albumSublist().then((sublist) => {
+          albums.value = sublist.data.data.map((artist) => new albumDateil(artist));
+        });
+
+        mvSublist().then((mvsublist) => {
+          timelineVideo.value = mvsublist.data.data;
+        });
       }
 
       subArtist().then((sub) => {
@@ -177,18 +198,15 @@ function loginInfo(): Promise<{
 
       obtainUserPlayList(uid.value)
         .then(async (sub) => {
-          if (sub.data.playlist.length > 0) {
-            songlist.value.push(...sub.data.playlist);
-          }
+          if (sub.data.playlist.length > 0) songlist.value.push(...sub.data.playlist);
         })
-        .catch((err) => {
-          console.log(err);
-        });
+        .catch(console.log);
 
       const likelist = await llikelist(uid.value);
 
       ids.value.push(...likelist.data.ids);
       linkeLen.value = ids.value.length;
+
       const strids = ids.value.join(",");
 
       getMusicDetail(strids).then((sources) => {
@@ -224,7 +242,7 @@ function ifIsSinger(issinger) {
 }
 
 function filterSelect(select: string) {
-  const hashTableArr = ["专辑", "艺人", "MV", "云盘"];
+  const hashTableArr = ["全部歌单", "创建的歌单", "收藏的歌单", "专辑", "艺人", "视频", "云盘"];
 
   const singerHashTable = {
     相似艺人: "艺人",

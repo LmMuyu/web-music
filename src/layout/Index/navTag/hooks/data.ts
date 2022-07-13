@@ -7,13 +7,12 @@ export const contentTags = [
   },
   {
     _id: "1001",
-    tagname: "排行榜",
-    comname: "Toplist",
-    comchildren: "TopListAsideTag",
+    tagname: "视频",
+    comname: "IndexvIdeo",
   },
   {
     _id: "1002",
-    tagname: "歌单",
-    comname: "playlist",
+    tagname: "MV",
+    comname: "MV",
   },
 ];

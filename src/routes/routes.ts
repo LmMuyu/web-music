@@ -70,6 +70,16 @@ const routes: (RouteRecordRaw & {
         name: "UserSongs",
         component: () => import("../layout/user/songs/Songs.vue"),
       },
+      {
+        path: "single",
+        name: "UserSingle",
+        components: {
+          default: () => import("../layout/songdetail/SongDetail.vue"),
+        },
+        meta: {
+          query: ["id"],
+        },
+      },
     ],
     components: {
       default: () => import("../layout/user/User.vue"),
@@ -140,6 +150,13 @@ const routes: (RouteRecordRaw & {
     name: "Setting",
     components: {
       default: () => import("../layout/setting/Setting.vue"),
+    },
+  },
+  {
+    path: "/indexvideo",
+    name: "IndexvIdeo",
+    components: {
+      default: () => import("../layout/video/Video.vue"),
     },
   },
 ];

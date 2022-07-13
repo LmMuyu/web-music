@@ -1,3 +1,4 @@
+import { ref, Ref, unref, watch } from "vue";
 import { isType } from "./methods";
 import { allType } from "./type";
 
@@ -33,7 +34,7 @@ export class singer {
     this.name = name;
   }
 
-  private singerInfo(detailInfo: any) {
+  singerInfo(detailInfo: any) {
     // console.log(detailInfo);
     const keys = Object.keys(detailInfo);
 
@@ -48,54 +49,69 @@ export class singer {
 }
 
 export class musicDetail {
+  dt: number;
   id: number;
-  name: string;
   picUrl: string;
+  name: string;
+  style: Ref<string>;
+  nickName: string;
+  rootClass: Ref<string>;
+  classStr: Ref<string>;
+  isMusicDetail: boolean;
   singer: Record<string, any>[];
   singerInfo: allType<typeSinger>;
-  isMusicDetail: boolean;
-  nickName: string;
-  dt: number;
+  stop: any;
 
   constructor(options: MusicDetailOption) {
-    const { id, name, picUrl, ar } = this.runMusicDetail(options);
+    const { picUrl, ar } = this.runMusicDetail(options);
 
-    this.id = options.id;
-    this.name = options.name;
-    this.picUrl = picUrl;
     this.singer = ar;
-    this.singerInfo = this.setSingerInfo(ar);
-    this.nickName = this.singerDomString();
-    this.isMusicDetail = true;
+    this.nickName = "";
+    this.id = options.id;
+    this.picUrl = picUrl;
     this.dt = options.dt;
+    this.style = ref("");
+    this.name = options.name;
+    this.classStr = ref("");
+    this.rootClass = ref("");
+    this.isMusicDetail = true;
+    this.singerInfo = this.setSingerInfo(ar);
+
+    this.singerDomString();
+    this.watchClassStyle();
   }
 
-  runMusicDetail(options: Record<string, any>) {
+  private runMusicDetail(options: Record<string, any>) {
     const detail = options?.[0] || options;
 
     return { ...(detail?.al || detail), ar: detail.ar };
   }
 
-  setSingerInfo(dataInfo: any) {
+  private setSingerInfo(dataInfo: any) {
     return isType(dataInfo) === "Array"
       ? (dataInfo as singerArr).map((info) => new singer(info))
       : new singer(dataInfo);
   }
 
-  singerDomString() {
+  async singerDomString() {
     const infos = this.singerInfo as singer[];
 
-    function createSpanTag(next: singer) {
-      return `<p class="cursor-pointer text_hover bottom_line" style="color:#b2bec3" user-id="${next.id}" >${next.name}</p>`;
-    }
+    const createSpanTag = (next: singer) =>
+      `<p class="cursor-pointer text_hover bottom_line ${unref(
+        this.classStr
+      )}" style="color:#b2bec3;${unref(this.style)}" user-id="${next.id}" >${next.name}</p>`;
 
     const str = `
-      <span class="flex items-center">
-      ${infos.map((next) => createSpanTag(next)).join("/")}
+      <span class="flex items-center" style="text-overflow: ellipsis;overflow: hidden;white-space: nowrap;" >
+      ${infos.map((next) => createSpanTag(next)).join(" / ")}
       </span>
      `;
 
-    return str;
+    this.nickName = str;
+  }
+
+  private watchClassStyle() {
+    this.stop = watch([this.classStr, this.style, this.rootClass], this.singerDomString);
   }
 }
 

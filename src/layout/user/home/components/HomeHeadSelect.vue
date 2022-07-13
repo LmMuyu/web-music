@@ -157,7 +157,7 @@ function openInputFile() {
 }
 
 function pushTags() {
-  const defaultTags = ["专辑", "艺人", "MV", "云盘"];
+  const defaultTags = ["专辑", "艺人", "视频", "云盘"];
 
   if (props.issinger) {
     const yirsindex = defaultTags.indexOf("艺人");

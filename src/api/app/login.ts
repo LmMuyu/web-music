@@ -17,6 +17,7 @@ export async function loginStateus() {
         const userId = data.profile.userId;
         store.commit("login/setUserId", userId);
         store.dispatch("login/setFollows");
+        store.dispatch("login/account");
       }
     });
     const res = data.data.code === 200 && data.data.account !== null && data.data.profile !== null;

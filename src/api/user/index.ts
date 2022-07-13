@@ -139,3 +139,24 @@ export function userAccount() {
     url: "/user/account",
   });
 }
+
+export function albumSublist() {
+  return request({
+    url: "/album/sublist",
+  });
+}
+
+export function mvSublist() {
+  return request({
+    url: "/mv/sublist",
+  });
+}
+
+export function timelineVideoAll(offset: number = 0) {
+  return request({
+    url: "/video/timeline/all",
+    params: {
+      offset,
+    },
+  });
+}

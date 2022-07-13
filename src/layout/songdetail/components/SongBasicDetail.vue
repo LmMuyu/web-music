@@ -1,19 +1,14 @@
 <template>
   <el-row>
-    <el-col :span="7">
-      <div
-        class="autowh rounded-md"
-        style="width: 256px; height: 256px"
-        :style="{ backgroundImage: `url(${playlist.backgroundUrlImage + '?param=256y256'})` }"
-      >
-        <el-image
-          class="h-full w-full"
-          fit="contain"
-          :src="playlist.backgroundUrlImage + '?param=256y256'"
-        ></el-image>
-      </div>
+    <el-col :span="4" class="rounded-md">
+      <el-image
+        class="h-full w-full"
+        fit="contain"
+        :src="playlist.backgroundUrlImage + '?param=256y256'"
+      ></el-image>
     </el-col>
-    <el-col class="basic_detail" :span="17">
+
+    <el-col class="basic_detail px-6" :span="17">
       <div class="flex items-center">
         <span class="text-2xl">{{ playlist.name }}</span>
         <el-tag
@@ -24,18 +19,21 @@
           >{{ tagname }}</el-tag
         >
       </div>
-      <div class="hove_text">
-        <router-link :to="{ path: '/user/home', query: { uid: playlist.creator?.userId || '' } }">
-          <span> </span>
-          <span>
-            {{ playlist.creator?.nickname || "" }}
-          </span>
-        </router-link>
+      <div class="flex items-center">
+        <div class="hove_text">
+          <router-link
+            class="flex items-center"
+            :to="{ path: '/user/home', query: { uid: playlist.creator?.userId || '' } }"
+          >
+            <el-avatar class="px-2" :size="32" fit="cover" :src="userData?.data?.avatarUrl ?? ''" />
+            <span style="color: #79bbff" class="px-2 flex items-center"
+              >{{ playlist.creator?.nickname || "" }}
+            </span>
+          </router-link>
+        </div>
+        <span class="text-xs" style="color: #b1b3b8">最后更新时间为{{ playlist.updateTime }} </span>
       </div>
-      <div>
-        <span class="text-sm">最后更新时间为{{ playlist.updateTime }} </span>
-      </div>
-      <div>
+      <div v-if="playlist.titile">
         <span class="boxtext text-left text-sm" v-html="playlist.titile"></span>
       </div>
       <div class="flex items-center">
@@ -50,14 +48,15 @@
           :plain="true"
         >
           <font-icon icon="iconxihuan"> </font-icon>
-          <span> 收藏 </span>
+          <span class="px-1"> 收藏 </span>
         </el-button>
       </div>
     </el-col>
   </el-row>
 </template>
 <script setup lang="ts">
-import { ElImage, ElRow, ElCol, ElButton, ElTag, ElMessage } from "element-plus";
+import { ElImage, ElRow, ElCol, ElButton, ElTag, ElMessage, ElAvatar } from "element-plus";
+import { computed } from "vue";
 import { useStore } from "vuex";
 import FontIcon from "../../../components/fonticon/FontIcon.vue";
 
@@ -77,6 +76,8 @@ function shouChuang() {
     return ElMessage.error("请先登录！");
   }
 }
+
+const userData = computed<any>(store.getters["login/getUserData"]);
 </script>
 <style scoped lang="scss">
 .boxtext {
@@ -85,11 +86,6 @@ function shouChuang() {
   display: -webkit-box;
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
-}
-
-.autowh {
-  max-height: 256px;
-  max-width: 256px;
 }
 
 .basic_detail {

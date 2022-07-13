@@ -17,15 +17,15 @@ import { computed, ref } from "vue";
 import { useRoute } from "vue-router";
 import { useStore } from "vuex";
 
+import dexie from "../../common/dexie";
+import transformSongDetails from "./utils/transformSongDetails";
 import { songDetail, songDetailAll } from "../../api/songdetail";
 import { musicDetail, musicResultDetail } from "../../utils/musicDetail";
-import transformSongDetails from "./utils/transformSongDetails";
 
 import { ElButton, ElContainer, ElMain, ElMessage } from "element-plus";
 import SongBasicDetail from "./components/SongBasicDetail.vue";
 import SongCollection from "./components/SongCollection.vue";
 import Loading from "../../components/svgloading/SvgLoading.vue";
-import dexie from "../../common/dexie";
 
 const route = useRoute();
 const store = useStore();
@@ -45,7 +45,16 @@ const songTrasf = (detaillist) => {
 
   const lists = detaillist.data[key];
   const songLists = key === "playlist" ? lists.tracks : lists;
-  detailLists.value.push(...songLists.map((detail) => musicResultDetail(detail)));
+  detailLists.value.push(
+    ...songLists.map((detail) => {
+      const resultDetail = musicResultDetail(detail);
+      resultDetail.style.value = `
+        color:#303133;
+      ` as string;
+      
+      return resultDetail;
+    })
+  );
 
   if (first) {
     loadBtn.value = true;
@@ -75,7 +84,6 @@ songDetail(route.query.id as unknown as number).then(songTrasf);
 async function playerAll() {
   const db = await mydexie;
   const musiclists = detailLists.value;
-
   db.setFirst(musiclists[0]);
 }
 

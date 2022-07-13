@@ -156,8 +156,8 @@ class login {
       },
 
       async account(state) {
-        const account = await userAccount();
-        state.commit("setAccount", account.data);
+        // const account = await userAccount();
+        // state.commit("setAccount", account.data);
       },
     };
   }
