@@ -185,7 +185,7 @@ export default defineComponent({
         );
 
         props.openUpload && BS.on("pullingUp", pullingUpHandler);
-        
+
         BS.on("scroll", (position) => {
           console.log(position.x, position.y);
         });
@@ -308,7 +308,7 @@ export default defineComponent({
 
         statusPrmosie.value = mutationSubtree(viewport.value.children[0]);
 
-        !isMountOneUpLoadIcon && watchRenderBottomLoading();
+        !isMountOneUpLoadIcon && props.openUpload && watchRenderBottomLoading();
         isMountOneUpLoadIcon = true;
 
         await nextTick();

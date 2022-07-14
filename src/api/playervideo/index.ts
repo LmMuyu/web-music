@@ -1,10 +1,10 @@
 import request from "../../utils/request";
 
-export function mvVideoDetail(mvid: number) {
+export function mvVideoDetail(morvid: number, vorm: "vid" | "mid" = "mid") {
   return request({
-    url: "/mv/detail",
+    url: vorm === "mid" ? "/mv/detail" : "/video/detail",
     params: {
-      mvid,
+      ...(vorm === "mid" ? { mvid: morvid } : { id: morvid }),
     },
   });
 }

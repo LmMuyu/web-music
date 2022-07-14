@@ -1,16 +1,18 @@
 <template>
   <div class="relative w-56">
-    <div class="relative" @mouseenter="showplayindex = index" @mouseleave="showplayindex = null">
-      <router-link to="/">
-        <ElImage :src="videoinfo.coverUrl + '?param=224y112'" class="rounded-md w-56 h-28">
-        </ElImage>
-      </router-link>
-      <div
+    <div
+      class="relative h-28"
+      @mouseenter="showplayindex = index"
+      @mouseleave="showplayindex = null"
+    >
+      <ElImage :src="videoinfo.coverUrl + '?param=224y112'" class="rounded-md"> </ElImage>
+      <router-link
+        :to="{ path: '/video', query: { vid: videoinfo.vid } }"
         class="absolute top-0 left-0 w-full h-full flex items-center justify-center bj-show"
         v-if="showplayindex === index"
       >
         <FontIcon size="32" color="#fff" icon="iconbofang2" />
-      </div>
+      </router-link>
       <div class="flex items-center absolute right-0 top-0">
         <FontIcon size="14" color="#fff" icon="iconbofang1" />
         <span class="px-1 text-white text-xs p-2">{{ fromPlayCount(videoinfo.playTime) }}</span>
@@ -19,7 +21,9 @@
         {{ filterDate(videoinfo.durationms) }}
       </div>
     </div>
-    <div class="truncate py-2" style="color: #303133">{{ videoinfo.title }}</div>
+    <div :class="titleclass" class="truncate py-2" style="color: #303133">
+      {{ videoinfo.title }}
+    </div>
     <div style="color: #ebedf0" class="text-sm">
       <span>by:</span>
       <router-link
@@ -57,9 +61,12 @@ const props = defineProps({
     type: Number,
     required: true,
   },
+  titleclass: String,
 });
 
-console.log(props.videoinfo);
+// enterPlayUrl
+
+// console.log(props.videoinfo);
 
 const showplayindex = ref(null);
 </script>

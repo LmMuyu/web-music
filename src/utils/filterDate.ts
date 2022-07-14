@@ -22,7 +22,7 @@ export default function (datetime: number, onlySec?: boolean, relativeTime?: boo
   return onlySec
     ? onlyGetSec(hours, min, sec)
     : hours === "0"
-    ? `${min}:${sec}`
+    ? `${min.padStart(2, "0")}:${sec.padEnd(2, "0")}`
     : `${hours.padStart(2, "0")}:${min}:${sec.padStart(2, "0")}`;
 }
 
