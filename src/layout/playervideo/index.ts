@@ -1,5 +1,6 @@
-import filterDate from "../../utils/filterDate";
+import filterDate, { formatTime } from "../../utils/filterDate";
 import { fromPlayCount } from "../../utils/fromPlayCount";
+import { isType } from "../../utils/methods";
 
 interface NickName {
   followed: boolean;
@@ -10,20 +11,18 @@ interface NickName {
 
 export interface VIDEO_INFO {
   vid: number;
-  videoname: string;
-  nickname: string;
-  artistNames: NickName[];
   title: string;
-  poster: string;
-  playcount: string;
-  createtime: number;
-  duration: string;
   cover: string;
+  poster: string;
+  nickname: string;
+  duration: string;
+  videoname: string;
+  playcount: string;
+  createtime: string;
   commentCount: number;
-  otherinfo: {
-    step: number;
-    linke: number;
-  };
+  artistNames: NickName[];
+  otherinfo: { step: number; linke: number };
+  videoGroup: { id: number; name: string }[];
 }
 
 export function videoinfodata(data: any): VIDEO_INFO {
@@ -35,7 +34,7 @@ export function videoinfodata(data: any): VIDEO_INFO {
     poster: "",
     title: "",
     playcount: "",
-    createtime: 0,
+    createtime: "",
     duration: "",
     commentCount: 0,
     cover: "",
@@ -43,19 +42,40 @@ export function videoinfodata(data: any): VIDEO_INFO {
       step: 0,
       linke: 0,
     },
+    videoGroup: [],
   };
 
-  videoinfo.videoname = data.name;
-  videoinfo.playcount = fromPlayCount(data.playCount);
-  videoinfo.createtime = data.publishTime;
+  console.log(data);
+
+  videoinfo.videoname = data.name || data.title;
+  videoinfo.playcount = fromPlayCount(data.playCount || data.playTime * 10);
+  videoinfo.createtime = formatTime(data.publishTime, "ymd_hms");
   videoinfo.nickname = data.artistName;
-  videoinfo.artistNames = data.artists;
-  videoinfo.title = data.desc;
-  videoinfo.duration = filterDate(data.duration);
+  videoinfo.artistNames =
+    isType(data.artists || data.creator) === "Array"
+      ? (data.artists || data.creator).map((detail) => new nickNameClass(detail))
+      : [new nickNameClass(data.artists || data.creator)];
+  videoinfo.title = data.desc || data.description;
+  videoinfo.duration = filterDate(data.duration || data.durationms);
   videoinfo.commentCount = data.commentCount;
   videoinfo.poster = data.picUrl ?? "";
-  videoinfo.vid = data.id;
-  videoinfo.cover = data.cover;
+  videoinfo.vid = data.id || data.vid;
+  videoinfo.cover = data.cover || data.coverUrl;
+  videoinfo.videoGroup = data.videoGroup || [];
 
   return videoinfo;
+}
+
+class nickNameClass implements NickName {
+  id: number;
+  img1v1Url: string;
+  name: string;
+  followed: boolean;
+
+  constructor(data: any) {
+    this.id = data.userId || data.id;
+    this.name = data.nickname || data.name;
+    this.followed = data.followed;
+    this.img1v1Url = data.avatarUrl || data.img1v1Url;
+  }
 }

@@ -77,6 +77,7 @@ import {
   getCurrentInstance,
   reactive,
   watch,
+  onUnmounted,
 } from "vue";
 import { useStore } from "vuex";
 
@@ -95,7 +96,7 @@ import AudioSlider from "./components/AudioSlider.vue";
 import { ElSlider, ElRow, ElCol } from "element-plus";
 import VolumeIcon from "./components/VolumeIcon.vue";
 import FontIcon from "../fonticon/FontIcon.vue";
-import { openDrawer } from "../../layout/playlist/components/PlayListHistory";
+// import { openDrawer } from "../../layout/playlist/components/PlayListHistory";
 import playerLists from "./playerlists";
 
 const props = defineProps({
@@ -137,6 +138,7 @@ const {
   volume: setVolume,
   playSeek: seekTime,
   againPlayIndexPos,
+  routeWatchStop,
 } = AudioHow(
   {
     musicinfoRef: musicinfo,
@@ -313,6 +315,10 @@ onMounted(() =>
     leaveTimeout();
   })
 );
+
+onUnmounted(() => {
+  routeWatchStop();
+});
 </script>
 <style scoped lang="scss">
 @include Iconfont(#2d3436, 20);

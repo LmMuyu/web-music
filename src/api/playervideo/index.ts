@@ -1,6 +1,6 @@
 import request from "../../utils/request";
 
-export function mvVideoDetail(morvid: number, vorm: "vid" | "mid" = "mid") {
+export function mvVideoDetail(morvid: number | string, vorm: "vid" | "mid" = "mid") {
   return request({
     url: vorm === "mid" ? "/mv/detail" : "/video/detail",
     params: {
@@ -73,6 +73,15 @@ export function simiMv(mvid: number) {
 export function commentMv(id: number) {
   return request({
     url: "/comment/mv",
+    params: {
+      id,
+    },
+  });
+}
+
+export function playerVideoPath(id: string) {
+  return request({
+    url: "/video/url",
     params: {
       id,
     },

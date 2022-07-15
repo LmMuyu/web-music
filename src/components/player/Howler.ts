@@ -1,10 +1,19 @@
-import { ComponentInternalInstance, computed, Ref, ref, watchEffect, WatchStopHandle } from "vue";
+import {
+  ComponentInternalInstance,
+  computed,
+  Ref,
+  ref,
+  watch,
+  watchEffect,
+  WatchStopHandle,
+} from "vue";
 import { getLyrics, getMusicDetail } from "../../api/playList";
 import store from "../../store";
 import filterDate from "../../utils/filterDate";
 import { isType } from "../../utils/methods";
 import { musicDetail } from "../../utils/musicDetail";
 import { useRefNegate } from "../../utils/useRefNegate";
+import { useWatchRoutePath } from "../../utils/useWatchHost";
 import { setIndexDBAAllDataToHowlLists, twoSearch, watchMusicinfo } from "./methods";
 import Play from "./Play";
 
@@ -28,7 +37,7 @@ function filterDurationTime(dt: number) {
 const Howl = (options: HOWLOPTIONS, ctx: compinstance) => {
   let timeseek = null;
   let currIndex = 0;
-  let autoplay = true;
+  let autoplay = false;
   let ismove = false;
   let initfirst = false;
   let playlistsLen = 0;
@@ -42,7 +51,7 @@ const Howl = (options: HOWLOPTIONS, ctx: compinstance) => {
 
   watchMusicinfo(options.musicinfoRef, maxTime);
 
-  const how = new Play({
+  const how: Play = new Play({
     on: {
       onPlay() {
         console.log("play");
@@ -62,6 +71,17 @@ const Howl = (options: HOWLOPTIONS, ctx: compinstance) => {
       },
     },
     autoplay,
+  });
+
+  const watchRoute = useWatchRoutePath();
+
+  const routeWatchStop = watch(watchRoute, (path) => {
+    const excludePaths = ["/video"];
+    if (excludePaths.indexOf(path.path) > -1) {
+      stop();
+      changePlayIcon();
+      playSeek.clear();
+    }
   });
 
   function mmusicEndNext() {
@@ -282,7 +302,6 @@ const Howl = (options: HOWLOPTIONS, ctx: compinstance) => {
     }
   }
 
-  console.log(import.meta.env.MODE);
   function setmaplyrics(lrc: string) {
     const lrcworker = new Worker("src/worker/lrc.js");
     lyricsmap.clear();
@@ -298,11 +317,8 @@ const Howl = (options: HOWLOPTIONS, ctx: compinstance) => {
     lrcworker.postMessage(lrc);
   }
 
-  function onEvent() {
-    window.addEventListener("unload", how.unWindowHowler.bind(how), false);
-  }
+  window.addEventListener("unload", how.unWindowHowler.bind(how), false);
 
-  onEvent();
   setIndexDBAAllDataToHowlLists(setImmdPlayLists, watchImmediatelyPlayMusics);
   return {
     seek,
@@ -320,6 +336,7 @@ const Howl = (options: HOWLOPTIONS, ctx: compinstance) => {
     initCurrentIndex,
     filterDurationTime,
     againPlayIndexPos,
+    routeWatchStop,
   };
 };
 

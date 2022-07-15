@@ -30,7 +30,7 @@ const circleRef = ref(true);
 function stopLoadAudioComp() {
   const RouteRLNL = useWatchRoutePath();
   const excludeLists = ["/login", "/video", "/404"];
-  const loadCompAudio = ref(true);
+  const loadCompAudio = ref(false);
 
   watchEffect(() => {
     loadCompAudio.value = excludeLists.indexOf(RouteRLNL.value.path) > -1 ? false : true;

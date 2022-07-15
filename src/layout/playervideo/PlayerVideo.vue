@@ -34,70 +34,76 @@
   </el-container>
 </template>
 <script setup lang="ts">
-import { nextTick, onMounted, onUnmounted, reactive, ref, watch, watchEffect } from "vue";
 import { useRoute } from "vue-router";
+import { nextTick, onMounted, onUnmounted, reactive, ref, watch, watchEffect } from "vue";
 
-import playerVideo from "../../common/videoplayer";
-import { mvVideoDetail, mvPath, simiMv } from "../../api/playervideo";
 import { videoinfodata, VIDEO_INFO } from ".";
+import playerVideo from "../../common/videoplayer";
+import { VideoComments } from "../../components/player";
+import { mvVideoDetail, mvPath, simiMv, playerVideoPath } from "../../api/playervideo";
 
-import { ElContainer, ElMain, ElAside } from "element-plus";
 import VideoInfo from "./components/VideoInfo.vue";
+import VideoLists from "./components/VideoLists.vue";
+import { ElContainer, ElMain, ElAside } from "element-plus";
 import BetterScroll from "../../components/betterscroll/BetterScroll.vue";
 import AsayncSuspense from "../../components/suspense/AsayncSuspense.vue";
-import VideoLists from "./components/VideoLists.vue";
 import PlayerCommtentContainer from "../playlist/components/PlayListHistory/components/CommtentContainer.vue";
-import { VideoComments } from "../../components/player";
 
 enum COMP {
   "Comment" = "Comment",
 }
 
-const route = useRoute();
-const videoId = Number(route.query.id);
+let poster = "";
 
 const ratio = ref([]);
 const mvurl = ref("");
 const video = ref(null);
+const route = useRoute();
+const better = ref(null);
 const videobox = ref(null);
 const simiMvLists = ref([]);
 const compvideo = ref<any>(null);
-const better = ref(null);
-let poster = "";
+const videoId = Number(route.query.id) || route.query.vid;
+const queryIsVid = Object.prototype.hasOwnProperty.call(route.query, "vid");
 
 //@ts-ignore
 const videoinfo = ref<VIDEO_INFO>({});
-const mvCommentModule = new VideoComments("mv");
-const commentModuleInfo = reactive({
-  comments: [],
-  total: 0,
-});
+const mvCommentModule = new VideoComments(queryIsVid ? "video" : "mv");
+const commentModuleInfo = reactive({ comments: [], total: 0 });
 
-mvVideoDetail(videoId)
+mvVideoDetail(videoId as number | string, queryIsVid ? "vid" : "mid")
   .then((sources) => sources.data)
-  .then(async (videodata) => {
-    // console.log(videodata);
-    const id = videodata.data.id;
-    const brs = videodata.data.brs;
-    const r = brs[brs.length - 1];
-    ratio.value = brs;
-    poster = videodata.data.cover;
-    const mvurldata = await mvPath(id, r.br);
-
-    mvPlayPath(mvurldata.data.data);
-    videoinfo.value = videoinfodata(videodata.data);
-  })
+  .then(queryIsVid ? vidSourcessFn : midSourcessFn)
   .catch((err) => {
-    console.log("mvVideoDetail接口发生错误:" + err);
+    console.error(err);
   });
 
-simiMv(videoId).then((simimv) => {
-  simiMvLists.value = simimv.data.mvs.map((mv) => videoinfodata(mv));
-});
+async function midSourcessFn(videodata: any) {
+  const id = videodata.data.id;
+  const brs = videodata.data.brs;
+  const r = brs[brs.length - 1];
+  ratio.value = brs;
+  poster = videodata.data.cover;
+  const mvurldata = await mvPath(id, r.br);
 
-function mvPlayPath(data: Record<string, any>) {
-  const videourl = data.url;
-  mvurl.value = videourl;
+  mvOrVideoPlayPath(mvurldata.data.data);
+  videoinfo.value = videoinfodata(videodata.data);
+}
+
+async function vidSourcessFn(videodata: any) {
+  ratio.value = videodata.data.resolutions;
+  videoinfo.value = videoinfodata(videodata.data);
+  mvOrVideoPlayPath((await playerVideoPath(videoId as string)).data.urls[0]);
+}
+
+if (!queryIsVid) {
+  simiMv(videoId as number).then((simimv) => {
+    simiMvLists.value = simimv.data.mvs.map((mv) => videoinfodata(mv));
+  });
+}
+
+function mvOrVideoPlayPath(data: Record<string, any>) {
+  mvurl.value = data.url;
 }
 
 function playerVideoFn() {
@@ -129,7 +135,7 @@ async function update() {
   }
 }
 
-mvCommentModule.currentMusicPlayIndex(null, videoId);
+mvCommentModule.currentMusicPlayIndex(null, videoId as number | string);
 
 let stop = watch(mvCommentModule.comments, async (lists) => {
   commentModuleInfo.comments.push(...lists);

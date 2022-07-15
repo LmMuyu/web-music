@@ -1,31 +1,49 @@
 <template>
   <div class="py-4 px-2">
     <div class="titletext">{{ videoinfo.videoname }}</div>
-    <div class="videoinfo flex items-center">
-      <font-icon class="videoinfo" icon="iconbofang1">
+    <div class="videoinfo flex items-center py-2">
+      <font-icon class="videoinfo" size="14" icon="iconbofang1">
         <template #after>
-          <span class="pl-2 text-sm">{{ videoinfo.playcount }} </span>
+          <span class="text-xs">{{ videoinfo.playcount }} </span>
         </template>
       </font-icon>
-      <span class="px-2 text-sm">•</span>
-      <span class="text-sm">{{ videoinfo.createtime }}</span>
+      <span class="px-2 text-xs">•</span>
+      <span class="text-xs">{{ videoinfo.createtime }}</span>
+    </div>
+    <div v-if="videoinfo.videoGroup && videoinfo.videoGroup.length > 0" class="flex items-center">
+      <el-tag
+        v-for="(group, index) in videoinfo.videoGroup"
+        class="px-2 cursor-pointer"
+        :class="index !== 0 && 'ml-2'"
+        type="info"
+        effect="plain"
+        size="small"
+        @click=""
+        >{{ group.name }}</el-tag
+      >
     </div>
   </div>
   <div class="w-full" style="border: 1px solid #e5e5e5"></div>
-  <div class="py-4">
-    <div class="flex justify-around">
+  <ElContainer>
+    <ElHeader class="flex items-center">
       <video-author
         v-if="Object.keys(videoinfo).length > 0"
         :videoAndUserInfo="videoinfo"
+        class="w-full"
       ></video-author>
-      <subscribe @follow="subscribeFollow" :subscribe="subscribe" :authorid="authorid"></subscribe>
-    </div>
-    <div class="pl-20" v-if="videoinfo.title">
+      <subscribe
+        class="w-full flex justify-end"
+        @follow="subscribeFollow"
+        :subscribe="subscribe"
+        :authorid="authorid"
+      ></subscribe>
+    </ElHeader>
+    <ElMain v-if="videoinfo.title">
       <div
         ref="titlebox"
         style="color: rgba(24, 24, 27, 1); width: 40vw"
-        class="text-sm"
         :class="watchTitleBoxHeight && 'linex'"
+        class="text-sm"
       >
         {{ videoinfo.title }}
       </div>
@@ -34,21 +52,22 @@
           {{ anAllTitle ? "展开" : "收起" }}
         </a>
       </div>
-    </div>
-  </div>
+    </ElMain>
+  </ElContainer>
 </template>
 <script setup lang="ts">
 import { computed, nextTick, PropType, ref, watchEffect } from "vue";
 
 import { isFollow } from "../../user/hooks";
-
-import FontIcon from "../../../components/fonticon/FontIcon.vue";
-import VideoAuthor from "../../../components/commentarea/CommentArea.vue";
-import Subscribe from "../../../components/subscribe/Subscribe.vue";
-
-import type { VIDEO_INFO } from "../";
 import { followUser } from "../../../api/playervideo";
 import { promptbox } from "../../../components/promptBox";
+
+import { ElTag, ElContainer, ElHeader, ElMain } from "element-plus";
+import FontIcon from "../../../components/fonticon/FontIcon.vue";
+import Subscribe from "../../../components/subscribe/Subscribe.vue";
+import VideoAuthor from "../../../components/commentarea/CommentArea.vue";
+
+import type { VIDEO_INFO } from "../";
 
 enum FollowInfo {
   "yesFollow",

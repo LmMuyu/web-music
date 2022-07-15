@@ -23,15 +23,7 @@ export default function CommentItem(props: PROPSTYPE) {
   }
 
   function ChildBeReplied() {
-    return (
-      <div class="flex flex-col">
-        <div class="w-full">
-          <div class="my-2" style="background-color: #EBEEF5">
-            {beRepliedList(scopedData.beReplied)}
-          </div>
-        </div>
-      </div>
-    );
+    return <div class="flex flex-col w-full">{beRepliedList(scopedData.beReplied)}</div>;
   }
 
   return (
@@ -48,11 +40,11 @@ export default function CommentItem(props: PROPSTYPE) {
             </div>
           </ElCol>
         )}
-        <ElCol
-          class={(isBeRepliedComp ? "p-2" : "") + "text-sm w-full "}
-          span={isBeRepliedComp ? 24 : 18}
-        >
-          <div>
+        <ElCol class={"text-sm w-full"} span={isBeRepliedComp ? 24 : 18}>
+          <div
+            style={isBeRepliedComp && "background-color:#F5F7FA"}
+            class={isBeRepliedComp ? "p-2 rounded-md" : "p-0"}
+          >
             <router-link
               class={"bottom_line"}
               to={{ path: "/user/home", query: { uid: scopedData.user.userId, isself: true } }}
@@ -60,7 +52,7 @@ export default function CommentItem(props: PROPSTYPE) {
             >
               {(isBeRepliedComp ? "@" : "") + scopedData.user.nickname}：
             </router-link>
-            <span style="color:#4F4F4F;" class="text-sm">
+            <span style="color:#4F4F4F;" class={"text-sm"}>
               {scopedData.content}
             </span>
           </div>

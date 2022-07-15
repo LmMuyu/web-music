@@ -60,11 +60,11 @@ export function userRecord(uid: number, type?: "0" | "1") {
 }
 
 export async function commentMusic(
-  id: number,
+  id: number | string,
   offset: number = 1,
   before?: number,
   limit: number = 20,
-  type: "music" | "mv" = "music"
+  type: "music" | "mv" | "video" = "music"
 ) {
   return request({
     url: "/comment/" + type,

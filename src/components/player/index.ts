@@ -2,7 +2,7 @@ import { reactive, ref } from "@vue/runtime-dom";
 import { Ref, watchEffect } from "vue";
 import { commentMusic } from "../../api/playList";
 
-type CommentsType = "music" | "mv";
+type CommentsType = "music" | "mv" | "video";
 
 export class VideoComments {
   currPage: number;
@@ -11,7 +11,7 @@ export class VideoComments {
   MAX_LIMIT: any;
   timeTable: Map<any, any>;
   playListHistoryOptions: { total: number; time: number };
-  mid: number;
+  mid: number | string;
   comments: Ref<any[]>;
   type: CommentsType;
   commentMusicThen: Ref<({ config, data: comment }: { config: any; data: any }) => void>;
@@ -67,7 +67,7 @@ export class VideoComments {
     }
   }
 
-  async currentMusicPlayIndex(index: number, mid: number) {
+  async currentMusicPlayIndex(index: number, mid: number | string) {
     const data = await commentMusic(mid, 1, 0, this.MAX_LIMIT, this.type);
     this.mid = mid;
 
