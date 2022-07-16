@@ -2,7 +2,7 @@
   <el-container class="w-full h-full bg-white">
     <el-header ref="header" class="flex items-center">
       <el-row class="w-full" align="middle">
-        <el-col :span="11">
+        <el-col :span="10">
           <el-button
             ref="mountSelectAllDom"
             @click="expandSelectAll"
@@ -14,24 +14,30 @@
             <FontIcon icon="iconmore"></FontIcon>
           </el-button>
         </el-col>
-        <el-col :span="13" class="flex justify-end">
-          <div class="pl-4" v-for="tag in videotags.slice(0, 9)">
-            <el-tag v-if="selectId === tag.id" size="small" type="danger" round>{{
-              tag.name
-            }}</el-tag>
-            <span
-              @click="clickTag(tag)"
-              style="color: #303133"
-              class="text-xs cursor-pointer"
-              v-else
+        <el-col :span="14">
+          <el-row class="flex justify-center items-center" align="middle">
+            <el-col
+              :span="3"
+              v-for="tag in videotags.slice(0, 8)"
+              class="flex items-center justify-center"
             >
-              {{ tag.name }}
-            </span>
-          </div>
+              <el-tag v-if="selectId === tag.id" size="small" type="danger" round>{{
+                tag.name
+              }}</el-tag>
+              <span
+                @click="clickTag(tag)"
+                style="color: #303133"
+                class="text-xs cursor-pointer px-2"
+                v-else
+              >
+                {{ tag.name }}
+              </span>
+            </el-col>
+          </el-row>
         </el-col>
       </el-row>
     </el-header>
-    <BetterScroll :open-h-render="false">
+    <BetterScroll @pull-up-load="pullUpLoad" :open-upload="true" :open-h-render="false">
       <card-row
         v-if="!loadingData"
         class="flex justify-center"
@@ -54,19 +60,23 @@
   />
 </template>
 <script setup lang="ts">
+import { useRoute, useRouter } from "vue-router";
 import { markRaw, reactive, ref, shallowRef } from "vue";
 
-import { getVideoGroup, groupVideoList } from "../../api/video";
 import { videoDetail } from "./hooks/data";
+import { getVideoGroup, groupVideoList } from "../../api/video";
 
 import CardRow from "../../components/card/CardRow.vue";
 import VideoBox from "../../components/videobox/VideoBox.vue";
 import FontIcon from "../../components/fonticon/FontIcon.vue";
 import Loading from "../../components/svgloading/SvgLoading.vue";
+import VideoAllGroupSelect from "./components/VideoAllGroupSelect.vue";
 import BetterScroll from "../../components/betterscroll/BetterScroll.vue";
 import { ElContainer, ElHeader, ElRow, ElCol, ElTag, ElButton } from "element-plus";
-import VideoAllGroupSelect from "./components/VideoAllGroupSelect.vue";
 
+let page = 0;
+const route = useRoute();
+const router = useRouter();
 const selectId = ref(0);
 const videotags = ref([]);
 const selectData = ref([]);
@@ -80,31 +90,58 @@ const selectModulePos = reactive({ x: 0, y: 0 });
 
 groupVideoList().then((grouplist) => {
   videotags.value = grouplist.data.data.map((tag) => ({ id: tag.id, name: tag.name }));
-  selectTag.value = videotags.value[0];
+  selectTag.value = defaultSelectTag(videotags.value);
   selectMap.value = videoMapKey(videotags.value);
-  selectId.value = videotags.value[0].id;
-
+  selectId.value = selectTag.value.id;
+  loadingData.value = true;
   twoPromiseAll(selectTag.value.id, 0);
 });
 
-function groupdata(group: any) {
-  selectData.value = group.map((data) => new videoDetail(data.data));
-  loadingData.value = false;
+function defaultSelectTag(tags: any[]) {
+  if (route.query.tagname) {
+    const tag = tags.find((tag) => tag.name === route.query.tagname);
+    return tag ? tag : tags[0];
+  } else {
+    return tags[0];
+  }
+}
+
+function routerPush(name: string) {
+  return router.replace({
+    path: "/indexvideo",
+    query: {
+      tagname: name,
+    },
+  });
 }
 
 function clickTag(tag: any) {
   selectTag.value = tag;
-  selectId.value = tag.id;
   showSelect.value && (showSelect.value = false);
+  loadingData.value = true;
   twoPromiseAll(tag.id);
+  selectId.value = tag.id;
+  routerPush(tag.name);
 }
 
 function twoPromiseAll(id: number, k: number = 0) {
-  loadingData.value = true;
-  Promise.all([getVideoGroup(id, k * 2), getVideoGroup(id, k * 2 + 1)]).then((value) => {
+  diffIdRemoveVideoData(selectId.value, id);
+  return Promise.all([getVideoGroup(id, k * 2), getVideoGroup(id, k * 2 + 1)]).then((value) => {
     const mapgroups = (value as any[]).reduce((group, next) => group.concat(next.data.datas), []);
     groupdata(mapgroups);
+    page += 1;
   });
+}
+
+function groupdata(group: any) {
+  selectData.value.push(...group.map((data) => new videoDetail(data.data)));
+  loadingData.value = false;
+}
+
+function diffIdRemoveVideoData(preid: number, nextid: number) {
+  if (preid !== nextid) {
+    selectData.value = [];
+  }
 }
 
 function expandSelectAll() {
@@ -133,6 +170,15 @@ function videoMapKey(videotags: any[]) {
   }
 
   return mapObj;
+}
+
+async function pullUpLoad([resolve, reject]) {
+  try {
+    await twoPromiseAll(selectId.value, page);
+    resolve(true);
+  } catch (error) {
+    reject(error);
+  }
 }
 </script>
 <style scoped lang="scss"></style>

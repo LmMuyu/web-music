@@ -1,5 +1,5 @@
 <template>
-  <span class="h-auto block">
+  <span class="flex h-auto">
     <slot name="before"></slot>
     <i :style="fonticon" :title="title" :class="[icon, setclass]" class="cursor-pointer"></i>
     <slot name="after"></slot>

@@ -87,3 +87,12 @@ export function playerVideoPath(id: string) {
     },
   });
 }
+
+export function allvideo(id: string) {
+  return request({
+    url: "/related/allvideo",
+    params: {
+      id,
+    },
+  });
+}

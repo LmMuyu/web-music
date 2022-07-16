@@ -45,8 +45,6 @@ export function videoinfodata(data: any): VIDEO_INFO {
     videoGroup: [],
   };
 
-  console.log(data);
-
   videoinfo.videoname = data.name || data.title;
   videoinfo.playcount = fromPlayCount(data.playCount || data.playTime * 10);
   videoinfo.createtime = formatTime(data.publishTime, "ymd_hms");

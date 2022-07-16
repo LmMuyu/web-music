@@ -1,5 +1,5 @@
 <template>
-  <el-row class="flex items-start my-2 px-2">
+  <el-row class="flex items-start py-1">
     <el-col :span="10">
       <div class="relative" style="height: 15vh">
         <el-image class="w-full h-full" fit="fill" :src="mvorvideo.cover"> </el-image>
@@ -8,7 +8,10 @@
         </span>
         <router-link
           class="absolute top-0 left-0 w-full h-full"
-          :to="{ path: '/video', query: { id: mvorvideo.vid, type: typefnstr } }"
+          :to="{
+            path: '/video',
+            query: { [isVideo ? 'vid' : 'id']: mvorvideo.vid, type: isVideo ? 'video' : 'mv' },
+          }"
           target="_blank"
         ></router-link>
       </div>
@@ -42,10 +45,13 @@ const props = defineProps({
     type: Object as PropType<VIDEO_INFO>,
     default: () => {},
   },
+  isVideo: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 const route = useRoute();
-const typefnstr = (route.query.type ?? "mv") as string;
 </script>
 <style scoped lang="scss">
 @mixin Text_Css($size, $lhight, $weight: 500) {

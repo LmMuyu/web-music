@@ -128,7 +128,7 @@ export default class Play {
   }
 
   stop() {
-    if (!this.howl.playing()) return true;
+    if (!this.howl?.playing() ?? true) return true;
     this.playing = false;
     this.howl.stop();
   }

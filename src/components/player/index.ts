@@ -48,6 +48,8 @@ export class VideoComments {
   }
 
   commentMusicThenFn({ config, data: comment }) {
+    console.log(comment);
+    
     this.playListHistoryOptions.total = comment.total;
     this.playListHistoryOptions.time = comment.comments[comment.comments.length - 1].time;
 

@@ -187,7 +187,7 @@ export default defineComponent({
         props.openUpload && BS.on("pullingUp", pullingUpHandler);
 
         BS.on("scroll", (position) => {
-          console.log(position.x, position.y);
+          // console.log(position.x, position.y);
         });
 
         const stop = watchEffect(() => {
