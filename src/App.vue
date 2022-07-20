@@ -1,7 +1,7 @@
 <template>
   <HtmlMain />
   <div class="absolute bottom-0 left-0 w-full">
-    <Audio v-if="loadCompAudio" :songinfo="songInfo" />
+    <!-- <Audio v-if="loadCompAudio" :songinfo="songInfo" /> -->
   </div>
 </template>
 

@@ -1,23 +1,35 @@
 <template>
-  <transition
-    name="notable"
-    leave-active-class="leave_enter_active"
-    enter-active-class="leave_enter_active"
-    leave-to-class="leave_translatex"
-    enter-to-class="enter_to"
-    enter-from-class="enter_translatex"
-    @before-leave="beforeLeave"
-    @after-leave="afterLeave"
-  >
-    <div
-      ref="group"
-      v-if="hidden"
-      :style="{ zIndex: !hidden ? -1 : 1 }"
-      class="overflow-x-hidden flex"
+  <div class="w-full h-1/2 relative">
+    <transition
+      v-for="slotname in forlinkelist"
+      :key="slotname"
+      :enter-from-class="linkelist.value === slotname ? 'enter_translatex' : ''"
+      :leave-to-class="linkelist.next.next.value === slotname ? 'leave_translatex' : ''"
+      leave-active-class="leave_enter_active"
+      enter-active-class="leave_enter_active"
+      enter-to-class="enter_to"
+      @before-leave="beforeLeave"
+      @after-leave="afterLeave"
     >
-      <slot></slot>
-    </div>
-  </transition>
+      <div
+        ref="group"
+        v-if="linkelist.value === slotname"
+        :style="
+          Object.assign(
+            {},
+            {
+              zIndex: linkelist.value === slotname ? 1 : -1,
+            },
+            linkelist.value === slotname ? activeCompStyle : {}
+          )
+        "
+        class="overflow-x-hidden flex"
+      >
+        <slot :name="slotname"></slot>
+      </div>
+    </transition>
+  </div>
+
   <div class="w-full flex justify-end">
     <el-pagination
       :page-size="1"
@@ -31,9 +43,20 @@
   </div>
 </template>
 <script setup lang="ts">
-import { nextTick, onMounted, ref, watch } from "vue";
+import { computed, nextTick, onMounted, ref, watch } from "vue";
 
 import { ElPagination } from "element-plus";
+
+interface transitionEnterLeaveInfo {
+  fromEnterTrX: string;
+  toLeaveTrX: string;
+}
+
+interface linklist {
+  value: string;
+  next: linklist;
+  style: transitionEnterLeaveInfo;
+}
 
 const ctxEmit = defineEmits(["currentPage"]);
 
@@ -44,15 +67,16 @@ const props = defineProps({
   },
 });
 
-const hidden = ref(true);
+let pre = 0;
 const group = ref(null);
-const leaveTrx = ref("0px");
-const enterTrx = ref("0px");
 const currindex = ref(0);
 const widthView = ref(0);
-const direc = ref<"left" | "right" | "">("");
-let pre = 0;
+const direc = ref<"pre" | "next" | "">("");
 const pagination = ref<typeof ElPagination>(null);
+const linkelist = ref<linklist>(linke());
+const forlinkelist = ref(forlinke(linkelist.value));
+const fromEnterTrx = computed(() => linkelist.value.style.fromEnterTrX);
+const toLeaveTrx = computed(() => linkelist.value.next.next.style.toLeaveTrX);
 
 let isChangeStyle = true;
 
@@ -80,7 +104,7 @@ function groupWidth(group: HTMLElement) {
 
 function isDirection(pre, cur) {
   const value = cur - pre;
-  return value < 0 ? "left" : "right";
+  return value > 0 ? "next" : "pre";
 }
 
 async function currPageIndex(index) {
@@ -97,23 +121,23 @@ function beforeLeave() {}
 
 function afterLeave() {
   ctxEmit("currentPage", currindex.value);
-  hidden.value = true;
 }
 
 watch(direc, async (direction) => {
   if (!direc.value) return;
   direc.value = "";
 
-  if (direction === "left") {
-    leaveTrx.value = -widthView.value + "px";
-    enterTrx.value = widthView.value + "px";
+  if (direction === "next") {
+    linkelist.value.style.toLeaveTrX = widthView.value + "px";
+    linkelist.value.next.style.fromEnterTrX = -widthView.value + "px";
+    linkelist.value = linkelist.value.next;
   } else {
-    leaveTrx.value = widthView.value + "px";
-    enterTrx.value = -widthView.value + "px";
+    linkelist.value.next.next.style.fromEnterTrX = widthView.value + "px";
+    linkelist.value.style.toLeaveTrX = -widthView.value + "px";
+    linkelist.value = linkelist.value.next.next;
   }
 
-  await nextTick();
-  hidden.value = false;
+  console.log(linkelist.value);
 });
 
 function paginationQuick() {
@@ -138,6 +162,40 @@ function paginationQuick() {
    `;
 }
 
+function linke() {
+  function linkNode(val: string): linklist {
+    return {
+      value: val,
+      style: {
+        fromEnterTrX: "0px",
+        toLeaveTrX: "0px",
+      },
+      next: null,
+    };
+  }
+
+  const midd = linkNode("midd");
+  const left = linkNode("left");
+  const right = linkNode("right");
+
+  midd.next = right;
+  right.next = left;
+  left.next = midd;
+
+  return midd;
+}
+
+function forlinke(linkelist: linklist) {
+  return [linkelist.value, linkelist.next.value, linkelist.next.next.value];
+}
+
+const activeCompStyle = computed(() => ({
+  position: "absolute",
+  left: "0px",
+  top: "0px",
+  width: "100%",
+}));
+
 onMounted(async () => {
   await nextTick();
 
@@ -156,11 +214,11 @@ onMounted(async () => {
   transition: all 0.25s ease-in;
 }
 .leave_translatex {
-  transform: translateX(v-bind(leaveTrx));
+  transform: translateX(v-bind(toLeaveTrx));
 }
 
 .enter_translatex {
-  transform: translateX(v-bind(enterTrx));
+  transform: translateX(v-bind(fromEnterTrx));
 }
 
 .enter_to {

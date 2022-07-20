@@ -5,8 +5,8 @@
     ref="viewport"
   >
     <div
-      class="content absolute top-0 left-0 w-full"
-      :style="{ height: capHeight + 'px', ...style }"
+      class="content w-full"
+      :style="{ height: capHeight - 0.1 + 'px', ...style }"
       :class="class"
       @load.capture="loadImages"
     >
@@ -110,8 +110,31 @@ export default defineComponent({
       // console.log(height);
     }
 
+    //判断一行有多少个元素，防止高度同一行高度相加，影响总滑动高度
+    function rowNodeCount(lists: HTMLElement[]) {
+      console.log(lists);
+
+      let lindex = 0;
+
+      // while (true) {
+      //   const cur = lindex;
+      //   const next = (lindex += 1);
+      //   console.log(lists[cur]);
+
+      //   const currect = lists[cur].getBoundingClientRect();
+      //   const nextrect = lists[next].getBoundingClientRect();
+
+      //   if (currect.y !== nextrect.y) {
+      //     return next;
+      //   }
+      // }
+    }
+
     function heightAdd() {
       const lists = viewport.value.children[0].children as HTMLElement[];
+      // const rowcount = rowNodeCount(lists);
+
+      // console.log(rowcount);
 
       const totalHeight = Array.prototype.reduce.apply(lists, [
         (pre, next) => {
@@ -148,6 +171,7 @@ export default defineComponent({
       ctxEmit("hook:update");
     }
 
+    //这里是上层组件的的默认高度
     nextTick(() => {
       //@ts-ignore
       const el = ctx.parent.ctx["$el"];
@@ -172,6 +196,9 @@ export default defineComponent({
     );
 
     async function betterBscroll(module, loadResult, message) {
+      //异步函数，等待返回结果，在这一步对BS实例化
+      // await asyncFn;
+
       if (typeof loadResult === "boolean" && loadResult && module) {
         if (!viewport.value) return;
         const BScroll = module;
@@ -186,7 +213,7 @@ export default defineComponent({
 
         props.openUpload && BS.on("pullingUp", pullingUpHandler);
 
-        BS.on("scroll", (position) => {
+        BS.on("scroll", (position: any) => {
           // console.log(position.x, position.y);
         });
 
@@ -226,6 +253,8 @@ export default defineComponent({
               clearTimeout(timer);
               timer = null;
             }
+
+            capHeight.value = 0;
 
             timer = setTimeout(() => {
               resolve((thenStatus.value = "fulfilled"));

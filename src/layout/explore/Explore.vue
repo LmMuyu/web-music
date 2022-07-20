@@ -1,6 +1,6 @@
 <template>
   <div class="bg-white h-full">
-    <better-scroll :open-h-render="false" :item-len="Infinity">
+    <better-scroll :open-h-render="false" :item-len="catPlaylists.length">
       <FilterBtnCollections @withTagData="getWithTagData" />
       <div class="container_height">
         <filter-cat-data v-if="!loadDataing" :catPlaylists="catPlaylists" />

@@ -151,6 +151,15 @@ const routes: (RouteRecordRaw & {
     components: {
       default: () => import("../layout/setting/Setting.vue"),
     },
+    children: [
+      {
+        path: "binding",
+        name: "Binding",
+        components: {
+          default: () => import("../layout/setting/pages/Binding.vue"),
+        },
+      },
+    ],
   },
   {
     path: "/indexvideo",

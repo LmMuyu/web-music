@@ -12,6 +12,7 @@ import "virtual:svg-icons-register";
 import "element-plus/theme-chalk/el-icon.css";
 import "vue3-text-editor/css/index.css";
 import "element-plus/dist/index.css";
+import "./assets/font_2449341_hemw4blioga/iconfont.css";
 
 const app = createApp(App);
 

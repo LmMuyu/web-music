@@ -3,10 +3,10 @@
     <div v-if="isDefault" class="w-full">
       <el-container v-if="isLoginComp" class="h-full">
         <el-main
-          class="h-full"
           style="z-index: 1; padding-top: 0px; padding-bottom: 0px"
           :style="{
             overflow: hidden ? 'hidden' : 'auto',
+            height: containerHeight,
           }"
         >
           <router-view v-slot="{ Component }">
@@ -144,6 +144,8 @@ const shieldContainer = computed(() => {
 });
 
 const hidden = computed(store.getters["getMainHidden"]);
+
+const containerHeight = computed(() => window.innerHeight + "px");
 </script>
 
 <style scoped lang="scss">

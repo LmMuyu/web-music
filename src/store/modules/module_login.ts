@@ -1,6 +1,6 @@
 import { ActionTree } from "vuex";
 import { computed, watchEffect } from "vue";
-import { follows, userAccount } from "../../api/user";
+import { follows, getBindingInfo, userAccount } from "../../api/user";
 import { followUser } from "../../api/playervideo";
 
 enum watchType {
@@ -33,6 +33,12 @@ export interface STATETYPE {
   watch: WATCHFNOPTIONS;
   follows: follow[];
   userId: number;
+  binding: Binding;
+}
+
+interface Binding {
+  bindingType: number[];
+  bindingInfo: any[];
 }
 
 class login {
@@ -62,6 +68,10 @@ class login {
       initStatus: false,
       watch: {
         watchLoginFn: null,
+      },
+      binding: {
+        bindingType: [],
+        bindingInfo: [],
       },
     };
   }
@@ -102,6 +112,11 @@ class login {
 
       setAccount(state: STATETYPE, account) {
         console.log(account);
+      },
+
+      setBinding(state: STATETYPE, bindingInfo: Binding) {
+        state.binding.bindingInfo.push(...bindingInfo.bindingInfo);
+        state.binding.bindingType.push(...bindingInfo.bindingType);
       },
     };
   }
@@ -145,7 +160,6 @@ class login {
         if (islogin) {
           const isfollow = follows.findIndex((follow) => follow.uid === uid);
           const resFollow = await followUser(uid, isfollow === -1 ? 1 : 0);
-          console.log(resFollow);
 
           if (resFollow.data.code === 200) {
             // state.commit("setFollowsLists", [uid]);
@@ -159,6 +173,21 @@ class login {
         // const account = await userAccount();
         // state.commit("setAccount", account.data);
       },
+
+      async bindingInfo(state, uid: number) {
+        const binding = await getBindingInfo(String(uid));
+        const types = binding.data.bindings.map((info) => info.type);
+        const infos = binding.data.bindings.map((info) => {
+          const json = JSON.parse(info.tokenJsonStr);
+          info.tokenJsonStr = json;
+          return info;
+        });
+
+        state.commit("setBinding", {
+          bindingInfo: infos,
+          bindingType: types,
+        });
+      },
     };
   }
 
@@ -171,6 +200,7 @@ class login {
       getIslogin: (state: STATETYPE) => state.islogin,
       getIds: (state: STATETYPE) => state.ids,
       getFollows: (state: STATETYPE) => () => state.follows,
+      getUserBindingInfo: (state: STATETYPE) => () => state.binding,
     };
   }
 }

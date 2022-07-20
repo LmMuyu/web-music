@@ -3,7 +3,7 @@
   <div class="flex justify-between">
     <router-link
       style="width: 134px"
-      class="block h-36 relative cursor-pointer"
+      class="block h-36 mb-4 relative cursor-pointer"
       v-for="(item, index) in playList"
       :key="index"
       :to="{
