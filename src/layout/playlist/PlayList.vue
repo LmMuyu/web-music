@@ -1,6 +1,6 @@
 <template>
   <el-container class="h-full relative section_container min_w_h">
-    <el-main class="backdrop padd">
+    <el-main class="backdrop padd" style="overflow: hidden">
       <PlayListMain
         :singerName="playListMainInfo.nickName"
         :musicName="playListMainInfo.musicName"
@@ -16,6 +16,7 @@ import { useStore } from "vuex";
 import PlayListMain from "./components/PlayListMain.vue";
 import { ElContainer, ElMain } from "element-plus";
 import { musicDetail } from "../../utils/musicDetail";
+import { useWatchRoutePath } from "../../utils/useWatchHost";
 
 const store = useStore();
 
@@ -27,9 +28,15 @@ const playListMainInfo = reactive({
 
 const songInfo = computed<musicDetail>(store.getters["playlist/getSongInfo"]);
 
-store.commit("setControlAudioCompIf", false);
+const routePath = useWatchRoutePath();
 
 watchEffect(() => {
+  if (routePath.value.query.id) {
+    store.commit("playlist/thisPlaylistPageSetSongId", routePath.value.query.id);
+  }
+});
+watchEffect(() => {
+  console.log(songInfo.value);
   if (Object.keys(songInfo.value).length > 0) {
     playListMainInfo.backgroundurl = songInfo.value.picUrl;
     playListMainInfo.nickName = songInfo.value.nickName;

@@ -1,6 +1,7 @@
 import type { PlayAudioInfo, State } from "./type";
 import type { MusicDetailOption } from "../utils/musicDetail";
 import type { RouteLocationNormalized } from "vue-router";
+import { isRef } from "vue";
 
 export default {
   countriesCode(state: State, commit: any) {

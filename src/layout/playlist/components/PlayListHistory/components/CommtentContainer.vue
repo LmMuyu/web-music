@@ -20,7 +20,7 @@
       </BetterScroll>
       <div v-else>
         <component
-          v-for="(item, index) in unref(data)"
+          v-for="(item, index) in data"
           :key="index"
           :scopedData="item"
           :is="selectComp"
@@ -38,6 +38,7 @@
         :total="totalpage"
         layout="prev, pager, next"
         class="flex justify-center"
+        :background="paginationbackground"
       ></el-pagination>
     </ElFooter>
   </ElContainer>
@@ -50,11 +51,12 @@ import {
   nextTick,
   onMounted,
   onUnmounted,
-  unref,
   watchEffect,
   watch,
   shallowRef,
 } from "@vue/runtime-core";
+import { useStore } from "vuex";
+import { useRouter } from "vue-router";
 
 import {
   ElContainer,
@@ -69,9 +71,7 @@ import BetterScroll from "../../../../../components/betterscroll/BetterScroll.vu
 import Loading from "../../../../../components/svgloading/SvgLoading.vue";
 import Dialog from "../components/Dialog.vue";
 import HistoryItem from "./HistoryItem.vue";
-import CommentItem from "./CommentItem";
-import { useStore } from "vuex";
-import { useRouter } from "vue-router";
+import CommentItem from "./CommentItem.vue";
 
 enum COMP {
   "History" = "History",
@@ -124,6 +124,7 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  paginationbackground:Boolean
 });
 
 const dialog = ref(null);

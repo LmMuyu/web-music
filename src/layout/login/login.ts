@@ -6,7 +6,6 @@ export function loginStoreSetInfo(data: any, status: boolean) {
   store.commit("login/setUserInfo", [data, "login"]);
   store.dispatch("login/setFollows");
   store.dispatch("login/bindingInfo", data.userID);
-  console.log(data);
 }
 
 export async function loginStatus(serveIslogin: boolean, account: any, profile: any) {

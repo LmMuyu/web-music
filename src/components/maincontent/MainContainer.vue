@@ -10,7 +10,7 @@
           }"
         >
           <router-view v-slot="{ Component }">
-            <keep-alive :max="3">
+            <keep-alive :max="3" :exclude="['Playlist']">
               <component :is="Component"></component>
             </keep-alive>
           </router-view>

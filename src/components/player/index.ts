@@ -32,9 +32,10 @@ export class VideoComments {
     if (index === this.currPage) {
       return;
     }
-    commentMusic(this.mid, index, this.timeTable.get(index - 1), null, this.type).then(
-      this.commentMusicThen.value.bind(this)
-    );
+
+    console.log(index);
+
+    commentMusic(this.mid, index, 0, 20, this.type).then(this.commentMusicThen.value.bind(this));
   }
 
   changePageIndex(index: number) {
@@ -42,16 +43,13 @@ export class VideoComments {
       return;
     }
 
-    commentMusic(this.mid, index, this.timeTable.get(index - 1) ?? 0, null, this.type).then(
-      this.commentMusicThen.value.bind(this)
-    );
+    commentMusic(this.mid, index, 0, 20, this.type).then(this.commentMusicThen.value.bind(this));
   }
 
   commentMusicThenFn({ config, data: comment }) {
-    console.log(comment);
-    
     this.playListHistoryOptions.total = comment.total;
     this.playListHistoryOptions.time = comment.comments[comment.comments.length - 1].time;
+    console.log(comment);
 
     if (config.params.offset + 1 === 1 && comment.hotComments.length > 0) {
       const diff = this.COMMENT_LEN - comment.hotComments.length;
@@ -76,7 +74,6 @@ export class VideoComments {
     return new Promise((resolve) => {
       watchEffect(() => {
         if (this.commentMusicThen.value) {
-          console.log("coomments");
           this.commentMusicThen.value.call(this, data);
           resolve(this.comments);
         }

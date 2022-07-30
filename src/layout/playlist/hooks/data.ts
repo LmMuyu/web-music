@@ -8,6 +8,7 @@ export const lyricNodeRect = reactive({
   offsetHeight: 0,
   scrollHeight: 0,
   scrollShiHeight: 0,
+  scrollNode: null,
 });
 
 export const clientHeight = ref(0);

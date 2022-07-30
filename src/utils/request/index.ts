@@ -42,6 +42,8 @@ function filterParams(params: Object) {
   return filterParam;
 }
 
+export const BASEURL = "https://netease-cloud-music-api-chi-ashy.vercel.app/";
+
 export default function request(config: AxiosRequestConfig) {
   // const cancelToken = httpCancelToken({
   //   url: config.url,
@@ -53,8 +55,8 @@ export default function request(config: AxiosRequestConfig) {
 
   const instance = axios.create({
     // baseURL: "http://120.27.135.200:3000/",
-    baseURL: "https://netease-cloud-music-api-chi-ashy.vercel.app/",
     // baseURL: "http://localhost:3000",
+    baseURL: BASEURL,
     method: "GET",
     timeout: 30000,
     withCredentials: true,

@@ -6,7 +6,7 @@
   >
     <div
       class="content w-full"
-      :style="{ height: capHeight - 0.1 + 'px', ...style }"
+      :style="{ height: capHeight + 'px', ...style }"
       :class="class"
       @load.capture="loadImages"
     >
@@ -27,6 +27,7 @@ import {
   render,
   watch,
   watchEffect,
+  computed,
 } from "vue";
 import useLoadNetworkRes from "../../utils/useLoadNetworkRes";
 import bottomLoading_H from "./bottomLoading_H";
@@ -68,9 +69,10 @@ export default defineComponent({
     let BS = null;
     let mountRefreshFn: (bs) => void = null;
     let mutation = null;
+    const mutex = ref(false);
+    const mutexQueue = [];
 
     function disable() {
-      console.log(BS);
       BS.disable();
     }
 
@@ -105,25 +107,15 @@ export default defineComponent({
       el.removeAttribute(hclass);
     }
 
-    function nodestyle(el: HTMLElement) {
-      const height = el.style.height;
-      // console.log(height);
-    }
-
     //判断一行有多少个元素，防止高度同一行高度相加，影响总滑动高度
     function rowNodeCount(lists: HTMLElement[]) {
-      console.log(lists);
-
-      let lindex = 0;
-
+      // console.log(lists);
+      // let lindex = 0;
       // while (true) {
       //   const cur = lindex;
       //   const next = (lindex += 1);
-      //   console.log(lists[cur]);
-
       //   const currect = lists[cur].getBoundingClientRect();
       //   const nextrect = lists[next].getBoundingClientRect();
-
       //   if (currect.y !== nextrect.y) {
       //     return next;
       //   }
@@ -131,16 +123,17 @@ export default defineComponent({
     }
 
     function heightAdd() {
+      mutex.value = true;
       const lists = viewport.value.children[0].children as HTMLElement[];
       // const rowcount = rowNodeCount(lists);
+      // // console.log(rowcount);
 
-      // console.log(rowcount);
+      let heightArr = [];
 
       const totalHeight = Array.prototype.reduce.apply(lists, [
-        (pre, next) => {
+        (pre, next, index) => {
           const oneheight = next.getBoundingClientRect().height;
           const [hclass, ishclass] = isHClassAndHCalss(next);
-          nodestyle(next);
 
           let twoheight = 0;
           if (!ishclass) {
@@ -149,42 +142,50 @@ export default defineComponent({
             twoheight = next.getBoundingClientRect().height;
           }
 
-          const height = Math.max(oneheight, twoheight);
+
+          const prevHeight = index > 0 ? heightArr[index - 1] : 0;
+          heightArr.push(Math.max(oneheight, twoheight));
+
+          const height = Math.max(
+            Math.abs(oneheight - prevHeight),
+            Math.abs(twoheight - prevHeight)
+          );
 
           return (pre += height);
         },
         0,
       ]);
 
-      const maxHeight = Math.max(totalHeight, capHeight.value);
+      capHeight.value = 0;
+      heightArr.length = 0;
       const preHeight = capHeight.value;
-      capHeight.value = maxHeight;
+      capHeight.value += totalHeight;
 
       if (preHeight !== capHeight.value) {
         BSRefresh();
       }
+
+      mutex.value = false;
     }
 
     function loadImages(ev) {
       ev.stopPropagation();
+      mutex.value && mutexQueue.push("addFn");
       heightAdd();
       ctxEmit("hook:update");
     }
 
-    //这里是上层组件的的默认高度
-    nextTick(() => {
-      //@ts-ignore
-      const el = ctx.parent.ctx["$el"];
-      const offsetTop = el.offsetTop;
-      const clientHeight = el.clientHeight;
-
-      if (el) {
-        viewportHeight.value =
-          clientHeight > offsetTop
-            ? clientHeight - offsetTop
-            : document.documentElement.clientHeight;
-      }
-    });
+    function ayncMutexCapHeight() {
+      watch(mutex, (mutexvalue) => {
+        if (!mutexvalue) {
+          const task = mutexQueue.unshift();
+          // if (task.length > 0) {
+          //   heightAdd();
+          // }
+        }
+      });
+    }
+    
 
     useLoadNetworkRes(src).then(
       ({ loadResult, module, message }) => {
@@ -196,9 +197,6 @@ export default defineComponent({
     );
 
     async function betterBscroll(module, loadResult, message) {
-      //异步函数，等待返回结果，在这一步对BS实例化
-      // await asyncFn;
-
       if (typeof loadResult === "boolean" && loadResult && module) {
         if (!viewport.value) return;
         const BScroll = module;
@@ -214,7 +212,7 @@ export default defineComponent({
         props.openUpload && BS.on("pullingUp", pullingUpHandler);
 
         BS.on("scroll", (position: any) => {
-          // console.log(position.x, position.y);
+          console.log(position.x, position.y);
         });
 
         const stop = watchEffect(() => {
@@ -232,6 +230,7 @@ export default defineComponent({
         });
 
         mountRefreshFn && mountRefreshFn(BS);
+        BSRefresh();
       }
       if (typeof loadResult === "boolean" && !loadResult) {
         console.warn("better-scrol:" + message);
@@ -253,8 +252,6 @@ export default defineComponent({
               clearTimeout(timer);
               timer = null;
             }
-
-            capHeight.value = 0;
 
             timer = setTimeout(() => {
               resolve((thenStatus.value = "fulfilled"));
@@ -278,7 +275,7 @@ export default defineComponent({
     //计算滑动总高度
     function capTotalHeight() {
       const lists = viewport.value.children[0].children as HTMLElement[];
-      capHeight.value = bottomPos(lists[lists.length - 1]);
+      capHeight.value = Math.max(bottomPos(lists[lists.length - 1]), capHeight.value);
     }
 
     async function pullingUpHandler() {
@@ -312,8 +309,6 @@ export default defineComponent({
     function watchRenderBottomLoading() {
       const mount = afterDiv(viewport.value.children[0]);
       watch(isPullUpLoad, (newavalue) => {
-        console.log(newavalue);
-
         render(bottomLoading_H({ isPullUpLoad }), mount);
       });
     }
@@ -347,14 +342,29 @@ export default defineComponent({
       }
     }
 
-    watch(() => props.itemLen, renderNode);
+    const stopRenderNode = watch(() => props.itemLen, renderNode);
 
     onMounted(async () => {
       renderNode();
+
+      //这里是上层组件的的默认高度
+      nextTick(() => {
+        //@ts-ignore
+        const el = ctx.parent.ctx["$el"];
+        const clientHeight = el.clientHeight;
+
+        el && (viewportHeight.value = clientHeight)
+          ? clientHeight
+          : document.documentElement.clientHeight;
+      });
+
+      await nextTick();
+      heightAdd();
     });
 
     onUnmounted(() => {
       BS.destroy();
+      stopRenderNode();
     });
 
     expose({

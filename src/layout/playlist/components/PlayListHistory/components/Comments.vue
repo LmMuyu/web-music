@@ -11,8 +11,9 @@
     :total="VideoCommentModule.playListHistoryOptions.total"
     :render-b-s="false"
     :shut-dialog="shut"
+    :paginationbackground="false"
     comp-id="Comment"
-  />;
+  />
 </template>
 <script setup lang="ts">
 import { ref, watch } from "vue";

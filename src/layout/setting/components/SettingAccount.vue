@@ -3,7 +3,7 @@
     >立即登录</el-button
   >
   <div v-else>
-    <div class="flex items-center ">
+    <div class="flex items-center">
       <FontIcon
         v-for="icon in iconclass"
         :key="icon.icon"
@@ -15,7 +15,9 @@
       <router-link to="/setting/binding" class="text-sm">绑定账号>></router-link>
     </div>
     <div class="py-4">
-      <el-button size="small" round >修改个人信息</el-button>
+      <el-button size="small" round>
+        <router-link to="/setting/personalinfo"> 修改个人信息 </router-link>
+      </el-button>
     </div>
   </div>
 </template>
@@ -37,6 +39,5 @@ const islogin = computed(() => {
 });
 
 const userBindingInfo = computed(store.getters["login/getUserBindingInfo"]);
-console.log(userBindingInfo.value);
 </script>
 <style scoped lang="scss"></style>

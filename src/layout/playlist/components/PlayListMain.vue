@@ -1,44 +1,38 @@
 <template>
-  <el-container
-    :style="{
-      backgroundImage: `url('${backgroundurl}')`,
-      backgroundRepeat: 'no-repeat',
-      backgroundOrigin: 'content-box',
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-    }"
-    ref="sectionNode"
-    class="flex h-full relative"
-  >
+  <el-container ref="sectionNode" class="flex h-full relative bg-white">
     <div class="drop_filter"></div>
-    <el-header class="flex flex-col justify-center items-center header z-10">
-      <div v-if="ifhidden">
-        <span class="text-xl py-2 cursor-pointer z-10" style="color: black">
-          {{ musicName }}
-        </span>
-        <div style="transform: translate3d(-13%, 0, 0)" class="flex items-center justify-center">
+    <el-header class="flex justify-center items-center header z-10">
+      <div v-if="ifhidden" class="flex flex-col justify-center items-center">
+        <span class="text-xl py-2 cursor-pointer z-10" style="color: black">{{ musicName }}</span>
+        <div class="flex items-center justify-center">
           <span v-html="singerName" class="text-sm z-10"></span>
           <span> - </span>
           <span style="color: #b2bec3" class="text-sm"> {{ musicName }} </span>
         </div>
       </div>
-
       <transition
         enterFromClass="musicname_center_from"
         enterToClass="musicname_center_to"
         enterActiveClass="musicname_center_active"
       >
-        <span v-if="!ifhidden" style="color: #303133" class="text-sm z-10">{{ musicName }}</span>
+        <div v-if="!ifhidden">
+          <span style="color: #303133" class="text-sm z-10">{{ musicName }}</span>
+        </div>
       </transition>
     </el-header>
-    <el-main ref="container_main" class="w-full flex">
+    <el-main
+      ref="container_main"
+      style="top: 60px"
+      class="absolute scroll_bar left-0 w-full h-full flex"
+    >
       <el-row style="height: 100vh">
         <el-col :span="10"> </el-col>
         <el-col :span="13">
           <div ref="container_lycs" class="relative lycs_music">
             <div
-              class="flex flex-col overflow-y-scroll relative sliderTrack"
-              style="height: 30rem"
+              class="flex flex-col relative sliderTrack"
+              :class="banscroll ? 'overflow-hidden' : 'overflow-y-scroll'"
+              style="height: 100vh"
               ref="lyricNode"
               @scroll="lyricThrottle"
             >
@@ -50,9 +44,9 @@
                 :slideScrollTop="sliderH"
                 :puremusic="puremusic"
                 :rootstyle="transformStyle"
-              />
+              ></play-lycs>
+              <div :style="{ height: scrollHeight }" class="absolute top-0 right-0 w-1"></div>
             </div>
-
             <div ref="trackNode" class="absolute top-0 right-0 bottom-0 w-1 h-full">
               <span
                 class="absolute left-0 w-1 h-8 transition"
@@ -64,28 +58,32 @@
         </el-col>
         <el-col :span="1"> </el-col>
       </el-row>
-      <div class="w-full flex justify-center">
-        <div ref="comments" class="h-auto w-1/2">
+      <div class="w-full h-8 py-8"></div>
+      <ElRow class="w-full">
+        <ElCol :span="5" class="h-8 w-full"></ElCol>
+        <ElCol :span="14" ref="comments" class="h-auto w-1/2">
           <ContainerComments :mid="Number(musicid)" />
-        </div>
-      </div>
+        </ElCol>
+        <ElCol :span="5"></ElCol>
+      </ElRow>
+      <div class="w-full h-24"></div>
     </el-main>
   </el-container>
 </template>
 <script setup lang="ts">
 import { useStore } from "vuex";
-import { onMounted } from "vue";
 import { useRoute } from "vue-router";
+import { onMounted, watch } from "vue";
 import { computed, nextTick, onUnmounted, ref, watchEffect, shallowRef } from "@vue/runtime-core";
 
 import { useType } from "../../../hooks";
 import { getLyrics } from "../../../api/playList";
-import { lyricNodeRect, clientHeight, distance } from "../hooks/data";
 import { conversionItem, lyricThrottle } from "../hooks/methods";
+import { lyricNodeRect, clientHeight, distance } from "../hooks/data";
 import { createAsComponent } from "../../../utils/createAsComponent";
 
-import { ElContainer, ElMain, ElRow, ElCol, ElHeader } from "element-plus";
 import PlayLycs from "./PLayLycs.vue";
+import { ElContainer, ElMain, ElRow, ElCol, ElHeader } from "element-plus";
 
 import type { MatchItem } from "../type";
 
@@ -123,9 +121,10 @@ const observerlists = [];
 const container_lycs = shallowRef(null);
 const container_main = ref(null);
 const puremusic = ref(false);
-
 const trackSliderMaxH = ref(0);
 const sliderH = ref(0);
+const scrollHeight = ref("");
+const banscroll = ref(false);
 
 const weizX = computed(() => {
   return Number(
@@ -241,23 +240,25 @@ function containerMainToScroll(toscroll: boolean | string, commentNode: HTMLElem
   }
 }
 
+watch(distance, scrollBorderCheck);
+
 const transformStyle = computed(() => {
-  let movey = 0;
-
-  const totalH = lyricNodeRect.scrollHeight - lyricNodeRect.offsetHeight;
-
-  if (distance.value > totalH) {
-    const diffy = totalH - distance.value;
-    distance.value -= distance.value - diffy;
-    movey = distance.value;
-  } else {
-    movey = distance.value;
-  }
-
   return {
-    transform: `translate3d(0,-${movey}px,0)`,
+    transform: `translate3d(0,-${
+      distance.value < lyricNodeRect.scrollHeight / 3
+        ? distance.value + distance.value * 0.02
+        : lyricNodeRect.scrollHeight / 2
+    }px,0)`,
   };
 });
+
+function scrollBorderCheck(distancevalue: number) {
+  if (distancevalue > (lyricNodeRect.scrollHeight - lyricNodeRect.offsetHeight) / 2) {
+    banscroll.value = true;
+  } else {
+    banscroll.value = false;
+  }
+}
 
 onMounted(async () => {
   nextTick().then(() => {
@@ -283,7 +284,8 @@ onMounted(async () => {
   });
 
   await nextTick();
-  watchCommentsTree(comments.value);
+  //@ts-ignore
+  watchCommentsTree(comments.value.$el);
   containerMainToScroll(toScrollComments as string, comments.value);
 });
 
@@ -318,9 +320,7 @@ section {
     height: 100%;
     line-height: 2;
     margin: auto;
-    border-radius: 5px;
-    background: rgb(245, 247, 250, 0.9);
-    box-shadow: 3px 3px 6px 3px rgba(0, 0, 0, 0.3);
+    background-image: linear-gradient(to bottom, #fafafa 0%, #fff 100%);
     overflow: hidden;
 
     &::before {
@@ -375,5 +375,9 @@ section {
 
 .musicname_center_active {
   transition: all 0.5s ease;
+}
+
+.scroll_bar::-webkit-scrollbar {
+  display: none;
 }
 </style>

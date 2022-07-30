@@ -1,13 +1,6 @@
 <template>
   <ElContainer>
-    <ElHeader height="48px" class="flex items-center">
-      <FontIcon
-        @click="router.go(-1)"
-        size="24"
-        class="cursor-pointer"
-        icon="iconarrow-right-copy"
-      />
-    </ElHeader>
+    <ElHeader height="48px" class="flex items-center"><RouteGo /></ElHeader>
     <ElMain>
       <div class="text-sm font-bold py-4">注册账号</div>
       <div class="p-4">
@@ -93,13 +86,12 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { useStore } from "vuex";
-import { useRouter } from "vue-router";
 
 import { ElContainer, ElMain, ElButton, ElHeader, ElInput, ElDialog } from "element-plus";
 import FontIcon from "../../../components/fonticon/FontIcon.vue";
+import RouteGo from "./RouteGo.vue";
 
 const store = useStore();
-const router = useRouter();
 const centerDialogVisible = ref(false);
 const pass = ref("");
 const iconclass = ref([

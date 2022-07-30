@@ -159,6 +159,13 @@ const routes: (RouteRecordRaw & {
           default: () => import("../layout/setting/pages/Binding.vue"),
         },
       },
+      {
+        path: "personalinfo",
+        name: "Personalinfo",
+        components: {
+          default: () => import("../layout/setting/pages/PersonalInfo.vue"),
+        },
+      },
     ],
   },
   {

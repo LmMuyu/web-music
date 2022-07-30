@@ -1,7 +1,11 @@
 <template>
-  <el-container :class="class" class="rounded-md bg-show w-3/5 h-4/6" :style="containerPos">
-    <el-main class="bg-white w-full h-full overflow-hidden">
-      <better-scroll :open-h-render="false">
+  <el-container
+    :class="class"
+    class="rounded-md bg-show w-3/5 h-5/6 relative"
+    :style="containerPos"
+  >
+    <el-main class="absolute top-0 left-0 bg-white w-full h-full overflow-hidden">
+      <better-scroll>
         <el-row align="middle" class="" v-for="(tagobj, row) in allSelectTag" :key="row">
           <el-col
             class="px-4 flex items-center justify-center"

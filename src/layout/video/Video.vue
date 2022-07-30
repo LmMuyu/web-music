@@ -6,7 +6,7 @@
           <el-button
             ref="mountSelectAllDom"
             @click="expandSelectAll"
-            size="medium"
+            size="default"
             round
             class="flex items-center px-4"
           >

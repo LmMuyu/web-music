@@ -60,7 +60,6 @@ export const computed_footerInfo = computed(() => {
   return function (props: any) {
     const { info, setData } = footerInfo(props);
     setData("linke", "icon", ["icondianzan1", "iconzan"]);
-
     return info;
   };
 });

@@ -1,17 +1,19 @@
 <template>
-  <section class="flex justify-end w-full h-full">
+  <section :class="class" class="flex justify-end w-full h-full">
     <div class="flex items-center justify-end w-1/2 h-full">
-      <div
-        :class="props.recursion ? setClass('items-end text-sm pb-2') : setClass('items-center ')"
-      >
+      <div :class="recursion ? setClass('items-end text-sm pb-2') : setClass('items-center ')">
         <span
-          v-for="(options, index) in props.info"
+          v-for="(options, index) in info"
           :key="index"
           :ref="(ref) => unref(subInfoEls).push(ref)"
           class="flex justify-center items-center px-4 cursor-pointer"
           @click="!!options?.event?.emit && returnEmit(options.event)"
         >
-          <FontIcon v-if="!!options.icon" :icon="icon(options.icon)"></FontIcon>
+          <FontIcon
+            v-if="!!options.icon"
+            :size="String(size)"
+            :icon="icon(options.icon)"
+          ></FontIcon>
           <p style="color: #b2bec3" class="text-sm">
             {{ !options.icon ? switchText(options.name) : "" }}
             {{ options.count === 0 ? "" : options.count }}
@@ -57,6 +59,11 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  size: {
+    type: Number,
+    default: 16,
+  },
+  class:String
 });
 
 const store = getStore();
@@ -104,7 +111,7 @@ const userData = computed(store.getters["login/getUserData"]);
 const isLinke = computed(() => {
   if (isLatestLinke.value) return true;
 
-  const len = props?.latestLikedUsers.length;
+  const len = props?.latestLikedUsers?.length || 0;
   //@ts-ignore
   const userid = userData.value?.data?.userID;
   if (!userid) return console.warn("mainContentFooter:userid");

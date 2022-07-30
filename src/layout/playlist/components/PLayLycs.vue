@@ -133,6 +133,8 @@ function selectLycs(e: Event) {
 onMounted(async () => {
   await nextTick();
   lyricNodeRect.scrollHeight = scrollNode.value.scrollHeight;
+  lyricNodeRect.scrollNode = scrollNode.value;
+
   frist = scrollNode.value.children[0].clientHeight;
 });
 </script>

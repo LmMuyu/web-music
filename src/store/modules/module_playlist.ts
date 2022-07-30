@@ -1,8 +1,8 @@
 import { GetterTree, MutationTree, StoreOptions } from "vuex";
-import type { musicDetail as SongInfo } from "../../utils/musicDetail";
+import type { musicDetail } from "../../utils/musicDetail";
 
 interface store {
-  songinfo: SongInfo | {};
+  songinfo: musicDetail | {};
   iconsize: number;
   songId: number;
   playlists: any[];
@@ -32,7 +32,7 @@ export default class Playlist implements StoreOptions<store> {
 
   private get mutationsmodule(): MutationTree<store> {
     return {
-      setSongInfo(state, payload) {
+      setSongInfo(state, payload: musicDetail) {
         if (!payload || Object.keys(payload).length === 0) return;
         state.songinfo = payload;
       },
@@ -44,6 +44,12 @@ export default class Playlist implements StoreOptions<store> {
       musiclists(state, lists: any[]) {
         if (Array.isArray(lists)) {
           state.playlists = lists;
+        }
+      },
+
+      thisPlaylistPageSetSongId(state, id: number) {
+        if (state.songId === 0 || state.songId !== id) {
+          state.songId = id;
         }
       },
     };

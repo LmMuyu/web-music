@@ -1,7 +1,7 @@
 <template>
   <HtmlMain />
   <div class="absolute bottom-0 left-0 w-full">
-    <!-- <Audio v-if="loadCompAudio" :songinfo="songInfo" /> -->
+    <Audio :songinfo="songInfo" />
   </div>
 </template>
 
@@ -29,17 +29,16 @@ const circleRef = ref(true);
 
 function stopLoadAudioComp() {
   const RouteRLNL = useWatchRoutePath();
-  const excludeLists = ["/login", "/video", "/404"];
-  const loadCompAudio = ref(false);
+  const excludeLists = ["/login", "/video", "/404", "/playlist"];
 
   watchEffect(() => {
-    loadCompAudio.value = excludeLists.indexOf(RouteRLNL.value.path) > -1 ? false : true;
+    const s = excludeLists.indexOf(RouteRLNL.value.path) > -1 ? false : true;
+    console.log(s)
+    store.commit("setControlAudioCompIf", s);
   });
-
-  return loadCompAudio;
 }
 
-const loadCompAudio = stopLoadAudioComp();
+stopLoadAudioComp();
 
 function showContainerMainHidden(meta: META) {
   store.commit("setMainHidden", !!meta.mainhidden);

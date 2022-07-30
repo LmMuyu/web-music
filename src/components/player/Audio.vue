@@ -121,7 +121,7 @@ const sliderPos = reactive({
 const volumecontrol = ref<typeof ElSlider | null>(null);
 let volumeControlStatus: "enter" | "remove" = "enter";
 let tiemr = null;
-let isLeaveSanSecBelow = ref<null | boolean>(null);
+let isLeaveSanSecBelow = ref<null | boolean>(false);
 
 const dexie = dexieFn();
 const {
@@ -163,14 +163,11 @@ watchEffect(() => {
   }
 });
 
-function volumeProcessing() {
-  watch(volume, (volume) => setVolume(volume / 100));
-}
-
-volumeProcessing();
+watch(volume, (volume) => setVolume(volume / 100));
 
 function leaveTimeout() {
   if (!controlAudioCompIf.value) {
+    clearAudioControlTimeout();
     return;
   }
 
@@ -194,7 +191,7 @@ function clearAudioControlTimeout() {
 
 async function initShowAudioModule() {
   (await dexie).first().then((first) => {
-    !first && (isLeaveSanSecBelow.value = true);
+    !first && controlAudioCompIf.value && (isLeaveSanSecBelow.value = true);
   });
 }
 
@@ -205,7 +202,7 @@ function enterAudio() {
 }
 
 function leaveAudio() {
-  if (!controlAudioCompIf) {
+  if (!controlAudioCompIf.value) {
     return;
   }
 
@@ -269,7 +266,6 @@ watchEffect(() => {
 function openVolume(e: Event & { clientX: number }) {
   if (volumeControlStatus === "remove") {
     openControl(-window.innerHeight + "px", -window.innerWidth + "px");
-
     return;
   }
 
