@@ -12,6 +12,7 @@ const footerInfo = (props: any) => {
       },
       icon: "icondianzan1",
       count: props?.event?.info?.likedCount || props?.likedCount || 0, //点赞
+      liked: props?.liked || false, //是否已点赞
     },
     {
       name: "comment",

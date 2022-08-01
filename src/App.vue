@@ -33,7 +33,6 @@ function stopLoadAudioComp() {
 
   watchEffect(() => {
     const s = excludeLists.indexOf(RouteRLNL.value.path) > -1 ? false : true;
-    console.log(s)
     store.commit("setControlAudioCompIf", s);
   });
 }

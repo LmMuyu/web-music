@@ -2,7 +2,7 @@
   <section :class="class" class="flex justify-end w-full h-full">
     <div class="flex items-center justify-end w-1/2 h-full">
       <div :class="recursion ? setClass('items-end text-sm pb-2') : setClass('items-center ')">
-        <span
+        <div
           v-for="(options, index) in info"
           :key="index"
           :ref="(ref) => unref(subInfoEls).push(ref)"
@@ -13,12 +13,13 @@
             v-if="!!options.icon"
             :size="String(size)"
             :icon="icon(options.icon)"
+            :color="options.liked ? '#409EFF' : '#607d8b'"
           ></FontIcon>
-          <p style="color: #b2bec3" class="text-sm">
-            {{ !options.icon ? switchText(options.name) : "" }}
-            {{ options.count === 0 ? "" : options.count }}
-          </p>
-        </span>
+          <span style="color: #b2bec3" class="flex items-center">
+            <p>{{ !options.icon ? switchText(options.name) : "" }}</p>
+            <p class="text-xs">{{ options.count === 0 ? "" : options.count }}</p>
+          </span>
+        </div>
       </div>
     </div>
   </section>
@@ -34,10 +35,11 @@ import FontIcon from "../../../components/fonticon/FontIcon.vue";
 import type { PropType } from "vue";
 
 type Options = {
-  name: string;
+  name: "linke" | "comment" | "forward";
   count: number;
   event?: Record<any, any>;
   icon?: string[] | string;
+  liked?: boolean;
 };
 
 const ctxEmit = defineEmits(["linke", "comment", "forward"]);
@@ -63,7 +65,7 @@ const props = defineProps({
     type: Number,
     default: 16,
   },
-  class:String
+  class: String,
 });
 
 const store = getStore();

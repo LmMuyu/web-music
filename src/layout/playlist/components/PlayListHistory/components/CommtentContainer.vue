@@ -1,4 +1,5 @@
 <template>
+  <Dialog ref="dialog" @editorContent="props.on['send-content']" />
   <ElContainer class="relative w-full h-full">
     <ElHeader height="56" class="flex justify-between">
       <div>
@@ -6,7 +7,6 @@
       </div>
       <div v-if="commentMod">
         <el-button size="small" @click="pubComment">发表评论</el-button>
-        <Dialog ref="dialog" @editorContent="props.on['send-content']" />
       </div>
     </ElHeader>
     <el-main v-if="comploading" class="w-full h-full flex justify-center items-center">
@@ -15,7 +15,7 @@
     <el-main v-else class="relative h-full parser">
       <BetterScroll v-if="renderBS" class="absolute top-0 left-0 w-full h-full">
         <div v-for="(item, index) in data" :key="index">
-          <component :scopedData="item" :is="compId"></component>
+          <component @comment="clickComment" :scopedData="item" :is="compId"></component>
         </div>
       </BetterScroll>
       <div v-else>
@@ -24,6 +24,7 @@
           :key="index"
           :scopedData="item"
           :is="selectComp"
+          @comment="clickComment"
         ></component>
       </div>
     </el-main>
@@ -69,7 +70,7 @@ import {
 } from "element-plus";
 import BetterScroll from "../../../../../components/betterscroll/BetterScroll.vue";
 import Loading from "../../../../../components/svgloading/SvgLoading.vue";
-import Dialog from "../components/Dialog.vue";
+import Dialog, { Reply } from "../components/Dialog.vue";
 import HistoryItem from "./HistoryItem.vue";
 import CommentItem from "./CommentItem.vue";
 
@@ -124,7 +125,7 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
-  paginationbackground:Boolean
+  paginationbackground: Boolean,
 });
 
 const dialog = ref(null);
@@ -220,23 +221,40 @@ const stop = watchEffect(() => {
   }
 });
 
+function noLoginMessage() {
+  ElMessage({
+    type: "error",
+    message: "请先登录，再发表评论！",
+  });
+  router.push({
+    path: "/login",
+    query: {
+      path: router.currentRoute.value.path,
+      id: router.currentRoute.value.query.id,
+    },
+  });
+}
+
 function pubComment() {
+  const args = [].slice.call(arguments, 0);
+
   const islogin = store.getters["login/getIslogin"];
-  if (islogin) {
-    dialog.value.visibleDialog();
-  } else {
-    ElMessage({
-      type: "error",
-      message: "请先登录，再发表评论！",
-    });
-    router.push({
-      path: "/login",
-      query: {
-        path: router.currentRoute.value.path,
-        id: router.currentRoute.value.query.id,
-      },
-    });
-  }
+  islogin
+    ? args.length > 0
+      ? dialog.value.visibleDialog.call(dialog.value, ...args)
+      : dialog.value.visibleDialog()
+    : noLoginMessage();
+}
+
+function clickComment(commentitem: any) {
+  const ops: Reply = {
+    uid: commentitem.userId,
+    commentcontent: commentitem.content,
+    avararUrl: commentitem.user.avatarUrl,
+    nickanme: commentitem.user.nickname,
+  };
+
+  pubComment.call(null, ops);
 }
 
 watch(

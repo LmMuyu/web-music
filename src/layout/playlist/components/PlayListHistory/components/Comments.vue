@@ -23,6 +23,11 @@ import { VideoComments } from "../../../../../components/player";
 
 import CommtentContainer from "./CommtentContainer.vue";
 
+interface SendContent {
+  content: string;
+  reply: boolean;
+}
+
 const props = defineProps({
   mid: {
     type: Number,
@@ -43,9 +48,9 @@ watch(VideoCommentModule.comments, (newvaluelists) => {
 
 VideoCommentModule.currentMusicPlayIndex(1, props.mid);
 
-async function sendContent(content: string) {
+async function sendContent(content: SendContent) {
   try {
-    const editor = await sendContentComment(1, "歌曲", { id: props.mid }, content);
+    const editor = await sendContentComment(1, "歌曲", { id: props.mid }, content.content);
     if (editor.data.code === 200) {
       shut.value = false;
     }
