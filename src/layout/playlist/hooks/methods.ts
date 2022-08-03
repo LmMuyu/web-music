@@ -120,7 +120,6 @@ class sendAfterCloseDialogMitt {
   constructor() {
     //sourcess为true是取消 false为打开
     this.handle = (sourcess: boolean) => {
-      console.log(sourcess);
       if (!sourcess) return;
       this.visilbity && (this.visilbity.value = false);
     };

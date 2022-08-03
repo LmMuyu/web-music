@@ -6,7 +6,7 @@
     :is="modelComp"
     @logout="updateModelStatus"
   />
-  <ElRow ref="infocard" class="flex items-center w-full cursor-pointer">
+  <ElRow ref="infocard" class="flex items-center justify-center w-full cursor-pointer transform-gpu translate-y-6">
     <MainInfoCard :infoData="infoData" />
     <ElCol :span="4" class="flex items-center justify-end icons">
       <i class="iconfont icongengduo-copy" openModel="copy" @click="openLoginModel"></i>

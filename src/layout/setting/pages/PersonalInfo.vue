@@ -1,7 +1,9 @@
 <template>
   <el-container>
     <el-header height="36px" class="flex justify-center flex-col">
-      <RouteGo />
+      <div>
+        <RouteGo />
+      </div>
     </el-header>
     <el-main>
       <div class="text-xl font-bold">编辑个人信息</div>
@@ -48,8 +50,8 @@
               </el-radio-group>
             </el-form-item>
             <el-form-item>
-              <el-button type="danger" @click="onSubmit">保存</el-button>
-              <el-button>取消</el-button>
+              <el-button :disabled="disabled" type="danger" @click="onSubmit">保存</el-button>
+              <el-button @click="router.go(-1)">取消</el-button>
             </el-form-item>
           </el-form>
         </el-col>
@@ -74,8 +76,19 @@
   </el-container>
 </template>
 <script setup lang="ts">
-import { computed, reactive, watchEffect, onUnmounted, watch } from "vue";
+import {
+  computed,
+  reactive,
+  watchEffect,
+  onUnmounted,
+  watch,
+  ref,
+  h,
+  createApp,
+  render,
+} from "vue";
 import { useStore } from "vuex";
+import { useRouter } from "vue-router";
 
 import { updateUser, uploadAvatar } from "../../../api/setting";
 import chinaCode from "../../../assets/“省份、城市” 二级联动编码数据.json";
@@ -98,12 +111,19 @@ import {
   ElOption,
   ElSelect,
   ElMessage,
+  ElNotification,
+  NotificationHandle,
 } from "element-plus";
 import RouteGo from "./RouteGo.vue";
 import { formatTime } from "../../../utils/filterDate";
 import dayjs from "dayjs";
+import { Message } from "element-plus/lib/components/message";
+import { loadIcon } from "../hooks";
 
 const store = useStore();
+const router = useRouter();
+
+const disabled = ref(true);
 
 const form = reactive({
   name: "",
@@ -122,6 +142,30 @@ const chinaUrban = reactive({
   shi: chinaCode[0].name,
   qu: chinaCode[0].cities["110000"],
 });
+
+class lodingUpdate {
+  private notHandle: NotificationHandle | undefined;
+  updateing() {
+    this.notHandle = ElNotification({
+      title: "图片",
+      message: h(
+        "div",
+        {
+          class: "flex items-center",
+        },
+        [loadIcon(), h("span", "上传中")]
+      ),
+    });
+  }
+
+  updatesourcess() {
+    this.notHandle && this.notHandle.close();
+  }
+}
+
+const imageUpinstance = new lodingUpdate();
+
+imageUpinstance.updateing();
 
 const userLoginData = computed<any>(store.getters["login/getUserData"]);
 
@@ -195,14 +239,47 @@ async function imgFileChange(file) {
   if (file.status === "fail") {
     const fileform = new FormData();
     fileform.append("imgFile", file.raw);
-    const upres = await uploadAvatar(fileform);
-    console.log(upres);
+    try {
+      const upres = await uploadAvatar(fileform);
+
+      if (upres.data.code === 200) {
+        updateUserData(upres.data);
+      } else {
+        throw new Error(`上传失败！,code:${upres.data.code}`);
+      }
+    } catch (error) {
+      console.log(error);
+      sourcessMessage("error", error);
+    }
   }
+}
+
+function updateUserData(updateData: any) {
+  const storeUserData = computed<any>(store.getters["login/getUserData"]);
+  const data = JSON.parse(JSON.stringify(storeUserData.value)).data;
+  const upUrl = updateData.data.url;
+
+  data.avatarUrl = upUrl;
+  data.userinfoData.avatarUrl = upUrl;
+  console.log(data);
+
+  store.commit("login/setUserInfo", [data, storeUserData.value.type]);
+  sourcessMessage("success", "上传成功");
+}
+
+function sourcessMessage(type: keyof Message, message: string) {
+  return ElMessage({
+    message,
+    //@ts-ignore
+    type,
+  });
 }
 
 const watchNewChinaUrbanStop = watch(chinaUrban, (newChinaUrban) => {
   chinaUrban.chinaQuJi = chinaCode.find((qu) => qu.id == newChinaUrban.shiId).cities;
 });
+
+const updateForm = watch(form, () => (disabled.value = true) && updateForm());
 
 function shiOrQu(id: number, type: "shi" | "qu") {
   if (type === "shi") {

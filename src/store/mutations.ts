@@ -91,6 +91,5 @@ export default {
 
   removeMittKey(state: State, p: any) {
     state.dialogEditor.off(p.key, p.removeHandle);
-    console.log(state);
   },
 };

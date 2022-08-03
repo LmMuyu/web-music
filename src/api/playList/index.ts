@@ -73,14 +73,7 @@ export async function commentMusic(
       limit,
       offset: (offset - 1) * limit,
       ...(before ? { before } : {}),
+      timestamp: Date.now(),
     },
-  });
-}
-
-function urlBlob(url: string) {
-  return request({
-    method: "get",
-    url,
-    responseType: "blob",
   });
 }

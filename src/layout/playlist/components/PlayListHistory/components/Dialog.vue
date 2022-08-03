@@ -91,11 +91,11 @@ function handleClose(done: () => void) {
 
 function editorContent(content: string) {
   if (content) {
+    closeInputEditorMitt.map(dialogVisible);
+    closeInputEditorMitt.on();
+
     ctxEmit("editorContent", { content, reply });
   }
-
-  closeInputEditorMitt.map(dialogVisible);
-  closeInputEditorMitt.on();
 }
 
 const follows = computed(() => {

@@ -49,7 +49,6 @@ export class VideoComments {
   commentMusicThenFn({ config, data: comment }) {
     this.playListHistoryOptions.total = comment.total;
     this.playListHistoryOptions.time = comment.comments[comment.comments.length - 1].time;
-    console.log(comment);
 
     if (config.params.offset + 1 === 1 && comment.hotComments.length > 0) {
       const diff = this.COMMENT_LEN - comment.hotComments.length;
