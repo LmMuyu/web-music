@@ -12,6 +12,7 @@
       viewBox="0 0 40 40"
       enable-background="new 0 0 40 40"
       xml:space="preserve"
+      :class="class" 
     >
       <path
         opacity="0.2"
@@ -38,7 +39,11 @@
     </svg>
   </div>
 </template>
-<script setup lang="ts"></script>
+<script setup lang="ts">
+const props = defineProps({
+  class: String,
+});
+</script>
 <style scoped lang="scss">
 svg path,
 svg rect {

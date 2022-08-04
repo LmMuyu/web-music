@@ -6,7 +6,7 @@
   >
     <div
       class="content w-full"
-      :style="{ height: capHeight + 'px', ...style }"
+      :style="{ height: scrollCapHeight + 'px', ...style }"
       :class="class"
       @load.capture="loadImages"
     >
@@ -36,6 +36,10 @@ export default defineComponent({
   props: {
     class: String,
     style: Object,
+    scrollTop: {
+      type: Number,
+      default: 0,
+    },
     BsOptions: {
       type: Object,
       default: {},
@@ -142,7 +146,6 @@ export default defineComponent({
             twoheight = next.getBoundingClientRect().height;
           }
 
-
           const prevHeight = index > 0 ? heightArr[index - 1] : 0;
           heightArr.push(Math.max(oneheight, twoheight));
 
@@ -185,7 +188,6 @@ export default defineComponent({
         }
       });
     }
-    
 
     useLoadNetworkRes(src).then(
       ({ loadResult, module, message }) => {
@@ -344,6 +346,27 @@ export default defineComponent({
 
     const stopRenderNode = watch(() => props.itemLen, renderNode);
 
+    const scrCapHeight = computed(() => {
+      return Math.abs(capHeight.value - viewportHeight.value) + 100;
+    });
+
+    const scrollCapHeight = computed(() => {
+      const h = scrCapHeight.value;
+      BS && BS.refresh();
+      return h + viewportHeight.value;
+    });
+
+    const toScrollTopStop = watch(
+      () => props.scrollTop,
+      (y) => {
+        if (y > scrCapHeight.value) {
+          return;
+        }
+        console.log(y);
+        BS && BS.scrollTo(0, y, 250, {});
+      }
+    );
+
     onMounted(async () => {
       renderNode();
 
@@ -365,6 +388,7 @@ export default defineComponent({
     onUnmounted(() => {
       BS.destroy();
       stopRenderNode();
+      toScrollTopStop();
     });
 
     expose({
@@ -381,6 +405,7 @@ export default defineComponent({
       capHeight,
       loadImages,
       isPullUpLoad,
+      scrollCapHeight,
     };
   },
 });

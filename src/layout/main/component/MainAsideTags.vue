@@ -56,7 +56,6 @@ function logindata(broadcastChannelData: USERINFO) {
 function serLoginUserData(userdata: USERINFO | { userdata: USERINFO }) {
   //@ts-ignore
   userdata = userdata?.userdata ?? userdata;
-  // console.log(userdata);
   loginUserData.tramsformButton = Object.keys(userdata).length > 0 ? true : false;
   loginUserData.userdata = userdata;
 }
@@ -88,6 +87,8 @@ function watchRetUserData() {
         //退出登录
       } else if (type && type === "logout") {
         dispposeUserInfo({});
+      } else {
+        loginUserData.userdata = storedata.data;
       }
     });
   });

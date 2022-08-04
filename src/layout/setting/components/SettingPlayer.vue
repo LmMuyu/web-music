@@ -105,7 +105,7 @@ const watchStop = watchSettingUpdate([playerlist, automaticPlay, broadcastPace, 
 
 function audioOutputDevices() {
   navigator.mediaDevices.enumerateDevices().then((devices) => {
-    console.log(devices);
+    // console.log(devices);
   });
 }
 

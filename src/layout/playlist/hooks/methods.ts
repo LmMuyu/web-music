@@ -40,8 +40,13 @@ export function lyricScroll(event: Event) {
   const diffy = disty - prev;
   prev = disty;
 
-  distance.value += diffy;
-  _setScrollHeight(disty);
+  if (distance.value < lyricNodeRect.scrollHeight / 3) {
+    distance.value += diffy;
+    _setScrollHeight(disty);
+  } else {
+    lyricNodeRect.scrollHeight / 2;
+  }
+  // ? distance.value + distance.value * 0.02
 }
 
 function Gain(ctx: AudioContext, gainvalue: Ref<number>): Promise<GainNode> {
@@ -120,7 +125,6 @@ class sendAfterCloseDialogMitt {
   constructor() {
     //sourcess为true是取消 false为打开
     this.handle = (sourcess: boolean) => {
-      console.log(sourcess);
       if (!sourcess) return;
       this.visilbity && (this.visilbity.value = false);
     };

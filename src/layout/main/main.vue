@@ -2,9 +2,7 @@
   <div class="flex h-full overflow-y-hidden">
     <div v-if="isTagShow" class="float-left w-1/6 h-full right_border">
       <div class="h-full" :style="{ minHeight: minheight + 'px' }">
-        <keep-alive>
-          <index-aside-tags />
-        </keep-alive>
+        <index-aside-tags />
       </div>
     </div>
     <div

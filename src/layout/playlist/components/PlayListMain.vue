@@ -29,29 +29,21 @@
         <el-col :span="10"> </el-col>
         <el-col :span="13">
           <div ref="container_lycs" class="relative lycs_music">
-            <div
-              class="flex flex-col relative sliderTrack"
-              :class="banscroll ? 'overflow-hidden' : 'overflow-y-scroll'"
-              style="height: 100vh"
-              ref="lyricNode"
-              @scroll="lyricThrottle"
-            >
-              <play-lycs
-                v-if="lycsLists.length > 0"
-                @transiateYPos="transiateYPos"
-                @selectlycs="clickScrollTop"
-                :musicItemList="lycsLists"
-                :slideScrollTop="sliderH"
-                :puremusic="puremusic"
-                :rootstyle="transformStyle"
-              ></play-lycs>
-              <div :style="{ height: scrollHeight }" class="absolute top-0 right-0 w-1"></div>
-            </div>
+            <play-lycs
+              v-if="lycsLists.length > 0"
+              @transiateYPos="transiateYPos"
+              @selectlycs="clickScrollTop"
+              :musicItemList="lycsLists"
+              :slideScrollTop="sliderH"
+              :puremusic="puremusic"
+              :rootstyle="transformStyle"
+            ></play-lycs>
+
             <div ref="trackNode" class="absolute top-0 right-0 bottom-0 w-1 h-full">
               <span
                 class="absolute left-0 w-1 h-8 transition"
                 :style="{ top: scrollBarTop + 'px' }"
-                style="background-color: #3a3a59"
+                style="background-color: #409eff"
               ></span>
             </div>
           </div>
@@ -136,7 +128,7 @@ const weizX = computed(() => {
 });
 
 const scrollBarTop = computed(() => {
-  const y = lyricNodeRect.scrollShiHeight * weizX.value;
+  const y = lyricNodeRect.scrollShiHeight;
   if (useType(y) === "Null") return 0;
   return y;
 });
@@ -215,17 +207,9 @@ function watchCommentsTree(commentnode: HTMLElement) {
   observerlists.push(mutation);
 }
 
-function clickScrollTop(e: HTMLElement) {
-  if (!e) return;
-
-  const { top: lyTop } = e.getBoundingClientRect();
-  const { top: clTop } = container_lycs.value.getBoundingClientRect();
-
-  const scrollTotalHeight = lyricNodeRect.scrollHeight - lyricNodeRect.offsetHeight;
-
-  if (scrollTotalHeight && lyTop && clTop && lyTop - clTop <= scrollTotalHeight) {
-    lyricNodeRect.scrollShiHeight = lyTop - clTop;
-  }
+function clickScrollTop(topy: number) {
+  lyricNodeRect.scrollShiHeight = topy;
+  console.log(lyricNodeRect.scrollShiHeight);
 }
 
 function containerMainToScroll(toscroll: boolean | string, commentNode: HTMLElement) {
@@ -244,11 +228,7 @@ watch(distance, scrollBorderCheck);
 
 const transformStyle = computed(() => {
   return {
-    transform: `translate3d(0,-${
-      distance.value < lyricNodeRect.scrollHeight / 3
-        ? distance.value + distance.value * 0.02
-        : lyricNodeRect.scrollHeight / 2
-    }px,0)`,
+    transform: `translate3d(0,-${distance.value}px,0)`,
   };
 });
 

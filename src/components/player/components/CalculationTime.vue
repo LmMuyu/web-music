@@ -23,7 +23,8 @@ const props = defineProps({
 const playerTime = ref<[minute, second]>(["0", "0"]);
 
 watchEffect(() => {
-  playerTime.value = filterDate(props.time).split(":") as [minute, second];
+  const [min, sec] = filterDate(props.time).split(":") as [minute, second];
+  playerTime.value = [min, sec];
 });
 </script>
 <style scoped lang="scss"></style>

@@ -133,7 +133,7 @@ const props = defineProps({
   paginationbackground: Boolean,
 });
 
-let replyInfo = null;
+const replyInfo = ref({});
 const curPage = ref(1);
 const dialog = ref(null);
 const totalpage = ref(1);
@@ -253,7 +253,7 @@ function pubComment() {
 }
 
 function clickComment(commentitem: any) {
-  replyInfo = commentitem;
+  replyInfo.value = commentitem;
 
   const ops: Reply = {
     uid: commentitem.userId,

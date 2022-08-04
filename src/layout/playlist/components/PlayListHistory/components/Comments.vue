@@ -16,8 +16,7 @@
   />
 </template>
 <script setup lang="ts">
-import { ref, watch } from "vue";
-import { useStore } from "vuex";
+import { ref, unref, watch } from "vue";
 
 import { sendContentComment } from "../../../../../api/app";
 import { VideoComments } from "../../../../../components/player";
@@ -37,8 +36,6 @@ const props = defineProps({
 const total = ref(1);
 const shut = ref(true);
 const commentsData = ref([]);
-const store = useStore();
-const MITT_KEY = "SHOWDIALOG";
 
 const VideoCommentModule = new VideoComments("music");
 
@@ -54,16 +51,26 @@ async function sendContent(content: SendContent) {
   const reply = content.reply;
   closeInputEditorMitt.emit(true);
 
-  // try {
-  //   const editor = await sendContentComment(1, "歌曲", { id: props.mid }, content.content);
-  //   if (editor.data.code === 200) {
-  //     shut.value = false;
-  //   }
-  // } catch (error) {
-  //   console.log(error);
-  // } finally {
-  //   shut.value = true;
-  // }
+  try {
+    const editor = await sendContentComment(
+      !unref(reply) ? 1 : 2,
+      "歌曲",
+      {
+        id: props.mid,
+        ...(Object.keys(unref(content.replyInfo)).length > 0
+          ? { commentId: unref(content.replyInfo).commentId }
+          : {}),
+      },
+      content.content
+    );
+    if (editor.data.code === 200) {
+      shut.value = false;
+    }
+  } catch (error) {
+    console.log(error);
+  } finally {
+    shut.value = true;
+  }
 }
 </script>
 <style scoped lang="scss"></style>

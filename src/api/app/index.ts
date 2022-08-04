@@ -56,6 +56,7 @@ export function sendContentComment<C extends 1 | 2>(
 
   if (!type && type !== 0) throw new Error("参数错误=>type");
 
+
   return request({
     url: "/comment",
     method: "post",
