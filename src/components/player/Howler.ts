@@ -170,21 +170,19 @@ const Howl = (options: HOWLOPTIONS, ctx: compinstance) => {
   function setIntervalGetSeek() {
     timeseek = setInterval(() => {
       const time = how.time_seek();
-      // console.log("pre:" + time);
 
       if (time === undefined) {
-        console.log("undefined");
+        console.log("歌曲播放时间undefined");
         return;
       }
 
-      documentTitle(twoSearch(time, lyricsmap));
+      documentTitle(twoSearch(time, lyricsmap), time);
       playtime.value = time ? time : playtime.value;
     }, 1000);
   }
 
-  function documentTitle(lycTimeList: [number, number]) {
-    // console.log(lrctime);
-    store.commit("subMitt", ["seek_time", lycTimeList[1]]);
+  function documentTitle(lycTimeList: [number, number], time: number) {
+    store.commit("subMitt", ["seek_time", [lycTimeList[1], time]]);
     const lrc = lyricsmap.get(lycTimeList[0]);
     // console.log(lrc);
 

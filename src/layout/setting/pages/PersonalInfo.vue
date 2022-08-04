@@ -76,20 +76,13 @@
   </el-container>
 </template>
 <script setup lang="ts">
-import {
-  computed,
-  reactive,
-  watchEffect,
-  onUnmounted,
-  watch,
-  ref,
-  h,
-  createApp,
-  render,
-} from "vue";
+import dayjs from "dayjs";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
+import { computed, reactive, watchEffect, onUnmounted, watch, ref, h } from "vue";
 
+import { notContent } from "../hooks";
+import { formatTime } from "../../../utils/filterDate";
 import { updateUser, uploadAvatar } from "../../../api/setting";
 import chinaCode from "../../../assets/“省份、城市” 二级联动编码数据.json";
 
@@ -115,10 +108,8 @@ import {
   NotificationHandle,
 } from "element-plus";
 import RouteGo from "./RouteGo.vue";
-import { formatTime } from "../../../utils/filterDate";
-import dayjs from "dayjs";
-import { Message } from "element-plus/lib/components/message";
-import { loadIcon } from "../hooks";
+
+import type { Message } from "element-plus/lib/components/message";
 
 const store = useStore();
 const router = useRouter();
@@ -148,24 +139,33 @@ class lodingUpdate {
   updateing() {
     this.notHandle = ElNotification({
       title: "图片",
-      message: h(
-        "div",
-        {
-          class: "flex items-center",
-        },
-        [loadIcon(), h("span", "上传中")]
-      ),
+      duration: 0,
+      customClass: "image_not",
+      showClose: false,
+      message: notContent(),
     });
+
+    this.groupNode();
   }
 
   updatesourcess() {
     this.notHandle && this.notHandle.close();
   }
+
+  private groupNode() {
+    const notclass = document.getElementsByClassName("image_not");
+    notclass[0] && this.putClass(notclass[0].children[0]);
+  }
+
+  private putClass(el: Element) {
+    console.log(el);
+
+    if (el) {
+      //@ts-ignore
+      el.style.width = "100%";
+    }
+  }
 }
-
-const imageUpinstance = new lodingUpdate();
-
-imageUpinstance.updateing();
 
 const userLoginData = computed<any>(store.getters["login/getUserData"]);
 
@@ -239,22 +239,27 @@ async function imgFileChange(file) {
   if (file.status === "fail") {
     const fileform = new FormData();
     fileform.append("imgFile", file.raw);
+
+    const imageUpinstance = new lodingUpdate();
     try {
+      imageUpinstance.updateing();
+
       const upres = await uploadAvatar(fileform);
 
       if (upres.data.code === 200) {
-        updateUserData(upres.data);
+        updateUserData(upres.data, imageUpinstance.updatesourcess.bind(imageUpinstance));
       } else {
         throw new Error(`上传失败！,code:${upres.data.code}`);
       }
     } catch (error) {
       console.log(error);
+      imageUpinstance.updatesourcess();
       sourcessMessage("error", error);
     }
   }
 }
 
-function updateUserData(updateData: any) {
+function updateUserData(updateData: any, close: Function) {
   const storeUserData = computed<any>(store.getters["login/getUserData"]);
   const data = JSON.parse(JSON.stringify(storeUserData.value)).data;
   const upUrl = updateData.data.url;
@@ -264,7 +269,8 @@ function updateUserData(updateData: any) {
   console.log(data);
 
   store.commit("login/setUserInfo", [data, storeUserData.value.type]);
-  sourcessMessage("success", "上传成功");
+  close();
+  sourcessMessage("success", "修改完成");
 }
 
 function sourcessMessage(type: keyof Message, message: string) {
