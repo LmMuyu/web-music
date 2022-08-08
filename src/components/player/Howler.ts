@@ -7,15 +7,16 @@ import {
   watchEffect,
   WatchStopHandle,
 } from "vue";
-import { getLyrics, getMusicDetail } from "../../api/playList";
+
+import Play from "./Play";
 import store from "../../store";
-import filterDate from "../../utils/filterDate";
 import { isType } from "../../utils/methods";
+import filterDate from "../../utils/filterDate";
 import { musicDetail } from "../../utils/musicDetail";
 import { useRefNegate } from "../../utils/useRefNegate";
 import { useWatchRoutePath } from "../../utils/useWatchHost";
+import { getLyrics, getMusicDetail } from "../../api/playList";
 import { setIndexDBAAllDataToHowlLists, twoSearch, watchMusicinfo } from "./methods";
-import Play from "./Play";
 
 type compinstance = ComponentInternalInstance;
 
@@ -27,8 +28,6 @@ interface staticPlaySeekMethods {
 interface HOWLOPTIONS {
   musicinfoRef: Ref<musicDetail>;
 }
-
-// const islogin = useStore().getters["login/getIslogin"];
 
 function filterDurationTime(dt: number) {
   return filterDate(dt);
@@ -131,6 +130,8 @@ const Howl = (options: HOWLOPTIONS, ctx: compinstance) => {
   }
 
   function playSrcSet(index: number) {
+    console.log(index);
+
     return new Promise(async (resolve) => {
       const musicdetail = palylists.value[index];
       if (!musicdetail.id) return;
@@ -219,8 +220,10 @@ const Howl = (options: HOWLOPTIONS, ctx: compinstance) => {
   };
 
   const seek = (pos: number) => {
+    console.log(pos);
     playSeek.clear();
     const sec = filterDate(pos, true) as string;
+    console.log(sec);
     how.set_seek(Number(sec));
     playSeek();
   };
@@ -335,6 +338,7 @@ const Howl = (options: HOWLOPTIONS, ctx: compinstance) => {
     filterDurationTime,
     againPlayIndexPos,
     routeWatchStop,
+    loop: how.set_loop,
   };
 };
 

@@ -109,18 +109,18 @@ const props = defineProps({
 const store = useStore();
 
 let mid = 0;
+let tiemr = null;
 const volume = ref(0);
-const musicinfo = ref<musicDetail>();
 const islock = ref(false);
-const ctx = getCurrentInstance();
 const audioSlider = ref(null);
 const sliderPos = reactive({
   top: -window.innerHeight + "px",
   left: -window.innerWidth + "px",
 });
+const ctx = getCurrentInstance();
+const musicinfo = ref<musicDetail>();
 const volumecontrol = ref<typeof ElSlider | null>(null);
 let volumeControlStatus: "enter" | "remove" = "enter";
-let tiemr = null;
 let isLeaveSanSecBelow = ref<null | boolean>(false);
 
 const dexie = dexieFn();
@@ -305,6 +305,31 @@ async function OpenHistory() {
   }
 }
 
+class clickLycPlaySeek {
+  private key: string;
+  constructor() {
+    this.key = "lyctime";
+
+    this.bindMittFn();
+  }
+
+  bindFn(seektime: { seeksec: number; type: "lyc" }) {
+    if (seektime.type && seektime.type === "lyc") {
+      console.log(seektime);
+    }
+  }
+
+  private bindMittFn() {
+    store.commit("bindMitt", [this.key, this.bindFn]);
+  }
+
+  removeMittFn() {
+    store.commit("removeMitt", this.key);
+  }
+}
+
+const clickLycTime = new clickLycPlaySeek();
+
 onMounted(() =>
   nextTick().then(() => {
     sliderstyle();
@@ -314,6 +339,7 @@ onMounted(() =>
 
 onUnmounted(() => {
   routeWatchStop();
+  clickLycTime.removeMittFn();
 });
 </script>
 <style scoped lang="scss">

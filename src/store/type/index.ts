@@ -15,6 +15,7 @@ export interface State {
   controlAudioCompIf: boolean;
   scrollMap: Map<string, Record<"x" | "y", number>>;
   dialogEditor: Emitter;
+  mitt: Emitter;
 }
 
 export interface ALLTOKEN {

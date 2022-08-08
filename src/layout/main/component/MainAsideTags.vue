@@ -81,6 +81,7 @@ function watchRetUserData() {
       const userdata = storedata.data ?? {};
       const type = storedata.type ?? "";
 
+
       //有登录信息
       if (Object.keys(userdata).length > 0 && type && type === "login") {
         dispposeUserInfo(userdata);
@@ -89,6 +90,7 @@ function watchRetUserData() {
         dispposeUserInfo({});
       } else {
         loginUserData.userdata = storedata.data;
+        loginUserData.tramsformButton  =true
       }
     });
   });

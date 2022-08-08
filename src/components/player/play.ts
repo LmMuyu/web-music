@@ -79,7 +79,7 @@ export default class Play {
       html5: true,
     });
 
-    // console.log(this.howl);
+    // console.log(this.howl.loop());
 
     this.onHookMethods(this.howl, this);
 

@@ -1,6 +1,7 @@
 interface OPTIONS {
   asyncBackcall?: (value: any) => any;
   quickrequest?: boolean;
+  totRiggerQuickrequest?: boolean;
 }
 
 function promiseData(thendata: Promise<any>, asyncBackcall: OPTIONS["asyncBackcall"]) {
@@ -29,6 +30,7 @@ export function debounce<T extends Function>(fn: T, delay: number = 150, options
         const retData = fn.apply(null, arg);
         promiseData(retData, options?.asyncBackcall ?? (() => {}));
         clearTimes();
+        options.totRiggerQuickrequest && (options.quickrequest = true);
       }, delay);
     }
   }

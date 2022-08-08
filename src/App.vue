@@ -99,6 +99,8 @@ store.dispatch("countriesCode");
 provide("circleRef", circleRef);
 
 const songInfo = computed<musicDetail>(store.getters["playlist/getSongInfo"]);
+
+window.addEventListener("mousedown", (e) => store.commit("emitMitt", ["*", e]), false);
 </script>
 
 <style lang="scss">

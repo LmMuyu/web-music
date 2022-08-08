@@ -1,6 +1,10 @@
+import { mittCommonFn } from "./hooks";
+
 import type { State } from "./type";
 import type { MusicDetailOption } from "../utils/musicDetail";
 import type { RouteLocationNormalized } from "vue-router";
+
+const mittCommMap = new mittCommonFn();
 
 export default {
   countriesCode(state: State, commit: any) {
@@ -91,5 +95,47 @@ export default {
 
   removeMittKey(state: State, p: any) {
     state.dialogEditor.off(p.key, p.removeHandle);
+  },
+
+  bindMitt(state: State, bind: [string, () => void]) {
+    const key = bind[0];
+    const fn = bind[1];
+
+    state.mitt.on(key, fn);
+    mittCommMap.setMittMap(key, fn);
+  },
+
+  bindOnceMitt(state: State, bind: [string, (...arg: any) => void]) {
+    const key = bind[0];
+    const fn = bind[1];
+
+    const proxyFn = new Proxy(fn, {
+      apply(target, thisArg, argArray) {
+        mittCommMap.removeMittMapKey(key);
+        console.log(state.mitt);
+        return target(...argArray);
+      },
+    });
+
+    state.mitt.on(key, proxyFn);
+    mittCommMap.setMittMap(key, proxyFn);
+  },
+
+  emitMitt(state: State, emitHandle: [string | undefined, any]) {
+    const key = emitHandle[0];
+    const event = emitHandle[1];
+    if (key === "*" || !key) {
+      state.mitt.all.forEach((v, k) => state.mitt.emit(k, event));
+    } else {
+      state.mitt.emit(key, event);
+    }
+  },
+
+  removeMitt(state: State, key: string) {
+    const fn = mittCommMap.getMittMapFn(key);
+
+    if (fn) {
+      state.mitt.off(key, fn);
+    }
   },
 };

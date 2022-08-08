@@ -32,20 +32,12 @@
             <play-lycs
               v-if="lycsLists.length > 0"
               @transiateYPos="transiateYPos"
-              @selectlycs="clickScrollTop"
+              @lyc-time="playLycTime"
               :musicItemList="lycsLists"
               :slideScrollTop="sliderH"
               :puremusic="puremusic"
               :rootstyle="transformStyle"
             ></play-lycs>
-
-            <div ref="trackNode" class="absolute top-0 right-0 bottom-0 w-1 h-full">
-              <span
-                class="absolute left-0 w-1 h-8 transition"
-                :style="{ top: scrollBarTop + 'px' }"
-                style="background-color: #409eff"
-              ></span>
-            </div>
           </div>
         </el-col>
         <el-col :span="1"> </el-col>
@@ -68,14 +60,13 @@ import { useRoute } from "vue-router";
 import { onMounted, watch } from "vue";
 import { computed, nextTick, onUnmounted, ref, watchEffect, shallowRef } from "@vue/runtime-core";
 
-import { useType } from "../../../hooks";
 import { getLyrics } from "../../../api/playList";
-import { conversionItem, lyricThrottle } from "../hooks/methods";
+import { conversionItem } from "../hooks/methods";
 import { lyricNodeRect, clientHeight, distance } from "../hooks/data";
 import { createAsComponent } from "../../../utils/createAsComponent";
 
-import PlayLycs from "./PLayLycs.vue";
 import { ElContainer, ElMain, ElRow, ElCol, ElHeader } from "element-plus";
+import PlayLycs from "./PLayLycs.vue";
 
 import type { MatchItem } from "../type";
 
@@ -102,7 +93,6 @@ const route = useRoute();
 let musicid = route.query.id as string;
 const toScrollComments = route.params.toscroll;
 const lyricNode = shallowRef<null | HTMLElement>(null);
-const trackNode = shallowRef<null | HTMLElement>(null);
 const sectionNode = shallowRef<null | HTMLElement>(null);
 const musicItemList = ref<Map<number, any>>(new Map());
 const lycsLists = ref([]);
@@ -113,25 +103,8 @@ const observerlists = [];
 const container_lycs = shallowRef(null);
 const container_main = ref(null);
 const puremusic = ref(false);
-const trackSliderMaxH = ref(0);
 const sliderH = ref(0);
-const scrollHeight = ref("");
 const banscroll = ref(false);
-
-const weizX = computed(() => {
-  return Number(
-    (
-      trackSliderMaxH.value /
-      (lyricNodeRect.scrollHeight + sliderH.value - trackSliderMaxH.value)
-    ).toFixed(3)
-  );
-});
-
-const scrollBarTop = computed(() => {
-  const y = lyricNodeRect.scrollShiHeight;
-  if (useType(y) === "Null") return 0;
-  return y;
-});
 
 function lycSplice(iterator: IterableIterator<RegExpMatchArray>) {
   while (true) {
@@ -207,11 +180,6 @@ function watchCommentsTree(commentnode: HTMLElement) {
   observerlists.push(mutation);
 }
 
-function clickScrollTop(topy: number) {
-  lyricNodeRect.scrollShiHeight = topy;
-  console.log(lyricNodeRect.scrollShiHeight);
-}
-
 function containerMainToScroll(toscroll: boolean | string, commentNode: HTMLElement) {
   if (toscroll === true || toscroll === "true") {
     const toTopPos = commentNode.scrollTop;
@@ -240,16 +208,21 @@ function scrollBorderCheck(distancevalue: number) {
   }
 }
 
+function playLycTime(time: string) {
+  const t = time.split(":");
+  const min = parseInt(t[0]) * 60;
+  const sec = parseInt(t[1]);
+  const totalsec = min + sec;
+
+  store.commit("emitMitt", [
+    "lyctime",
+    { seeksec: totalsec, type: "lyc" } as { seeksec: number; type: "lyc" },
+  ]);
+}
+
 onMounted(async () => {
   nextTick().then(() => {
     lyricNodeRect.offsetHeight = lyricNode.value.offsetHeight;
-    trackSliderMaxH.value = trackNode.value.clientHeight;
-
-    sliderH.value = (trackNode.value.firstChild as HTMLElement).offsetHeight;
-
-    function disconnect() {
-      mutation.disconnect();
-    }
 
     const mutation = new MutationObserver((mutation) => {
       const node = mutation[0];
@@ -259,6 +232,10 @@ onMounted(async () => {
       childrenMapNode(childrem);
       disconnect();
     });
+
+    function disconnect() {
+      mutation.disconnect();
+    }
 
     mutation.observe(lyricNode.value, { attributes: true, childList: true, subtree: true });
   });

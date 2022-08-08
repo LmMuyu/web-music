@@ -3,22 +3,27 @@
     <div
       class="pointer-events-auto transform-gpu transition-all h-full px-14 root-bg-image"
       ref="scrollNode"
-      @mouseenter="showCurTimeEvent"
-      @mouseleave="leave"
       :style="rootstyle"
     >
       <better-scroll
-        :scrollTop="toScrollTop"
+        @mousewheel-move="debounce_Scroll"
+        :scrollToEl="scrollToEl"
         :open-h-render="false"
         :item-len="musicItemList.length"
+        :bs-options="{
+          scrollbar: true,
+          observeImage: true,
+        }"
         class="bg-image"
       >
         <div
           v-for="(musicItem, index) in musicItemList"
-          :key="musicItem.playTime"
-          class="flex items-center py-3 relative"
+          class="flex items-center py-2 relative"
+          @mouseenter="showCurTimeEvent(index)"
+          @mouseleave="showTimeIndex = null"
           :lycs-key="musicItem.indexId"
           :ref="(r) => lycRenderList.push(r)"
+          :key="musicItem.playTime"
         >
           <div class="flex items-center w-full relative">
             <transition
@@ -35,18 +40,26 @@
             </transition>
             <div
               class="flex justify-center w-full"
-              :lycs-key="musicItem.indexId"
               scrollnode="true"
-              :keyid="index"
-              @click="selectLycs"
+              :lycs-key="musicItem.indexId"
+              @click="
+                scrollToTop(allTimeToSec(musicItem.originTime), 'click').then(() =>
+                  ctxEmit('lycTime', musicItem.originTime)
+                )
+              "
             >
               <span
                 class="text-sm text-left cursor-pointer whitespace-nowrap text_color"
-                :lycplaytime="musicItem.originTime"
-                :node_id="musicItem.playTime"
                 :lycs-key="musicItem.indexId"
                 :keyid="index"
-                :style="{ color: colorShowIndex === index && '#409EFF' }"
+                :style="{
+                  color:
+                    colorShowIndex >= index
+                      ? '#409EFF'
+                      : colorShowIndex === musicItemList.length - 2
+                      ? '#409EFF'
+                      : '',
+                }"
               >
                 {{ musicItem.lyc }}
               </span>
@@ -73,16 +86,18 @@
 </template>
 <script setup lang="ts">
 import { useStore } from "vuex";
-import { computed, nextTick, onMounted, PropType, ref, watchEffect } from "vue";
+import { nextTick, onMounted, PropType, ref, watchEffect } from "vue";
 
-import { distance, lyricNodeRect } from "../hooks/data";
+import { lyricNodeRect } from "../hooks/data";
+import { allTimeToSec } from "../../../utils/filterDate";
 
 import FontIcon from "../../../components/fonticon/FontIcon.vue";
 import BetterScroll from "../../../components/betterscroll/BetterScroll.vue";
 
 import type { MatchItem } from "../type";
+import { debounce } from "../../../utils/debounce";
 
-const ctxEmit = defineEmits(["transiateYPos", "selectlycs"]);
+const ctxEmit = defineEmits(["transiateYPos", "lycTime"]);
 
 const props = defineProps({
   musicItemList: {
@@ -103,8 +118,8 @@ let containerTop = null;
 const lycPosMsTime = [];
 const store = useStore();
 const lycRenderList = [];
-let mouseenterPos = false;
-const toScrollTop = ref(0);
+let openScrollToEl = true;
+const scrollToEl = ref(null);
 const colorShowIndex = ref(0);
 const showTimeIndex = ref(null);
 const scrollNode = ref<HTMLElement | null>(null);
@@ -144,18 +159,9 @@ function watchLycToComputedTimeMs() {
 
 watchLycToComputedTimeMs();
 
-function leave() {
-  showTimeIndex.value = null;
-  mouseenterPos = false;
-}
-
-function showCurTimeEvent(e: Event) {
+function showCurTimeEvent(curIndex: number) {
   if (props.puremusic) return;
 
-  mouseenterPos = true;
-  const target = e.target as HTMLElement;
-
-  const curIndex = target.getAttribute("keyid");
   if (curIndex && curIndex !== null) {
     showTimeIndex.value = curIndex;
   }
@@ -164,30 +170,24 @@ function showCurTimeEvent(e: Event) {
 store.commit("pubMitt", ["seek_time", lyctime]);
 
 function lyctime([lycindex, lyctime]: [number, number]) {
-  const tranYIndex = binarySearch(lycPosMsTime, Math.floor(lyctime * 1000)) - 1;
-  tranYIndex && nodeRectPosY(lycRenderList, tranYIndex);
+  scrollToTop(lyctime, "play");
 }
 
-const vpost = computed(() => viewPostHeight / 2);
+function scrollToTop(time: number, event: "click" | "play" = "play") {
+  const tranYIndex =
+    binarySearch(lycPosMsTime, Math.floor(time * 1000)) - (event === "play" ? 1 : 0);
+  tranYIndex && nodeRectPosY(lycRenderList, tranYIndex);
 
-let prey = 0;
+  return Promise.resolve();
+}
 
 function nodeRectPosY(lycLists: HTMLElement[], tolycIndex: number) {
   colorShowIndex.value = tolycIndex;
-  const lycNodeRectTop = nodeRectTop(lycLists[tolycIndex] ?? lycLists[lycLists.length - 1]);
-  console.log("lycNodeRectTop:" + lycNodeRectTop);
-  console.log("viewPostHeight" + viewPostHeight);
 
-  if (lycNodeRectTop > vpost.value) {
-    const y = -Math.abs(Math.floor(lycNodeRectTop - viewPostHeight));
-    const addY = addTime;
-    prey = addY(y, prey);
-    toScrollTop.value = prey;
+  if (openScrollToEl) {
+    const el = lycLists[tolycIndex] ?? lycLists[lycLists.length - 1];
+    scrollToEl.value = el;
   }
-}
-
-function nodeRectTop(el: HTMLElement) {
-  return el.getBoundingClientRect().y;
 }
 
 function binarySearch(lists: number[], time: number) {
@@ -212,23 +212,16 @@ function binarySearch(lists: number[], time: number) {
     }
   }
 
-  return curIndex;
+  return curIndex === -1 ? 0 : curIndex;
 }
 
-function selectLycs(e: Event) {
-  let target = e.target as HTMLElement;
+const debounce_Scroll = debounce(onScroll, 1500, {
+  quickrequest: true,
+  totRiggerQuickrequest: true,
+});
 
-  if (!target.hasAttribute("scrollnode")) {
-    target = target.parentElement;
-  }
-
-  const topy = target.getBoundingClientRect().y;
-
-  if (target.hasAttribute("lycs-key")) {
-    ctxEmit("selectlycs", topy - containerTop);
-  } else {
-    console.log("找不到lycs-key");
-  }
+function onScroll() {
+  openScrollToEl = !openScrollToEl;
 }
 
 onMounted(async () => {

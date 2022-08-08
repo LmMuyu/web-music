@@ -36,9 +36,8 @@ export default defineComponent({
   props: {
     class: String,
     style: Object,
-    scrollTop: {
-      type: Number,
-      default: 0,
+    scrollToEl: {
+      type: Object,
     },
     BsOptions: {
       type: Object,
@@ -58,7 +57,7 @@ export default defineComponent({
     },
     scrollFn: Function,
   },
-  emits: ["pullUpLoad", "hook:update"],
+  emits: ["pullUpLoad", "hook:update", "mousewheelMove"],
   setup(props, { expose, slots, emit: ctxEmit }) {
     const src = "https://cdnjs.cloudflare.com/ajax/libs/better-scroll/2.4.2/better-scroll.esm.js";
     const viewport = ref(null);
@@ -111,26 +110,9 @@ export default defineComponent({
       el.removeAttribute(hclass);
     }
 
-    //判断一行有多少个元素，防止高度同一行高度相加，影响总滑动高度
-    function rowNodeCount(lists: HTMLElement[]) {
-      // console.log(lists);
-      // let lindex = 0;
-      // while (true) {
-      //   const cur = lindex;
-      //   const next = (lindex += 1);
-      //   const currect = lists[cur].getBoundingClientRect();
-      //   const nextrect = lists[next].getBoundingClientRect();
-      //   if (currect.y !== nextrect.y) {
-      //     return next;
-      //   }
-      // }
-    }
-
     function heightAdd() {
       mutex.value = true;
       const lists = viewport.value.children[0].children as HTMLElement[];
-      // const rowcount = rowNodeCount(lists);
-      // // console.log(rowcount);
 
       let heightArr = [];
 
@@ -178,17 +160,6 @@ export default defineComponent({
       ctxEmit("hook:update");
     }
 
-    function ayncMutexCapHeight() {
-      watch(mutex, (mutexvalue) => {
-        if (!mutexvalue) {
-          const task = mutexQueue.unshift();
-          // if (task.length > 0) {
-          //   heightAdd();
-          // }
-        }
-      });
-    }
-
     useLoadNetworkRes(src).then(
       ({ loadResult, module, message }) => {
         betterBscroll(module.value, loadResult.value, message);
@@ -213,9 +184,7 @@ export default defineComponent({
 
         props.openUpload && BS.on("pullingUp", pullingUpHandler);
 
-        BS.on("scroll", (position: any) => {
-          console.log(position.x, position.y);
-        });
+        BS.on("mousewheelMove", (position: any) => ctxEmit("mousewheelMove", position.y), BS);
 
         const stop = watchEffect(() => {
           if (
@@ -357,14 +326,8 @@ export default defineComponent({
     });
 
     const toScrollTopStop = watch(
-      () => props.scrollTop,
-      (y) => {
-        if (y > scrCapHeight.value) {
-          return;
-        }
-        console.log(y);
-        BS && BS.scrollTo(0, y, 250, {});
-      }
+      () => props.scrollToEl,
+      (el) => el && BS && BS.scrollToElement(el, 250, true, true, {})
     );
 
     onMounted(async () => {

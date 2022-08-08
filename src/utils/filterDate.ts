@@ -42,3 +42,21 @@ function retRelativeTime(time: number) {
 export function formatTime(time: number, format: "ymd" | "ymd_hms") {
   return dayjs(time).format(`YYYY-MM-DD${format === "ymd_hms" ? " hh:mm:ss" : ""}`);
 }
+
+export function allTimeToSec(time: string) {
+  const times = time.split(":");
+  if (times.length >= 2) {
+    const isLenBigThree = times.length === 3;
+    const hoursToSec = isLenBigThree ? strToInt(times[0]) * 60 * 60 * 60 : 0;
+    const minToSec = isLenBigThree ? strToInt(times[1]) * 60 : strToInt(times[0]) * 60;
+    const sec = isLenBigThree ? strToInt(times[2]) : strToInt(times[1]);
+
+    return hoursToSec + minToSec + sec;
+  }
+
+  return 0;
+}
+
+function strToInt(s: string) {
+  return parseInt(s);
+}
