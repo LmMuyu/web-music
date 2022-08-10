@@ -56,7 +56,8 @@ const routes: (RouteRecordRaw & {
         },
       },
       showtiao: false,
-      //issinger:boolean
+      //issinger:boolean//是否是歌手
+
       query: ["uid", "isself", "issinger"],
     },
     children: [

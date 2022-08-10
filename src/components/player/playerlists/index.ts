@@ -1,18 +1,19 @@
-import { App, createApp } from "vue";
+import { App, computed, createApp, ref, Ref, watchEffect } from "vue";
 import router from "../../../routes";
 import store from "../../../store";
 import PlayerLists from "./PlayerLists.vue";
 import { ElContainer, ElHeader, ElMain, ElRow, ElCol } from "element-plus";
-import dexie from "../../../common/dexie";
+import { musicDetail } from "../../../utils/musicDetail";
 
 export default class playerLists {
-  data: any[];
+  data: Ref<musicDetail[]>;
   app: App<Element>;
   mountel: HTMLDivElement;
   comps: any[];
   mounting: boolean;
+  stopWatchPlayQueue: any;
   constructor() {
-    this.data = [];
+    this.data = ref([]);
     this.app = null;
     this.comps = [ElContainer, ElHeader, ElMain, , ElRow, ElCol];
     this.mounting = false;
@@ -58,8 +59,11 @@ export default class playerLists {
   }
 
   async songs() {
-    const mydexie = await dexie();
-    const songlists = (await mydexie.getAllSong()).map((music) => music.songinfo);
-    this.data.push(...songlists);
+    const lists = computed<musicDetail[]>(store.getters["playlist/getMusiclists"]);
+
+    this.stopWatchPlayQueue = watchEffect(() => {
+      console.log(lists.value);
+      this.data.value = lists.value;
+    });
   }
 }

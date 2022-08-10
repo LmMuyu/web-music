@@ -28,7 +28,7 @@
         >
           <el-col :span="2" class="flex items-center justify-center">
             <div
-              v-if="songid === song.id"
+              v-if="songInfo.id === song.id"
               class="transform-gpu -rotate-90 flex items-center justify-center"
             >
               <font-icon icon="iconbottom-triangle" size="12"></font-icon>
@@ -64,10 +64,10 @@ const store = useStore();
 const currbgid = ref(null);
 
 function dbPlayer(song: musicDetail) {
-  store.commit("playlist/setSongId", song.id); //将第一首歌曲id写入stroe
+  store.commit("playlist/runPlayerFn", song.id); //将第一首歌曲id写入stroe
 }
 
-const songid = computed(store.getters["playlist/getSongId"]);
+const songInfo = computed<musicDetail>(store.getters["playlist/getSongInfo"]);
 
 async function clearAllPlayList() {
   const mydexie = await dexie();

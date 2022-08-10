@@ -10,13 +10,14 @@ import {
 
 import Play from "./Play";
 import store from "../../store";
+import dexie from "../../common/dexie";
 import { isType } from "../../utils/methods";
+import { getLyrics } from "../../api/playList";
 import filterDate from "../../utils/filterDate";
 import { musicDetail } from "../../utils/musicDetail";
 import { useRefNegate } from "../../utils/useRefNegate";
 import { useWatchRoutePath } from "../../utils/useWatchHost";
-import { getLyrics, getMusicDetail } from "../../api/playList";
-import { setIndexDBAAllDataToHowlLists, twoSearch, watchMusicinfo } from "./methods";
+import { indexDBAllLists, twoSearch, watchMusicinfo } from "./methods";
 
 type compinstance = ComponentInternalInstance;
 
@@ -33,44 +34,108 @@ function filterDurationTime(dt: number) {
   return filterDate(dt);
 }
 
-const Howl = (options: HOWLOPTIONS, ctx: compinstance) => {
+function initMusicPlay(autoplay: boolean) {
+  const how: Play = new Play({ autoplay });
+
+  return {
+    how,
+  };
+}
+
+//获取进入网页后的第一首歌曲
+function firstSong(musiclist: musicDetail[]) {
+  const first = musiclist[0];
+  store.commit("playlist/setSongInfo", first);
+  return first;
+}
+
+function findMusicLists(musiclist: musicDetail[], id: number) {
+  return musiclist.find((musicDetail) => musicDetail.id === id);
+}
+
+function async_p() {
+  let _resolve: (value: unknown) => void = null;
+
+  const p = new Promise((resolve) => {
+    _resolve = resolve;
+  });
+
+  return {
+    p,
+    _resolve,
+  };
+}
+
+const Howl = async (options: HOWLOPTIONS, ctx: compinstance) => {
   let timeseek = null;
   let currIndex = 0;
   let autoplay = false;
   let ismove = false;
-  let initfirst = false;
-  let playlistsLen = 0;
   const playtime = ref(0);
   const maxTime = ref(0);
   const palylists = ref<musicDetail[]>([]);
   let stopWatch: WatchStopHandle | null = null;
   const lyricsmap = new Map<number, string>();
-  let watchTheMusicInfo = JSON.parse(JSON.stringify(options.musicinfoRef.value ?? {}));
   const { countRef: isplay, negate: changePlayIcon } = useRefNegate(autoplay);
+  let nowPlayingMid = 0;
+  let stopMusicLists = null;
+  let initfirstmusic = false;
 
+  //用来监听修改每一次，听的歌曲时长
   watchMusicinfo(options.musicinfoRef, maxTime);
 
-  const how: Play = new Play({
-    on: {
-      onPlay() {
-        console.log("play");
-        isplay.value = true;
-        play();
-      },
-      onPause() {
-        console.log("pause");
-        isplay.value = false;
-      },
-      onPlayerror(err) {
-        console.log(err);
-      },
-      onEnd() {
-        playSeek.clear();
-        mmusicEndNext();
-      },
-    },
-    autoplay,
-  });
+  //初始化操作
+  async function init() {
+    const islogin = computed(() => store.getters["login/getIslogin"]);
+    const dexieInstance = await dexie();
+    const { _resolve, p } = async_p();
+    let preventNull: WatchStopHandle = null;
+
+    //清空播放列表
+    palylists.value = [];
+
+    if (islogin.value === null) {
+      preventNull = watch(islogin, _resolve);
+    } else {
+      _resolve(true);
+    }
+
+    //异步操作同步化，用来防止‘islogin’出现null
+    await p;
+
+    preventNull && preventNull();
+
+    //已经登录就删除在IndexDB的整个播放列表
+    if (islogin.value) {
+      removeAllIndexDBDataPutToPlaylists(dexieInstance);
+    } else {
+      const musiclists = await indexDBAllLists();
+      //@ts-ignore
+      setImmdPlayLists(musiclists);
+      //第一首歌
+      firstPlayMusic();
+    }
+
+    //用来监听后续有没有登录用的
+    const stopWatchLogin = watch(islogin, (il) => {
+      if (il) {
+        //一开始没登录，后来登录的也要删除在IndexDB的整个播放列表
+        removeAllIndexDBDataPutToPlaylists(dexieInstance);
+      }
+    });
+
+    return {
+      stopWatchLogin,
+    };
+  }
+
+  //异步操作同步化
+  //等初始化完成
+  //stopWatchLogin用来停止监听登录操作
+  const { stopWatchLogin } = await init();
+
+  //初始化howl
+  const { how } = initMusicPlay(autoplay);
 
   const watchRoute = useWatchRoutePath();
 
@@ -81,6 +146,22 @@ const Howl = (options: HOWLOPTIONS, ctx: compinstance) => {
       changePlayIcon();
       playSeek.clear();
     }
+  });
+
+  how.on("play", () => {
+    console.log("play");
+    isplay.value = true;
+    play();
+  });
+
+  how.on("end", () => {
+    playSeek.clear();
+    mmusicEndNext();
+  });
+
+  how.on("pause", () => {
+    console.log("pause");
+    isplay.value = false;
   });
 
   function mmusicEndNext() {
@@ -99,7 +180,7 @@ const Howl = (options: HOWLOPTIONS, ctx: compinstance) => {
     }
 
     playtime.value = 0;
-    playSrcSet(currIndex);
+    playSrcSet(palylists.value[currIndex].id);
   }
 
   function preveMusic() {
@@ -109,19 +190,12 @@ const Howl = (options: HOWLOPTIONS, ctx: compinstance) => {
     }
 
     playtime.value = 0;
-    playSrcSet(currIndex);
+    playSrcSet(palylists.value[currIndex].id);
   }
 
-  function againPlayIndexPos(mid: number) {
-    const index = palylists.value.findIndex((music) => music.id === mid);
-
-    if (index > -1) {
-      playtime.value = 0;
-      playSrcSet(index);
-
-      return true;
-    }
-
+  //看一下是不是在播放中
+  function pairingPlayMid(mid: number) {
+    if (mid === nowPlayingMid) return true;
     return false;
   }
 
@@ -129,18 +203,14 @@ const Howl = (options: HOWLOPTIONS, ctx: compinstance) => {
     return `https://music.163.com/song/media/outer/url?id=${id}.mp3`;
   }
 
-  function playSrcSet(index: number) {
-    console.log(index);
+  async function playSrcSet(id: number) {
+    if (!id) return;
 
-    return new Promise(async (resolve) => {
-      const musicdetail = palylists.value[index];
-      if (!musicdetail.id) return;
-
-      musicFoundation(musicdetail);
-      how.setSrc(createSrc(musicdetail.id));
-      store.commit("playlist/setSongId", musicdetail.id); //将第一首歌曲id写入stroe
-      resolve(true);
-    });
+    //获取歌词
+    //@ts-ignore
+    await musicFoundation(findMusicLists(palylists.value, id));
+    nowPlayingMid = id;
+    how.setSrc(createSrc(id));
   }
 
   const playSeek: staticPlaySeekMethods = function playSeek() {
@@ -185,7 +255,6 @@ const Howl = (options: HOWLOPTIONS, ctx: compinstance) => {
   function documentTitle(lycTimeList: [number, number], time: number) {
     store.commit("subMitt", ["seek_time", [lycTimeList[1], time]]);
     const lrc = lyricsmap.get(lycTimeList[0]);
-    // console.log(lrc);
 
     if (lrc) {
       const musicdetail = options.musicinfoRef.value;
@@ -233,8 +302,30 @@ const Howl = (options: HOWLOPTIONS, ctx: compinstance) => {
     return howVolume;
   }
 
-  function setImmdPlayLists(lists: any[] | any) {
-    palylists.value.unshift(...(isType(lists) === "Array" ? lists : [lists]));
+  //统一写入到播放列表里
+  function setImmdPlayLists(lists: musicDetail[] | musicDetail) {
+    if (Array.isArray(lists)) {
+      const ids = palylists.value.map((v) => v.id);
+      const filterlists = lists.filter((vm) => ids.indexOf(vm.id) === -1);
+
+      //@ts-ignore
+      palylists.value.unshift(...filterlists);
+    } else {
+      //@ts-ignore
+      const exist = existPlayerList(palylists.value, lists.id);
+      if (!exist) {
+        //@ts-ignore
+        palylists.value.unshift(lists);
+      }
+    }
+
+    store.commit("playlist/musiclists", palylists.value);
+  }
+
+  //判断是否在播放列表中
+
+  function existPlayerList(lists: musicDetail[], id: number) {
+    return lists.some((v) => v.id === id);
   }
 
   function initCurrentIndex(songinfo: musicDetail) {
@@ -242,67 +333,17 @@ const Howl = (options: HOWLOPTIONS, ctx: compinstance) => {
     return (currIndex = index > -1 ? index : 0);
   }
 
-  function watchImmediatelyPlayMusics() {
-    let isonewatch = true;
-    watchEffect(async () => {
-      if (palylists.value.length && palylists.value.length !== playlistsLen && !isonewatch) {
-        playlistsLen = palylists.value.length;
-        const firstListsMusicData = palylists.value[0];
-
-        if (firstListsMusicData.id !== watchTheMusicInfo.id || !initfirst) {
-          initfirst = true;
-          playSrcSet(0);
-        }
-      } else {
-        isonewatch = false;
-      }
-    });
-  }
-  function watchLaterPlayQueue() {
-    const musiclists = computed<musicDetail[]>(store.getters["playlist/getMusiclists"]);
-    watchEffect(() => {
-      if (musiclists.value.length > 0) {
-        duplicateRemoval(musiclists.value);
-        setImmdPlayLists(musiclists.value);
-      }
-    });
-  }
-
-  function duplicateRemoval(musiclists: musicDetail[]) {
-    musiclists.map((music) => {
-      const index = palylists.value.findIndex((song) => music.id === song.id);
-
-      if (index === -1) return music;
-      palylists.value.splice(index, 1);
-    });
-  }
-
-  watchLaterPlayQueue();
-
-  function musicFoundation(musicdetail: musicDetail) {
+  async function musicFoundation(musicdetail: musicDetail) {
     if (musicdetail !== options.musicinfoRef.value) {
       options.musicinfoRef.value = musicdetail;
-      watchTheMusicInfo = musicdetail;
     }
 
-    getLyrics(String(musicdetail.id)).then((lyrics) => {
-      const lrc = lyrics.data.lrc.lyric;
-      setmaplyrics(lrc);
-    });
+    const lyrics = await getLyrics(String(musicdetail.id));
+    const lrc = lyrics.data.lrc.lyric;
+    setmaplyrics(lrc);
   }
 
-  async function retMusicData(musicifno: any) {
-    if (!(musicifno instanceof musicDetail)) {
-      const reqdata = await getMusicDetail(musicifno.id);
-      const song = reqdata.data.songs[0];
-      const songInfo = new musicDetail(song);
-
-      return songInfo;
-    } else {
-      return true;
-    }
-  }
-
+  //获取歌词
   function setmaplyrics(lrc: string) {
     const lrcworker = new Worker("src/worker/lrc.js");
     lyricsmap.clear();
@@ -320,7 +361,43 @@ const Howl = (options: HOWLOPTIONS, ctx: compinstance) => {
 
   window.addEventListener("unload", how.unWindowHowler.bind(how), false);
 
-  setIndexDBAAllDataToHowlLists(setImmdPlayLists, watchImmediatelyPlayMusics);
+  function removeAllIndexDBDataPutToPlaylists(dexieInstance: any) {
+    stopMusicLists && stopMusicLists();
+
+    //清空播放列表
+    palylists.value = [];
+
+    //删除indexDB里的全部数据
+    dexieInstance.tableDelete();
+    //获取登录用户的播放队列
+    const musiclists = computed<musicDetail[]>(store.getters["playlist/getMusiclists"]);
+
+    //在初始化前
+    stopMusicLists = watchEffect(() => {
+      if (musiclists.value.length > 0) {
+        palylists.value = [];
+        setImmdPlayLists(musiclists.value);
+        //第一首歌
+        firstPlayMusic();
+      }
+    });
+  }
+
+  function firstPlayMusic() {
+    if (initfirstmusic) return;
+
+    //并在初始化后第一首歌曲
+    //@ts-ignore
+    const first = firstSong(palylists.value);
+    console.log(first);
+
+    options.musicinfoRef.value = first;
+    console.log(options.musicinfoRef);
+
+    palylists.value.length > 0 && playSrcSet(first.id);
+    initfirstmusic = true;
+  }
+
   return {
     seek,
     play,
@@ -336,9 +413,12 @@ const Howl = (options: HOWLOPTIONS, ctx: compinstance) => {
     setImmdPlayLists,
     initCurrentIndex,
     filterDurationTime,
-    againPlayIndexPos,
+    pairingPlayMid,
     routeWatchStop,
     loop: how.set_loop,
+    stopWatchLogin,
+    existPlayerList: existPlayerList.bind(null, palylists.value),
+    findMusicLists: findMusicLists.bind(null, palylists.value),
   };
 };
 

@@ -1,11 +1,15 @@
+import mitt, { Emitter } from "mitt";
 import { GetterTree, MutationTree, StoreOptions } from "vuex";
+import { isType } from "../../utils/methods";
 import type { musicDetail } from "../../utils/musicDetail";
 
 interface store {
   songinfo: musicDetail | {};
   iconsize: number;
   songId: number;
-  playlists: any[];
+  playlists: musicDetail[];
+  playerFn: (id: number) => void;
+  mitt: Emitter;
 }
 
 export default class Playlist implements StoreOptions<store> {
@@ -27,6 +31,8 @@ export default class Playlist implements StoreOptions<store> {
       songinfo: {},
       songId: 0,
       playlists: [],
+      playerFn: null,
+      mitt: mitt(),
     };
   }
 
@@ -41,15 +47,36 @@ export default class Playlist implements StoreOptions<store> {
         state.songId = id;
       },
 
-      musiclists(state, lists: any[]) {
+      musiclists(state, lists: musicDetail[]) {
+        // console.log(lists);
         if (Array.isArray(lists)) {
-          state.playlists = lists;
+          const lids = state.playlists.map((v) => v.id);
+          const filterAfterData = lists.filter((m) => lids.indexOf(m.id) === -1);
+
+          state.playlists.push(...filterAfterData);
         }
       },
 
       thisPlaylistPageSetSongId(state, id: number) {
         if (state.songId === 0 || state.songId !== id) {
           state.songId = id;
+        }
+      },
+
+      setPlayerFn(state, fn: (id: number) => void) {
+        const typefn = isType(fn);
+
+        if (typefn !== "Function" && typefn !== "AsyncFunction") {
+          return console.error("要求fn是一个函数，得到的是" + typefn);
+        }
+        state.playerFn = fn;
+      },
+
+      runPlayerFn(state, id: number) {
+        state.playerFn && state.playerFn(id);
+
+        if (isType(state.playerFn) === "Null") {
+          console.warn("state.playerFn为Null");
         }
       },
     };

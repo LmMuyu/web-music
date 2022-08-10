@@ -5,6 +5,7 @@ export default function (detail: any) {
     creator: {
       nickname: detail.creator.nickname,
       userId: detail.creator.userId,
+      avatarUrl: detail.creator.avatarUrl,
     },
     tags: detail.tags,
     commentCount: detail.commentCount,

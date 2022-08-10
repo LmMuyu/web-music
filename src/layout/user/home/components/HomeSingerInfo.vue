@@ -1,11 +1,7 @@
 <template>
   <el-row class="flex w-full m-4">
-    <el-col :span="5">
-      <el-image
-        style="border-radius: 96px"
-        class="w-48 h-48 object-cover"
-        :src="singerinfo.avatarUrl"
-      ></el-image>
+    <el-col :span="5" class="flex justify-center" >
+      <el-avatar :size="128" :src="singerinfo.avatarUrl"></el-avatar>
     </el-col>
     <el-col :span="19" class="pl-6">
       <div class="text-lg font-medium">{{ singerinfo.nickname }}</div>
@@ -48,7 +44,7 @@ import { module, singerModuleInfo } from "../hooks/singer";
 import { useWatchRoutePath } from "../../../../utils/useWatchHost";
 import { watch } from "vue";
 
-import { ElImage, ElRow, ElCol, ElAvatar, ElButton } from "element-plus";
+import { ElRow, ElCol, ElAvatar, ElButton } from "element-plus";
 import FontIcon from "../../../../components/fonticon/FontIcon.vue";
 
 const props = defineProps({
@@ -57,6 +53,9 @@ const props = defineProps({
     default: () => ({}),
   },
 });
+
+console.log(props.singerinfo);
+
 
 const watchRoute = useWatchRoutePath();
 

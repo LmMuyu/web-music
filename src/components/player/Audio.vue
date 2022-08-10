@@ -43,7 +43,7 @@
           </div>
           <div class="px-4">
             <router-link
-              :to="{ name: 'Playlist', params: { toscroll: true }, query: { id: storeMid } }"
+              :to="{ name: 'Playlist', params: { toscroll: true }, query: { id: playMid } }"
             >
               <font-icon icon="iconpinglun_huabanfuben" size="24"> </font-icon>
             </router-link>
@@ -70,7 +70,6 @@
 import {
   ref,
   nextTick,
-  PropType,
   watchEffect,
   computed,
   onMounted,
@@ -81,12 +80,13 @@ import {
 } from "vue";
 import { useStore } from "vuex";
 
-import { getMusicDetail } from "../../api/playList";
-import { useLocalStorage } from "../../utils/useLocalStorage";
-import { musicDetail } from "../../utils/musicDetail";
-import dexieFn from "../../common/dexie";
-import { musicPlayEndZero, sliderstyle } from "./methods";
 import AudioHow from "./Howler";
+import playerLists from "./playerlists";
+import dexieFn from "../../common/dexie";
+import { getMusicDetail, userRecord } from "../../api/playList";
+import { musicDetail } from "../../utils/musicDetail";
+import { musicPlayEndZero, sliderstyle } from "./methods";
+import { useLocalStorage } from "../../utils/useLocalStorage";
 
 //@ts-ignore
 import AudioAndVideoControls from "./components/AudioAndVideoControls.vue";
@@ -96,23 +96,14 @@ import AudioSlider from "./components/AudioSlider.vue";
 import { ElSlider, ElRow, ElCol } from "element-plus";
 import VolumeIcon from "./components/VolumeIcon.vue";
 import FontIcon from "../fonticon/FontIcon.vue";
-// import { openDrawer } from "../../layout/playlist/components/PlayListHistory";
-import playerLists from "./playerlists";
-
-const props = defineProps({
-  songinfo: {
-    type: Object as PropType<musicDetail>,
-    required: true,
-  },
-});
 
 const store = useStore();
 
-let mid = 0;
 let tiemr = null;
 const volume = ref(0);
 const islock = ref(false);
 const audioSlider = ref(null);
+const playMid = ref(0);
 const sliderPos = reactive({
   top: -window.innerHeight + "px",
   left: -window.innerWidth + "px",
@@ -129,7 +120,6 @@ const {
   pause,
   play,
   maxTime,
-  palylists,
   nextMusic,
   preveMusic,
   seek: setseek,
@@ -137,14 +127,18 @@ const {
   initCurrentIndex,
   volume: setVolume,
   playSeek: seekTime,
-  againPlayIndexPos,
   routeWatchStop,
-} = AudioHow(
+  pairingPlayMid,
+  existPlayerList,
+  findMusicLists,
+  stopWatchLogin,
+} = await AudioHow(
   {
     musicinfoRef: musicinfo,
   },
   getCurrentInstance()
 );
+const playerlist = new playerLists();
 
 const musicPosTime = seekTime();
 volume.value = setVolume() * 100;
@@ -220,46 +214,63 @@ function inputValue(pos: number) {
   setseek(pos);
 }
 
-const storeMid = computed<number>(store.getters["playlist/getSongId"]);
-watchEffect(async () => {
+function lastPlayRecord() {
+  const islogin = computed(() => store.getters["login/getIslogin"]);
+
+  const stopLogin = watchEffect(() => {
+    if (islogin?.value) {
+      Promise.resolve(store.getters["login/getUserData"]()).then(async (storeUserData) => {
+        if (storeUserData?.data) {
+          const lastRecord = await userRecord(storeUserData.data.id, "0");
+          const lastRecordLists = lastRecord.data.allData.map((v) => new musicDetail(v.song));
+          store.commit("playlist/musiclists", lastRecordLists);
+        }
+      });
+    }
+  });
+
+  return stopLogin;
+}
+
+const stopLogin = lastPlayRecord();
+
+store.commit("playlist/setPlayerFn", async (mid: number) => {
   try {
-    if (storeMid.value && storeMid.value !== mid) {
-      mid = storeMid.value;
+    let musicSongInfo = null;
 
-      const isIngPlay = againPlayIndexPos(mid);
-      if (isIngPlay) {
-        return;
-      }
+    playMid.value = mid;
+    //重复播放代表暂停播放
+    const isPlaying = pairingPlayMid(mid);
+    if (isPlaying) return pause();
 
+    if (!existPlayerList(mid)) {
       const reqdata = await getMusicDetail(String(mid));
       if (reqdata.data.songs.length === 0) return;
 
       const song = reqdata.data.songs[0];
-      const songInfo = new musicDetail(song);
-
-      setImmdPlayLists(songInfo);
-      Promise.resolve().then(() => store.commit("playlist/setSongInfo", songInfo));
-      musicinfo.value = songInfo;
-
-      enterAudioActive();
-      leaveTimeout();
-
-      (await dexie).put(songInfo.id, songInfo);
-      setImmdPlayLists(songInfo);
-      initCurrentIndex(songInfo);
-      useLocalStorage("recplaysong", JSON.stringify(songInfo));
+      musicSongInfo = new musicDetail(song);
+      setImmdPlayLists(musicSongInfo);
+    } else {
+      musicSongInfo = findMusicLists(mid);
     }
+
+    Promise.resolve().then(() => store.commit("playlist/setSongInfo", musicSongInfo));
+
+    //用来修改每一次听的歌曲时长
+    musicinfo.value = musicSongInfo;
+
+    //唤醒Audio
+    enterAudioActive();
+    leaveTimeout();
+
+    if (!store.getters["login/getIslogin"]) {
+      //写入indexDB
+      (await dexie).put(musicSongInfo.id, musicSongInfo);
+    }
+
+    useLocalStorage("recplaysong", JSON.stringify(musicSongInfo));
   } catch (error) {
     console.log(error);
-  }
-});
-
-//获取登录用户的播放队列
-const musiclists = computed<musicDetail[]>(store.getters["playlist/getMusiclists"]);
-watchEffect(() => {
-  if (musiclists.value.length > 0) {
-    palylists.value.length = 0;
-    setImmdPlayLists(musiclists.value);
   }
 });
 
@@ -296,7 +307,6 @@ function openControl(top: string, left: string) {
   sliderPos.left = left;
 }
 
-const playerlist = new playerLists();
 async function OpenHistory() {
   if (playerlist.mounting) {
     playerlist.unmount();
@@ -338,7 +348,9 @@ onMounted(() =>
 );
 
 onUnmounted(() => {
+  stopLogin();
   routeWatchStop();
+  stopWatchLogin();
   clickLycTime.removeMittFn();
 });
 </script>

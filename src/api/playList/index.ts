@@ -37,19 +37,8 @@ export function getLyrics(id: string) {
   });
 }
 
-export function getRecord(uid: number, type: 1 | 0 = 1) {
-  return request({
-    url: "/user/record",
-    params: {
-      uid,
-      type,
-    },
-  });
-}
-
 export function userRecord(uid: number, type?: "0" | "1") {
   type = type || "0";
-
   return request({
     url: "/user/record",
     params: {

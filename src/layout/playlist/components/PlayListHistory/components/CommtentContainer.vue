@@ -1,9 +1,9 @@
 <template>
-  <Dialog
-    ref="dialog"
-    @editorContent="(reply) => props.on['send-content'](Object.assign({}, reply, { replyInfo }))"
-  />
   <ElContainer class="relative w-full h-full">
+    <Dialog
+      ref="dialog"
+      @editorContent="(reply) => props.on['send-content'](Object.assign({}, reply, { replyInfo }))"
+    />
     <ElHeader height="56" class="flex justify-between">
       <div>
         <span class="text-base">{{ title }}</span>
@@ -12,10 +12,17 @@
         <el-button size="small" @click="pubComment">发表评论</el-button>
       </div>
     </ElHeader>
-    <el-main v-if="comploading" class="w-full h-full flex justify-center items-center">
+    <el-main
+      v-if="comploading"
+      class="w-full h-full flex justify-center items-center overflow-hidden"
+    >
       <loading></loading>
     </el-main>
-    <el-main v-else class="relative h-full parser">
+    <el-main
+      v-else
+      :style="{ overflow: ismainhidden ? 'hidden' : 'auto' }"
+      class="relative h-full parser"
+    >
       <BetterScroll v-if="renderBS" class="absolute top-0 left-0 w-full h-full">
         <div v-for="(item, index) in data" :key="index">
           <component @comment="clickComment" :scopedData="item" :is="compId"></component>
@@ -131,6 +138,7 @@ const props = defineProps({
     default: true,
   },
   paginationbackground: Boolean,
+  ismainhidden: Boolean,
 });
 
 const replyInfo = ref({});

@@ -7,13 +7,12 @@
         :src="playlist.backgroundUrlImage + '?param=256y256'"
       ></el-image>
     </el-col>
-
     <el-col class="basic_detail px-6" :span="17">
       <div class="flex items-center">
         <span class="text-2xl">{{ playlist.name }}</span>
         <el-tag
           class="mx-2 cursor-pointer"
-          size="mini"
+          size="small"
           v-for="(tagname, index) in playlist.tags"
           :key="index"
           >{{ tagname }}</el-tag
@@ -23,9 +22,24 @@
         <div class="hove_text">
           <router-link
             class="flex items-center"
-            :to="{ path: '/user/home', query: { uid: playlist.creator?.userId || '' } }"
+            :to="{
+              path: '/user/home',
+              query: { uid: playlist.creator?.userId || '', isself: false, issinger: false },
+            }"
           >
-            <el-avatar class="px-2" :size="32" fit="cover" :src="userData?.data?.avatarUrl ?? ''" />
+            <el-avatar
+              :size="32"
+              fit="contain"
+              :src="
+                logininfopriority
+                  ? store.getters['login/getIslogin']
+                    ? userData?.data?.avatarUrl + '?param=32y32'
+                    : ''
+                  : playlist?.creator?.avatarUrl
+                  ? playlist.creator.avatarUrl + '?param=32y32'
+                  : ''
+              "
+            />
             <span style="color: #79bbff" class="px-2 flex items-center"
               >{{ playlist.creator?.nickname || "" }}
             </span>
@@ -66,6 +80,10 @@ const props = defineProps({
   playlist: {
     type: Object,
     required: true,
+  },
+  logininfopriority: {
+    type: Boolean,
+    default: false,
   },
 });
 

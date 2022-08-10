@@ -1,21 +1,23 @@
 import { Howl, Howler } from "howler";
 import { OPTIONS } from "./type";
 
-const ons = ["onPlayerror", "onPlay", "onStop", "onPause", "onEnd"];
+type Event =
+  | "pause"
+  | "play"
+  | "stop"
+  | "end"
+  | "mute"
+  | "volume"
+  | "rate"
+  | "seek"
+  | "fade"
+  | "unlock";
 
 type KeXuan<T> = { [K in keyof T]?: T[K] };
 
-function setThatMethods(hookMethods: OPTIONS["on"]) {
-  const self = this as Play;
-
-  for (const key in hookMethods) {
-    if (!Object.prototype.hasOwnProperty.call(self, key)) {
-      const method = hookMethods[key];
-      if (typeof method === "function") {
-        self[key] = method;
-      }
-    }
-  }
+interface HowlEvent {
+  event: Event;
+  fn: (...arg: any) => void;
 }
 
 function ifRate(rate: string) {
@@ -27,7 +29,13 @@ function ifRate(rate: string) {
   return count;
 }
 
-export default class Play {
+class ViceHowl {
+  protected bindEnvet(howl: Howl, event: HowlEvent) {
+    howl.on(event.event, event.fn);
+  }
+}
+
+export default class Play extends ViceHowl {
   private howl: Howl;
   private loop: boolean;
   private src: string;
@@ -36,12 +44,14 @@ export default class Play {
   private ismute: boolean;
   private format: string[];
   private setaction: boolean;
+  private ons: HowlEvent[];
   dt: number;
   autoplay: boolean;
   duration: string;
   playing: boolean;
 
   constructor(options?: OPTIONS & KeXuan<Pick<Play, "autoplay">>) {
+    super();
     this.howl = null;
     this.src = "";
     this.loop = false;
@@ -52,21 +62,19 @@ export default class Play {
     this.ismute = options.mute ?? false;
     this.playing = false;
     this.setaction = false;
-
-    setThatMethods.call(this, options.on);
+    this.ons = [];
   }
 
-  unmountHow() {
+  private unmountHow() {
     if (this.howl) {
       this.howl.unload();
       this.howl = null;
     }
   }
 
-  createHowler() {
+  private createHowler() {
     Howler.unload();
     const { loop, src, volume, format, autoplay } = this;
-    // console.log(this.howl);
 
     this.unmountHow();
 
@@ -79,9 +87,7 @@ export default class Play {
       html5: true,
     });
 
-    // console.log(this.howl.loop());
-
-    this.onHookMethods(this.howl, this);
+    this.ons.forEach((v) => this.bindEnvet(this.howl, v));
 
     if (autoplay) {
       this.play();
@@ -105,20 +111,6 @@ export default class Play {
     } else {
       this.playing = true;
     }
-  }
-
-  onHookMethods(howl: Howl, self: Play) {
-    ons.forEach((evevtname) => {
-      if (self[evevtname]) {
-        howl.on(evevtname.substring(2).toLocaleLowerCase(), self[evevtname]);
-      }
-    });
-
-    this.removeAllHook();
-  }
-
-  removeAllHook() {
-    this.howl.on("stop", () => this.howl.off());
   }
 
   play() {
@@ -212,6 +204,19 @@ export default class Play {
     navigator.mediaSession.setActionHandler("seekto", (dateils) => {
       console.log(dateils);
     });
+  }
+
+  on(event: Event, fn: (...arg: any) => void) {
+    try {
+      if (this.howl) {
+        this.howl.on(event, fn);
+        return;
+      }
+
+      this.ons.push({ event: event, fn });
+    } catch (error) {
+      return Promise.reject(error);
+    }
   }
 
   get play_volume() {

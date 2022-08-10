@@ -6,9 +6,13 @@
   >
     <div
       class="content w-full"
-      :style="{ height: scrollCapHeight + 'px', ...style }"
+      :style="{
+        height: (isminusviewposth ? scrollCapHeight : capHeight) + 'px',
+        ...style,
+      }"
       :class="class"
-      @load.capture="loadImages"
+      @load.capture="debounce_LoadImages"
+      ref="container"
     >
       <slot v-if="!openHRender"></slot>
       <div :internal="true" style="height: 1px" class="w-full absolute"></div>
@@ -28,8 +32,13 @@ import {
   watch,
   watchEffect,
   computed,
+  shallowRef,
 } from "vue";
+import fd from "fastdom";
+
+import { debounce } from "../../utils/debounce";
 import useLoadNetworkRes from "../../utils/useLoadNetworkRes";
+
 import bottomLoading_H from "./bottomLoading_H";
 
 export default defineComponent({
@@ -56,24 +65,30 @@ export default defineComponent({
       default: true,
     },
     scrollFn: Function,
+    isminusviewposth: {
+      type: Boolean,
+      default: false,
+    },
   },
   emits: ["pullUpLoad", "hook:update", "mousewheelMove"],
   setup(props, { expose, slots, emit: ctxEmit }) {
-    const src = "https://cdnjs.cloudflare.com/ajax/libs/better-scroll/2.4.2/better-scroll.esm.js";
-    const viewport = ref(null);
-    const viewportHeight = ref(0);
+    let BS = null;
+    let mutation = null;
     const capHeight = ref(0);
+    const viewportHeight = ref(0);
     let statusPrmosie = ref(null);
-    let thenStatus = ref<"pending" | "fulfilled">("pending");
+    const allTotalHeightLists: number[] = [];
     const isPullUpLoad = ref(false);
     let isMountOneUpLoadIcon = false;
-
     const ctx = getCurrentInstance();
-    let BS = null;
+    const viewport = shallowRef(null);
+    const container = shallowRef(null);
+    let thenStatus = ref<"pending" | "fulfilled">("pending");
+    const src = "https://cdnjs.cloudflare.com/ajax/libs/better-scroll/2.4.2/better-scroll.esm.js";
+
     let mountRefreshFn: (bs) => void = null;
-    let mutation = null;
-    const mutex = ref(false);
-    const mutexQueue = [];
+
+    const BSRefresh = () => (BS ? BS.refresh() : (mountRefreshFn = (bs) => bs.refresh()));
 
     function disable() {
       BS.disable();
@@ -83,81 +98,45 @@ export default defineComponent({
       BS.enable();
     }
 
-    const BSRefresh = () => (BS ? BS.refresh() : (mountRefreshFn = (bs) => bs.refresh()));
-
-    function excludeEl(el: HTMLElement) {
-      return el.hasAttribute("internal");
-    }
-
-    function isHClassAndHCalss(el: HTMLElement): [string, boolean] {
-      const isExcludeEl = excludeEl(el);
-      if (isExcludeEl) return ["", true];
-
-      const classlists = Array.prototype.slice.call(el.classList, 0) as string[];
-      let index = 0;
-      const ishclass = classlists.every((value, i) => {
-        if (value.startsWith("h")) {
-          return value[1] === "-" ? (index = i) && false : true;
-        } else {
-          return true;
-        }
-      });
-
-      return [classlists[index], ishclass];
-    }
-
-    function removeClassHGetToH(el: HTMLElement, hclass: string) {
-      el.removeAttribute(hclass);
-    }
-
-    function heightAdd() {
-      mutex.value = true;
-      const lists = viewport.value.children[0].children as HTMLElement[];
-
-      let heightArr = [];
-
-      const totalHeight = Array.prototype.reduce.apply(lists, [
-        (pre, next, index) => {
-          const oneheight = next.getBoundingClientRect().height;
-          const [hclass, ishclass] = isHClassAndHCalss(next);
-
-          let twoheight = 0;
-          if (!ishclass) {
-            removeClassHGetToH(next, hclass);
-            BSRefresh();
-            twoheight = next.getBoundingClientRect().height;
-          }
-
-          const prevHeight = index > 0 ? heightArr[index - 1] : 0;
-          heightArr.push(Math.max(oneheight, twoheight));
-
-          const height = Math.max(
-            Math.abs(oneheight - prevHeight),
-            Math.abs(twoheight - prevHeight)
-          );
-
-          return (pre += height);
-        },
-        0,
-      ]);
-
-      capHeight.value = 0;
-      heightArr.length = 0;
-      const preHeight = capHeight.value;
-      capHeight.value += totalHeight;
-
-      if (preHeight !== capHeight.value) {
-        BSRefresh();
-      }
-
-      mutex.value = false;
-    }
+    const debounce_LoadImages = debounce(loadImages, 100);
 
     function loadImages(ev) {
       ev.stopPropagation();
-      mutex.value && mutexQueue.push("addFn");
-      heightAdd();
+      getContainerScrollHeight(container.value);
+      BS && BS.refresh();
       ctxEmit("hook:update");
+    }
+
+    function getContainerScrollHeight(c: HTMLElement) {
+      fd.measure(async () => {
+        const tsh = [].reduce
+          .call(
+            c.children,
+            (hlist: number[], el: HTMLElement) => {
+              const eh = el.getBoundingClientRect().height;
+
+              if (hlist.indexOf(eh) === -1) {
+                hlist.push(eh);
+              }
+
+              return hlist;
+            },
+            []
+          )
+          .reduce((totalh: number, eh: number) => (totalh += eh), 0);
+
+        if (allTotalHeightLists.indexOf(tsh) === -1) {
+          allTotalHeightLists.push(tsh);
+        }
+
+        console.log(allTotalHeightLists);
+
+        const maxH = Math.max(...allTotalHeightLists);
+        capHeight.value = maxH;
+
+        await nextTick();
+        BS && BSRefresh();
+      });
     }
 
     useLoadNetworkRes(src).then(
@@ -177,14 +156,49 @@ export default defineComponent({
           viewport.value,
           Object.assign(
             {},
-            { mouseWheel: true, bounce: false, click: true, pullUpLoad: props.openUpload },
+            {
+              mouseWheel: true,
+              bounce: false,
+              click: true,
+              pullUpLoad: props.openUpload,
+            },
             props.BsOptions
           )
         );
 
         props.openUpload && BS.on("pullingUp", pullingUpHandler);
 
-        BS.on("mousewheelMove", (position: any) => ctxEmit("mousewheelMove", position.y), BS);
+        const debounce_correction = debounce(correction, 100);
+
+        BS.on(
+          "mousewheelMove",
+          (position: any) => {
+            ctxEmit("mousewheelMove", position.y);
+            debounce_correction(
+              //动点y1
+              position.y
+            );
+          },
+          BS
+        );
+
+        let prevhch = 0;
+
+        function correction(y1: number) {
+          const maxH = Math.max(...allTotalHeightLists);
+          const totalScrollHeight = maxH;
+          const viewportHeightAddTotalScrollHeight = maxH + viewportHeight.value;
+
+          //补上差值的y值高度
+          const y2 =
+            Number((1 - viewportHeightAddTotalScrollHeight / totalScrollHeight).toFixed(4)) *
+            Math.abs(y1);
+
+          capHeight.value = capHeight.value - prevhch + Math.abs(y2);
+          prevhch = Math.abs(y2);
+
+          BS && BSRefresh();
+        }
 
         const stop = watchEffect(() => {
           if (
@@ -279,9 +293,7 @@ export default defineComponent({
 
     function watchRenderBottomLoading() {
       const mount = afterDiv(viewport.value.children[0]);
-      watch(isPullUpLoad, (newavalue) => {
-        render(bottomLoading_H({ isPullUpLoad }), mount);
-      });
+      watch(isPullUpLoad, (newavalue) => render(bottomLoading_H({ isPullUpLoad }), mount));
     }
 
     function templateHVnode(slotss) {
@@ -318,11 +330,9 @@ export default defineComponent({
     const scrCapHeight = computed(() => {
       return Math.abs(capHeight.value - viewportHeight.value) + 100;
     });
-
+    //修改滑动高度
     const scrollCapHeight = computed(() => {
-      const h = scrCapHeight.value;
-      BS && BS.refresh();
-      return h + viewportHeight.value;
+      return scrCapHeight.value + viewportHeight.value;
     });
 
     const toScrollTopStop = watch(
@@ -345,7 +355,7 @@ export default defineComponent({
       });
 
       await nextTick();
-      heightAdd();
+      getContainerScrollHeight(container.value);
     });
 
     onUnmounted(() => {
@@ -369,6 +379,8 @@ export default defineComponent({
       loadImages,
       isPullUpLoad,
       scrollCapHeight,
+      container,
+      debounce_LoadImages,
     };
   },
 });

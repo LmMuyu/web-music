@@ -111,7 +111,8 @@ export class musicDetail {
   }
 
   private watchClassStyle() {
-    this.stop = watch([this.classStr, this.style, this.rootClass], this.singerDomString);
+    const that = this;
+    this.stop = watch([this.classStr, this.style, this.rootClass], this.singerDomString.bind(that));
   }
 }
 

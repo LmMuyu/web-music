@@ -30,7 +30,7 @@ export function debounce<T extends Function>(fn: T, delay: number = 150, options
         const retData = fn.apply(null, arg);
         promiseData(retData, options?.asyncBackcall ?? (() => {}));
         clearTimes();
-        options.totRiggerQuickrequest && (options.quickrequest = true);
+        options?.totRiggerQuickrequest && (options.quickrequest = true);
       }, delay);
     }
   }

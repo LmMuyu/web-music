@@ -1,10 +1,8 @@
-import { ComponentInternalInstance, ref, Ref, watch } from "vue";
+import { ComponentInternalInstance, computed, ref, Ref, watch, watchEffect } from "vue";
+import { userRecord } from "../../api/playList";
 import dexieInstance from "../../common/dexie";
 import store from "../../store";
 import { musicDetail } from "../../utils/musicDetail";
-import { useLocalStorage } from "../../utils/useLocalStorage";
-
-const dexie = dexieInstance();
 
 export async function sliderstyle() {
   try {
@@ -37,50 +35,6 @@ export function musicPlayEndZero(ctx: ComponentInternalInstance, mintime: Ref<nu
   ctx.appContext.config.globalProperties["mittBus"].on("audioend", () => {
     mintime.value = 0;
   });
-}
-
-export async function setIndexDBAAllDataToHowlLists(
-  unshitfMusicLists: (lists: any[] | any) => void,
-  watchMusics: () => any
-) {
-  const allCollectionData = await (await dexie).getAllSong();
-  const songlists = allCollectionData.map((musicDetailData) => musicDetailData.songinfo);
-
-  const firstSong = await indexDBRecentlyPlayMusic();
-
-  if (!firstSong) {
-    throw new Error("firstSong:null");
-  }
-
-  store.commit("playlist/setSongId", firstSong.id); //将第一首歌曲id写入stroe
-  const splicelists = spliceMusicLits(songlists, firstSong);
-  unshitfMusicLists(splicelists);
-  watchMusics(); //开启watchEffect来监听后续写入播放数组里面的音乐信息
-  unshitfMusicLists(firstSong);
-}
-
-async function indexDBRecentlyPlayMusic(): Promise<musicDetail | null> {
-  const firstsong = await (await dexie).first(); //返回indexDB第一个音乐信息
-  if (!firstsong) return null;
-
-  useLocalStorage("recplaysong", JSON.stringify(firstsong.songinfo)); //写入主页面加载完成第一次音乐播放
-  return firstsong.songinfo;
-}
-
-function spliceMusicLits(songlists: musicDetail[], first: musicDetail) {
-  const indexDBMusicLists = songlists.slice(0);
-  const index = songlists.slice(0).findIndex((song) => song.id === first.id);
-
-  if (index === -1) {
-    throw new Error("index:" + index);
-  }
-
-  const splicelists = indexDBMusicLists.splice(index, 1);
-  if (!splicelists.length) {
-    throw new Error("splice splicelists error:" + splicelists);
-  }
-
-  return indexDBMusicLists;
 }
 
 export function twoSearch(value: number, lyricsmap: Map<number, string>): [number, number] {
@@ -123,8 +77,15 @@ export function twoSearch(value: number, lyricsmap: Map<number, string>): [numbe
 
 export function watchMusicinfo(watchSources: Ref<musicDetail>, maxTime: Ref<number>) {
   watch(watchSources, (value) => {
+    console.log(value);
+
     if (value) {
       maxTime.value = value.dt;
     }
   });
+}
+
+export async function indexDBAllLists() {
+  const dexie = await dexieInstance();
+  return (await dexie.getAllSong()).map((indexdbsong) => indexdbsong.songinfo);
 }

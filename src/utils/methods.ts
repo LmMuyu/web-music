@@ -6,7 +6,8 @@ type RETTYPE =
   | "Null"
   | "Boolean"
   | "Undefined"
-  | "Function";
+  | "Function"
+  | "AsyncFunction";
 
 export function isType(type: any): RETTYPE {
   return Object.prototype.toString.call(type).match(/\[object (.+)\]/)?.[1]!;

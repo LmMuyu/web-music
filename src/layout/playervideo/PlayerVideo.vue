@@ -1,5 +1,5 @@
 <template>
-  <el-container class="w-full h-full">
+  <el-container style="height: 100vh" class="w-full">
     <el-container>
       <el-container class="h-full bg-white">
         <el-header height="50px" class="flex items-center">
@@ -8,8 +8,8 @@
             <span class="font-bold">{{ queryIsVid ? "视频" : "MV" }}详情</span>
           </div>
         </el-header>
-        <el-main style="width: 69.5vw; padding-top: 0" class="h-full">
-          <better-scroll ref="better" @hook:update="update" :open-h-render="false" class="h-full">
+        <el-main style="width: 69.5vw; padding-top: 0; overflow: hidden" class="h-full">
+          <better-scroll ref="better" @hook:update="update" :isminusviewposth="true" :open-h-render="false" class="h-full">
             <div class="root" ref="videobox" style="height: 84vh">
               <div ref="video" class="xgplayer-skin-customplay"></div>
             </div>
@@ -22,6 +22,7 @@
               :comp-id="COMP.Comment"
               :loading="false"
               :renderBS="false"
+              :ismainhidden="true"
             />
           </better-scroll>
         </el-main>
@@ -32,7 +33,7 @@
         <el-header height="50px" class="flex items-center" style="padding: 0">
           <span class="font-bold">相关推荐</span>
         </el-header>
-        <better-scroll :item-len="simiMvLists.length" :open-h-render="false">
+        <!-- <better-scroll :item-len="simiMvLists.length" :open-h-render="false">
           <video-lists
             :isVideo="queryIsVid"
             v-for="simimv in simiMvLists"
@@ -40,7 +41,7 @@
             :mvorvideo="simimv"
           >
           </video-lists>
-        </better-scroll>
+        </better-scroll> -->
       </asaync-suspense>
     </el-aside>
   </el-container>

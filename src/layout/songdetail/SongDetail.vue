@@ -1,5 +1,5 @@
 <template>
-  <el-container class="relative w-full h-full overflow-y-scroll bg-white song_container">
+  <el-container style="height:100vh" class="relative w-full  overflow-y-scroll bg-white song_container">
     <el-main class="absolute left-0 top-0 right-0">
       <SongBasicDetail @playerAll="playerAll" :playlist="playlistDetail" />
       <SongCollection :playlist-tracks="detailLists" />

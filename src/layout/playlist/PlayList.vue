@@ -27,7 +27,6 @@ const playListMainInfo = reactive({
 });
 
 const songInfo = computed<musicDetail>(store.getters["playlist/getSongInfo"]);
-
 const routePath = useWatchRoutePath();
 
 watchEffect(() => {

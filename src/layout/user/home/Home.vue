@@ -1,8 +1,11 @@
 <template>
   <ElContainer class="h-full bg-white">
-    <ElHeader :height="issinger ? '200px' : '100px'" class="flex items-center py-4">
+    <ElHeader
+      :height="issinger ? '200px' : !isself ? '144px' : '100px'"
+      class="flex items-center py-4"
+    >
       <div v-if="Object.keys(userinfo).length > 0 && !issinger" class="flex py-2">
-        <ElAvatar size="medium" :src="userinfo.avatarUrl" />
+        <ElAvatar size="default" :src="userinfo.avatarUrl" />
         <div>
           <span class="text-2xl px-2"> {{ userinfo.nickname }}的音乐库 </span>
         </div>
@@ -12,7 +15,7 @@
       </div>
     </ElHeader>
     <ElMain class="container_main">
-      <div v-if="!issinger" class="flex" style="height: 30vh">
+      <div v-if="!issinger && isself" class="flex" style="height: 30vh">
         <div class="w-1/3">
           <HomeLLikeMusic
             :id="songlist?.[0]?.id ?? 0"
@@ -66,9 +69,10 @@ import {
   simiSinger,
   albumSublist,
   mvSublist,
+  getUserDetail,
 } from "../../../api/user";
 import { transformArtistData } from "./hooks/Home";
-import { albumDateil, SingetInfo } from "./hooks/singer";
+import { albumDateil, deputyInformation, SingetInfo } from "./hooks/singer";
 
 import HomeAlbum from "./components/HomeAlbum.vue";
 import HomeVideo from "./components/HomeVideo.vue";
@@ -81,6 +85,7 @@ import HomeSingerInfo from "./components/HomeSingerInfo.vue";
 import HomeLLinkeLists from "./components/HomeLLinkeLists.vue";
 
 import { ElContainer, ElMain, ElHeader, ElAvatar } from "element-plus";
+import { transformUserData } from "../../login/useBroadcastChannel";
 
 const route = useRoute();
 const store = useStore();
@@ -95,6 +100,7 @@ const timelineVideo = ref([]);
 const songlist = ref<any[]>([]);
 const linkeLists = ref<musicDetail[]>([]);
 const uid = ref(route.query.uid as string);
+const isself = ref(ifIsSinger(route.query.isself));
 const contentComps = shallowRef<any>(HomeSongList);
 const issinger = ref(ifIsSinger(route.query.issinger));
 const selectTag = ref<"all" | "linke" | "sub" | "">("all");
@@ -189,6 +195,12 @@ function loginInfo(): Promise<{
 
         mvSublist().then((mvsublist) => {
           timelineVideo.value = mvsublist.data.data;
+        });
+      } else {
+        getUserDetail(uid.value).then((user) => {
+          const data = transformUserData(user.data.profile) as any;
+          data.deputyInformation = new deputyInformation(data.userinfoData);
+          userinfo.value = new SingetInfo(data);
         });
       }
 

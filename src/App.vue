@@ -1,7 +1,9 @@
 <template>
   <HtmlMain />
   <div class="absolute bottom-0 left-0 w-full">
-    <Audio :songinfo="songInfo" />
+    <AsayncSuspense>
+      <Audio></Audio>
+    </AsayncSuspense>
   </div>
 </template>
 
@@ -29,7 +31,7 @@ const circleRef = ref(true);
 
 function stopLoadAudioComp() {
   const RouteRLNL = useWatchRoutePath();
-  const excludeLists = ["/login", "/video", "/404", "/playlist"];
+  const excludeLists = ["/login", "/404", "/playlist"];
 
   watchEffect(() => {
     const s = excludeLists.indexOf(RouteRLNL.value.path) > -1 ? false : true;
@@ -97,8 +99,6 @@ router.beforeEach(async (to, from, next) => {
 
 store.dispatch("countriesCode");
 provide("circleRef", circleRef);
-
-const songInfo = computed<musicDetail>(store.getters["playlist/getSongInfo"]);
 
 window.addEventListener("mousedown", (e) => store.commit("emitMitt", ["*", e]), false);
 </script>

@@ -14,8 +14,10 @@ export default function HomeLLinkeListsPlay(linkes: Ref<musicDetail[]>) {
     watchstop = watchEffect(() => {
       if (linkes.value.length > 0) {
         if (store) {
-          store.commit("playlist/musiclists", linkes.value);
-          store.commit("playlist/setSongId", linkes.value[0].id);
+          console.log(store);
+          
+          // store.commit("playlist/musiclists", linkes.value);
+          store.commit("playlist/runPlayerFn", linkes.value[0].id);
         } else {
           console.error("store无值");
         }

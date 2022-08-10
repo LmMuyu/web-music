@@ -39,7 +39,7 @@ const renderSongs = computed(() => {
 function trnsfer(song: any) {
   return {
     id: song.id,
-    path: "/home/songs",
+    path: "/user/songs",
     subtitle: "作者：" + song.creator.nickname,
     subscribed: song.subscribed,
     coverImgUrl: song.coverImgUrl,

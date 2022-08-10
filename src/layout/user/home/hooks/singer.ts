@@ -24,8 +24,6 @@ export class SingetInfo {
   title: string;
 
   constructor(data: any) {
-    console.log(data);
-
     this.id = data.artist.id;
     this.uid = data?.user?.userId || data.artist.id;
     this.nickname = data?.user?.nickname || data.artist.name;
@@ -106,5 +104,18 @@ export class albumDateil {
     this.coverImgUrl = data.picUrl;
     this.createtime = formatTime(data.publishTime, "ymd");
     this.alias = data.alias;
+  }
+}
+
+export class deputyInformation {
+  eventCount: number;
+  isfollowed: boolean;
+  followeds: number;
+  follows: number;
+  constructor(data: any) {
+    this.eventCount = data.eventCount;
+    this.isfollowed = data.followed;
+    this.followeds = data.followeds;
+    this.follows = data.follows;
   }
 }
