@@ -19,6 +19,7 @@ export function checkStatus(key: string) {
     url: "/login/qr/check",
     params: {
       key,
+      timestamp: Date.now(),
     },
   });
 }

@@ -9,7 +9,11 @@ export async function loginStateus() {
   }
 
   try {
-    const httpRes = await request({ method: "post", url: "/login/status" });
+    const httpRes = await request({
+      method: "post",
+      url: "/login/status",
+    });
+    
     const data = httpRes.data;
     Promise.resolve(data).then((userdata) => {
       const data = userdata.data;

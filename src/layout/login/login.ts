@@ -14,8 +14,10 @@ export async function loginStatus(serveIslogin: boolean, account: any, profile: 
   }
 
   await dispatchWatchObserver(serveIslogin);
+
   if (serveIslogin) {
     const data = transformUserData(profile);
+    console.log(data);
     loginStoreSetInfo(data, true);
   } else {
     store.commit("login/switchStatus", false);

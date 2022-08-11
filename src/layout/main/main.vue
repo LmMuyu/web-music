@@ -54,6 +54,8 @@ function addEventResize() {
   window.addEventListener("resize", _resize, false);
 }
 
+console.log("index-aside-tags");
+
 onMounted(addEventResize);
 </script>
 

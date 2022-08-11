@@ -1,14 +1,14 @@
 <template>
   <HtmlMain />
   <div class="absolute bottom-0 left-0 w-full">
-    <AsayncSuspense>
+    <AsayncSuspense :openload="false">
       <Audio></Audio>
     </AsayncSuspense>
   </div>
 </template>
 
 <script setup lang="ts">
-import { provide, ref, computed, watchEffect, defineAsyncComponent } from "vue";
+import { provide, ref, watchEffect, defineAsyncComponent } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 
@@ -17,8 +17,8 @@ import HtmlMain from "./layout/main/Main.vue";
 import { loginStateus } from "./api/app/login";
 import { useWatchRoutePath } from "./utils/useWatchHost";
 
-import type { musicDetail } from "./utils/musicDetail";
 import { META } from "./routes/type/type";
+import { watchUserData } from "./layout/main/hooks/methods";
 
 const Audio = defineAsyncComponent(() => import("./components/player/Audio.vue"));
 
@@ -101,6 +101,8 @@ store.dispatch("countriesCode");
 provide("circleRef", circleRef);
 
 window.addEventListener("mousedown", (e) => store.commit("emitMitt", ["*", e]), false);
+
+store.commit("login/setWatchFn", watchUserData.storeWatchFn);
 </script>
 
 <style lang="scss">

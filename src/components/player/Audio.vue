@@ -124,7 +124,6 @@ const {
   preveMusic,
   seek: setseek,
   setImmdPlayLists,
-  initCurrentIndex,
   volume: setVolume,
   playSeek: seekTime,
   routeWatchStop,
@@ -216,16 +215,17 @@ function inputValue(pos: number) {
 
 function lastPlayRecord() {
   const islogin = computed(() => store.getters["login/getIslogin"]);
+  const storeUserData = computed<any>(store.getters["login/getUserData"]);
 
-  const stopLogin = watchEffect(() => {
-    if (islogin?.value) {
-      Promise.resolve(store.getters["login/getUserData"]()).then(async (storeUserData) => {
-        if (storeUserData?.data) {
-          const lastRecord = await userRecord(storeUserData.data.id, "0");
-          const lastRecordLists = lastRecord.data.allData.map((v) => new musicDetail(v.song));
-          store.commit("playlist/musiclists", lastRecordLists);
-        }
-      });
+  const stopLogin = watchEffect(async () => {
+    console.log(storeUserData.value);
+    if (islogin?.value && Object.keys(storeUserData.value).length > 0) {
+      if (storeUserData.value?.data) {
+        const lastRecord = await userRecord(storeUserData.value.data.id, "0");
+        const lastRecordLists = lastRecord.data.allData.map((v) => new musicDetail(v.song));
+        console.log(lastRecordLists);
+        store.commit("playlist/musiclists", lastRecordLists);
+      }
     }
   });
 

@@ -83,6 +83,7 @@ class login {
       },
 
       setUserInfo(state: STATETYPE, data: [Object, loginType]) {
+
         state.userdata = {
           data: data[0],
           type: data[1],
@@ -133,7 +134,6 @@ class login {
             if (argvs[1] === false) {
               state.commit("setUserInfo", [{}, "logout"]);
             }
-
             watchRunFn.value(argvs[1]);
             _resolve(true);
           }

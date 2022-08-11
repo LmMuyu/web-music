@@ -1,19 +1,26 @@
 <template>
-  <el-row style="background-color: #eaeaea" class="flex justify-center items-center w-full h-full">
-    <el-col :span="8" class="h-full relative">
-      <keep-alive>
-        <component :is="componentId"></component>
-      </keep-alive>
-      <Bookmark @switchLogin="switchLogin" class="absolute right-0 top-0 mt-4" />
-    </el-col>
-    <el-col :span="16" class="h-full py-2 bgimage"></el-col>
-  </el-row>
+  <el-container style="height: 100vh">
+    <el-main>
+      <el-row
+        style="background-color: #eaeaea"
+        class="flex justify-center items-center w-full h-full"
+      >
+        <el-col :span="8" class="h-full relative">
+          <keep-alive>
+            <component :is="componentId"></component>
+          </keep-alive>
+          <Bookmark @switchLogin="switchLogin" class="absolute right-0 top-0 mt-4" />
+        </el-col>
+        <el-col :span="16" class="h-full py-2 bgimage"></el-col>
+      </el-row>
+    </el-main>
+  </el-container>
 </template>
 <script setup lang="ts">
 import { shallowRef } from "@vue/reactivity";
 
 import { createAsComponent } from "../../utils/createAsComponent";
-import { ElRow, ElCol } from "element-plus";
+import { ElContainer, ElMain, ElRow, ElCol } from "element-plus";
 import Bookmark from "./components/Bookmark.vue";
 
 const MobilePhone = createAsComponent(() => import("./loginWay/mobilePhone/MobilePhone.vue"));

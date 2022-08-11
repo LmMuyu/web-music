@@ -10,6 +10,7 @@
         :scrollToEl="scrollToEl"
         :open-h-render="false"
         :item-len="musicItemList.length"
+        :isminusviewposth="true"
         :bs-options="{
           scrollbar: true,
           observeImage: true,

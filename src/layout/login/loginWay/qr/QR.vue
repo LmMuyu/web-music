@@ -9,10 +9,16 @@
   </div>
 </template>
 <script setup lang="ts">
-import { onUnmounted, ref } from "vue";
-import { getQrKey, checkStatus, getQrCreate } from "../../../../api/login/qrCodeLogin";
-import { ElImage, ElButton } from "element-plus";
+import { onUnmounted, ref, onDeactivated, onActivated } from "vue";
+import { useRouter } from "vue-router";
 
+import { setCookie } from "../../../../utils/request/response/result";
+import { getQrKey, checkStatus, getQrCreate } from "../../../../api/login/qrCodeLogin";
+
+import { ElImage, ElButton } from "element-plus";
+import { useLocalStorage } from "@vueuse/core";
+
+const router = useRouter();
 const qrbase64img = ref("");
 const qrcode = ref(0);
 let unikey = null;
@@ -41,21 +47,35 @@ function checkTimeoutQr() {
   timer = setTimeout(async () => {
     const res = await checkStatus(unikey);
 
-    loginQrCode(res.data.code);
+    loginQrCode(res.data.code, res.data.message);
+    const ch = check(res.data.code, res.data);
 
-    if (res.data.code === 800) {
-      clearTime();
-      return;
-    }
+    if (ch) return clearTime();
 
     clearTime();
     checkTimeoutQr();
   }, 5000);
 }
 
-function loginQrCode(code: number) {
+function check(code: number, data: any) {
+  if (code === 800) {
+    //二维码过期
+    return true;
+  } else if (code === 803) {
+    //授权登录成功
+    //写入cookie
+    setCookie({ cookie: data.cookie });
+    useLocalStorage("cookie", data.cookie);
+    Promise.resolve().then(() => router.replace("/index"));
+    return true;
+  } else {
+    return false;
+  }
+}
+
+function loginQrCode(code: number, mes: string) {
   qrcode.value = code;
-  console.log(code);
+  console.log(mes);
 }
 
 function checkCodeQr(res) {
@@ -69,9 +89,18 @@ function checkCodeQr(res) {
 
 function refreshQr() {
   clearTime();
-
   getQrCreate(unikey).then(checkCodeQr);
 }
+
+onDeactivated(() => {
+  console.log("onDeactivated");
+  clearTime();
+});
+
+onActivated(() => {
+  console.log("onActivated");
+  checkTimeoutQr();
+});
 
 onUnmounted(() => {
   console.log("clear");

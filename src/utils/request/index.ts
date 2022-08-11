@@ -1,13 +1,14 @@
-import axios, { AxiosInstance, CancelTokenSource } from "axios";
+import axios, { AxiosInstance } from "axios";
 
-import { tryAgainRequest, cancelHttpRequest, deleteHttpToken } from "./methods";
+import { tryAgainRequest } from "./methods";
 import useResponse from "./response";
 import useRequest from "./request";
 
-import type { AxiosRequestConfig } from "axios";
 import jsCookie from "js-cookie";
 import { sliceurl } from "./response/result";
 import { isType } from "../methods";
+
+import type { AxiosRequestConfig } from "axios";
 
 interface CONFIG_DEFAULT {
   defaults?: {
@@ -54,8 +55,7 @@ export default function request(config: AxiosRequestConfig) {
   const isget = (config.method ?? "GET").toLocaleUpperCase() === "GET";
 
   const instance = axios.create({
-    // baseURL: "http://120.27.135.200:3000/",
-    // baseURL: "http://localhost:3000",
+    // baseURL: "http://120.27.135.200:3000",
     baseURL: BASEURL,
     method: "GET",
     timeout: 30000,
@@ -94,9 +94,9 @@ export default function request(config: AxiosRequestConfig) {
     }
   );
 
-  return instance(
-    Object.assign({}, config, {
-      url: config.url + `${!!csrf_token ? "?csrf_token=" + csrf_token : ""}`,
-    } as AxiosRequestConfig)
-  );
+  const ass = Object.assign({}, config, {
+    url: config.url + `${!!csrf_token ? "?csrf_token=" + csrf_token : ""}`,
+  } as AxiosRequestConfig);
+
+  return instance(ass);
 }

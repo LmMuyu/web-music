@@ -375,6 +375,8 @@ const Howl = async (options: HOWLOPTIONS, ctx: compinstance) => {
     //在初始化前
     stopMusicLists = watchEffect(() => {
       if (musiclists.value.length > 0) {
+        console.log(musiclists);
+        
         palylists.value = [];
         setImmdPlayLists(musiclists.value);
         //第一首歌

@@ -109,21 +109,21 @@ export default defineComponent({
 
     function getContainerScrollHeight(c: HTMLElement) {
       fd.measure(async () => {
-        const tsh = [].reduce
-          .call(
-            c.children,
-            (hlist: number[], el: HTMLElement) => {
-              const eh = el.getBoundingClientRect().height;
+        const setList = [];
 
-              if (hlist.indexOf(eh) === -1) {
-                hlist.push(eh);
-              }
+        const tsh = [].reduce.call(
+          c.children,
+          (totalh: number, el: HTMLElement) => {
+            const rect = el.getBoundingClientRect();
+            const eh = rect.height;
 
-              return hlist;
-            },
-            []
-          )
-          .reduce((totalh: number, eh: number) => (totalh += eh), 0);
+            if (setList.indexOf(rect.y) === -1) {
+              setList.push(rect.y);
+              return (totalh += rect.height);
+            }
+          },
+          0
+        );
 
         if (allTotalHeightLists.indexOf(tsh) === -1) {
           allTotalHeightLists.push(tsh);
@@ -328,11 +328,11 @@ export default defineComponent({
     const stopRenderNode = watch(() => props.itemLen, renderNode);
 
     const scrCapHeight = computed(() => {
-      return Math.abs(capHeight.value - viewportHeight.value) + 100;
+      return Math.abs(capHeight.value - viewportHeight.value * (2 / 3)) + 100;
     });
     //修改滑动高度
     const scrollCapHeight = computed(() => {
-      return scrCapHeight.value + viewportHeight.value;
+      return scrCapHeight.value;
     });
 
     const toScrollTopStop = watch(

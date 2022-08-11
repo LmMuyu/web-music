@@ -26,7 +26,7 @@
     <div v-else class="w-full flex">
       <el-container
         v-if="shieldContainer(settConInfo.left?.subject)"
-        :style="{ width: settConInfo.left.width }"
+        :style="{ width: settConInfo.left.width, height: '100vh' }"
         class="relative"
       >
         <el-main
