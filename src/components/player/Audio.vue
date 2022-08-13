@@ -4,7 +4,7 @@
       @mouseenter="enterAudio"
       @mouseleave="leaveAudio"
       class="flex items-center h-full w-full px-4 relative bg-white z-50 audio_shadow"
-      v-show="!isLeaveSanSecBelow"
+      v-show="isLeaveSanSecBelow"
       ref="audioSlider"
     >
       <el-row class="flex content-center h-full w-full">
@@ -61,7 +61,7 @@
     </div>
   </transition>
   <div
-    v-if="isLeaveSanSecBelow"
+    v-if="!isLeaveSanSecBelow"
     @mouseenter="enterAudio"
     class="w-full h-4 absolute bottom-0 left-0 z-10"
   ></div>
@@ -80,13 +80,14 @@ import {
 } from "vue";
 import { useStore } from "vuex";
 
+import { AudioStatus } from ".";
 import AudioHow from "./Howler";
 import playerLists from "./playerlists";
 import dexieFn from "../../common/dexie";
-import { getMusicDetail, userRecord } from "../../api/playList";
 import { musicDetail } from "../../utils/musicDetail";
 import { musicPlayEndZero, sliderstyle } from "./methods";
 import { useLocalStorage } from "../../utils/useLocalStorage";
+import { getMusicDetail, userRecord } from "../../api/playList";
 
 //@ts-ignore
 import AudioAndVideoControls from "./components/AudioAndVideoControls.vue";
@@ -138,6 +139,7 @@ const {
   getCurrentInstance()
 );
 const playerlist = new playerLists();
+const AStatus = new AudioStatus();
 
 const musicPosTime = seekTime();
 volume.value = setVolume() * 100;
@@ -148,57 +150,43 @@ const audioPlayTime = computed(() => {
   return musicTime * 1000;
 });
 
-const controlAudioCompIf = computed(store.getters["getControlAudioCompIf"]);
-
-watchEffect(() => {
-  if (controlAudioCompIf.value === false) {
-    isLeaveSanSecBelow.value = controlAudioCompIf.value;
-  }
-});
-
 watch(volume, (volume) => setVolume(volume / 100));
 
+//判断Audio是不是默认显示
+AStatus.p.then((status: boolean) => {
+  isLeaveSanSecBelow.value = status;
+});
+
 function leaveTimeout() {
-  if (!controlAudioCompIf.value) {
-    clearAudioControlTimeout();
+  if (AStatus.status.value) {
+    leaveTimeout.clearAudioControlTimeout();
     return;
   }
 
   tiemr = setTimeout(() => {
-    isLeaveSanSecBelow.value = true;
+    isLeaveSanSecBelow.value = false;
   }, 1500);
 }
 
 function enterAudioActive() {
-  if (!controlAudioCompIf.value) {
+  if (AStatus.status.value) {
     return;
   }
-  isLeaveSanSecBelow.value = false;
-  clearAudioControlTimeout();
+
+  isLeaveSanSecBelow.value = true;
+  leaveTimeout.clearAudioControlTimeout();
 }
 
-function clearAudioControlTimeout() {
+leaveTimeout.clearAudioControlTimeout = function () {
   clearTimeout(tiemr);
   tiemr = null;
-}
-
-async function initShowAudioModule() {
-  (await dexie).first().then((first) => {
-    !first && controlAudioCompIf.value && (isLeaveSanSecBelow.value = true);
-  });
-}
-
-initShowAudioModule();
+};
 
 function enterAudio() {
   enterAudioActive();
 }
 
 function leaveAudio() {
-  if (!controlAudioCompIf.value) {
-    return;
-  }
-
   if (!islock.value) {
     leaveTimeout();
   }
@@ -218,12 +206,10 @@ function lastPlayRecord() {
   const storeUserData = computed<any>(store.getters["login/getUserData"]);
 
   const stopLogin = watchEffect(async () => {
-    console.log(storeUserData.value);
     if (islogin?.value && Object.keys(storeUserData.value).length > 0) {
       if (storeUserData.value?.data) {
         const lastRecord = await userRecord(storeUserData.value.data.id, "0");
         const lastRecordLists = lastRecord.data.allData.map((v) => new musicDetail(v.song));
-        console.log(lastRecordLists);
         store.commit("playlist/musiclists", lastRecordLists);
       }
     }
@@ -261,7 +247,7 @@ store.commit("playlist/setPlayerFn", async (mid: number) => {
 
     //唤醒Audio
     enterAudioActive();
-    leaveTimeout();
+    leaveAudio();
 
     if (!store.getters["login/getIslogin"]) {
       //写入indexDB

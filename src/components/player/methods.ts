@@ -1,6 +1,8 @@
 import { ComponentInternalInstance, computed, ref, Ref, watch, watchEffect } from "vue";
 import { userRecord } from "../../api/playList";
 import dexieInstance from "../../common/dexie";
+import { conversionItem } from "../../layout/playlist/hooks/methods";
+import { MatchItem } from "../../layout/playlist/type";
 import store from "../../store";
 import { musicDetail } from "../../utils/musicDetail";
 
@@ -77,8 +79,6 @@ export function twoSearch(value: number, lyricsmap: Map<number, string>): [numbe
 
 export function watchMusicinfo(watchSources: Ref<musicDetail>, maxTime: Ref<number>) {
   watch(watchSources, (value) => {
-    console.log(value);
-
     if (value) {
       maxTime.value = value.dt;
     }
@@ -88,4 +88,9 @@ export function watchMusicinfo(watchSources: Ref<musicDetail>, maxTime: Ref<numb
 export async function indexDBAllLists() {
   const dexie = await dexieInstance();
   return (await dexie.getAllSong()).map((indexdbsong) => indexdbsong.songinfo);
+}
+
+export function lyric(lyr: MatchItem): MatchItem {
+  lyr.lyc = lyr.lyc.replace(/(\[.+\])?/, "");
+  return conversionItem(lyr);
 }

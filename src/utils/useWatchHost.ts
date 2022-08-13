@@ -1,8 +1,9 @@
-import { ref, watchEffect } from "vue";
-import { RouteLocationNormalizedLoaded, useRoute } from "vue-router";
+import { ref, watchEffect, Ref } from "vue";
+import { useRoute } from "vue-router";
 import router from "../routes";
+import type { RouteLocationNormalizedLoaded } from "vue-router";
 
-export function useWatchRoutePath(callbck?: Function) {
+export function useWatchRoutePath(callbck?: (route: RouteLocationNormalizedLoaded) => void) {
   const RLNL = ref<Partial<RouteLocationNormalizedLoaded>>({});
   let route = useRoute();
   route = route ?? router.currentRoute.value;

@@ -35,7 +35,6 @@ watchEffect(() => {
   }
 });
 watchEffect(() => {
-  console.log(songInfo.value);
   if (Object.keys(songInfo.value).length > 0) {
     playListMainInfo.backgroundurl = songInfo.value.picUrl;
     playListMainInfo.nickName = songInfo.value.nickName;

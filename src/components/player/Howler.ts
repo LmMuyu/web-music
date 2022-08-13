@@ -1,6 +1,7 @@
 import {
   ComponentInternalInstance,
   computed,
+  nextTick,
   Ref,
   ref,
   watch,
@@ -11,13 +12,13 @@ import {
 import Play from "./Play";
 import store from "../../store";
 import dexie from "../../common/dexie";
-import { isType } from "../../utils/methods";
 import { getLyrics } from "../../api/playList";
 import filterDate from "../../utils/filterDate";
 import { musicDetail } from "../../utils/musicDetail";
 import { useRefNegate } from "../../utils/useRefNegate";
 import { useWatchRoutePath } from "../../utils/useWatchHost";
-import { indexDBAllLists, twoSearch, watchMusicinfo } from "./methods";
+import { indexDBAllLists, lyric, twoSearch, watchMusicinfo } from "./methods";
+import { MatchItem } from "../../layout/playlist/type";
 
 type compinstance = ComponentInternalInstance;
 
@@ -50,7 +51,10 @@ function firstSong(musiclist: musicDetail[]) {
 }
 
 function findMusicLists(musiclist: musicDetail[], id: number) {
-  return musiclist.find((musicDetail) => musicDetail.id === id);
+  const music = musiclist.find((musicDetail) => musicDetail.id === id);
+  store.commit("playlist/setSongInfo", music);
+
+  return music;
 }
 
 function async_p() {
@@ -74,6 +78,7 @@ const Howl = async (options: HOWLOPTIONS, ctx: compinstance) => {
   const playtime = ref(0);
   const maxTime = ref(0);
   const palylists = ref<musicDetail[]>([]);
+  let lyclists: MatchItem[] = [];
   let stopWatch: WatchStopHandle | null = null;
   const lyricsmap = new Map<number, string>();
   const { countRef: isplay, negate: changePlayIcon } = useRefNegate(autoplay);
@@ -173,24 +178,32 @@ const Howl = async (options: HOWLOPTIONS, ctx: compinstance) => {
     }
   }
 
-  function nextMusic() {
+  async function nextMusic() {
     currIndex += 1;
     if (currIndex > palylists.value.length - 1) {
       currIndex = 0;
     }
 
+    playSeek.clear();
     playtime.value = 0;
     playSrcSet(palylists.value[currIndex].id);
+
+    await nextTick();
+    play();
   }
 
-  function preveMusic() {
+  async function preveMusic() {
     currIndex -= 1;
     if (currIndex < 0) {
       currIndex = palylists.value.length - 1;
     }
 
+    playSeek.clear();
     playtime.value = 0;
     playSrcSet(palylists.value[currIndex].id);
+
+    await nextTick();
+    play();
   }
 
   //看一下是不是在播放中
@@ -209,6 +222,7 @@ const Howl = async (options: HOWLOPTIONS, ctx: compinstance) => {
     //获取歌词
     //@ts-ignore
     await musicFoundation(findMusicLists(palylists.value, id));
+
     nowPlayingMid = id;
     how.setSrc(createSrc(id));
   }
@@ -241,6 +255,7 @@ const Howl = async (options: HOWLOPTIONS, ctx: compinstance) => {
   function setIntervalGetSeek() {
     timeseek = setInterval(() => {
       const time = how.time_seek();
+      console.log(time);
 
       if (time === undefined) {
         console.log("歌曲播放时间undefined");
@@ -289,7 +304,6 @@ const Howl = async (options: HOWLOPTIONS, ctx: compinstance) => {
   };
 
   const seek = (pos: number) => {
-    console.log(pos);
     playSeek.clear();
     const sec = filterDate(pos, true) as string;
     console.log(sec);
@@ -345,14 +359,19 @@ const Howl = async (options: HOWLOPTIONS, ctx: compinstance) => {
 
   //获取歌词
   function setmaplyrics(lrc: string) {
-    const lrcworker = new Worker("src/worker/lrc.js");
-    lyricsmap.clear();
+    lyclists = [];
 
+    const lrcworker = new Worker("src/worker/lrc.js");
+
+    lyricsmap.clear();
     lrcworker.onmessage = function ({ data }) {
       if (data === "close") {
         lrcworker.terminate();
+        store.commit("playlist/setLyrics", lyclists);
       } else {
         lyricsmap.set(data.showtime, data.lrc);
+        const group = data.group;
+        lyclists.push(lyric(group));
       }
     };
 
@@ -375,8 +394,6 @@ const Howl = async (options: HOWLOPTIONS, ctx: compinstance) => {
     //在初始化前
     stopMusicLists = watchEffect(() => {
       if (musiclists.value.length > 0) {
-        console.log(musiclists);
-        
         palylists.value = [];
         setImmdPlayLists(musiclists.value);
         //第一首歌
@@ -391,10 +408,8 @@ const Howl = async (options: HOWLOPTIONS, ctx: compinstance) => {
     //并在初始化后第一首歌曲
     //@ts-ignore
     const first = firstSong(palylists.value);
-    console.log(first);
 
     options.musicinfoRef.value = first;
-    console.log(options.musicinfoRef);
 
     palylists.value.length > 0 && playSrcSet(first.id);
     initfirstmusic = true;
@@ -410,17 +425,17 @@ const Howl = async (options: HOWLOPTIONS, ctx: compinstance) => {
     maxTime,
     playSeek,
     palylists,
-    preveMusic,
     nextMusic,
+    preveMusic,
+    pairingPlayMid,
+    routeWatchStop,
+    stopWatchLogin,
     setImmdPlayLists,
     initCurrentIndex,
     filterDurationTime,
-    pairingPlayMid,
-    routeWatchStop,
     loop: how.set_loop,
-    stopWatchLogin,
-    existPlayerList: existPlayerList.bind(null, palylists.value),
     findMusicLists: findMusicLists.bind(null, palylists.value),
+    existPlayerList: existPlayerList.bind(null, palylists.value),
   };
 };
 

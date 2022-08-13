@@ -1,6 +1,8 @@
 import { reactive, ref } from "@vue/runtime-dom";
-import { Ref, watchEffect } from "vue";
+import { nextTick, Ref, watchEffect, WatchStopHandle } from "vue";
 import { commentMusic } from "../../api/playList";
+import { useLocalStorage } from "../../utils/useLocalStorage";
+import { useWatchRoutePath } from "../../utils/useWatchHost";
 
 type CommentsType = "music" | "mv" | "video";
 
@@ -78,5 +80,53 @@ export class VideoComments {
         }
       });
     });
+  }
+}
+
+export class AudioStatus {
+  status: Ref<boolean>;
+  p: Promise<unknown>;
+  private include: string[];
+  private _resolve: (value: unknown) => void;
+  private comeout: string[];
+  constructor() {
+    this.status = ref(false);
+    //这个数组是用来固定死Audio组件的，不让它伸回去/伸出来
+    this.include = ["/playlist", "/video"];
+    //同时在include和comeout数组的路由路径是不让伸出来
+    this.comeout = ["/video"];
+
+    this.defaultStatus();
+    this.sync();
+    this.watchRoute();
+  }
+
+  defaultStatus() {
+    const status = useLocalStorage("audiodefstatus").value;
+    if (this.status.value) {
+      this.status.value = status;
+    }
+  }
+
+  watchRoute() {
+    useWatchRoutePath(async (route) => {
+      const path = route.path;
+
+      if (this.include.indexOf(path) > -1) {
+        this.status.value = true;
+      } else {
+        this.status.value = false;
+      }
+
+      await nextTick();
+      const comeoutstatus = this.comeout.indexOf(path) > -1;
+      //用来控制Audio组件默认状态
+      this._resolve(!comeoutstatus);
+    });
+  }
+
+  sync() {
+    this._resolve = null;
+    this.p = new Promise((resolve) => (this._resolve = resolve));
   }
 }

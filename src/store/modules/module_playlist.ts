@@ -1,5 +1,6 @@
 import mitt, { Emitter } from "mitt";
 import { GetterTree, MutationTree, StoreOptions } from "vuex";
+import { MatchItem } from "../../layout/playlist/type";
 import { isType } from "../../utils/methods";
 import type { musicDetail } from "../../utils/musicDetail";
 
@@ -10,6 +11,7 @@ interface store {
   playlists: musicDetail[];
   playerFn: (id: number) => void;
   mitt: Emitter;
+  lyrics: MatchItem[];
 }
 
 export default class Playlist implements StoreOptions<store> {
@@ -33,6 +35,7 @@ export default class Playlist implements StoreOptions<store> {
       playlists: [],
       playerFn: null,
       mitt: mitt(),
+      lyrics: [],
     };
   }
 
@@ -79,6 +82,10 @@ export default class Playlist implements StoreOptions<store> {
           console.warn("state.playerFn为Null");
         }
       },
+
+      setLyrics(state, lyrics: MatchItem[]) {
+        state.lyrics = lyrics;
+      },
     };
   }
 
@@ -105,6 +112,8 @@ export default class Playlist implements StoreOptions<store> {
       getMusiclists(state) {
         return () => state.playlists;
       },
+
+      getLyrics: (state) => state.lyrics,
     };
   }
 }

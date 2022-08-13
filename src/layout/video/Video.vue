@@ -37,19 +37,19 @@
         </el-col>
       </el-row>
     </el-header>
-    <BetterScroll @pull-up-load="pullUpLoad" :open-upload="true" :open-h-render="false">
-      <card-row
-        v-if="!loadingData"
-        class="flex justify-center"
-        :col-item="4"
-        :playlist="selectData"
-      >
+    <BetterScroll
+      @pull-up-load="pullUpLoad"
+      :open-upload="true"
+      :open-h-render="false"
+      v-if="!loadingData"
+    >
+      <card-row class="flex justify-center" :col-item="4" :playlist="selectData">
         <template #default="{ custom }">
           <VideoBox titleclass="text-sm" :videoinfo="custom.playitem" :index="0"></VideoBox>
         </template>
       </card-row>
-      <Loading v-else />
     </BetterScroll>
+    <Loading v-else />
   </el-container>
   <video-all-group-select
     :selectId="selectId"

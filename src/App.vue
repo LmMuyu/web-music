@@ -8,14 +8,13 @@
 </template>
 
 <script setup lang="ts">
-import { provide, ref, watchEffect, defineAsyncComponent } from "vue";
+import { provide, ref, defineAsyncComponent } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 
 import HtmlMain from "./layout/main/Main.vue";
 
 import { loginStateus } from "./api/app/login";
-import { useWatchRoutePath } from "./utils/useWatchHost";
 
 import { META } from "./routes/type/type";
 import { watchUserData } from "./layout/main/hooks/methods";
@@ -28,18 +27,6 @@ const store = useStore();
 const router = useRouter();
 const linkType = ref<linkType>("info");
 const circleRef = ref(true);
-
-function stopLoadAudioComp() {
-  const RouteRLNL = useWatchRoutePath();
-  const excludeLists = ["/login", "/404", "/playlist"];
-
-  watchEffect(() => {
-    const s = excludeLists.indexOf(RouteRLNL.value.path) > -1 ? false : true;
-    store.commit("setControlAudioCompIf", s);
-  });
-}
-
-stopLoadAudioComp();
 
 function showContainerMainHidden(meta: META) {
   store.commit("setMainHidden", !!meta.mainhidden);

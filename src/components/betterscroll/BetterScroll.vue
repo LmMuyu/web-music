@@ -119,7 +119,9 @@ export default defineComponent({
 
             if (setList.indexOf(rect.y) === -1) {
               setList.push(rect.y);
-              return (totalh += rect.height);
+              return (totalh += eh);
+            } else {
+              return totalh;
             }
           },
           0
@@ -128,8 +130,6 @@ export default defineComponent({
         if (allTotalHeightLists.indexOf(tsh) === -1) {
           allTotalHeightLists.push(tsh);
         }
-
-        console.log(allTotalHeightLists);
 
         const maxH = Math.max(...allTotalHeightLists);
         capHeight.value = maxH;

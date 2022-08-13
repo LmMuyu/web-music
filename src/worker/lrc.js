@@ -2,10 +2,16 @@
 
 self.onmessage = function ({ data: lrc }) {
   const lrcreg = /\[(\d+):(\d+)\.(\d+)\](.+)/g
+  const lyctimereg = /\[(?<playTime>.+)\]\s?(?<lyc>.+)/;
   let regstr = null
+
 
   while ((regstr = lrcreg.exec(lrc)) !== null) {
     const lrcitems = Array.from(regstr)
+    const lycplaytime = lrcitems[0].match(lyctimereg)
+
+
+
     let showtime = 0
     let lrc = ""
 
@@ -26,7 +32,7 @@ self.onmessage = function ({ data: lrc }) {
     }
 
 
-    self.postMessage({ lrc, showtime })
+    self.postMessage({ lrc, showtime, group: lycplaytime.groups })
   }
 
   self.postMessage("close")

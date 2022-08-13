@@ -62,7 +62,6 @@ export default class playerLists {
     const lists = computed<musicDetail[]>(store.getters["playlist/getMusiclists"]);
 
     this.stopWatchPlayQueue = watchEffect(() => {
-      console.log(lists.value);
       this.data.value = lists.value;
     });
   }

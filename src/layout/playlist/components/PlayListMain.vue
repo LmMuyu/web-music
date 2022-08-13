@@ -60,15 +60,11 @@ import { useRoute } from "vue-router";
 import { onMounted, watch } from "vue";
 import { computed, nextTick, onUnmounted, ref, watchEffect, shallowRef } from "@vue/runtime-core";
 
-import { getLyrics } from "../../../api/playList";
-import { conversionItem } from "../hooks/methods";
 import { lyricNodeRect, clientHeight, distance } from "../hooks/data";
 import { createAsComponent } from "../../../utils/createAsComponent";
 
 import { ElContainer, ElMain, ElRow, ElCol, ElHeader } from "element-plus";
 import PlayLycs from "./PLayLycs.vue";
-
-import type { MatchItem } from "../type";
 
 const ContainerComments = createAsComponent(
   () => import("./PlayListHistory/components/Comments.vue")
@@ -95,7 +91,7 @@ const toScrollComments = route.params.toscroll;
 const lyricNode = shallowRef<null | HTMLElement>(null);
 const sectionNode = shallowRef<null | HTMLElement>(null);
 const musicItemList = ref<Map<number, any>>(new Map());
-const lycsLists = ref([]);
+const lycsLists = ref([]); //歌词
 const store = useStore();
 const ifhidden = ref(true);
 const comments = ref(null);
@@ -105,22 +101,6 @@ const container_main = ref(null);
 const puremusic = ref(false);
 const sliderH = ref(0);
 const banscroll = ref(false);
-
-function lycSplice(iterator: IterableIterator<RegExpMatchArray>) {
-  while (true) {
-    const matchItem: { groups: MatchItem } = iterator.next().value;
-    if (!matchItem) {
-      break;
-    }
-
-    matchItem.groups.lyc = matchItem.groups.lyc.replace(/(\[.+\])?/, "");
-
-    const conMusicItem = conversionItem(matchItem.groups);
-    musicItemList.value.set(conMusicItem.playTime, conMusicItem);
-  }
-
-  lycsLists.value = [...musicItemList.value.values()];
-}
 
 function compareMusic() {
   const songId = computed(store.getters["playlist/getSongId"]);
@@ -138,15 +118,6 @@ function compareMusic() {
 
 compareMusic();
 
-getLyrics(musicid).then(({ data }) => {
-  if (data.qfy && data.sfy) puremusic.value = true;
-
-  const lyrics = data.lrc.lyric as string;
-  const lrcReg = /\[(?<playTime>.+)\]\s?(?<lyc>.+)/g;
-  const iterator = lyrics.matchAll(lrcReg);
-  lycSplice(iterator);
-});
-
 async function childrenMapNode(childrenList: HTMLElement[]) {
   const len = childrenList ? childrenList.length : 0;
   clientHeight.value = (lyricNode.value && lyricNode.value.clientHeight) || 0;
@@ -162,6 +133,17 @@ async function childrenMapNode(childrenList: HTMLElement[]) {
     musicItemList.value.set(nodeid, musicItem);
   }
 }
+
+const lyrics = computed<any[]>(() => store.getters["playlist/getLyrics"]);
+
+const stoplycsList = watchEffect(async () => {
+  if (lyrics.value.length > 0) {
+    lycsLists.value = [];
+
+    await nextTick();
+    lycsLists.value = lyrics.value;
+  }
+});
 
 function transiateYPos(disty: number) {
   if (disty != undefined) {
@@ -250,6 +232,8 @@ onUnmounted(() => {
   observerlists.forEach((observe) => {
     console.log(observe.disconnect());
   });
+
+  stoplycsList();
 });
 </script>
 

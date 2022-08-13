@@ -1,13 +1,10 @@
-import { distance, gainValue, lyricNodeRect, clientHeight, index } from "./data";
+import { distance, gainValue, index } from "./data";
 import { promptbox } from "../../../components/promptBox";
 import { Ref } from "@vue/reactivity";
 import { userRecord } from "../../../api/playList";
 import store from "../../../store";
 
-import { useStorage } from "../../../utils/useStorage";
-import { throttle } from "../../../utils/throttle";
-
-import type { MatchItem, MatchItemList } from "../type";
+import type { MatchItem } from "../type";
 
 export function conversionItem(matchItem: MatchItem): MatchItem {
   const str = String(matchItem.playTime);
@@ -16,37 +13,11 @@ export function conversionItem(matchItem: MatchItem): MatchItem {
   const playTime = Number(timeArr[0]) * 60 + parseInt(timeArr[1]);
 
   return {
-    top: 0,
     playTime,
-    node: null,
     indexId: 0,
     lyc: matchItem.lyc,
     originTime: str.slice(0, str.indexOf(".")),
   };
-}
-
-export function _setScrollHeight(scrollH: number) {
-  lyricNodeRect.scrollShiHeight = scrollH;
-}
-
-export const lyricThrottle = throttle(lyricScroll, 16.6);
-
-let prev = 0;
-
-export function lyricScroll(event: Event) {
-  const el = event.target as HTMLElement;
-  const disty = el.scrollTop;
-
-  const diffy = disty - prev;
-  prev = disty;
-
-  if (distance.value < lyricNodeRect.scrollHeight / 3) {
-    distance.value += diffy;
-    _setScrollHeight(disty);
-  } else {
-    lyricNodeRect.scrollHeight / 2;
-  }
-  // ? distance.value + distance.value * 0.02
 }
 
 function Gain(ctx: AudioContext, gainvalue: Ref<number>): Promise<GainNode> {
@@ -80,21 +51,6 @@ export async function createAudioContext(buffer: ArrayBuffer) {
   }
 }
 
-let list: MatchItem[] = [];
-
-export function lycHighlightPos(top: number, itemlist: MatchItemList, curNodePos: number) {
-  const mid = clientHeight.value >>> 1;
-  const lists = !!list.length ? list : (list = [...itemlist.value.values()]);
-
-  if (top >= mid && curNodePos > index.value) {
-    if (!index.value) index.value = curNodePos;
-    const curIndex = curNodePos - index.value;
-
-    const item = lists[curIndex];
-    distance.value = item.top;
-  }
-}
-
 export const Ability = () => {
   index.value = 0;
   distance.value = 0;
@@ -106,16 +62,6 @@ export async function recordData(record: string, recordData: Ref<Object>) {
   const result = await userRecord(recording.userID, "0");
 
   recordData.value = result;
-}
-
-export async function recordStorage(recordInfoData: Ref<Object>) {
-  const localData = await useStorage("userinfo", "", "local", {
-    isGet: true,
-  });
-
-  if (!localData) return;
-
-  await recordData(localData.value, recordInfoData);
 }
 
 class sendAfterCloseDialogMitt {
