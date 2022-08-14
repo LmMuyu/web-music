@@ -67,7 +67,9 @@ function imgsrc(url: string) {
 }
 
 function routerQuery(item) {
-  if (item?.topath) {
+  if (item.query) {
+    return item.query;
+  } else if (item?.topath) {
     return { id: item.id };
   } else if (item.path) {
     return {

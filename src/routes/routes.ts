@@ -171,9 +171,16 @@ const routes: (RouteRecordRaw & {
   },
   {
     path: "/indexvideo",
-    name: "IndexvIdeo",
+    name: "IndexVideo",
     components: {
       default: () => import("../layout/video/Video.vue"),
+    },
+  },
+  {
+    path: "/indexmv",
+    name: "IndexMv",
+    components: {
+      default: () => import("../layout/mv/MV.vue"),
     },
   },
 ];

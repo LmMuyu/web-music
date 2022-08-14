@@ -5,9 +5,16 @@
       @mouseenter="showplayindex = index"
       @mouseleave="showplayindex = null"
     >
-      <ElImage :src="videoinfo.coverUrl + '?param=224y112'" class="rounded-md"> </ElImage>
+      <ElImage
+        :src="
+          videoinfo.coverUrl +
+          `?param=${videoinfo.x && videoinfo.y ? videoinfo.x + 'y' + videoinfo.y : '224y112'}`
+        "
+        class="rounded-md"
+      >
+      </ElImage>
       <router-link
-        :to="{ path: '/video', query: { vid: videoinfo.vid } }"
+        :to="{ path: '/video', query: Query(videoinfo) }"
         class="absolute top-0 left-0 w-full h-full flex items-center justify-center bj-show"
         v-if="showplayindex === index"
       >
@@ -24,22 +31,31 @@
     <div :class="titleclass" class="truncate py-2" style="color: #303133">
       {{ videoinfo.title }}
     </div>
-    <div style="color: #ebedf0" class="text-sm">
-      <span>by:</span>
+    <div>
       <router-link
-        :to="{
-          path: '/user/home',
-          query: {
-            uid: creator.userId,
-            isself: true,
-            issinger: true,
-          },
-        }"
-        class="text_hover"
-        v-for="(creator, index) in videoinfo.creator"
+        class="text-sm"
+        v-if="videoinfo.name"
+        :to="{ path: '/video', query: Query(videoinfo) }"
       >
-        {{ creator.userName + (index !== videoinfo.creator.length - 1 && "/") }}
+        {{ videoinfo.name }}
       </router-link>
+      <div style="color: #ebedf0" class="text-sm">
+        <span>by:</span>
+        <router-link
+          :to="{
+            path: '/user/home',
+            query: {
+              uid: creator.userId,
+              isself: true,
+              issinger: true,
+            },
+          }"
+          class="text_hover"
+          v-for="(creator, index) in videoinfo.creator"
+        >
+          {{ creator.userName + (index !== videoinfo.creator.length - 1 && "/") }}
+        </router-link>
+      </div>
     </div>
   </div>
 </template>
@@ -64,11 +80,15 @@ const props = defineProps({
   titleclass: String,
 });
 
-// enterPlayUrl
-
-// console.log(props.videoinfo);
-
 const showplayindex = ref(null);
+
+function Query(vi: any) {
+  if (vi.query) {
+    return vi.query;
+  } else {
+    return { vid: vi.vid };
+  }
+}
 </script>
 <style scoped lang="scss">
 .bj-show {

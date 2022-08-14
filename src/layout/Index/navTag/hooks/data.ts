@@ -8,11 +8,11 @@ export const contentTags = [
   {
     _id: "1001",
     tagname: "视频",
-    comname: "IndexvIdeo",
+    comname: "IndexVideo",
   },
   {
     _id: "1002",
     tagname: "MV",
-    comname: "MV",
+    comname: "IndexMv",
   },
 ];
