@@ -1,53 +1,51 @@
 <template>
-  <better-scroll>
-    <el-row
-      class="flex w-full py-3 px-6 relative"
-      v-for="(letter, index) in privateLetterList"
-      :key="letter.fromUser.uid"
-      @click.capture="
-        // transitionOffset($event, toPath.bind(null, index, letter.fromUser.uid)),
-        sendLetterUserInfo({
-          avatar: letter.fromUser.avatar,
-          nickname: letter.fromUser.nickname,
-          uid: letter.fromUser.uid,
-          lastTime: letter.lastTime,
-        })
-      "
-    >
-      <a href="javascript:void(;;)" class="absolute top-0 left-0 w-full h-full"></a>
-      <el-col :span="4" class="flex items-center">
-        <ElAvatar :src="letter.fromUser.avatar" />
-      </el-col>
-      <el-col :span="20" class="flex flex-col justify-between">
-        <div class="py-2">
-          <div class="w-full flex items-center justify-between">
-            <span class="text-sm" style="color: #2f4154">
-              {{ letter.fromUser.nickname }}
+  <el-row
+    class="flex w-full py-3 px-4 relative"
+    v-for="(letter, index) in privateLetterList"
+    :key="letter.fromUser.uid"
+    @click.capture="
+      // transitionOffset($event, toPath.bind(null, index, letter.fromUser.uid)),
+      sendLetterUserInfo({
+        avatar: letter.fromUser.avatar,
+        nickname: letter.fromUser.nickname,
+        uid: letter.fromUser.uid,
+        lastTime: letter.lastTime,
+      })
+    "
+  >
+    <a href="javascript:void(;;)" class="absolute top-0 left-0 w-full h-full"></a>
+    <el-col :span="4" class="flex items-center">
+      <ElAvatar :src="letter.fromUser.avatar" />
+    </el-col>
+    <el-col :span="20" class="flex flex-col justify-between">
+      <div class="py-2">
+        <div class="w-full flex items-center justify-between">
+          <span class="text-sm" style="color: #2f4154">
+            {{ letter.fromUser.nickname }}
+          </span>
+          <span class="text-xs whitespace-nowrap">
+            {{ letter.lastMsgTime }}
+          </span>
+        </div>
+        <div class="w-full flex justify-between relative">
+          <span
+            :style="{ color: letter.newMsgCount > 0 ? '#556574' : '#a6aeb6' }"
+            class="text-xs truncate text"
+            >{{ letter.lastMsg["msg"] }}</span
+          >
+          <div
+            v-if="!(letter.newMsgCount <= 0)"
+            class="flex justify-cneter items-center text-xs w-4 h-4 rounded-xl p-1 text-white"
+            style="background: #409eff"
+          >
+            <span :style="{ transform: `translateX(${spanLeft(letter.newMsgCount)})` }">
+              {{ letter.newMsgCount }}
             </span>
-            <span class="text-xs whitespace-nowrap">
-              {{ letter.lastMsgTime }}
-            </span>
-          </div>
-          <div class="w-full flex justify-between relative">
-            <span
-              :style="{ color: letter.newMsgCount > 0 ? '#556574' : '#a6aeb6' }"
-              class="text-xs truncate text"
-              >{{ letter.lastMsg["msg"] }}</span
-            >
-            <div
-              v-if="!(letter.newMsgCount <= 0)"
-              class="flex justify-cneter items-center text-xs w-4 h-4 rounded-xl p-1 text-white"
-              style="background: #409eff"
-            >
-              <span :style="{ transform: `translateX(${spanLeft(letter.newMsgCount)})` }">
-                {{ letter.newMsgCount }}
-              </span>
-            </div>
           </div>
         </div>
-      </el-col>
-    </el-row>
-  </better-scroll>
+      </div>
+    </el-col>
+  </el-row>
 </template>
 <script setup lang="ts">
 import { defineProps, defineEmits, ref, onMounted, nextTick } from "vue";
@@ -57,7 +55,6 @@ import { useSlidingTrack } from "../../../utils/useSlidingTrack";
 import { FocusTheUser } from "../hook/factory";
 
 import { ElAvatar, ElRow, ElCol } from "element-plus";
-import BetterScroll from "../../../components/betterscroll/BetterScroll.vue";
 
 import type { PropType } from "vue";
 import type { SendLetterInfoEmit } from "../type";

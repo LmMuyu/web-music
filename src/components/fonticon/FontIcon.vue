@@ -32,7 +32,7 @@ const fonticon = computed(() => {
   return `
       font-family:"iconfont" !important;
       font-size:${props.size}px;
-      color:${props.color};
+      color:${!!props.color ? props.color : "#607d8b"};
       font-style:normal;
       -webkit-font-smoothing: antialiased;
       -webkit-text-stroke-width: 0.2px;

@@ -1,6 +1,6 @@
 <template>
   <ElContainer class="py-4">
-    <ElHeader>
+    <ElHeader style="padding-left: 0">
       <el-row :align="'middle'">
         <el-col :span="15">
           <Text text="最新MV" />

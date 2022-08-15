@@ -1,3 +1,5 @@
+import { mylinked, videoDetailInfo } from "../../api/playervideo";
+import { mvSublist } from "../../api/user";
 import filterDate, { formatTime } from "../../utils/filterDate";
 import { fromPlayCount } from "../../utils/fromPlayCount";
 import { isType } from "../../utils/methods";
@@ -10,7 +12,7 @@ interface NickName {
 }
 
 export interface VIDEO_INFO {
-  vid: number;
+  vid: number | string;
   title: string;
   cover: string;
   poster: string;
@@ -21,11 +23,17 @@ export interface VIDEO_INFO {
   createtime: string;
   commentCount: number;
   artistNames: NickName[];
-  otherinfo: { step: number; linke: number };
+  otherinfo: {
+    collection: number;
+    linke: number;
+    share: number;
+    islinke: boolean;
+    iscollection: boolean;
+  };
   videoGroup: { id: number; name: string }[];
 }
 
-export function videoinfodata(data: any): VIDEO_INFO {
+export async function videoinfodata(data: any): Promise<VIDEO_INFO> {
   const videoinfo: VIDEO_INFO = {
     vid: null,
     videoname: "",
@@ -39,8 +47,11 @@ export function videoinfodata(data: any): VIDEO_INFO {
     commentCount: 0,
     cover: "",
     otherinfo: {
-      step: 0,
       linke: 0,
+      collection: 0,
+      share: 0,
+      islinke: false,
+      iscollection: false,
     },
     videoGroup: [],
   };
@@ -60,6 +71,15 @@ export function videoinfodata(data: any): VIDEO_INFO {
   videoinfo.vid = data.id || data.vid;
   videoinfo.cover = data.cover || data.coverUrl;
   videoinfo.videoGroup = data.videoGroup || [];
+  videoinfo.otherinfo.linke = data.praisedCount;
+  videoinfo.otherinfo.collection = data.subscribeCount;
+  videoinfo.otherinfo.share = data.shareCount;
+
+  const otherInfo = await isLinkCollect(videoinfo.vid as string);
+
+  for (const key in otherInfo) {
+    videoinfo.otherinfo[`is${key}`] = otherInfo[key];
+  }
 
   return videoinfo;
 }
@@ -76,4 +96,17 @@ class nickNameClass implements NickName {
     this.followed = data.followed;
     this.img1v1Url = data.avatarUrl || data.img1v1Url;
   }
+}
+
+export async function isLinkCollect(isid: string) {
+  const quantityInfo = await mvSublist();
+  const isRes = {
+    collection: false,
+    linke: false,
+  };
+
+  isRes.collection = quantityInfo.data.data.some((collect) => collect.vid === isid);
+  isRes.linke = (await videoDetailInfo(isid)).data.liked;
+
+  return isRes;
 }

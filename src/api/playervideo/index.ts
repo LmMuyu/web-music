@@ -1,6 +1,8 @@
 import request from "../../utils/request";
 
 export function mvVideoDetail(morvid: number | string, vorm: "vid" | "mid" = "mid") {
+  console.log(morvid);
+
   return request({
     url: vorm === "mid" ? "/mv/detail" : "/video/detail",
     params: {
@@ -93,6 +95,45 @@ export function allvideo(id: string) {
     url: "/related/allvideo",
     params: {
       id,
+    },
+  });
+}
+
+export function subVideo(vid: string, t: "1" | "0") {
+  return request({
+    method: "POST",
+    url: "/video/sub",
+    params: {
+      id: vid,
+      t,
+      timestamp: Date.now(),
+    },
+  });
+}
+
+export function mylinked() {
+  return request({
+    url: "/playlist/mylike",
+  });
+}
+
+export function videoDetailInfo(vid: string) {
+  return request({
+    url: "/video/detail/info",
+    params: {
+      vid,
+    },
+  });
+}
+
+export async function linked(threadId: string, t: 0 | 1, type: number) {
+  return request({
+    method: "post",
+    url: "/resource/like",
+    data: {
+      t,
+      type,
+      id: threadId,
     },
   });
 }

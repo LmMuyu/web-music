@@ -11,13 +11,13 @@ export function getSubScriptDynamic(lasttime: number = -1) {
   });
 }
 
-export async function postLinke(threadId: string, successFn: Function, t: 0 | 1) {
+export async function postLinke(threadId: string, successFn: Function, t: 0 | 1, type: number = 6) {
   const res = await request({
     method: "post",
     url: "/resource/like",
     data: {
       t,
-      type: 6,
+      type,
       threadId,
     },
   });

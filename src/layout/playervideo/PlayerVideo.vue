@@ -13,7 +13,12 @@
             <div class="root" ref="videobox" style="height: 84vh">
               <div ref="video" class="xgplayer-skin-customplay"></div>
             </div>
-            <video-info ref="compvideo" :videoinfo="videoinfo" />
+            <video-info
+              @linke="linke"
+              @collection="collection"
+              ref="compvideo"
+              :videoinfo="videoinfo"
+            />
             <player-commtent-container
               title="精彩评论"
               :size="10"
@@ -45,6 +50,18 @@
       </asaync-suspense>
     </el-aside>
   </el-container>
+
+  <el-dialog v-model="centerDialogVisible" width="40%" center>
+    <div class="h-full w-full flex justify-center items-center py-5">
+      <span>确定不再收藏该视频？</span>
+    </div>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="centerDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="dialogHeadle">确定</el-button>
+      </span>
+    </template>
+  </el-dialog>
 </template>
 <script setup lang="ts">
 import { useRoute, useRouter } from "vue-router";
@@ -53,19 +70,30 @@ import { nextTick, onMounted, onUnmounted, reactive, ref, watch, watchEffect } f
 import { videoinfodata, VIDEO_INFO } from ".";
 import playerVideo from "../../common/videoplayer";
 import { VideoComments } from "../../components/player";
-import { mvVideoDetail, mvPath, simiMv, playerVideoPath, allvideo } from "../../api/playervideo";
+import {
+  mvVideoDetail,
+  mvPath,
+  simiMv,
+  playerVideoPath,
+  allvideo,
+  subVideo,
+  linked,
+} from "../../api/playervideo";
 
 import VideoInfo from "./components/VideoInfo.vue";
 import VideoLists from "./components/VideoLists.vue";
 import FontIcon from "../../components/fonticon/FontIcon.vue";
-import { ElContainer, ElMain, ElAside, ElHeader } from "element-plus";
 import BetterScroll from "../../components/betterscroll/BetterScroll.vue";
 import AsayncSuspense from "../../components/suspense/AsayncSuspense.vue";
+import { ElContainer, ElMain, ElAside, ElHeader, ElDialog, ElButton } from "element-plus";
 import PlayerCommtentContainer from "../playlist/components/PlayListHistory/components/CommtentContainer.vue";
+import { promptbox } from "../../components/promptBox";
 
 enum COMP {
   "Comment" = "Comment",
 }
+
+type otherInfoKey = "collection" | "linke" | "share";
 
 let poster = "";
 
@@ -78,7 +106,8 @@ const router = useRouter();
 const videobox = ref(null);
 const simiMvLists = ref([]);
 const compvideo = ref<any>(null);
-const videoId = Number(route.query.id) || route.query.vid;
+const centerDialogVisible = ref(false);
+const videoId = Number(route.query.id) || route.query.vid || route.query.mid;
 const queryIsVid = Object.prototype.hasOwnProperty.call(route.query, "vid");
 
 //@ts-ignore
@@ -102,22 +131,23 @@ async function midSourcessFn(videodata: any) {
   const mvurldata = await mvPath(id, r.br);
 
   mvOrVideoPlayPath(mvurldata.data.data);
-  videoinfo.value = videoinfodata(videodata.data);
+  videoinfo.value = await videoinfodata(videodata.data);
 }
 
 async function vidSourcessFn(videodata: any) {
   ratio.value = videodata.data.resolutions;
-  videoinfo.value = videoinfodata(videodata.data);
+  videoinfo.value = await videoinfodata(videodata.data);
+
   mvOrVideoPlayPath((await playerVideoPath(videoId as string)).data.urls[0]);
 }
 
 if (!queryIsVid) {
   simiMv(videoId as number).then((simimv) => {
-    simiMvLists.value = simimv.data.mvs.map((mv) => videoinfodata(mv));
+    simiMvLists.value = simimv.data.mvs.map(async (mv) => await videoinfodata(mv));
   });
 } else {
   allvideo(videoId as string).then((simiVideo) => {
-    simiMvLists.value = simiVideo.data.data.map((video) => videoinfodata(video));
+    simiMvLists.value = simiVideo.data.data.map(async (video) => await videoinfodata(video));
   });
 }
 
@@ -163,6 +193,55 @@ let stop = watch(mvCommentModule.comments, async (lists) => {
   await nextTick();
   better.value.scrollHeightRefresh();
 });
+
+async function reqCollection(t: "1" | "0") {
+  //t : 1 为收藏,其他为取消收藏
+  const vid = videoId as string;
+
+  const sub = await subVideo(vid, t);
+  console.log(sub);
+}
+
+async function collection(key: otherInfoKey, status: boolean) {
+  if (queryIsVid) {
+    //已收藏
+    if (status) return (centerDialogVisible.value = true);
+
+    //未收藏
+    await reqCollection("1");
+    promptbox({ title: "视频已收藏" });
+    putVideoInfo(true, key);
+  }
+}
+
+async function dialogHeadle() {
+  centerDialogVisible.value = false;
+  await reqCollection("0");
+  promptbox({ title: "视频取消收藏成功" });
+  putVideoInfo(false, "collection");
+}
+
+//status:true为收藏成功，false为取消收藏或收藏失败
+function putVideoInfo(status: boolean, key: otherInfoKey) {
+  if (status) {
+    videoinfo.value.otherinfo[`is${key}`] = true;
+  } else {
+    videoinfo.value.otherinfo[`is${key}`] = false;
+  }
+}
+
+async function linke(key: otherInfoKey, status: boolean) {
+  const vid = videoId as string;
+  if (status) {
+    await linked(vid, 0, 5);
+    promptbox({ title: "已取消赞" });
+  } else {
+    await linked(vid, 1, 5);
+    promptbox({ title: "已赞" });
+  }
+
+  putVideoInfo(!status, key);
+}
 
 onMounted(async () => {
   playerVideoFn();

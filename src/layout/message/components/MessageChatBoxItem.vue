@@ -4,7 +4,7 @@
       <el-avatar :size="32" :src="fromUser.avatar"></el-avatar>
     </div>
     <div class="px-2 flex flex-col w-3/4" :class="!isfromuser && 'items-end'">
-      <pre class="text-xs py-2">2021:222</pre>
+      <pre class="text-xs py-2">{{ formatTime(messageInfo.time, "ymd_hms") }}</pre>
       <p
         style="word-wrap: break-word"
         class="text-sm text-left p-3 rounded-md"
@@ -23,6 +23,7 @@ import { ElAvatar } from "element-plus";
 import type { SendLetterInfoEmit } from "../type";
 
 import followLetterInfo from "../hook/followLetterInfo";
+import { formatTime } from "../../../utils/filterDate";
 
 const props = defineProps({
   messageInfo: {

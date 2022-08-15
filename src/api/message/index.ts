@@ -22,3 +22,13 @@ export async function getSendMsgUser(limit: number = 30) {
     params: { limit },
   });
 }
+
+export function historyComments(limit: number = 10, uid: number) {
+  return request({
+    url: "/msg/comments",
+    params: {
+      limit,
+      uid,
+    },
+  });
+}

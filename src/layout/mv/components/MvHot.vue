@@ -1,6 +1,6 @@
 <template>
   <ElContainer class="py-4">
-    <ElHeader>
+    <ElHeader style="padding-left: 0;">
       <Text text="热播MV"></Text>
     </ElHeader>
     <Lists :rootlist="hotlist"></Lists>

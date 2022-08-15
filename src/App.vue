@@ -2,7 +2,7 @@
   <HtmlMain />
   <div class="absolute bottom-0 left-0 w-full">
     <AsayncSuspense :openload="false">
-      <!-- <Audio></Audio> -->
+      <Audio></Audio>
     </AsayncSuspense>
   </div>
 </template>

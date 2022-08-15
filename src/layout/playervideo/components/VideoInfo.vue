@@ -4,11 +4,13 @@
     <div class="videoinfo flex items-center py-2">
       <font-icon class="videoinfo" size="14" icon="iconbofang1">
         <template #after>
-          <span class="text-xs">{{ videoinfo.playcount }} </span>
+          <div class="flex items-center">
+            <span class="text-xs pl-1">{{ videoinfo.playcount }} </span>
+          </div>
         </template>
       </font-icon>
       <span class="px-2 text-xs">•</span>
-      <span class="text-xs">{{ videoinfo.createtime }}</span>
+      <span class="text-xs">发布：{{ videoinfo.createtime }}</span>
     </div>
     <div v-if="videoinfo.videoGroup && videoinfo.videoGroup.length > 0" class="flex items-center">
       <el-tag
@@ -29,7 +31,7 @@
       <video-author
         v-if="Object.keys(videoinfo).length > 0"
         :videoAndUserInfo="videoinfo"
-        class="w-full"
+        class="w-full py-4"
       ></video-author>
       <subscribe
         class="w-full flex justify-end"
@@ -52,20 +54,45 @@
           {{ anAllTitle ? "展开" : "收起" }}
         </a>
       </div>
+
+      <div class="py-4">
+        <el-button
+          v-for="(other, key) in videoOtherInfo(videoinfo.otherinfo)"
+          :key="key"
+          @click="ctxEmit(otherIcon[key].event as 'collection' | 'linke' | 'share', key, videoinfo.otherinfo[`is${key}`])"
+          class="flex items-center px-4"
+          round
+        >
+          <FontIcon
+            size="20"
+            :color="videoinfo.otherinfo[`is${key}`] ? '#F56C6C' : ''"
+            :icon="has(otherIcon, key) && otherIcon[key].icon"
+          ></FontIcon>
+          <span class="px-2"
+            >{{
+              `${
+                videoinfo.otherinfo[`is${key}`] ? "已" + otherIcon[key].text : otherIcon[key].text
+              }(${other})`
+            }}
+          </span>
+        </el-button>
+      </div>
     </ElMain>
   </ElContainer>
 </template>
 <script setup lang="ts">
 import { computed, nextTick, PropType, ref, watchEffect } from "vue";
+import { useStore } from "vuex";
+import { has } from "lodash";
 
-import { isFollow } from "../../user/hooks";
-import { followUser } from "../../../api/playervideo";
 import { promptbox } from "../../../components/promptBox";
+import { followUser } from "../../../api/playervideo";
+import { isFollow } from "../../user/hooks";
 
-import { ElTag, ElContainer, ElHeader, ElMain } from "element-plus";
-import FontIcon from "../../../components/fonticon/FontIcon.vue";
-import Subscribe from "../../../components/subscribe/Subscribe.vue";
+import { ElTag, ElContainer, ElHeader, ElMain, ElButton } from "element-plus";
 import VideoAuthor from "../../../components/commentarea/CommentArea.vue";
+import Subscribe from "../../../components/subscribe/Subscribe.vue";
+import FontIcon from "../../../components/fonticon/FontIcon.vue";
 
 import type { VIDEO_INFO } from "../";
 
@@ -74,6 +101,8 @@ enum FollowInfo {
   "noFollow",
 }
 
+const ctxEmit = defineEmits(["collection", "linke", "share"]);
+
 const props = defineProps({
   videoinfo: {
     type: Object as PropType<VIDEO_INFO>,
@@ -81,10 +110,29 @@ const props = defineProps({
   },
 });
 
+const store = useStore();
+
 const watchTitleBoxHeight = ref(false);
 const anAllTitle = ref(false);
 const titlebox = ref(null);
 const subscribe = ref(false);
+const otherIcon = {
+  linke: {
+    text: "赞",
+    icon: "icondianzan_tuijian",
+    event: "linke",
+  },
+  collection: {
+    text: "收藏",
+    icon: "iconshoucang",
+    event: "collection",
+  },
+  share: {
+    text: "分享",
+    icon: "iconfenxiang",
+    event: "share",
+  },
+};
 
 class followReslut {
   handler: ((code: number, next: () => void) => void)[];
@@ -123,9 +171,17 @@ function anAllAndPackupTitle() {
 }
 
 async function subscribeFollow([follow, followid]) {
+  const islogin = store.getters["login/getIslogin"];
+
+  //有没有登录
+  if (!islogin) {
+    promptbox({ title: "请先登录！" });
+    return;
+  }
+
   const followRes = await followUser(
-    follow as FollowInfo.noFollow | FollowInfo.yesFollow,
-    followid
+    followid,
+    follow as FollowInfo.noFollow | FollowInfo.yesFollow
   );
   new followReslut(followRes.data.code, followRes.data.msg);
 }
@@ -139,6 +195,18 @@ function setSubscribe() {
 }
 
 setSubscribe();
+
+function videoOtherInfo(other: any) {
+  const newother = {} as typeof otherIcon;
+
+  for (const key in otherIcon) {
+    if (has(other, key)) {
+      newother[key] = other[key];
+    }
+  }
+
+  return newother;
+}
 
 const authorid = computed(() => {
   return props.videoinfo?.artistNames?.[0].id || 0;

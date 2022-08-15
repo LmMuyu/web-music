@@ -1,7 +1,7 @@
 <template>
-  <ElRow class="flex h-full overflow-hidden relative border_radius">
+  <ElRow class="flex h-full overflow-hidden relative">
     <ElCol :span="7" class="solide_border">
-      <message-user :letterList="letterList" @find-follow-mess="findFollowInfo" />
+      <MessageUserData :letterList="letterList" @find-follow-mess="findFollowInfo" />
     </ElCol>
     <ElCol class="w-full h-full absolute right-0 top-0 bg-white" :span="17">
       <MessageChatBox
@@ -19,13 +19,12 @@ import { computed, ref } from "@vue/reactivity";
 
 import { getFollowUserMessage, getSendMsgUser } from "../../api/message";
 import { FocusTheUser } from "./hook/factory";
-import LRU from "../explore/LRUCache";
 import followLetterInfo from "./hook/followLetterInfo";
 import letterDexie from "./hook/letterDexie";
 
 import MessageBackground from "./components/MessageBackground.vue";
 import MessageChatBox from "./components/MessageChatBox.vue";
-import MessageUser from "./components/MessageUser.vue";
+import MessageUserData from "./components/MessageUser.vue";
 import { ElRow, ElCol } from "element-plus";
 
 import type { SendLetterInfoEmit } from "./type";
@@ -125,15 +124,6 @@ const displayChatBox = computed(() => {
 });
 </script>
 <style scoped lang="scss">
-.border_radius {
-  box-shadow: 0 0 1px 2px #f5f6fa;
-  border-radius: 8px;
-
-  .solide_border {
-    border-right: 1px solid #f5f6fa;
-  }
-}
-
 .container {
   &:deep(.main_padding) {
     padding-top: 1.5rem !important;

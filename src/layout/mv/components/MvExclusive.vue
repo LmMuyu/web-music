@@ -1,6 +1,6 @@
 <template>
   <ElContainer class="py-4">
-    <ElHeader>
+    <ElHeader style="padding-left: 0;">
       <Text text="官方出品"></Text>
     </ElHeader>
     <Lists :rootlist="exclusivelist"></Lists>
