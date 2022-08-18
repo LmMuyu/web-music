@@ -11,6 +11,8 @@ import { onUnmounted, ref, watchEffect } from "@vue/runtime-core";
 import CardRow from "../../../components/card/CardRow.vue";
 import VideoBox from "../../../components/videobox/VideoBox.vue";
 
+type MyReturn<T> = T extends (...arg: any) => infer R ? R : never;
+
 const props = defineProps({
   rootlist: {
     type: Array,
@@ -18,7 +20,7 @@ const props = defineProps({
   },
 });
 
-const list = ref([]);
+const list = ref<MyReturn<typeof mvInfo>[]>([]);
 
 const stop = watchEffect(() => {
   if (props.rootlist.length) {

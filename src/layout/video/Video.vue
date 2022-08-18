@@ -75,15 +75,15 @@ import BetterScroll from "../../components/betterscroll/BetterScroll.vue";
 import { ElContainer, ElHeader, ElRow, ElCol, ElTag, ElButton } from "element-plus";
 
 let page = 0;
-const route = useRoute();
-const router = useRouter();
 const selectId = ref(0);
+const route = useRoute();
 const videotags = ref([]);
-const selectData = ref([]);
 const selectMap = ref({});
+const router = useRouter();
 const loadingData = ref(true);
 const showSelect = ref(false);
 const header = shallowRef(null);
+const selectData = ref<videoDetail[]>([]);
 const mountSelectAllDom = shallowRef(null);
 const selectTag = ref({ name: "", id: 0 });
 const selectModulePos = reactive({ x: 0, y: 0 });

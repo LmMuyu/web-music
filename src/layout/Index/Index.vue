@@ -4,7 +4,7 @@
       <IndexHeaderModule />
     </el-header>
     <el-main class="flex flex-col h-full scrollbar" style="padding: 16px 0 !important">
-      <AsayncSuspense class="px-2">
+      <AsyncSuspense class="px-2">
         <IndexBanner :banner-data="bannerImages" />
         <IndexRecommended />
         <IndexDiscover />
@@ -12,7 +12,7 @@
         <IndexHotsong />
         <IndexFeaturedSinger />
         <IndexHotPlaylists :playList="playList" />
-      </AsayncSuspense>
+      </AsyncSuspense>
     </el-main>
   </el-container>
 </template>

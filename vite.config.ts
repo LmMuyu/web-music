@@ -24,6 +24,7 @@ const aliasList = createAlias([
   ["api/", "src/api"],
   ["layout/", "src/layout"],
   ["vue", "vue/dist/vue.esm-bundler.js"],
+  ["assets/", "src/assets"],
 ]);
 
 export default ({ mode }: ConfigEnv): UserConfig => {

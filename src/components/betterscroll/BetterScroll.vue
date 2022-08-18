@@ -7,7 +7,7 @@
     <div
       class="content w-full"
       :style="{
-        height: (isminusviewposth ? scrollCapHeight : capHeight) + 'px',
+        height: (isminusviewposth ? scrollCapHeight() : capHeight) + 'px',
         ...style,
       }"
       :class="class"
@@ -182,6 +182,23 @@ export default defineComponent({
           BS
         );
 
+        let stopPoint = 0;
+
+        BS.on(
+          "mousewheelMove",
+          (position: any) => {
+            stopPoint = position.y;
+          },
+          BS
+        );
+
+        BS.on("mousewheelEnd", (mousewheel) => {
+          //已经到底部，停止滑动
+          if (mousewheel.directionY === 1) {
+            BS.scrollTo(0, stopPoint, 0, {});
+          }
+        });
+
         let prevhch = 0;
 
         function correction(y1: number) {
@@ -327,13 +344,39 @@ export default defineComponent({
 
     const stopRenderNode = watch(() => props.itemLen, renderNode);
 
-    const scrCapHeight = computed(() => {
-      return Math.abs(capHeight.value - viewportHeight.value * (2 / 3)) + 100;
-    });
     //修改滑动高度
-    const scrollCapHeight = computed(() => {
-      return scrCapHeight.value;
-    });
+    const scrollCapHeight = () => {
+      const diffh = diffCapHeight(Math.abs(capHeight.value - viewportHeight.value));
+      const totalh =
+        Math.abs(capHeight.value - viewportHeight.value * diffh) + (100 + Math.ceil(diffh) * 10);
+
+      //@ts-ignore
+      window.meibsh[window.meibsh.length - 1].push(totalh);
+      //@ts-ignore
+
+      console.log(window.meibsh);
+
+      return totalh;
+    };
+
+    function diffCapHeight(h: number) {
+      const vposth = viewportHeight.value;
+      const diffh = Math.floor(h / vposth) / 3;
+
+      //@ts-ignore
+
+      if (!window.meibsh) {
+        //@ts-ignore
+
+        window.meibsh = [];
+      }
+
+      //@ts-ignore
+
+      window.meibsh.push([vposth, diffh]);
+
+      return diffh > 1 ? 1 : diffh;
+    }
 
     const toScrollTopStop = watch(
       () => props.scrollToEl,
@@ -347,11 +390,13 @@ export default defineComponent({
       nextTick(() => {
         //@ts-ignore
         const el = ctx.parent.ctx["$el"];
+
         const clientHeight = el.clientHeight;
 
-        el && (viewportHeight.value = clientHeight)
-          ? clientHeight
-          : document.documentElement.clientHeight;
+        if (el) {
+          viewportHeight.value =
+            clientHeight > 0 ? clientHeight : document.documentElement.clientHeight;
+        }
       });
 
       await nextTick();

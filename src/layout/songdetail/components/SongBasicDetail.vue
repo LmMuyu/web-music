@@ -2,9 +2,9 @@
   <el-row>
     <el-col :span="4" class="rounded-md">
       <el-image
-        class="h-full w-full"
+        class="w-56 h-56"
         fit="contain"
-        :src="playlist.backgroundUrlImage + '?param=256y256'"
+        :src="playlist.backgroundUrlImage + '?param=224y224'"
       ></el-image>
     </el-col>
     <el-col class="basic_detail px-6" :span="17">

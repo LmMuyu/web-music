@@ -4,14 +4,15 @@
       <el-avatar :size="32" :src="fromUser.avatar"></el-avatar>
     </div>
     <div class="px-2 flex flex-col w-3/4" :class="!isfromuser && 'items-end'">
-      <pre class="text-xs py-2">{{ formatTime(messageInfo.time, "ymd_hms") }}</pre>
-      <p
+      <span style="color: #303133" class="text-xs"> {{ fromUser.nickname }}</span>
+      <span
         style="word-wrap: break-word"
-        class="text-sm text-left p-3 rounded-md"
+        class="text-sm text-left p-3 rounded-md my-2"
         :style="{ backgroundColor: isfromuser ? '#dcf3fe' : '#F2F6FA' }"
       >
         {{ messageInfo.letterMes.msg }}
-      </p>
+      </span>
+      <span class="text-xs">{{ formatTime(messageInfo.time, "ymd_hms") }}</span>
     </div>
   </div>
 </template>
@@ -39,8 +40,6 @@ const props = defineProps({
     required: true,
   },
 });
-
-console.log(props.messageInfo);
 
 const putmsg = computed(() => {
   return function (str: string) {

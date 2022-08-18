@@ -1,69 +1,109 @@
 <template>
-  <ElContainer class="w-full h-full bg-white">
-    <ElHeader height="40px">
-      <header-type
-        :keywordlists="typekeyword"
-        :type="type ? type : '单曲'"
-        @selectType="selectKeyword"
-      />
-    </ElHeader>
-    <ElMain
-      class="relative pt-4"
-      :style="{
-        overflow: hidden ? 'hidden' : 'auto',
-      }"
-      style="padding: 0 !important"
-    >
-      <AsayncSuspense>
-        <component
-          @click-refresh="() => selectKeyword(type)"
-          :is="componentId"
-          :data="searchtype.data"
-          :artistlist="singerLists"
-        ></component>
-      </AsayncSuspense>
+  <ElContainer class="bg-white" style="height: 100vh">
+    <ElMain style="overflow: hidden">
+      <el-tabs v-model="activeName" @tab-click="handleClick">
+        <el-tab-pane label="单曲" name="song">
+          <AsyncSuspense>
+            <DisplaySongSearch :data="searchData.song.data">
+              <Pagination
+                @currpage="currPage"
+                :total="searchData.song.total"
+                :count="searchData.song.count"
+                v-if="LIMIT_MAX <= searchData.song.total"
+              />
+            </DisplaySongSearch>
+          </AsyncSuspense>
+        </el-tab-pane>
+        <el-tab-pane label="专辑" name="album">
+          <AsyncSuspense>
+            <DisplayAlbum :data="searchData.album.data">
+              <Pagination
+                @currpage="currPage"
+                :total="searchData.album.total"
+                :count="searchData.album.count"
+                v-if="LIMIT_MAX <= searchData.album.total"
+              />
+            </DisplayAlbum>
+          </AsyncSuspense>
+        </el-tab-pane>
+        <el-tab-pane label="歌手" name="singer">
+          <AsyncSuspense>
+            <DisplaySinger :data="searchData.singer.data">
+              <Pagination
+                @currpage="currPage"
+                :total="searchData.singer.total"
+                :count="searchData.singer.count"
+                v-if="LIMIT_MAX <= searchData.singer.total"
+              />
+            </DisplaySinger>
+          </AsyncSuspense>
+        </el-tab-pane>
+        <el-tab-pane label="歌单" name="playlist">
+          <AsyncSuspense>
+            <DisplayPlaylist :data="searchData.playlist.data">
+              <Pagination
+                @currpage="currPage"
+                :total="searchData.playlist.total"
+                :count="searchData.playlist.count"
+                v-if="LIMIT_MAX <= searchData.playlist.total"
+              />
+            </DisplayPlaylist>
+          </AsyncSuspense>
+        </el-tab-pane>
+        <el-tab-pane label="视频" name="video">
+          <AsyncSuspense>
+            <DisplayVideo :data="searchData.video.data">
+              <Pagination
+                @currpage="currPage"
+                :total="searchData.video.total"
+                :count="searchData.video.count"
+                v-if="LIMIT_MAX <= searchData.video.total"
+              />
+            </DisplayVideo>
+          </AsyncSuspense>
+        </el-tab-pane>
+        <el-tab-pane label="MV" name="mv">
+          <MvLists :rootlist="searchData.mv.data"> </MvLists>
+        </el-tab-pane>
+        <el-tab-pane label="用户" name="user">
+          <AsyncSuspense>
+            <DisplayUser :data="searchData.user.data">
+              <Pagination
+                @currpage="currPage"
+                :total="searchData.user.total"
+                :count="searchData.user.count"
+                v-if="LIMIT_MAX <= searchData.user.total"
+              />
+            </DisplayUser>
+          </AsyncSuspense>
+        </el-tab-pane>
+      </el-tabs>
     </ElMain>
   </ElContainer>
 </template>
 <script setup lang="ts">
-import { onUnmounted, reactive, ref, shallowRef, watch } from "vue";
-import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
+import { defineAsyncComponent, reactive, ref, onActivated } from "vue";
+import { onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
 
 import { cloudSearch } from "../../api/displaysearchreult";
+import { PlayList, User } from ".";
 
-import { ElContainer, ElMain, ElHeader } from "element-plus";
-import HeaderType from "./components/HeaderType.vue";
-import AsayncSuspense from "../../components/suspense/AsayncSuspense.vue";
-import DisplaySongSearch from "./components/DisplaySongSearch.vue";
-import Loading from "../../components/svgloading/SvgLoading.vue";
-import LoadError from "../../components/loaderror/LoadError.vue";
-import SingerArtist from "../user/home/components/HomeArtist.vue";
-import DisplayAlbum from "./components/DisplayAlbum.vue";
-import DisplayMv from "./components/DisplayMv.vue";
+import { ElContainer, ElMain, ElTabPane, ElTabs } from "element-plus";
+import Pagination from "./components/Pagination.vue";
 
-import LRU from "../explore/LRUCache";
-import { musicDetail } from "../../utils/musicDetail";
 import { transformArtistData } from "../user/home/hooks/Home";
+import { musicDetail } from "../../utils/musicDetail";
 
-const route = useRoute();
-const currentPage = ref(1);
-const componentId = shallowRef(Loading);
-const hidden = ref(false);
-const liststype = new Map();
+import type { TabsPaneContext } from "element-plus";
+import { videoDetail } from "../video/hooks/data";
 
-const searchtype = reactive({
-  data: [],
-  type: "",
-});
-
-const lru = new LRU();
-const countpages = ref();
-let requestType = null;
-const keyword = ref(route.query.keyword as string);
-const type = ref(route.query.type as string);
-const router = useRouter();
-const singerLists = ref([]);
-let frist = false;
+const MvLists = defineAsyncComponent(() => import("../mv/components/Lists.vue"));
+const DisplayUser = defineAsyncComponent(() => import("./components/DisplayUser.vue"));
+const DisplayAlbum = defineAsyncComponent(() => import("./components/DisplayAlbum.vue"));
+const DisplayVideo = defineAsyncComponent(() => import("./components/DisplayVideo.vue"));
+const DisplaySinger = defineAsyncComponent(() => import("./components/DisplaySinger.vue"));
+const DisplayPlaylist = defineAsyncComponent(() => import("./components/DisplayPlaylist.vue"));
+const DisplaySongSearch = defineAsyncComponent(() => import("./components/DisplaySongSearch.vue"));
 
 const typekeyword = {
   1: "单曲",
@@ -75,36 +115,117 @@ const typekeyword = {
   1014: "视频",
 };
 
-//工具函数
+const english = {
+  单曲: "song",
+  专辑: "album",
+  歌手: "singer",
+  歌单: "playlist",
+  用户: "user",
+  MV: "mv",
+  视频: "video",
+};
 
-const findTypeKey = (map: Map<string, string>, type: string) =>
-  map.has(type) ? map.get(type) : -1;
-const setTypeKey = (map: Map<string, string>, type: string, value: string) => map.set(type, value);
-const delTypeKey = (map: Map<string, string>, type: string) => map.has(type) && map.delete(type);
+const LIMIT_MAX = 30;
+const route = useRoute();
+const router = useRouter();
+const type = ref(route.query.type as string);
+const keyword = ref(route.query.keyword as string);
 
-class hiddenComps {
-  private comps: any[];
-  constructor() {
-    this.comps = [DisplaySongSearch, DisplayMv];
-  }
+const activeName = ref(english[type.value]);
+const searchData = reactive({
+  song: {
+    data: [],
+    total: 0,
+    count: 0,
+  },
+  album: {
+    data: [],
+    total: 0,
+    count: 0,
+  },
+  singer: {
+    data: [],
+    total: 0,
+    count: 0,
+  },
+  playlist: {
+    data: [],
+    total: 0,
+    count: 0,
+  },
+  video: {
+    data: [],
+    total: 0,
+    count: 0,
+  },
+  mv: {
+    data: [],
+    total: 0,
+    count: 0,
+  },
+  user: {
+    data: [],
+    total: 0,
+    count: 0,
+  },
+});
 
-  someApply(comp) {
-    return this.comps.some((includecomp) => includecomp == comp);
+function handleClick(tab: TabsPaneContext | { props: { name: string; label: string } }) {
+  console.log(tab.props.name);
+
+  goRouterPath(tab.props.label);
+  const cs_p = cloudSearch(keyword.value, valuetokey.get(tab.props.label), LIMIT_MAX);
+
+  if (tab.props.name === "album") {
+    cs_p.then((data) => {
+      searchData.album.count = LIMIT_MAX;
+      searchData.album.total = data.data.result.albumCount;
+      searchData.album.data = data.data.result.albums;
+    });
+  } else if (tab.props.name === "singer") {
+    cs_p.then((data) => {
+      searchData.singer.count = LIMIT_MAX;
+      searchData.singer.total = data.data.result.artistCount;
+      searchData.singer.data = data.data.result.artists.map((artist) =>
+        transformArtistData(artist)
+      );
+    });
+  } else if (tab.props.name === "playlist") {
+    cs_p.then((data) => {
+      searchData.playlist.count = LIMIT_MAX;
+      searchData.playlist.total = data.data.result.playlistCount;
+      searchData.playlist.data = data.data.result.playlists.map(
+        (playlist) => new PlayList(playlist)
+      );
+    });
+  } else if (tab.props.name === "video") {
+    cs_p.then((data) => {
+      searchData.video.count = LIMIT_MAX;
+      searchData.video.total = data.data.result.videoCount;
+      searchData.video.data = data.data.result.videos.map((video) => new videoDetail(video));
+    });
+  } else if (tab.props.name === "mv") {
+    cs_p.then((data) => {
+      searchData.mv.count = LIMIT_MAX;
+      searchData.mv.total = data.data.result.mvCount;
+      searchData.mv.data = data.data.result.mvs;
+    });
+  } else if (tab.props.name === "user") {
+    cs_p.then((data) => {
+      searchData.user.count = LIMIT_MAX;
+      searchData.user.total = data.data.result.userprofileCount;
+      searchData.user.data = data.data.result.userprofiles.map((user) => new User(user));
+    });
+  } else if (tab.props.name === "song") {
+    cs_p.then((data) => {
+      searchData.song.total = data.data.result.songCount;
+      searchData.song.count = LIMIT_MAX;
+      musicSongs(data.data.result.songs);
+    });
+  } else {
+    console.error("没有找到对应的type的ID");
   }
 }
-
-const isHiddenComp = (comp) => new hiddenComps().someApply(comp);
-
-//模块函数
-const stopWatchComp = watch(componentId, (comp) => {
-  if (isHiddenComp(comp)) {
-    if (componentId.value) {
-      hidden.value = true;
-    }
-  } else {
-    hidden.value = false;
-  }
-});
 
 function mappingmap(keyword: typeof typekeyword) {
   const keytovalue = new Map(),
@@ -121,136 +242,51 @@ function mappingmap(keyword: typeof typekeyword) {
   };
 }
 
-const { keytovalue, valuetokey } = mappingmap(typekeyword);
+const { valuetokey } = mappingmap(typekeyword);
 
 function musicSongs(data: any[]) {
-  searchtype.type = "单曲";
-  searchtype.data = data.map((song) => new musicDetail(song));
-  componentId.value = DisplaySongSearch;
+  searchData.song.data = data.map((song) => new musicDetail(song));
 }
 
-function musicSinger(data: any[]) {
-  searchtype.type = "歌手";
-  singerLists.value = data.map((singer) => transformArtistData(singer));
-  console.log(singerLists.value);
-  componentId.value = SingerArtist;
-}
+handleClick({
+  props: {
+    name: english[type.value],
+    label: type.value,
+  },
+});
 
-function musicAlbum(data: any[]) {
-  searchtype.type = "专辑";
-  searchtype.data = data;
-  componentId.value = DisplayAlbum;
-}
-
-function musicMv(data: any[]) {
-  searchtype.type = "MV";
-  searchtype.data = data;
-  componentId.value = DisplayMv;
-}
-
-function routerPush(type: string) {
-  router.push({
-    path: "/searchres",
-    query: {
-      keyword: keyword.value,
-      type,
-    },
+function currPage(page: number) {
+  cloudSearch(keyword.value, valuetokey.get(type), LIMIT_MAX, page).then((data) => {
+    searchData.song.total = data.data.result.songCount;
+    searchData.song.count = LIMIT_MAX;
+    musicSongs(data.data.result.songs);
   });
 }
 
-function selectKeyword(selecttype: string) {
-  if (selecttype === type.value && frist) return (frist = true);
+function goRouterPath(labeltype: string) {
+  router.replace({
+    path: "/searchres",
+    query: {
+      keyword: keyword.value,
+      type: labeltype,
+    },
+  });
 
-  const classift = valuetokey.get(selecttype);
-  if (!classift) return console.log(classift + "无值");
-
-  const key = selecttype + "_" + currentPage.value;
-  requestType = selecttype;
-
-  const lrudata = lru.get(key);
-
-  routerPush(selecttype);
-  if (lrudata !== -1) {
-    searchResult(lrudata.value, true);
-    return;
-  }
-
-  delTypeKey(liststype, requestType);
-  componentId.value = Loading;
-  cloudSearch(keyword.value, classift).then((res) => searchResult(res.data.result));
-}
-
-selectKeyword(type.value);
-
-async function searchResult(resultdata: any[], isget?: boolean) {
-  try {
-    const litstype = findTypeKey(liststype, requestType);
-    const lists = searchResultLists(
-      requestType,
-      litstype === -1
-        ? resultdata
-        : {
-            [litstype]: resultdata,
-          }
-    );
-
-    if (!lists) {
-      throw new Error("lists:为undefined");
-    }
-
-    if (!isget) {
-      const key = requestType + "_" + currentPage.value;
-      lru.put(key, lists);
-    }
-  } catch (error) {
-    console.log(error);
-    componentId.value = LoadError as any;
-  }
-}
-
-function searchResultLists(type: string, resultdata: Object) {
-  let list = null;
-  searchtype.data = [];
-
-  switch (type) {
-    case "单曲":
-      list = resultdata["songs"];
-      musicSongs(list);
-      setTypeKey(liststype, requestType, "songs");
-      break;
-    case "歌手":
-      list = resultdata["artists"];
-      musicSinger(list);
-      setTypeKey(liststype, requestType, "artists");
-      break;
-    case "专辑":
-      list = resultdata["albums"];
-      countpages.value = resultdata["albumCount"];
-      setTypeKey(liststype, requestType, "albums");
-
-      musicAlbum(list);
-      break;
-    case "MV":
-      list = resultdata["mvs"];
-      countpages.value = resultdata["mvCount"];
-      setTypeKey(liststype, requestType, "mvs");
-      musicMv(list);
-      break;
-    default:
-      throw new Error(`无法找到对应${type}名称组件`);
-  }
-
-  return list;
+  type.value = labeltype;
 }
 
 //生命周期
-onUnmounted(() => {
-  stopWatchComp();
-});
 
-onBeforeRouteLeave((grouproute) => {
-  if (grouproute.path === route.path) {
-    componentId.value = Loading;
+onActivated(() => {
+  type.value = route.query.type as string;
+  keyword.value = route.query.keyword as string;
+
+  for (const key in searchData) {
+    if (Object.prototype.hasOwnProperty.call(searchData, key)) {
+      searchData[key].data = [];
+      searchData[key].total = 0;
+      searchData[key].count = 0;
+    }
   }
 });
 

@@ -1,22 +1,30 @@
 <template>
   <div class="h-full flex items-center justify-center">
-    <div class="relative">
+    <div class="relative" v-if="qrcode !== 802">
       <el-image class="w-44 h-44" :src="qrbase64img"></el-image>
       <div v-if="qrcode === 800" class="make flex items-center justify-center">
-        <el-button @click="refreshQr" plain> 点击刷新 </el-button>
+        <el-button @click="refreshQr" plain class="flex flex-col">
+          <span class="py-2">点击刷新</span>
+          <span class="text-xs" style="color: #303133"> 二维码已过期 </span>
+        </el-button>
       </div>
+    </div>
+    <div v-else class="flex flex-col items-center justify-center">
+      <img class="w-11 h-11" src="../../../../assets/svg/sourcess.svg" />
+      <span class="text-xs py-4" style="color: #303133">扫码成功，等待授权</span>
     </div>
   </div>
 </template>
 <script setup lang="ts">
 import { onUnmounted, ref, onDeactivated, onActivated } from "vue";
+import { useLocalStorage } from "@vueuse/core";
 import { useRouter } from "vue-router";
 
 import { setCookie } from "../../../../utils/request/response/result";
 import { getQrKey, checkStatus, getQrCreate } from "../../../../api/login/qrCodeLogin";
 
 import { ElImage, ElButton } from "element-plus";
-import { useLocalStorage } from "@vueuse/core";
+import { login } from "../../../../api/app/login";
 
 const router = useRouter();
 const qrbase64img = ref("");
@@ -26,15 +34,12 @@ let unikey = null;
 getQrKey()
   .then((res) => {
     unikey = res.data.data.unikey;
-    if (unikey) {
-      return getQrCreate(unikey);
-    }
+    if (unikey) return getQrCreate(unikey);
+
     return Promise.reject();
   })
   .then(checkCodeQr)
-  .catch((err) => {
-    console.log(err);
-  });
+  .catch((err) => console.log);
 
 let timer = null;
 
@@ -66,7 +71,12 @@ function check(code: number, data: any) {
     //写入cookie
     setCookie({ cookie: data.cookie });
     useLocalStorage("cookie", data.cookie);
-    Promise.resolve().then(() => router.replace("/index"));
+    login()
+      .then((res) => {
+        console.log(res);
+        Promise.resolve().then(() => router.replace("/index"));
+      })
+      .catch((err) => console.error(err));
     return true;
   } else {
     return false;
@@ -116,5 +126,14 @@ onUnmounted(() => {
   left: 0;
   z-index: 2;
   background-color: rgba(0, 0, 0, 0.3);
+}
+
+.iconfont_iconwancheng {
+  font-family: "iconfont" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-stroke-width: 0.2px;
+  -moz-osx-font-smoothing: grayscale;
 }
 </style>

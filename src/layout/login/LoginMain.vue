@@ -1,8 +1,8 @@
 <template>
-  <el-container style="height: 100vh">
+  <el-container class="bg-white" style="height: 100vh">
     <el-main>
       <el-row
-        style="background-color: #eaeaea"
+        style="background-color: #fafafa"
         class="flex justify-center items-center w-full h-full"
       >
         <el-col :span="8" class="h-full relative">

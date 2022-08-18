@@ -6,7 +6,6 @@
       </span>
       <router-link :to="{ path: '/playlist', query: { id: track.id } }" class="block px-4">
         <ElImage
-          :lazy="true"
           shape="square"
           :src="track.picUrl + '?param=32y32'"
           class="w-8 h-8 rounded-md"

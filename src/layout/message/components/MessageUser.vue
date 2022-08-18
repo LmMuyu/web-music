@@ -3,11 +3,13 @@
     <el-main ref="msgmain" class="h-full relative bg-white main_padding">
       <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick">
         <el-tab-pane label="私信" name="allmess">
-          <MessagePrivateLetter
-            @retNicknameInfo="(data) => ctxEmit('findFollowMess', data)"
-            :privateLetterList="letterList"
-            v-if="letterList?.length > 0 && showTabModule === '0'"
-          ></MessagePrivateLetter>
+          <BetterScroll :isminusviewposth="true" :open-h-render="false">
+            <MessagePrivateLetter
+              @retNicknameInfo="(data) => ctxEmit('findFollowMess', data)"
+              :privateLetterList="letterList"
+              v-if="letterList?.length > 0 && showTabModule === '0'"
+            ></MessagePrivateLetter
+          ></BetterScroll>
         </el-tab-pane>
         <el-tab-pane label="评论" name="second">
           <MessageComment v-if="showTabModule === '1'" />
@@ -24,6 +26,7 @@ import { defineAsyncComponent, PropType, ref, unref } from "vue";
 import { FocusTheUser } from "../hook/factory";
 
 import { ElContainer, ElMain, ElTabs, ElTabPane } from "element-plus";
+import BetterScroll from "../../../components/betterscroll/BetterScroll.vue";
 
 const MessagePrivateLetter = defineAsyncComponent(() => import("./MessagePrivateLetter.vue"));
 const MessageComment = defineAsyncComponent(() => import("./MessageComment.vue"));

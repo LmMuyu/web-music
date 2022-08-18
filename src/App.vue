@@ -1,9 +1,9 @@
 <template>
   <HtmlMain />
   <div class="absolute bottom-0 left-0 w-full">
-    <AsayncSuspense :openload="false">
-      <Audio></Audio>
-    </AsayncSuspense>
+    <AsyncSuspense :openload="false">
+      <!-- <Audio></Audio> -->
+    </AsyncSuspense>
   </div>
 </template>
 

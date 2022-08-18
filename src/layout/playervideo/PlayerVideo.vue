@@ -84,7 +84,7 @@ import VideoInfo from "./components/VideoInfo.vue";
 import VideoLists from "./components/VideoLists.vue";
 import FontIcon from "../../components/fonticon/FontIcon.vue";
 import BetterScroll from "../../components/betterscroll/BetterScroll.vue";
-import AsayncSuspense from "../../components/suspense/AsayncSuspense.vue";
+import AsyncSuspense from "../../components/suspense/AsyncSuspense.vue";
 import { ElContainer, ElMain, ElAside, ElHeader, ElDialog, ElButton } from "element-plus";
 import PlayerCommtentContainer from "../playlist/components/PlayListHistory/components/CommtentContainer.vue";
 import { promptbox } from "../../components/promptBox";

@@ -19,7 +19,7 @@
           }"
         >
           <router-view v-slot="{ Component }">
-            <keep-alive :max="3" :exclude="['Playlist']">
+            <keep-alive :max="3" :exclude="['Playlist', 'Searchres']">
               <component :is="Component"></component>
             </keep-alive>
           </router-view>
@@ -52,7 +52,7 @@
           class="h-full absolute top-0 left-0 right-0 track_bar"
         >
           <router-view name="section" v-slot="{ Component }">
-            <keep-alive>
+            <keep-alive :exclude="['Playlist', 'Searchres']">
               <component :is="Component"></component>
             </keep-alive>
           </router-view>
@@ -74,7 +74,7 @@
         </el-header>
         <el-main v-if="shieldContainer(settConInfo.right?.center)" class="text w-full track_bar">
           <router-view name="article" v-slot="{ Component }">
-            <keep-alive>
+            <keep-alive :exclude="['Playlist', 'Searchres']">
               <component :is="Component"></component>
             </keep-alive>
           </router-view>

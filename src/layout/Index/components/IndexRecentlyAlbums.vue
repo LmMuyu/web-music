@@ -1,7 +1,7 @@
 <template>
   <IndexModuleHeadTitle v-if="!donreferto" title="最近的专辑" />
   <div :class="donreferto && 'h-full'" class="overflow-hidden w-full betterscroll">
-    <better-scroll v-if="donreferto" :open-h-render="!donreferto" :item-len="Infinity">
+    <better-scroll v-if="donreferto" :open-h-render="!donreferto" :item-len="outsidealbums.length">
       <div class="grid grid-cols-4">
         <card-exhibition
           v-for="(album, index) in outsidealbums"
@@ -11,6 +11,7 @@
           class="pt-4"
         />
       </div>
+      <slot></slot>
     </better-scroll>
     <div class="flex w-full justify-between" v-else>
       <card-exhibition
@@ -20,6 +21,7 @@
         :data="album"
         class="w-56"
       />
+      <slot></slot>
     </div>
   </div>
 </template>

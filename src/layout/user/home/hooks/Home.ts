@@ -14,5 +14,7 @@ export function transformArtistData(artist: any) {
     },
     xsize: 512,
     ysize: 512,
+    isuser: artist.accountId ? true : false,
+    alias: artist.alia,
   };
 }

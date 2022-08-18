@@ -1,5 +1,7 @@
 <template>
-  <DisplayAlbums :outsidealbums="albums" :donreferto="true" />
+  <DisplayAlbums :outsidealbums="albums" :donreferto="true">
+    <slot></slot>
+  </DisplayAlbums>
 </template>
 <script setup lang="ts">
 import { ref, watchEffect } from "vue";

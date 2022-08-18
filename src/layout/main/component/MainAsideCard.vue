@@ -1,29 +1,42 @@
 <template>
-  <component
-    ref="model"
-    :moduleInfoCard="moduleInfoCard"
-    :infoData="infoData"
-    :is="modelComp"
-    @logout="updateModelStatus"
-  />
   <ElRow
     ref="infocard"
     class="flex items-center justify-center w-full cursor-pointer transform-gpu translate-y-6"
   >
     <MainInfoCard :infoData="infoData" />
     <ElCol :span="4" class="flex items-center justify-end icons">
-      <i class="iconfont icongengduo-copy" openModel="copy" @click="openLoginModel"></i>
+      <i class="iconfont icongengduo-copy" openModel="copy" @click="centerDialogVisible = true"></i>
     </ElCol>
   </ElRow>
+
+  <Teleport to="#dialog">
+    <el-dialog
+      class="flex justify-center"
+      v-model="centerDialogVisible"
+      title="退出登录"
+      width="40%"
+      center
+      @opened="dialogOpened"
+    >
+      <span class="py-5">您确定要退出登录？</span>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="centerDialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="confirmLogout">确定</el-button>
+        </span>
+      </template>
+    </el-dialog>
+  </Teleport>
 </template>
 <script setup lang="ts">
-import { defineAsyncComponent, defineProps, reactive, shallowRef } from "@vue/runtime-core";
+import { defineProps, onUnmounted, shallowRef } from "@vue/runtime-core";
 import { ref } from "vue";
 import { useStore } from "vuex";
 
-import { ElCol, ElRow } from "element-plus";
+import { ElCol, ElRow, ElDialog, ElButton } from "element-plus";
 import MainInfoCard from "./MainInfoCard.vue";
-const MainModel = defineAsyncComponent(() => import("./MainModel.vue"));
+import { logout } from "../../../api/app/login";
+import { promptbox } from "../../../components/promptBox";
 
 const props = defineProps({
   infoData: {
@@ -33,66 +46,29 @@ const props = defineProps({
 });
 
 const store = useStore();
-
-const modelComp = shallowRef();
-const model = ref<HTMLElement | null>(null);
+const centerDialogVisible = ref(false);
 const infocard = shallowRef(null);
 
-const moduleInfoCard = reactive({
-  x: 0,
-  y: 0,
-  width: 0,
-  height: 0,
+function dialogOpened() {
+  const body = document.querySelector("body") as HTMLElement;
+  body.style.padding = "0";
+}
+
+async function confirmLogout() {
+  centerDialogVisible.value = false;
+
+  try {
+    await logout();
+    promptbox({ title: "已退出登录" });
+    store.commit("login/setUserInfo", [{}, "logout"]);
+  } catch (error) {
+    promptbox({ title: "退出登录错误" });
+  }
+}
+
+onUnmounted(() => {
+  stop();
 });
-
-function updateModelStatus() {
-  if (modelComp.value) {
-    modelComp.value = null;
-    window.removeEventListener("mousedown", modelCompEvent, false); //卸载事件
-  } else {
-    modelComp.value = MainModel;
-    window.addEventListener("mousedown", modelCompEvent, false);
-  }
-}
-
-function openLoginModel() {
-  infoCardModulePosInfo();
-  updateModelStatus();
-}
-
-function modelCompEvent(e: MouseEvent) {
-  const target = e.target as HTMLElement;
-  const bute = target.getAttribute("openModel");
-
-  if (!!bute) return;
-
-  const x = e.clientX + 16;
-  const y = e.clientY;
-
-  const logoutModelInfo = store.getters["maintags/getPosInfo"];
-
-  if (
-    !(
-      logoutModelInfo.mx <= x &&
-      x <= logoutModelInfo.maxX &&
-      logoutModelInfo.my <= y &&
-      y <= logoutModelInfo.maxY
-    )
-  ) {
-    updateModelStatus();
-    return;
-  }
-}
-
-function infoCardModulePosInfo() {
-  //@ts-ignore
-  const el = infocard.value.$el as HTMLElement;
-  const posinfo = el.getBoundingClientRect();
-  moduleInfoCard.x = posinfo.x;
-  moduleInfoCard.y = posinfo.y;
-  moduleInfoCard.width = posinfo.width;
-  moduleInfoCard.height = posinfo.height;
-}
 </script>
 
 <style scoped lang="scss">
