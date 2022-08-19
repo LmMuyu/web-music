@@ -53,10 +53,10 @@ let tagId = 0;
 const catlist = [];
 const categories = ref([]);
 const beforeCatlist = ref([]);
-const showAllBtnItem = ref(false);
-const activeBtnRefList: Ref<boolean>[] = [];
 const slectAllSection = ref([]);
+const showAllBtnItem = ref(false);
 const recordSelectClick = ref(false);
+const activeBtnRefList: Ref<boolean>[] = [];
 
 getPlaylistCatlist().then((catvalue) => {
   categories.value = Object.values(catvalue.data.categories);
@@ -83,9 +83,10 @@ const filterBtnItem = defineComponent({
     const { countRef: selectBtnValue } = useRefNegate(initRef());
     activeBtnRefList.push(selectBtnValue);
 
-    if (selectBtnValue.value) {
-      ctxEmit("withTagData", props.tag);
-    }
+    //默认触发一次请求
+    // if (selectBtnValue.value) {
+    //   ctxEmit("withTagData", props.tag);
+    // }
 
     function addSlectAllSection(tag: string, btnref: Ref<boolean>) {
       const [first, last] = retListFirstLast();

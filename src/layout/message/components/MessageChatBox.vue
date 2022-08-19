@@ -1,10 +1,10 @@
 <template>
-  <el-container class="h-full">
+  <el-container class="h-full bg-white">
     <el-header class="flex items-center solide_border">
       <div><el-avatar :size="42" :src="letterUser.avatar"></el-avatar></div>
       <span class="ml-4">{{ letterUser.nickname }}</span>
     </el-header>
-    <el-main ref="mesMain" style="overflow: hidden">
+    <el-main style="height: 500px" ref="mesMain">
       <better-scroll :isminusviewposth="true" :open-h-render="false" :item-len="letterLists.length">
         <message-chat-box-item
           v-for="msg in letterLists"
@@ -12,18 +12,16 @@
           :message-info="msg"
           :from-user="letterUser"
           :isfromuser="letterUser.uid !== msg.fromId"
-        />
+        ></message-chat-box-item>
       </better-scroll>
     </el-main>
     <el-footer height="240" class="flex items-cneter solide_border_top">
-      <div class="py-2 w-full">
-        <TextEditor
-          @upLoadImage="upLoadImage"
-          :appendToContainer="false"
-          :AiteUserData="[]"
-          @editor_content="editorContent"
-        />
-      </div>
+      <TextEditor
+        @upLoadImage="upLoadImage"
+        :appendToContainer="false"
+        :AiteUserData="[]"
+        @editor_content="editorContent"
+      />
     </el-footer>
   </el-container>
 </template>
@@ -67,7 +65,7 @@ watch(modelValue, (value) => {
 </script>
 <style scoped lang="scss">
 .solide_border {
-  border-bottom: 1px solid #f5f6fa;
+  border-bottom: 2px solid #e4e7ed;
 }
 
 .solide_border_left {

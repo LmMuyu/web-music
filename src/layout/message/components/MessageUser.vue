@@ -1,6 +1,6 @@
 <template>
-  <el-container class="h-full container">
-    <el-main ref="msgmain" class="h-full relative bg-white main_padding">
+  <el-container class="h-full">
+    <el-main ref="msgmain" class="h-full overflow-hidden relative bg-white">
       <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick">
         <el-tab-pane label="私信" name="allmess">
           <BetterScroll :isminusviewposth="true" :open-h-render="false">

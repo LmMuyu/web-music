@@ -31,7 +31,6 @@ import {
   render,
   watch,
   watchEffect,
-  computed,
   shallowRef,
 } from "vue";
 import fd from "fastdom";
@@ -132,6 +131,8 @@ export default defineComponent({
         }
 
         const maxH = Math.max(...allTotalHeightLists);
+        // console.log("total:", maxH);
+
         capHeight.value = maxH;
 
         await nextTick();
@@ -212,6 +213,7 @@ export default defineComponent({
             Math.abs(y1);
 
           capHeight.value = capHeight.value - prevhch + Math.abs(y2);
+
           prevhch = Math.abs(y2);
 
           BS && BSRefresh();
@@ -350,31 +352,12 @@ export default defineComponent({
       const totalh =
         Math.abs(capHeight.value - viewportHeight.value * diffh) + (100 + Math.ceil(diffh) * 10);
 
-      //@ts-ignore
-      window.meibsh[window.meibsh.length - 1].push(totalh);
-      //@ts-ignore
-
-      console.log(window.meibsh);
-
       return totalh;
     };
 
     function diffCapHeight(h: number) {
       const vposth = viewportHeight.value;
-      const diffh = Math.floor(h / vposth) / 3;
-
-      //@ts-ignore
-
-      if (!window.meibsh) {
-        //@ts-ignore
-
-        window.meibsh = [];
-      }
-
-      //@ts-ignore
-
-      window.meibsh.push([vposth, diffh]);
-
+      const diffh = Math.floor(h / vposth) / 3.5;
       return diffh > 1 ? 1 : diffh;
     }
 
@@ -390,8 +373,7 @@ export default defineComponent({
       nextTick(() => {
         //@ts-ignore
         const el = ctx.parent.ctx["$el"];
-
-        const clientHeight = el.clientHeight;
+        const clientHeight = el.getBoundingClientRect().height;
 
         if (el) {
           viewportHeight.value =

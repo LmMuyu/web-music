@@ -1,9 +1,9 @@
 <template>
-  <ElRow class="flex h-full overflow-hidden relative">
-    <ElCol :span="7" class="solide_border">
-      <MessageUserData :letterList="letterList" @find-follow-mess="findFollowInfo" />
-    </ElCol>
-    <ElCol class="w-full h-full absolute right-0 top-0 bg-white" :span="17">
+  <ElContainer class="bg-white w-full">
+    <ElAside width="350px">
+      <MessageLeftUserData :letterList="letterList" @find-follow-mess="findFollowInfo" />
+    </ElAside>
+    <ElMain style="overflow: hidden; padding: 4px 0 0 0" class="ml-5 px-5 bg-white">
       <MessageChatBox
         @emitRequest="onEmitRequest"
         v-if="displayChatBox"
@@ -11,8 +11,8 @@
         :letterUser="letterContentUserInfo"
       />
       <MessageBackground v-else />
-    </ElCol>
-  </ElRow>
+    </ElMain>
+  </ElContainer>
 </template>
 <script setup lang="ts">
 import { computed, ref } from "@vue/reactivity";
@@ -24,18 +24,23 @@ import letterDexie from "./hook/letterDexie";
 
 import MessageBackground from "./components/MessageBackground.vue";
 import MessageChatBox from "./components/MessageChatBox.vue";
-import MessageUserData from "./components/MessageUser.vue";
-import { ElRow, ElCol } from "element-plus";
+import MessageLeftUserData from "./components/MessageUser.vue";
+import { ElContainer, ElMain, ElAside } from "element-plus";
 
 import type { SendLetterInfoEmit } from "./type";
+import { useStore } from "vuex";
+import { onUnmounted } from "vue";
 
 let preuid = null;
+const store = useStore();
 const dexie = new letterDexie();
 const letterList = ref<FocusTheUser[]>([]);
 const letterUserContents = ref<followLetterInfo[]>([]);
 const letterContentUserInfo = ref<SendLetterInfoEmit>(null);
 
 const beforePageTime = new Map<number, number[]>();
+
+store.commit("setMainHidden", true);
 
 getSendMsgUser().then((senduser) => {
   letterList.value = senduser.data.msgs.map((follow) => new FocusTheUser(follow));
@@ -85,10 +90,6 @@ async function setLetterInfoToIndexDB(uid: number, letterContent: followLetterIn
   );
 }
 
-function diffDexieLetterInfos(lasttime: number, letterContent: followLetterInfo[]) {
-  return dexie.diffPut(lasttime, letterContent);
-}
-
 function setLetterContent(uid: number, letterContent: followLetterInfo[]) {
   if (uid === preuid) {
     letterUserContents.value.push(...letterContent);
@@ -106,8 +107,6 @@ async function getLetterIndexDBInfo(uid: number, lasttime: number) {
   return letterLists;
 }
 
-function dexieLetterInfos(uid) {}
-
 async function crcLastMsgTimeIsFit(uid: number, lasttime: number) {
   const lasttimes = await dexie.getLastTimes(uid);
 
@@ -121,6 +120,10 @@ async function crcLastMsgTimeIsFit(uid: number, lasttime: number) {
 
 const displayChatBox = computed(() => {
   return letterUserContents.value.length > 0 && Object.keys(letterContentUserInfo.value).length > 0;
+});
+
+onUnmounted(() => {
+  store.commit("setMainHidden", false);
 });
 </script>
 <style scoped lang="scss">

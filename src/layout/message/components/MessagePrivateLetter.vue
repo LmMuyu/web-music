@@ -1,6 +1,6 @@
 <template>
   <el-row
-    class="flex w-full py-3 px-4 relative"
+    class="flex w-full py-2 relative"
     v-for="(letter, index) in privateLetterList"
     :key="letter.fromUser.uid"
     @click.capture="

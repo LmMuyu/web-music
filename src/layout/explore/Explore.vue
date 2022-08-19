@@ -1,14 +1,20 @@
 <template>
-  <div class="bg-white h-full">
-    <better-scroll :open-h-render="false" :item-len="catPlaylists.length">
+  <div class="bg-white" style="height: 100vh">
+    <better-scroll
+      v-if="catPlaylists.length > 0"
+      :isminusviewposth="true"
+      :open-h-render="false"
+      :item-len="catPlaylists.length"
+      :open-upload="true"
+      @pullUpLoad="pullUpLoad"
+    >
       <FilterBtnCollections @withTagData="getWithTagData" />
-      <div class="container_height">
-        <filter-cat-data v-if="!loadDataing" :catPlaylists="catPlaylists" />
-        <div class="h-full flex justify-center items-center" v-else>
-          <svg-loading></svg-loading>
-        </div>
-      </div>
+      <filter-cat-data :catPlaylists="catPlaylists" />
     </better-scroll>
+
+    <div class="h-full flex justify-center items-center" v-else>
+      <svg-loading></svg-loading>
+    </div>
   </div>
 </template>
 <script setup lang="ts">
@@ -29,6 +35,10 @@ const lru = new LRU();
 let isfetch = false;
 const loadDataing = ref(true);
 
+function pullUpLoad() {
+  console.log(55);
+}
+
 const _topPlaylist = debounce(topPlaylist, 100, {
   asyncBackcall: toDealWithTopPlaylist,
   quickrequest: true,
@@ -40,8 +50,8 @@ function toDealWithTopPlaylist(catData: any) {
 
   if (!catData.cache) {
     lru.put(data.cat, data.playlists);
-    // console.log(lru.toviewCache);
   }
+
   loadDataing.value = false;
   catPlaylists.value = data.playlists ?? data;
 }
@@ -66,6 +76,8 @@ function getWithTagData(tag: string) {
   loadDataing.value = true;
   _topPlaylist(tag);
 }
+
+getWithTagData("全部");
 </script>
 <style scoped lang="scss">
 .container_height {

@@ -132,22 +132,28 @@ async function midSourcessFn(videodata: any) {
 
   mvOrVideoPlayPath(mvurldata.data.data);
   videoinfo.value = await videoinfodata(videodata.data);
+  console.log(videoinfo.value);
+
 }
 
 async function vidSourcessFn(videodata: any) {
   ratio.value = videodata.data.resolutions;
   videoinfo.value = await videoinfodata(videodata.data);
-
+  
   mvOrVideoPlayPath((await playerVideoPath(videoId as string)).data.urls[0]);
 }
 
 if (!queryIsVid) {
-  simiMv(videoId as number).then((simimv) => {
-    simiMvLists.value = simimv.data.mvs.map(async (mv) => await videoinfodata(mv));
+  simiMv(videoId as number).then(async (simimv) => {
+    simiMvLists.value = await Promise.all(
+      simimv.data.mvs.map(async (mv) => await videoinfodata(mv))
+    );
   });
 } else {
-  allvideo(videoId as string).then((simiVideo) => {
-    simiMvLists.value = simiVideo.data.data.map(async (video) => await videoinfodata(video));
+  allvideo(videoId as string).then(async (simiVideo) => {
+    simiMvLists.value = await Promise.all(
+      simiVideo.data.mvs.map(async (mv) => await videoinfodata(mv))
+    );
   });
 }
 
