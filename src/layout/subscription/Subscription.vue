@@ -1,12 +1,14 @@
 <template>
-  <el-container class="flex h-full">
+  <el-container class="flex h-full bg-white">
     <el-container>
-      <el-header height="44px" class="header"><subscription-header /></el-header>
+      <el-header height="44px" class="header">
+        <subscription-header />
+      </el-header>
       <el-main style="background-color: #fff">
         <subscription-content />
       </el-main>
     </el-container>
-    <el-aside width="300px">
+    <el-aside width="300px" style="overflow: hidden">
       <subscription-right></subscription-right>
     </el-aside>
   </el-container>

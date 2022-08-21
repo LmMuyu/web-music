@@ -15,7 +15,7 @@
 </template>
 <script setup lang="tsx">
 import { nextTick, onMounted, ref } from "@vue/runtime-core";
-import { inject, onUnmounted } from "vue";
+import { inject } from "vue";
 import { useStore } from "vuex";
 
 import { watchUserData } from "../hooks/methods";
@@ -59,10 +59,6 @@ onMounted(() => {
     reviseButtonPos();
     setButtonStyle();
   });
-});
-
-onUnmounted(() => {
-  console.log("onUnmounted");
 });
 </script>
 <style scoped lang="scss"></style>

@@ -1,27 +1,22 @@
 <template>
   <div :style="absoluteBox">
-    <ul
-      :style="gridstyle"
-      :class="{ 'mt-6': isMarginTop }"
-      class="h-full"
-      @click.capture="emitPreImage"
-    >
-      <li v-for="(file, index) in dynamics.picList" :key="index">
-        <img :src="file" class="object-cover w-full h-full" :key-index="index" />
-      </li>
-    </ul>
+    <div :style="gridstyle" :class="{ 'mt-6': isMarginTop }" class="h-full">
+      <ElImage v-for="(file, index) in dynamics.picList" :preview-src-list="dynamics.picList" :initial-index="index"
+        :key="index" :src="file + `?parma=${dynamics.w}y${dynamics.h}`">
+      </ElImage>
+    </div>
   </div>
 </template>
 <script setup lang="ts">
-import { computed, defineProps, reactive, ref } from "vue";
+import { computed, defineProps, PropType, reactive, ref } from "vue";
 
-import { Dynamic } from "../methods";
+import { ElImage } from "element-plus";
 
-const ctxEmit = defineEmits(["preImage"]);
+import { Dynamic, DynamicEvent } from "../methods";
 
 const props = defineProps({
   subinfo: {
-    type: Object,
+    type: Object as PropType<DynamicEvent>,
     required: true,
   },
   isMarginTop: {
@@ -34,14 +29,6 @@ const picList = ref<any[]>([]);
 
 const dynamics = new Dynamic(props.subinfo);
 picList.value = dynamics.picList;
-
-function emitPreImage(e: Event) {
-  const target = e.target as HTMLElement;
-
-  if (target.nodeName === "IMG") {
-    ctxEmit("preImage", target.getAttribute("key-index"));
-  }
-}
 
 const row = computed(() => {
   return Math.ceil(dynamics.picList.length / 3);
@@ -75,4 +62,5 @@ const absoluteBox = computed(() => {
   return style;
 });
 </script>
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+</style>

@@ -46,7 +46,7 @@ const ctxEmit = defineEmits(["linke", "comment", "forward"]);
 
 const props = defineProps({
   info: {
-    type: Array as PropType<Array<Options>>,
+    type: Array as PropType<Options[]>,
     default: () => [],
   },
   showTime: {

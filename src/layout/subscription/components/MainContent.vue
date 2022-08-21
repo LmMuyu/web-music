@@ -1,44 +1,32 @@
 <template>
-  <el-container
-    :style="{ backgroundColor: props.recursion ? '#f5f6fa' : '#fff' }"
-    :class="recursion && 'px-6 pt-4 w-full h-full'"
-  >
+  <el-container :style="{ backgroundColor: recursion ? '#f5f6fa' : '#fff' }"
+    :class="recursion && 'px-6 pt-4 w-full h-full'">
     <el-header>
-      <MainContentHeader :type="eventType" :userinfo="event.user" :showTime="event.showTime" />
+      <MainContentHeader :type="eventType" :userinfo="dynamic.dynamicuser" :timestr="dynamic.timestr" />
     </el-header>
     <el-main class="py-6" style="padding-top: 0; padding-bottom: 0" v-if="hiddenMain">
-      <span class="cursor-text text-sm font-medium" ref="content_text"></span>
+      <span style="color:#303133" class="cursor-text text-sm">
+        {{ dynamic.eventcontent.content.msg }}
+      </span>
       <main-song v-if="mainContentData.song" :song-data="mainContentData.song" />
-      <main-content-image-list :subinfo="event" @preImage="previewComp" />
-      <main-website
-        v-if="mainContentData.resource"
-        :resource="mainContentData.resource"
-      ></main-website>
+      <main-content-image-list :subinfo="dynamic" />
+      <main-website v-if="mainContentData.resource" :resource="mainContentData.resource"></main-website>
     </el-main>
     <el-main v-if="mainContentData.event && !hiddenMain">
-      <MainContent :event="mainContentData.event" :recursion="true" />
+      <slot name="recursion" :defualt="mainContentData.event"></slot>
     </el-main>
-    <el-footer height="40px">
-      <main-content-footer
-        :info="footerInfo"
-        :latestLikedUsers="event.info.commentThread.latestLikedUsers ?? []"
-        @linke="linke"
-        @comment="comment"
-        @forward="forward"
-      />
-    </el-footer>
+    <ElFooter height="40px">
+      <MainContentFooter :info="footerInfo" :latestLikedUsers="dynamic.otherinfo.latestLikedUsers ?? []" @linke="linke"
+        @comment="ctxEmit('clickComment', dynamic)" @forward="forward" />
+    </ElFooter>
   </el-container>
 </template>
 
-<script setup lang="tsx">
-import { onMounted, reactive, ref, unref } from "@vue/runtime-core";
+<script setup lang="ts">
+import { reactive, ref, unref } from "@vue/runtime-core";
 
 import { musicResultDetail } from "../../../utils/musicDetail";
-import { useRefNegate } from "../../../utils/useRefNegate";
-import preview from "../../../components/previewpicture";
-import { getComment } from "../../../api/subscription";
-import { computed_footerInfo, msgRender } from "../methods";
-import { onLinke } from "../hooks/onLinke";
+import { computed_footerInfo, DynamicEvent, msgRender } from "../methods";
 
 import { ElContainer, ElHeader, ElMain, ElFooter } from "element-plus";
 import MainContentImageList from "./MainContentImageList.vue";
@@ -46,19 +34,20 @@ import MainContentHeader from "./MainContentHeader.vue";
 import MainContentFooter from "./MainContentFooter.vue";
 import MainContentText from "./MainContentText.vue";
 // import MainWriteBox from "./MainWriteBox.vue";
-import MainContent from "./MainContent.vue";
 import MainWebsite from "./MainWebsite.vue";
 import MainSong from "./MainSong.vue";
+
+import type { PropType } from "vue";
 
 type infoMapValue = Map<string, { query: string; id: number }>;
 type activityMap = Map<number, infoMapValue>;
 
-const ctxEmit = defineEmits(["retPics"]);
+const ctxEmit = defineEmits(["retPics", "clickComment"]);
 
 const props = defineProps({
-  event: {
-    type: Object,
-    default: () => {},
+  dynamic: {
+    type: Object as PropType<DynamicEvent>,
+    default: () => ({}),
   },
   recursion: {
     type: Boolean,
@@ -66,15 +55,15 @@ const props = defineProps({
   },
 });
 
+
+
+
 const footerInfo = unref(computed_footerInfo)(props);
-const { countRef, negate } = useRefNegate(false);
-const eventType = ref(Number(event.type));
-const commentList = ref([]);
+const eventType = ref(Number(props.dynamic.type));
 const activityInfoMap = ref<activityMap>(new Map());
 const activitySetLists = new Set<infoMapValue>();
-const content_text = ref(null);
 
-const mainContentData = reactive({
+const mainContentData = reactive<Record<string, any>>({
   event: null,
   song: null,
   msg: null,
@@ -106,20 +95,12 @@ function withoutNull() {
   return hiddenMain;
 }
 
-async function comment() {
-  if (countRef.value || commentList.value.length > 0) return negate();
+function forward() { }
 
-  const result = await getComment(props.event.info.threadId);
-  commentList.value = result.data.comments;
-  negate();
-}
-
-function forward() {}
-
-function previewComp(preindex: number) {
-  const pics = props.event.pics;
-  const previewcomp = new preview(pics, preindex);
-}
+// function previewComp(preindex: number) {
+//   const pics = props.dynamic.imagelists;
+//   const previewcomp = new preview(pics, preindex);
+// }
 
 function programData(data) {
   const song = data.mainSong && musicResultDetail(data.mainSong, data);
@@ -155,7 +136,7 @@ const runDataKeyFn: Record<string, (...arg) => void> = {
 };
 
 function jsonTransform() {
-  const parseTojson = JSON.parse(props.event.json);
+  const parseTojson = props.dynamic.eventcontent.content
   // console.log(parseTojson);
 
   Object.keys(mainContentData).forEach((mainkey) => {
@@ -183,8 +164,7 @@ function sliceTextStr(msg: string, start: number, end: number) {
       msg = msg.replace(
         `#${sliceLink}#`,
         `
-        <router-link  class="bottom_line" style="color: rgb(116, 185, 255);" to="/topic?tid=${
-          map.get(sliceLink).id
+        <router-link  class="bottom_line" style="color: rgb(116, 185, 255);" to="/topic?tid=${map.get(sliceLink).id
         }&topictitle=${sliceLink}">#${sliceLink}#</router-link>
       `
       );
@@ -219,11 +199,11 @@ function patcRouterLink(msg: string) {
 }
 
 function activityInfos() {
-  if (!props?.event?.bottomActivityInfos) {
+  if (!props?.dynamic?.bottomActivityInfos) {
     return console.warn("props.event：Null");
   }
 
-  const bottomActivityInfos = props.event.bottomActivityInfos as Record<string, any>[];
+  const bottomActivityInfos = props.dynamic.bottomActivityInfos as Record<string, any>[];
   const typeMethods = {
     1: "One",
     2: "Two",
@@ -280,11 +260,8 @@ function setActiveInfos(activeInfo: any, query: string, id: number) {
   }
 }
 
-onMounted(() => {
-  if (content_text.value) {
-    mainContentData.msg(content_text.value);
-  }
-});
+
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+</style>

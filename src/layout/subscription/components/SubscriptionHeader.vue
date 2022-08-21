@@ -4,7 +4,12 @@
     <div class="w-1/2 flex justify-end">
       <div class="w-1/2 flex">
         <div class="flex justify-center items-center rounded-full">
-          <FontIcon icon="iconw_shuxie" title="写动态" size="30"></FontIcon>
+          <FontIcon
+            @click="dialogVisible = true"
+            icon="iconw_shuxie"
+            title="写动态"
+            size="30"
+          ></FontIcon>
         </div>
         <div class="flex items-center px-6">
           <el-avatar :src="userinfo?.data?.avatarUrl"></el-avatar>
@@ -13,18 +18,77 @@
       </div>
     </div>
   </div>
-</template>
->
-<script setup lang="ts">
-import { computed } from "vue";
-import { useStore } from "vuex";
-import { ElAvatar } from "element-plus";
 
+  <el-dialog v-model="dialogVisible" title="Tips" width="40%" :before-close="handleClose">
+    <TextEditor
+      @upLoadImage="upLoadImage"
+      :appendToContainer="false"
+      :AiteUserData="[]"
+      @editor_content="editorContent"
+    />
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="dialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="dialogVisible = false">发布</el-button>
+      </span>
+    </template>
+  </el-dialog>
+</template>
+
+<script setup lang="ts">
+import { computed, defineComponent, ref, h } from "vue";
+import { useStore } from "vuex";
+
+import { ElAvatar, ElMessageBox, ElDialog, ElButton, ElRow, ElCol } from "element-plus";
 import FontIcon from "../../../components/fonticon/FontIcon.vue";
+import { TextEditor } from "vue3-text-editor";
 
 const store = useStore();
+const dialogVisible = ref(false);
 
 const userinfo = computed<any>(store.getters["login/getUserData"]);
+
+const promptBox = defineComponent({
+  components: {
+    ElButton,
+    ElRow,
+    ElCol,
+  },
+  template: `
+  <div class="flex flex-col rounded-lg">
+    <span style="color:#303133" class="font-bold flex justify-center text-lg">提示</span>
+    <span style="color:#C0C4CC" class="text-xs py-4">即将退出，是否保留草稿</span>
+    <ElRow  style="background-color:#FAFAFA" class="py-4">
+        <ElCol :span="12">
+          <span style="color:#303133" class="cursor-pointer">不保留</span>
+        </ElCol>
+        <ElCol :span="12">
+          <span style="color:#409EFF" class="cursor-pointer">保留</span>
+        </ElCol>
+    </ElRow>
+  </div>
+  `,
+});
+
+function writeDynamic() {}
+
+function handleClose(done: () => void) {
+  console.log(done);
+
+  ElMessageBox.confirm(h(promptBox), {
+    showCancelButton: false,
+    showConfirmButton: false,
+    center: true,
+  })
+    .then(() => {
+      done();
+    })
+    .catch(() => {});
+}
+function editorContent() {}
+function upLoadImage(file) {
+  console.log(file);
+}
 </script>
 <style scoped lang="scss">
 .rounded_text {

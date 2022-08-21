@@ -11,7 +11,11 @@ const footerInfo = (props: any) => {
         emit_name: "linke",
       },
       icon: "icondianzan1",
-      count: props?.event?.info?.likedCount || props?.likedCount || 0, //点赞
+      count:
+        props?.event?.info?.likedCount ||
+        props?.likedCount ||
+        props?.dynamic?.otherinfo?.likedCount ||
+        0, //点赞
       liked: props?.liked || false, //是否已点赞
     },
     {
@@ -20,7 +24,11 @@ const footerInfo = (props: any) => {
         emit: true,
         emit_name: "comment",
       },
-      count: props?.event?.info?.commentCount || props?.commentCount || 0, //评论
+      count:
+        props?.event?.info?.commentCount ||
+        props?.commentCount ||
+        props?.dynamic?.otherinfo?.commentCount ||
+        0, //评论
     },
     {
       name: "forward",
@@ -28,7 +36,8 @@ const footerInfo = (props: any) => {
         emit: true,
         emit_name: "comment",
       },
-      count: props?.event?.insiteForwardCount || props?.insiteForwardCount || 0, //转发
+      count:
+        props?.event?.shareCount || props?.shareCount || props?.dynamic?.otherinfo?.shareCount || 0, //转发
     },
   ];
 
@@ -137,11 +146,9 @@ class PicLists {
 }
 
 export class Dynamic extends PicLists {
-  relativeTime: string;
   images: string[];
-  constructor(subinfo) {
-    super(subinfo.pics);
-    this.relativeTime = filterDate(subinfo.eventTime, null, true);
+  constructor(subinfo: DynamicEvent) {
+    super(subinfo.imagelists);
   }
 }
 
@@ -150,4 +157,76 @@ export function msgRender(msg: string, mount: HTMLElement) {
   const app = createApp(comp);
   app.use(router);
   app.mount(mount);
+}
+
+export class DynamicEvent {
+  eventcontent: EventContent;
+  id: number;
+  imagelists: any[];
+  otherinfo: OtherInfo;
+  timestr: string;
+  dynamicuser: DynamicUser;
+  type: number;
+  act: { id: any; actName: any };
+  bottomActivityInfos: any;
+  constructor(dynamic: any) {
+    this.id = dynamic.id;
+    this.eventcontent = new EventContent(dynamic);
+    this.imagelists = dynamic.pics.map((pics) => new Image(pics));
+    this.otherinfo = new OtherInfo(dynamic);
+    this.timestr = filterDate(dynamic.showTime, null, true);
+    this.dynamicuser = new DynamicUser(dynamic.user);
+    this.type = dynamic.type;
+    this.act = {
+      id: dynamic.actId,
+      actName: dynamic.dynamic,
+    };
+    this.bottomActivityInfos = dynamic.bottomActivityInfos;
+  }
+}
+
+class EventContent {
+  content: any;
+  id: number;
+  constructor(content: any) {
+    this.content = JSON.parse(content.json);
+    this.id = content.id;
+  }
+}
+
+class Image {
+  pcRectangleUrl: string;
+  pcSquareUrl: string;
+  constructor(pics: any) {
+    this.pcRectangleUrl = pics.pcRectangleUrl;
+    this.pcSquareUrl = pics.pcSquareUrl;
+  }
+}
+
+class OtherInfo {
+  latestLikedUsers: any;
+  commentId: string;
+  commentCount: number;
+  islined: boolean;
+  likedCount: number;
+  shareCount: number;
+  constructor(dynamic: any) {
+    this.latestLikedUsers = dynamic.info.commentThread.latestLikedUsers;
+    this.commentId = dynamic.info.threadId;
+    this.commentCount = dynamic.info.commentCount;
+    this.islined = dynamic.info.liked;
+    this.likedCount = dynamic.info.likedCount;
+    this.shareCount = dynamic.info.shareCount;
+  }
+}
+
+class DynamicUser {
+  avatarUrl: string;
+  nickname: string;
+  userId: number;
+  constructor(user: any) {
+    this.avatarUrl = user.avatarUrl;
+    this.nickname = user.nickname;
+    this.userId = user.userId;
+  }
 }

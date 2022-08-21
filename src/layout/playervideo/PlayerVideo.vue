@@ -84,7 +84,6 @@ import VideoInfo from "./components/VideoInfo.vue";
 import VideoLists from "./components/VideoLists.vue";
 import FontIcon from "../../components/fonticon/FontIcon.vue";
 import BetterScroll from "../../components/betterscroll/BetterScroll.vue";
-import AsyncSuspense from "../../components/suspense/AsyncSuspense.vue";
 import { ElContainer, ElMain, ElAside, ElHeader, ElDialog, ElButton } from "element-plus";
 import PlayerCommtentContainer from "../playlist/components/PlayListHistory/components/CommtentContainer.vue";
 import { promptbox } from "../../components/promptBox";
@@ -132,14 +131,12 @@ async function midSourcessFn(videodata: any) {
 
   mvOrVideoPlayPath(mvurldata.data.data);
   videoinfo.value = await videoinfodata(videodata.data);
-  console.log(videoinfo.value);
-
 }
 
 async function vidSourcessFn(videodata: any) {
   ratio.value = videodata.data.resolutions;
   videoinfo.value = await videoinfodata(videodata.data);
-  
+
   mvOrVideoPlayPath((await playerVideoPath(videoId as string)).data.urls[0]);
 }
 

@@ -1,11 +1,9 @@
 <template>
   <subscription-content v-if="events.length > 0" :event="events">
-    <el-container class="bg-white" style="height: 70vh">
+    <el-container class="bg-white" style="height: 40vh">
       <el-main>
-        <div
-          class="flex justify-center items-center flex-col w-full h-full"
-          :style="{ backgroundImage: `url(${topic.bgimg})`, backgroundSize: 'cover' }"
-        >
+        <div class="flex justify-center items-center flex-col w-full h-full rounded-lg"
+          :style="{ backgroundImage: `url(${topic.bgimg})`, backgroundSize: 'cover' }">
           <div class="h-2/4 flex items-center justify-center flex-col">
             <span class="text-white text-3xl py-4 block">{{ topic.topicTitle }} </span>
             <ul class="list-disc text-white">
@@ -15,10 +13,12 @@
             </ul>
           </div>
           <div class="h-2/4 flex items-center justify-center">
-            <el-button plain size="large" style="width: 10vw; display: flex">
-              <font-icon icon="iconw_shuxie" size="30" color="rgb(116 185 255)">
+            <el-button plain size="large" style="width: 20vw; display: flex">
+              <font-icon icon="iconw_shuxie" size="24" color="rgb(116 185 255)">
                 <template #after>
-                  <span style="color: rgb(116 185 255)" class="text-xl"> 写动态 </span>
+                  <div class="flex items-center">
+                    <span style="color: rgb(116 185 255)"> 立即参与 </span>
+                  </div>
                 </template>
               </font-icon>
             </el-button>
@@ -32,7 +32,7 @@
 import { reactive, ref } from "vue";
 import { useRoute } from "vue-router";
 
-import { topicDetail, topicHotEvent } from "../../api/topic";
+import { topicDetail, topicHotEvent, hotTopic } from "../../api/topic";
 
 import { ElContainer, ElMain, ElButton } from "element-plus";
 import FontIcon from "../../components/fonticon/FontIcon.vue";
@@ -52,12 +52,12 @@ const events = ref([]);
 async function topicRequest(tid: number) {
   if (!tid) return console.error("tid:NUll");
 
-  const topicData = (await topicDetail(tid)).data.act;
-  console.log(topicData);
-  topic.bgimg = topicData.coverPCUrl;
-  topic.topicTitle = topicData.title;
-  topic.introductions = topicData.text;
-  console.log(JSON.parse(topicData.resourceJson));
+  const topicData = (await topicDetail(tid)).data;
+  const act = topicData.act
+  topic.bgimg = act.coverPCUrl;
+  topic.topicTitle = act.title;
+  topic.introductions = act.text;
+  console.log(JSON.parse(act.resourceJson));
 }
 
 async function topicEventHot(tid: number) {
@@ -70,4 +70,5 @@ async function topicEventHot(tid: number) {
 topicRequest(topic.tid);
 topicEventHot(topic.tid);
 </script>
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+</style>

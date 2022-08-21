@@ -1,8 +1,6 @@
 import request from "../../utils/request";
 
 export function mvVideoDetail(morvid: number | string, vorm: "vid" | "mid" = "mid") {
-  console.log(morvid);
-
   return request({
     url: vorm === "mid" ? "/mv/detail" : "/video/detail",
     params: {

@@ -10,6 +10,7 @@ import path from "path";
 import AutoImport from "unplugin-auto-import/vite";
 import Components from "unplugin-vue-components/vite";
 import { ElementPlusResolver } from "unplugin-vue-components/resolvers";
+import externalGlobals from "rollup-plugin-external-globals";
 
 import type { ConfigEnv, UserConfig } from "vite";
 
@@ -27,13 +28,32 @@ const aliasList = createAlias([
   ["assets/", "src/assets"],
 ]);
 
+function buildElementPlus(mode: string) {
+  const isPro = mode === "production";
+  const element = isPro
+    ? [
+        AutoImport({
+          resolvers: [ElementPlusResolver()],
+        }),
+        Components({
+          resolvers: [ElementPlusResolver()],
+        }),
+      ]
+    : [
+        createStyleImportPlugin({
+          resolves: [ElementPlusResolve()],
+        }),
+      ];
+
+  return element;
+}
+
 export default ({ mode }: ConfigEnv): UserConfig => {
   const root = process.cwd();
   const env = loadEnv(mode, root);
   const { VITE_PORT, VITE_HOST } = env;
 
   const basePath = mode === "produrtion" ? "/dist" : "/";
-  const isPro = mode === "production";
 
   return {
     base: basePath,
@@ -51,21 +71,8 @@ export default ({ mode }: ConfigEnv): UserConfig => {
           path.join(process.cwd(), "/src/assets/.xgplayer/skin/assets"),
         ],
       }),
-
-      ...(isPro
-        ? [
-            AutoImport({
-              resolvers: [ElementPlusResolver()],
-            }),
-            Components({
-              resolvers: [ElementPlusResolver()],
-            }),
-          ]
-        : [
-            createStyleImportPlugin({
-              resolves: [ElementPlusResolve()],
-            }),
-          ]),
+      ...buildElementPlus(mode),
+   
     ],
     css: {
       preprocessorOptions: {
@@ -82,7 +89,7 @@ export default ({ mode }: ConfigEnv): UserConfig => {
     },
     build: {
       rollupOptions,
-      minify: "terser",
+      minify: "esbuild",
       terserOptions: {
         compress: {
           drop_console: true, //清除console
@@ -92,7 +99,7 @@ export default ({ mode }: ConfigEnv): UserConfig => {
           comments: true, //c
         },
       },
-      sourcemap: true,
+      // sourcemap: true,
     },
     server: {
       port: Number(VITE_PORT),
@@ -121,7 +128,8 @@ export default ({ mode }: ConfigEnv): UserConfig => {
       },
     },
     optimizeDeps: {
-      exclude: ["vue-demi"],
+      exclude: ["vue-demi", "vue"],
+      entries: ["vue", "vue-demi"],
     },
   };
 };

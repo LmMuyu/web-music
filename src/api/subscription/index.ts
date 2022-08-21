@@ -6,7 +6,7 @@ export function getSubScriptDynamic(lasttime: number = -1) {
     url: "/event",
     params: {
       lasttime,
-      pagesize: 15,
+      pagesize: 10,
     },
   });
 }
