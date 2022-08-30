@@ -1,17 +1,22 @@
 <template>
-  <el-container class="h-full" style="background: rgb(245, 248, 255)">
+  <el-container class="h-full bg-white">
     <el-header class="bg-white flex items-center" height="54px">
       <IndexHeaderModule />
     </el-header>
     <el-main class="flex flex-col h-full scrollbar" style="padding: 16px 0 !important">
+      <IndexBanner :banner-data="bannerImages" />
+      <el-container style="height: inherit">
+        <el-main>
+          <IndexRecommended />
+        </el-main>
+        <el-aside width="350px">
+          <IndexHotPlaylists :playList="playList" />
+        </el-aside>
+      </el-container>
       <AsyncSuspense class="px-2">
-        <IndexBanner :banner-data="bannerImages" />
-        <IndexRecommended />
-        <IndexDiscover />
         <IndexRecentlyAlbums />
         <IndexHotsong />
         <IndexFeaturedSinger />
-        <IndexHotPlaylists :playList="playList" />
       </AsyncSuspense>
     </el-main>
   </el-container>
@@ -22,16 +27,16 @@ import { ref } from "vue";
 import { getBanner as getBannerImages, getHot, getPlayList } from "../../api/index";
 
 import IndexHotsong from "./components/IndexHotsong.vue";
-import IndexDiscover from "./components/IndexDiscover.vue";
-import { ElContainer, ElHeader, ElMain } from "element-plus";
 import IndexBanner from "../../components/banner/Banner.vue";
 import IndexRecommended from "./components/IndexRecommended.vue";
 import IndexHeaderModule from "./components/IndexHeaderModule.vue";
 import IndexHotPlaylists from "./components/IndexHotPlaylists.vue";
+import { ElContainer, ElHeader, ElMain, ElAside } from "element-plus";
 import IndexRecentlyAlbums from "./components/IndexRecentlyAlbums.vue";
 import IndexFeaturedSinger from "./components/IndexFeaturedSinger.vue";
 
 import type { AxiosResponse } from "axios";
+import { RecPlayList } from ".";
 
 const bannerImages = ref([]);
 const hotList = ref([]);
@@ -55,7 +60,7 @@ function requestThenFn(value: AxiosResponse<any>) {
   } else if (url === "/playlist/hot") {
     hotList.value = value.data.tags;
   } else if (url === "/top/playlist") {
-    playList.value = value.data.playlists;
+    playList.value = value.data.playlists.slice(0, 6).map((data) => new RecPlayList(data));
   } else {
     console.log(url + "url数据无法写入");
   }

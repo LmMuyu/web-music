@@ -1,6 +1,8 @@
 <template>
   <el-container ref="asidetags" class="h-full">
-    <el-header class="flex items-center justify-center"> Web Music </el-header>
+    <el-header class="flex items-center justify-center">
+      <span style="color: #409eff" class="text-lg" > 余音音乐 </span>
+    </el-header>
     <el-main>
       <MainTag />
     </el-main>

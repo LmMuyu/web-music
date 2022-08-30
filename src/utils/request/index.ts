@@ -17,8 +17,6 @@ interface CONFIG_DEFAULT {
   };
 }
 
-const csrf_token = jsCookie.get("__csrf");
-
 function setRetryCount(
   instance: AxiosInstance & CONFIG_DEFAULT,
   { retry, delay }: { retry?: number; delay?: number }
@@ -56,7 +54,8 @@ export default function request(config: AxiosRequestConfig) {
 
   const instance = axios.create({
     // baseURL: "http://120.27.135.200:3000",
-    baseURL: BASEURL,
+    // baseURL: BASEURL,
+    baseURL: "/cloud",
     method: "GET",
     timeout: 30000,
     withCredentials: true,
@@ -93,6 +92,8 @@ export default function request(config: AxiosRequestConfig) {
       return Promise.reject(config);
     }
   );
+
+  const csrf_token = jsCookie.get("__csrf");
 
   const ass = Object.assign({}, config, {
     url: config.url + `${!!csrf_token ? "?csrf_token=" + csrf_token : ""}`,

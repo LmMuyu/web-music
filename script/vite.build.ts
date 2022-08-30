@@ -1,9 +1,9 @@
 import { loadEnv } from "vite";
 import { ElementPlusResolve, createStyleImportPlugin } from "vite-plugin-style-import";
-import rollupOptions from "./vite/rollupOptions";
+import rollupOptions from "../vite/rollupOptions";
 import vueJsx from "@vitejs/plugin-vue-jsx";
 import { createSvgIconsPlugin } from "vite-plugin-svg-icons";
-import createAlias from "./vite/alias";
+import createAlias from "../vite/alias";
 import vue from "@vitejs/plugin-vue";
 import { readFileSync } from "fs";
 import path from "path";
@@ -52,7 +52,6 @@ export default ({ mode }: ConfigEnv): UserConfig => {
   const env = loadEnv(mode, root);
   const { VITE_PORT, VITE_HOST } = env;
 
-  const basePath = mode === "produrtion" ? "/dist" : "/";
 
   return {
     base: "/",
@@ -97,6 +96,7 @@ export default ({ mode }: ConfigEnv): UserConfig => {
           comments: true, //c
         },
       },
+      // sourcemap: true,
     },
     server: {
       port: Number(VITE_PORT),
@@ -120,13 +120,6 @@ export default ({ mode }: ConfigEnv): UserConfig => {
           rewrite(path) {
             console.log(path);
             return path;
-          },
-        },
-        "/cloud": {
-          target: "http://cloud-music.pl-fe.cn/",
-          changeOrigin: true,
-          rewrite(path) {
-            return path.replace(/^\/cloud/, "");
           },
         },
       },

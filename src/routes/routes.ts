@@ -5,6 +5,10 @@ const routes: (RouteRecordRaw & {
   meta?: META;
 })[] = [
   {
+    path: "/index.html",
+    redirect: "/index",
+  },
+  {
     path: "/",
     redirect: "/index",
   },
@@ -183,6 +187,13 @@ const routes: (RouteRecordRaw & {
       default: () => import("../layout/mv/MV.vue"),
     },
   },
+  // {
+  //   path: "/localmusic",
+  //   name: "Localmusic",
+  //   components: {
+  //     default: () => import("../layout/localmusic/LocalMusic.vue"),
+  //   },
+  // },
 ];
 
 export default routes;

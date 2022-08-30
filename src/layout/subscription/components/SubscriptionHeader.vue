@@ -58,32 +58,21 @@ const promptBox = defineComponent({
   <div class="flex flex-col rounded-lg">
     <span style="color:#303133" class="font-bold flex justify-center text-lg">提示</span>
     <span style="color:#C0C4CC" class="text-xs py-4">即将退出，是否保留草稿</span>
-    <ElRow  style="background-color:#FAFAFA" class="py-4">
-        <ElCol :span="12">
-          <span style="color:#303133" class="cursor-pointer">不保留</span>
-        </ElCol>
-        <ElCol :span="12">
-          <span style="color:#409EFF" class="cursor-pointer">保留</span>
-        </ElCol>
-    </ElRow>
   </div>
   `,
 });
 
-function writeDynamic() {}
-
 function handleClose(done: () => void) {
-  console.log(done);
-
   ElMessageBox.confirm(h(promptBox), {
-    showCancelButton: false,
-    showConfirmButton: false,
+    cancelButtonClass: "cancelClass",
+    confirmButtonClass: "confirmClass",
     center: true,
   })
     .then(() => {
-      done();
+      console.log(222);
     })
-    .catch(() => {});
+    .catch(() => {})
+    .finally(done);
 }
 function editorContent() {}
 function upLoadImage(file) {
@@ -96,3 +85,5 @@ function upLoadImage(file) {
   background: #74b9ff;
 }
 </style>
+
+<style></style>

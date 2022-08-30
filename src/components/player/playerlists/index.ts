@@ -1,4 +1,4 @@
-import { App, computed, createApp, ref, Ref, watchEffect } from "vue";
+import { App, computed, createApp, ref, Ref, unref, watchEffect } from "vue";
 import router from "../../../routes";
 import store from "../../../store";
 import PlayerLists from "./PlayerLists.vue";
@@ -23,7 +23,7 @@ export default class playerLists {
   mount() {
     if (this.mounting) return;
 
-    this.app = this.app ? this.app : createApp(PlayerLists, { data: this.data });
+    this.app = this.app ? this.app : createApp(PlayerLists, { data: unref(this.data) });
     this.plugin(this.app, [router, store]);
     this.components(this.app, this.comps);
     const mountnode = this.node();

@@ -23,7 +23,7 @@
           @mouseenter="currbgid = song.id"
           @mouseleave="currbgid = null"
           @dblclick="dbPlayer(song)"
-          :class="currbgid == song.id ? 'bgtrue' : 'bgfalse'"
+          :class="currbgid == song.id || songInfo.id === song.id ? 'bgtrue' : 'bgfalse'"
           :key="song.id"
         >
           <el-col :span="2" class="flex items-center justify-center">
@@ -87,7 +87,14 @@ onUnmounted(() => {
   store.commit("removeMitt", "playerlists");
 });
 </script>
+
 <style scoped lang="scss">
+@mixin transition_bg {
+  transition: background-color 0.25s ease-in;
+  -webkit-transition: background-color 0.25s ease-in;
+  -moz-transition: background-color 0.25s ease-in;
+}
+
 .bianshow {
   -webkit-box-shadow: -1px 0px 1px 0px #f4f4f5;
   -moz-box-shadow: -1px 0px 1px 0px #f4f4f5;
@@ -96,9 +103,11 @@ onUnmounted(() => {
 
 .bgtrue {
   background-color: #f4f4f5;
+  @include transition_bg;
 }
 
 .bgfalse {
   background-color: #ffffff;
+  @include transition_bg;
 }
 </style>

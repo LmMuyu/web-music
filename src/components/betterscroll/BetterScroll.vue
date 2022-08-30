@@ -372,8 +372,10 @@ export default defineComponent({
       //这里是上层组件的的默认高度
       nextTick(() => {
         //@ts-ignore
-        const el = ctx.parent.ctx["$el"];
-        const clientHeight = el.getBoundingClientRect().height;
+        const el = viewport.value as HTMLElement;
+        const parentEl = el.parentElement;
+
+        const clientHeight = parentEl.getBoundingClientRect().height;
 
         if (el) {
           viewportHeight.value =
