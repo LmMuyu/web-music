@@ -12,7 +12,7 @@
         <el-col :span="4" class="flex items-center justify-center">
           <AudioAndVideoControls
             :status="isplay"
-            @play="play"
+            @play="() => play(!isplay)"
             @pause="pause"
             @next="nextMusic"
             @pre="preveMusic"
@@ -117,20 +117,21 @@ let isLeaveSanSecBelow = ref<null | boolean>(false);
 
 const dexie = dexieFn();
 const {
-  isplay,
-  pause,
   play,
+  pause,
+  isplay,
   maxTime,
   nextMusic,
   preveMusic,
+  playSrcSet,
   seek: setseek,
-  setImmdPlayLists,
-  volume: setVolume,
-  playSeek: seekTime,
+  findMusicLists,
   routeWatchStop,
   pairingPlayMid,
   existPlayerList,
-  findMusicLists,
+  setImmdPlayLists,
+  volume: setVolume,
+  playSeek: seekTime,
   stopWatchLogin,
 } = await AudioHow(
   {
@@ -238,6 +239,7 @@ store.commit("playlist/setPlayerFn", async (mid: number) => {
       setImmdPlayLists(musicSongInfo);
     } else {
       musicSongInfo = findMusicLists(mid);
+      setImmdPlayLists(musicSongInfo);
     }
 
     Promise.resolve().then(() => store.commit("playlist/setSongInfo", musicSongInfo));
@@ -255,6 +257,10 @@ store.commit("playlist/setPlayerFn", async (mid: number) => {
     }
 
     useLocalStorage("recplaysong", JSON.stringify(musicSongInfo));
+
+    await playSrcSet(musicinfo.value.id);
+
+    play(!isplay.value);
   } catch (error) {
     console.log(error);
   }

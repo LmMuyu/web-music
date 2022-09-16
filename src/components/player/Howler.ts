@@ -19,6 +19,7 @@ import { useRefNegate } from "../../utils/useRefNegate";
 import { useWatchRoutePath } from "../../utils/useWatchHost";
 import { indexDBAllLists, lyric, twoSearch, watchMusicinfo } from "./methods";
 import { MatchItem } from "../../layout/playlist/type";
+import { useLocalStorage } from "../../utils/useLocalStorage";
 
 type compinstance = ComponentInternalInstance;
 
@@ -70,6 +71,16 @@ function async_p() {
   };
 }
 
+function saveLastSong(mid: number) {
+  useLocalStorage("savelastsong", mid);
+  console.log(mid);
+}
+
+function localSvaeLastSong(): number | undefined {
+  const saveLastSongMid = useLocalStorage("savelastsong").value;
+  return saveLastSongMid ? saveLastSongMid : undefined;
+}
+
 const Howl = async (options: HOWLOPTIONS, ctx: compinstance) => {
   let timeseek = null;
   let currIndex = 0;
@@ -86,7 +97,7 @@ const Howl = async (options: HOWLOPTIONS, ctx: compinstance) => {
   let stopMusicLists = null;
   let initfirstmusic = false;
 
-  //用来监听修改每一次，听的歌曲时长
+  //用来监听修改每一次歌曲时长
   watchMusicinfo(options.musicinfoRef, maxTime);
 
   //初始化操作
@@ -156,7 +167,6 @@ const Howl = async (options: HOWLOPTIONS, ctx: compinstance) => {
   how.on("play", () => {
     console.log("play");
     isplay.value = true;
-    play();
   });
 
   how.on("end", () => {
@@ -187,9 +197,7 @@ const Howl = async (options: HOWLOPTIONS, ctx: compinstance) => {
     playSeek.clear();
     playtime.value = 0;
     playSrcSet(palylists.value[currIndex].id);
-
-    await nextTick();
-    play();
+    play(isplay.value);
   }
 
   async function preveMusic() {
@@ -201,9 +209,7 @@ const Howl = async (options: HOWLOPTIONS, ctx: compinstance) => {
     playSeek.clear();
     playtime.value = 0;
     playSrcSet(palylists.value[currIndex].id);
-
-    await nextTick();
-    play();
+    play(isplay.value);
   }
 
   //看一下是不是在播放中
@@ -225,6 +231,7 @@ const Howl = async (options: HOWLOPTIONS, ctx: compinstance) => {
 
     nowPlayingMid = id;
     how.setSrc(createSrc(id));
+    saveLastSong(nowPlayingMid);
   }
 
   const playSeek: staticPlaySeekMethods = function playSeek() {
@@ -279,7 +286,11 @@ const Howl = async (options: HOWLOPTIONS, ctx: compinstance) => {
     }
   }
 
-  function play() {
+  async function play(status: boolean | undefined) {
+    if (!isplay.value && !status) return;
+
+    await nextTick();
+
     if (!how.how_playing) {
       changePlayIcon();
     }
@@ -342,7 +353,7 @@ const Howl = async (options: HOWLOPTIONS, ctx: compinstance) => {
     return lists.some((v) => v.id === id);
   }
 
-  function initCurrentIndex(songinfo: musicDetail) {
+  function currentIndex(songinfo: musicDetail) {
     const index = palylists.value.findIndex((value) => value.id === songinfo.id);
     return (currIndex = index > -1 ? index : 0);
   }
@@ -404,15 +415,25 @@ const Howl = async (options: HOWLOPTIONS, ctx: compinstance) => {
 
   function firstPlayMusic() {
     if (initfirstmusic) return;
+    const mid = localSvaeLastSong();
 
     //并在初始化后第一首歌曲
     //@ts-ignore
-    const first = firstSong(palylists.value);
+    let first =
+      mid > 0 && !!mid
+        ? findMusicLists(palylists.value as unknown as musicDetail[], Number(mid))
+        : firstSong(palylists.value as unknown as musicDetail[]);
+
+    if (!first) {
+      first = firstSong(palylists.value as unknown as musicDetail[]);
+    }
 
     options.musicinfoRef.value = first;
 
     palylists.value.length > 0 && playSrcSet(first.id);
     initfirstmusic = true;
+
+    currentIndex(first);
   }
 
   return {
@@ -427,13 +448,14 @@ const Howl = async (options: HOWLOPTIONS, ctx: compinstance) => {
     palylists,
     nextMusic,
     preveMusic,
+    playSrcSet,
     pairingPlayMid,
     routeWatchStop,
     stopWatchLogin,
     setImmdPlayLists,
-    initCurrentIndex,
     filterDurationTime,
     loop: how.set_loop,
+    initCurrentIndex: currentIndex,
     findMusicLists: findMusicLists.bind(null, palylists.value),
     existPlayerList: existPlayerList.bind(null, palylists.value),
   };

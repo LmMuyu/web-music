@@ -1,4 +1,4 @@
-import { ComponentInternalInstance, computed, ref, Ref, watch, watchEffect } from "vue";
+import { ComponentInternalInstance, computed, ref, Ref, unref, watch, watchEffect } from "vue";
 import { userRecord } from "../../api/playList";
 import dexieInstance from "../../common/dexie";
 import { conversionItem } from "../../layout/playlist/hooks/methods";
@@ -93,4 +93,25 @@ export async function indexDBAllLists() {
 export function lyric(lyr: MatchItem): MatchItem {
   lyr.lyc = lyr.lyc.replace(/(\[.+\])?/, "");
   return conversionItem(lyr);
+}
+
+export function musicSwitchControl(defstatus: Ref<boolean> | boolean) {
+  const mitt = new Map<string, Function[]>();
+  let prestatus = unref(defstatus);
+  let currstatus = ref(unref(defstatus));
+
+  const has = (type: "next" | "prev") => mitt.has(type);
+
+  function capSubFn(fn: Function) {
+    
+
+    fn();
+  }
+
+  function sub(type: "next" | "prev", fn: Function) {
+    if (has(type)) {
+      return;
+    }
+  }
+  function pub(type: "next" | "prev", fn: Function) {}
 }

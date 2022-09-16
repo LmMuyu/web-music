@@ -67,7 +67,11 @@ import { ElContainer, ElMain, ElRow, ElCol, ElHeader } from "element-plus";
 import PlayLycs from "./PLayLycs.vue";
 
 const ContainerComments = createAsComponent(
-  () => import("./PlayListHistory/components/Comments.vue")
+  () => import("./PlayListHistory/components/Comments.vue"),
+  {
+    timeout: 30 * 1000,
+    loadComp: true,
+  }
 );
 
 const props = defineProps({
