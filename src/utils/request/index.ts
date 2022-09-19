@@ -55,7 +55,7 @@ export default function request(config: AxiosRequestConfig) {
   const instance = axios.create({
     // baseURL: "http://120.27.135.200:3000",
     // baseURL: BASEURL,
-    baseURL: "http://cloud-music.pl-fe.cn/",
+    baseURL: "/cloud",
     method: "GET",
     timeout: 30000,
     withCredentials: true,

@@ -1,20 +1,29 @@
-import { loadEnv } from "vite";
-import { ElementPlusResolve, createStyleImportPlugin } from "vite-plugin-style-import";
-import rollupOptions from "./vite/rollupOptions";
-import vueJsx from "@vitejs/plugin-vue-jsx";
-import { createSvgIconsPlugin } from "vite-plugin-svg-icons";
-import createAlias from "./vite/alias";
-import vue from "@vitejs/plugin-vue";
-import { readFileSync } from "fs";
+import {
+  ElementPlusResolve,
+  createStyleImportPlugin,
+} from "vite-plugin-style-import";
 import path from "path";
+import { loadEnv } from "vite";
+import { readFileSync } from "fs";
+import vue from "@vitejs/plugin-vue";
+import createAlias from "./vite/alias";
+import vueJsx from "@vitejs/plugin-vue-jsx";
+import rollupOptions from "./vite/rollupOptions";
 import AutoImport from "unplugin-auto-import/vite";
 import Components from "unplugin-vue-components/vite";
+import { createSvgIconsPlugin } from "vite-plugin-svg-icons";
 import { ElementPlusResolver } from "unplugin-vue-components/resolvers";
 
 import type { ConfigEnv, UserConfig } from "vite";
 
-const privatekey = readFileSync(path.join(process.cwd(), "/public/server_key.pem"), "utf-8");
-const publiccer = readFileSync(path.join(process.cwd(), "/public/server.crt"), "utf-8");
+const privatekey = readFileSync(
+  path.join(process.cwd(), "/public/server_key.pem"),
+  "utf-8"
+);
+const publiccer = readFileSync(
+  path.join(process.cwd(), "/public/server.crt"),
+  "utf-8"
+);
 
 const aliasList = createAlias([
   ["src/", "/src"],
@@ -53,6 +62,7 @@ export default ({ mode }: ConfigEnv): UserConfig => {
   const { VITE_PORT, VITE_HOST } = env;
 
   const basePath = mode === "produrtion" ? "/dist" : "/";
+  const _DEV_ = mode === "produrtion" ? false : true;
 
   return {
     base: "/",
@@ -99,12 +109,13 @@ export default ({ mode }: ConfigEnv): UserConfig => {
       },
     },
     server: {
-      port: Number(VITE_PORT),
-      host: VITE_HOST,
-      https: {
-        key: privatekey,
-        cert: publiccer,
-      },
+      // port: Number(VITE_PORT),
+      // host: VITE_HOST,
+      // https: {
+      //   key: privatekey,
+      //   cert: publiccer,
+      // },
+      hmr: true,
       proxy: {
         "^/music": {
           target: "https://music.163.com",
@@ -132,8 +143,12 @@ export default ({ mode }: ConfigEnv): UserConfig => {
       },
     },
     optimizeDeps: {
-      exclude: ["vue-demi", "vue"],
-      entries: ["vue", "vue-demi"],
+      ...(_DEV_
+        ? {
+            exclude: ["vue-demi", "vue"],
+            entries: ["vue", "vue-demi"],
+          }
+        : {}),
     },
   };
 };

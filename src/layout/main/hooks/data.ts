@@ -41,7 +41,7 @@ export const AsideTags = [
     index: "tag_7",
     icon: "iconzhankai",
     title: "最近播放",
-    path: "/setting",
+    path: "/latelyplay",
     islogin: false,
   },
   {

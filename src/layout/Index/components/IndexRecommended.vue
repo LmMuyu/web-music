@@ -11,13 +11,13 @@
         <PlayList :hotsong="hotsong" />
       </div>
     </ElCol>
-    <ElCol :span="12" class="container">
+    <ElCol :span="12" class="grid grid-cols-2 gap-y-7">
       <div
         v-for="(hotsong, index) in recommendSongs.slice(1)"
         class="flex flex-col relative w-32 h-32 rounded-md"
         :key="index"
       >
-        <PlayList :hotsong="hotsong" />
+        <PlayList :multi-truncate="true" :hotsong="hotsong" />
       </div>
     </ElCol>
   </ElRow>
@@ -38,16 +38,4 @@ getRecommend(5).then((res) => {
   recommendSongs.value = res.data.result.map((res) => new RecPlayList(res));
 });
 </script>
-<style scoped lang="scss">
-.container {
-  display: grid;
-  grid-auto-flow: row dense;
-  grid-auto-columns: 1fr;
-  grid-template-columns: 0.8fr 0.8fr;
-  grid-template-rows: 1fr 1fr;
-  grid-row-gap: 40px;
-  grid-template-areas:
-    ". ."
-    ". .";
-}
-</style>
+<style scoped lang="scss"></style>

@@ -5,10 +5,6 @@ const routes: (RouteRecordRaw & {
   meta?: META;
 })[] = [
   {
-    path: "/index.html",
-    redirect: "/index",
-  },
-  {
     path: "/",
     redirect: "/index",
   },
@@ -122,7 +118,8 @@ const routes: (RouteRecordRaw & {
     path: "/searchres",
     name: "Searchres",
     components: {
-      default: () => import("../layout/displaysearchresult/DisplaySearchResult.vue"),
+      default: () =>
+        import("../layout/displaysearchresult/DisplaySearchResult.vue"),
     },
   },
   {
@@ -187,6 +184,15 @@ const routes: (RouteRecordRaw & {
       default: () => import("../layout/mv/MV.vue"),
     },
   },
+
+  {
+    path: "/latelyplay",
+    name: "Latelyplay",
+    components: {
+      default: () => import("../layout/latelyplay/LatelyPlay.vue"),
+    },
+  },
+
   // {
   //   path: "/localmusic",
   //   name: "Localmusic",

@@ -1,5 +1,5 @@
 import { createStore } from "vuex";
-import { ref } from "@vue/runtime-dom";
+import { ref } from "vue";
 import mitt from "mitt";
 
 import actions from "./actions";

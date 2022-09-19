@@ -8,8 +8,9 @@
       "type": "pwa-chrome",
       "request": "launch",
       "name": "Launch Chrome against localhost",
-      "url": "http://localhost:3002/",
-      "webRoot": "${workspaceFolder}"
+      "url": "http://127.0.0.1:3002/",
+      "webRoot": "${workspaceFolder}",
+      "cwd": "${fileDirname}"
     }
   ]
 }

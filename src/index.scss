@@ -56,3 +56,12 @@
     overflow: hidden;
   }
 }
+
+@mixin multi-truncate($clamp: 2) {
+  .multi_truncate {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    -webkit-line-clamp: $clamp;
+  }
+}

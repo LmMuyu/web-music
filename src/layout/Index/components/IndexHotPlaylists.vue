@@ -1,14 +1,12 @@
 <template>
-  <div class="py-1">
-    <HeadTitle title="热门歌单" />
-  </div>
-  <div class="flex flex-wrap">
+  <HeadTitle title="热门歌单" />
+  <div class="grid grid-cols-3 gap-7">
     <div
       v-for="(hotmusiclist, index) in playList"
-      class="flex flex-col relative w-28 p-2 rounded-md"
+      class="flex flex-col relative w-28 rounded-md"
       :key="index"
     >
-      <PlayList :hotsong="hotmusiclist" />
+      <PlayList :multi-truncate="true" :hotsong="hotmusiclist" />
     </div>
   </div>
 </template>

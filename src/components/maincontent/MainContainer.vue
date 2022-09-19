@@ -6,12 +6,17 @@
           <el-container v-if="isLoginComp" class="h-full">
             <el-header height="60" class="bg-white mx-5 flex items-center py-2">
               <font-icon
-                @click="router.go(-1)"
+                @click="pageRouterGo('prev')"
                 size="20"
                 icon="iconarrow-right-copy"
                 class="px-2"
               ></font-icon>
-              <font-icon @click="router.go(1)" size="20" icon="iconmore" class="p-2"></font-icon>
+              <font-icon
+                @click="pageRouterGo('next')"
+                size="20"
+                icon="iconmore"
+                class="p-2"
+              ></font-icon>
             </el-header>
             <el-main
               style="z-index: 1; padding-top: 0px; padding-bottom: 0px"
@@ -42,12 +47,17 @@
           >
             <el-header height="60" class="bg-white mx-5 flex items-center py-2">
               <font-icon
-                @click="router.go(-1)"
+                @click="pageRouterGo('prev')"
                 size="20"
                 icon="iconarrow-right-copy"
                 class="px-2"
               ></font-icon>
-              <font-icon @click="router.go(1)" size="20" icon="iconmore" class="p-2"></font-icon>
+              <font-icon
+                @click="pageRouterGo('next')"
+                size="20"
+                icon="iconmore"
+                class="p-2"
+              ></font-icon>
             </el-header>
             <el-main
               v-if="shieldContainer(settConInfo.left?.center)"
@@ -67,12 +77,17 @@
           >
             <el-header height="60" class="bg-white mx-5 flex items-center">
               <font-icon
-                @click="router.go(-1)"
+                @click="pageRouterGo('prev')"
                 size="20"
                 icon="iconarrow-right-copy"
                 class="py-2"
               ></font-icon>
-              <font-icon @click="router.go(1)" size="26" icon="iconmore" class="p-2"></font-icon>
+              <font-icon
+                @click="pageRouterGo('next')"
+                size="26"
+                icon="iconmore"
+                class="p-2"
+              ></font-icon>
             </el-header>
             <el-main
               v-if="shieldContainer(settConInfo.right?.center)"
@@ -125,6 +140,15 @@ const settConInfo = reactive<{
     width: null,
   },
 });
+let routePointIndex = null;
+
+function pageRouterGo(behavior: "prev" | "next") {
+  const routes = router.getRoutes();
+
+  // console.log(routes);
+
+  router.go(behavior == "next" ? 1 : -1);
+}
 
 const isLoginComp = useWatchHost();
 

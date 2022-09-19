@@ -2,11 +2,20 @@
   <el-container class="bianshow h-full" style="background: #ffffff">
     <el-header height="80px flex flex-col">
       <div class="flex items-center">
-        <span class="text-lg cursor-pointer" @click="clearPlayerListAll">当前播放</span>
+        <span class="text-lg cursor-pointer" @click="clearPlayerListAll"
+          >当前播放</span
+        >
       </div>
       <div class="flex justify-between py-2">
-        <span class="px-2 text-xs" style="color: #b1b3b8"> 共{{ data.length }}首 </span>
-        <span class="px-2 text-sm" @click="clearAllPlayList" style="color: #409eff">清空列表</span>
+        <span class="px-2 text-xs" style="color: #b1b3b8">
+          共{{ data.length }}首
+        </span>
+        <span
+          class="px-2 text-sm"
+          @click="clearAllPlayList"
+          style="color: #409eff"
+          >清空列表</span
+        >
       </div>
     </el-header>
     <el-main style="overflow: hidden; padding: 0 16px">
@@ -23,7 +32,11 @@
           @mouseenter="currbgid = song.id"
           @mouseleave="currbgid = null"
           @dblclick="dbPlayer(song)"
-          :class="currbgid == song.id || songInfo.id === song.id ? 'bgtrue' : 'bgfalse'"
+          :class="
+            currbgid == song.id || songInfo.id === song.id
+              ? 'bgtrue'
+              : 'bgfalse'
+          "
           :key="song.id"
         >
           <el-col :span="2" class="flex items-center justify-center">
@@ -45,18 +58,25 @@
   </el-container>
 </template>
 <script setup lang="ts">
-import { computed, onUnmounted, PropType, ref } from "vue";
 import { useStore } from "vuex";
+import { computed, onUnmounted, PropType, ref } from "vue";
+import { ElContainer, ElMain, ElRow, ElCol, ElHeader } from "element-plus";
+
 import dexie from "../../../common/dexie";
 import filterDate from "../../../utils/filterDate";
 import { musicDetail } from "../../../utils/musicDetail";
-import BetterScroll from "../../betterscroll/BetterScroll.vue";
+
 import FontIcon from "../../fonticon/FontIcon.vue";
+import BetterScroll from "../../betterscroll/BetterScroll.vue";
 
 const props = defineProps({
   data: {
     type: Array as PropType<musicDetail[]>,
     default: () => [],
+  },
+  isAppCreate: {
+    type: Boolean,
+    default: true,
   },
 });
 
