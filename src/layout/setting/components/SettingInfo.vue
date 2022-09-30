@@ -1,33 +1,38 @@
 <template>
-  <div class="py-4 text-sm">信息</div>
   <div>
-    <div class="font-bolb py-4 flex items-center">
-      <span class="text-xs" style="color: #73767a"> 私信：</span>
-      <span class="text-xs" style="color: #dedfe0"> 接受私信提醒 </span>
-    </div>
-    <Radio :radio-options="directMessages.player" v-model:model-radio="directMessages.direct" />
+    <div class="py-4 text-sm">信息</div>
+    <div>
+      <div class="font-bolb py-4 flex items-center">
+        <span class="text-xs" style="color: #73767a"> 私信：</span>
+        <span class="text-xs" style="color: #dedfe0"> 接受私信提醒 </span>
+      </div>
+      <Radio
+        :radio-options="directMessages.player"
+        v-model:model-radio="directMessages.direct"
+      />
 
-    <div class="font-bolb py-4 flex items-center">
-      <span class="text-xs" style="color: #73767a"> 通知: </span>
-    </div>
-    <div class="flex flex-col">
-      <Radio
-        v-for="(notice, index) in usernotice"
-        :key="index"
-        :radio-options="notice.player"
-        :uncheck="true"
-        v-model:model-radio="notice.notice"
-      />
-    </div>
-    <div class="font-bolb py-4 flex items-center">
-      <span class="text-xs" style="color: #73767a"> 我的听歌排行: </span>
-    </div>
-    <div class="flex flex-col">
-      <Radio
-        :radio-options="musicRanking.player"
-        :uncheck="true"
-        v-model:model-radio="musicRanking.ranking"
-      />
+      <div class="font-bolb py-4 flex items-center">
+        <span class="text-xs" style="color: #73767a"> 通知: </span>
+      </div>
+      <div class="flex flex-col">
+        <Radio
+          v-for="(notice, index) in usernotice"
+          :key="index"
+          :radio-options="notice.player"
+          :uncheck="true"
+          v-model:model-radio="notice.notice"
+        />
+      </div>
+      <div class="font-bolb py-4 flex items-center">
+        <span class="text-xs" style="color: #73767a"> 我的听歌排行: </span>
+      </div>
+      <div class="flex flex-col">
+        <Radio
+          :radio-options="musicRanking.player"
+          :uncheck="true"
+          v-model:model-radio="musicRanking.ranking"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -100,7 +105,11 @@ const musicRanking = reactive({
   ]),
 });
 
-const settingUpdate = watchSettingUpdate([directMessages, usernotice, musicRanking]);
+const settingUpdate = watchSettingUpdate([
+  directMessages,
+  usernotice,
+  musicRanking,
+]);
 
 onUnmounted(() => {
   settingUpdate();

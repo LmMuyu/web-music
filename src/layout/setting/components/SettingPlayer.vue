@@ -1,45 +1,56 @@
 <template>
-  <div class="py-4 text-sm">播放</div>
   <div>
-    <div class="font-bolb py-4 flex items-center">
-      <span class="text-xs" style="color: #73767a"> 播放播放列表：</span>
-      <span class="text-xs" style="color: #dedfe0"> 单曲、声音 </span>
-    </div>
-    <Radio :radio-options="playerlist.player" v-model:model-radio="playerlist.playlist" />
+    <div class="py-4 text-sm">播放</div>
     <div>
-      <span class="text-xs" style="color: #73767a"> 自动播放：</span>
-    </div>
-    <Radio
-      :uncheck="true"
-      :radio-options="automaticPlay.player"
-      v-model:model-radio="automaticPlay.automatic"
-    />
-    <div>
-      <span class="text-xs" style="color: #73767a"> 播放进度：</span>
-    </div>
-    <Radio
-      :uncheck="true"
-      :radio-options="broadcastPace.player"
-      v-model:model-radio="broadcastPace.broadcastpace"
-    />
-    <div>
-      <span class="text-xs" style="color: #73767a"> 效果：</span>
-    </div>
-    <Radio :uncheck="true" :radio-options="effect.player" v-model:model-radio="effect.effect" />
+      <div class="font-bolb py-4 flex items-center">
+        <span class="text-xs" style="color: #73767a"> 播放播放列表：</span>
+        <span class="text-xs" style="color: #dedfe0"> 单曲、声音 </span>
+      </div>
+      <Radio
+        :radio-options="playerlist.player"
+        v-model:model-radio="playerlist.playlist"
+      />
+      <div>
+        <span class="text-xs" style="color: #73767a"> 自动播放：</span>
+      </div>
+      <Radio
+        :uncheck="true"
+        :radio-options="automaticPlay.player"
+        v-model:model-radio="automaticPlay.automatic"
+      />
+      <div>
+        <span class="text-xs" style="color: #73767a"> 播放进度：</span>
+      </div>
+      <Radio
+        :uncheck="true"
+        :radio-options="broadcastPace.player"
+        v-model:model-radio="broadcastPace.broadcastpace"
+      />
+      <div>
+        <span class="text-xs" style="color: #73767a"> 效果：</span>
+      </div>
+      <Radio
+        :uncheck="true"
+        :radio-options="effect.player"
+        v-model:model-radio="effect.effect"
+      />
 
-    <div>
-      <span class="text-xs" style="color: #73767a"> 输出设备：指放下一首歌时生效 DirectSound </span>
-    </div>
+      <div>
+        <span class="text-xs" style="color: #73767a">
+          输出设备：指放下一首歌时生效 DirectSound
+        </span>
+      </div>
 
-    <div class="py-2">
-      <el-select v-model="outputdevices" placeholder="Select" size="small">
-        <!-- <el-option
+      <div class="py-2">
+        <el-select v-model="outputdevices" placeholder="Select" size="small">
+          <!-- <el-option
         v-for="item in options"
         :key="item.value"
         :label="item.label"
         :value="item.value"
       /> -->
-      </el-select>
+        </el-select>
+      </div>
     </div>
   </div>
 </template>
@@ -101,7 +112,12 @@ const effect = reactive({
   ]),
 });
 
-const watchStop = watchSettingUpdate([playerlist, automaticPlay, broadcastPace, effect]);
+const watchStop = watchSettingUpdate([
+  playerlist,
+  automaticPlay,
+  broadcastPace,
+  effect,
+]);
 
 function audioOutputDevices() {
   navigator.mediaDevices.enumerateDevices().then((devices) => {

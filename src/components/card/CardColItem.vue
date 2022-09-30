@@ -1,6 +1,12 @@
 <template>
   <section class="flex flex-col w-full h-full relative">
-    <div class="text-center relative w-full clearfix whauto">
+    <div
+      class="text-center relative clearfix"
+      :style="{
+        width: playitem?.xsize ?? 150,
+        height: playitem?.ysize ?? 100,
+      }"
+    >
       <img
         :src="imgsrc(playitem.coverImgUrl || playitem.al.picUrl)"
         class="p-1"
@@ -12,7 +18,10 @@
         :class="isPlayIcon && 'play_icon'"
       >
         <router-link
-          :to="{ path: playitem.topath || playitem.path || to, query: routerQuery(playitem) }"
+          :to="{
+            path: playitem.topath || playitem.path || to,
+            query: routerQuery(playitem),
+          }"
           class="absolute top-0 bottom-0 left-0 right-0 w-full h-full"
           :itemid="playitem.id"
         ></router-link>
@@ -20,14 +29,23 @@
       </div>
     </div>
     <div class="px-1 h-auto hover_opacity">
-      <span v-if="!!playitem.playCount" class="text_icon flex items-center py-1 text-sm">
+      <span
+        v-if="!!playitem.playCount"
+        class="text_icon flex items-center py-1 text-sm"
+      >
         <i class="iconfont iconbofang1 text-sm"></i>
         <p class="ml-2 text-sm">{{ fromPlayCount(playitem.playCount) }}</p>
       </span>
       <span class="black">
-        <p :style="playitem?.style?.name ?? ''" class="text-left cursor-pointer text-sm fotn_title">
+        <p
+          :style="playitem?.style?.name ?? ''"
+          class="text-left cursor-pointer text-sm fotn_title"
+        >
           <router-link
-            :to="{ path: playitem.topath || playitem.path || to, query: routerQuery(playitem) }"
+            :to="{
+              path: playitem.topath || playitem.path || to,
+              query: routerQuery(playitem),
+            }"
           >
             {{ playitem.name || playitem.albumname }}
           </router-link>
@@ -35,7 +53,9 @@
         <p :style="playitem?.style?.subtitle ?? ''" v-if="playitem.subtitle">
           {{ playitem.subtitle }}
         </p>
-        <p class="text-xs py-2" style="colos: #f0f2f5">{{ playitem?.createtime ?? "" }}</p>
+        <p class="text-xs py-2" style="colos: #f0f2f5">
+          {{ playitem?.createtime ?? "" }}
+        </p>
       </span>
     </div>
   </section>

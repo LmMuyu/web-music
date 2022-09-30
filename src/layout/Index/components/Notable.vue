@@ -1,4 +1,4 @@
-<!-- <template>
+<template>
   <div class="flex justify-center items-center w-full h-full py-4">
     <div
       @mouseenter="mouseenter"
@@ -6,7 +6,10 @@
       class="flex items-center w-full relative wind"
       :style="{ height: `${h}px` }"
     >
-      <div :style="{ width: `${allWidth + offsetW}px` }" class="relative h-full overflow-hidden">
+      <div
+        :style="{ width: `${allWidth + offsetW}px` }"
+        class="relative h-full overflow-hidden"
+      >
         <div
           v-show="btn_button"
           class="absolute top-0 left-0 h-full flex items-center z-10 btn-prev"
@@ -14,7 +17,13 @@
         >
           <font-icon icon="iconarrow-right-copy" size="24"></font-icon>
         </div>
-        <transition @enter="enter" @before-leave="leave" appear name="tali" mode="default">
+        <transition
+          @enter="enter"
+          @before-leave="leave"
+          appear
+          name="tali"
+          mode="default"
+        >
           <NotableWind
             v-if="show"
             :class="!show ? 'absolute top-0 left-0' : ''"
@@ -44,7 +53,6 @@
 </template>
 <script setup lang="ts">
 import { computed, ref, watchEffect } from "vue";
-import { topSong } from "../../../../api/index";
 
 import FontIcon from "../../../../../../components/fonticon/FontIcon.vue";
 import NotableWind from "./NotableWind.vue";
@@ -66,23 +74,18 @@ const show = ref(true);
 const toleave = ref(-allWidth.value + "px");
 const fromenter = ref(allWidth.value + "px");
 
-const topnewsongs = ref([]);
-
 const imglist = ref([]);
 const showlist = ref([]);
-
-watchEffect(() => {
-  imglist.value = topnewsongs.value.map((song) => {
-    return song.album.blurPicUrl + `?param=${w.value}y${h.value}`;
-  });
-});
 
 watchEffect(() => {
   let i = end.value + 1;
   i > imglist.value.length - 1 && (i = 0);
 
   if (imglist.value.length > 0) {
-    showlist.value = [...imglist.value.slice(start.value, end.value), imglist.value[i]];
+    showlist.value = [
+      ...imglist.value.slice(start.value, end.value),
+      imglist.value[i],
+    ];
     if (showlist.value.length !== 5) {
       console.log(showlist.value);
       console.log({ start, end });
@@ -125,11 +128,6 @@ function btnNext() {
   show.value = !show.value;
 }
 
-topSong().then((song) => {
-  const newsongs = song.data;
-  topnewsongs.value = newsongs.data.slice(0, 25);
-});
-
 function mouseenter() {
   btn_button.value = true;
 }
@@ -151,4 +149,4 @@ function mouseleave() {
 .tali-leave-to {
   transform: translate(v-bind(toleave), 0);
 }
-</style> -->
+</style>

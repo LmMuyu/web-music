@@ -1,10 +1,12 @@
 <template>
-  <div class="py-4 text-sm">常规</div>
-  <div class="flex items-center">
-    <span class="text-xs">字体选择：</span>
-    <el-select v-model="value" class="m-2" placeholder="Select" size="small">
-      <!-- <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" /> -->
-    </el-select>
+  <div>
+    <div class="py-4 text-sm">常规</div>
+    <div class="flex items-center">
+      <span class="text-xs">字体选择：</span>
+      <el-select v-model="value" class="m-2" placeholder="Select" size="small">
+        <!-- <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" /> -->
+      </el-select>
+    </div>
   </div>
 </template>
 <script setup lang="ts">

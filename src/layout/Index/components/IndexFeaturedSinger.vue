@@ -5,7 +5,7 @@
       <span style="color: #545499"> 全部 </span>
     </div>
   </div>
-  <div class="flex justify-between">
+  <div class="flex justify-between" style="height: 18vh">
     <div
       class="w-56 h-24 bg-white rounded-md"
       v-for="(item, index) in artists.slice(0, 4)"
@@ -15,7 +15,12 @@
       <el-row class="p-4" style="color: #545499">
         <el-col :span="10">
           <router-link :to="routerLinkTemp(item.id)">
-            <el-avatar shape="square" :size="60" :src="item.picUrl + '?param=60y60'"> </el-avatar>
+            <el-avatar
+              shape="square"
+              :size="60"
+              :src="item.picUrl + '?param=60y60'"
+            >
+            </el-avatar>
           </router-link>
         </el-col>
         <el-col :span="10" style="color: #7474ad" class="relative">
@@ -30,7 +35,10 @@
         <el-col :span="4" class="flex justify-center">
           <font-icon
             @click="
-              store.dispatch('login/follow', { uid: item.accountId, backcall: followBackCall })
+              store.dispatch('login/follow', {
+                uid: item.accountId,
+                backcall: followBackCall,
+              })
             "
             icon="iconxihuan"
             color="#7474ad"
@@ -67,7 +75,10 @@ function artistRandom(artists: any[]) {
 
   for (let i = 0; i < songlists.length; i++) {
     const randomCount = Math.floor(Math.random() * (len - 1));
-    [songlists[i], songlists[randomCount]] = [songlists[randomCount], songlists[i]];
+    [songlists[i], songlists[randomCount]] = [
+      songlists[randomCount],
+      songlists[i],
+    ];
   }
   return songlists;
 }

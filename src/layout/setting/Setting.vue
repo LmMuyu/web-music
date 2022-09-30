@@ -5,7 +5,7 @@
       <setting-header />
     </el-header>
     <el-main style="overflow: hidden">
-      <better-scroll :open-h-render="false">
+      <better-scroll ref="betterscrollref" :open-h-render="false">
         <SettingAccount ref="accout" />
         <SettingConventional />
         <SettingPlayer />
@@ -14,13 +14,23 @@
         <div class="py-8 w-full h-10"></div>
       </better-scroll>
     </el-main>
-    <div v-if="routerViewClass" class="absolute left-0 top-0 w-full h-full bg-white">
+    <div
+      v-if="routerViewClass"
+      class="absolute left-0 top-0 w-full h-full bg-white"
+    >
       <router-view></router-view>
     </div>
   </el-container>
 </template>
 <script setup lang="ts">
-import { ref, watchEffect, onActivated, onDeactivated } from "vue";
+import {
+  ref,
+  watchEffect,
+  onActivated,
+  onDeactivated,
+  onMounted,
+  onUnmounted,
+} from "vue";
 
 import { useWatchRoutePath } from "../../utils/useWatchHost";
 
@@ -34,6 +44,8 @@ import SettingConventional from "./components/SettingConventional.vue";
 import BetterScroll from "../../components/betterscroll/BetterScroll.vue";
 
 const routerViewClass = ref(false);
+const betterscrollref = ref<any>(null);
+const mutationStops: IntersectionObserver[] = [];
 
 class container {
   val: any;
@@ -84,6 +96,29 @@ onActivated(() => {
 onDeactivated(() => {
   watchEffectStop();
   watchEffectStop = null;
+});
+
+onMounted(() => {
+  mutationStops.concat(
+    Array.from(
+      (betterscrollref.value.rootContainer as HTMLElement).children
+    ).map((node) => {
+      const mutation = new IntersectionObserver(
+        (mutation) => {
+          console.log(mutation);
+        },
+        {
+          root: document.documentElement,
+        }
+      );
+      mutation.observe(node);
+      return mutation;
+    })
+  );
+});
+
+onUnmounted(() => {
+  mutationStops.forEach((mutation) => mutation.disconnect());
 });
 </script>
 <style scoped lang="scss"></style>

@@ -1,10 +1,12 @@
 <template>
-  <div class="w-full h-1/2 relative">
+  <div :style="style" :class="calss" class="w-full h-1/2 relative">
     <transition
       v-for="slotname in forlinkelist"
       :key="slotname"
       :enter-from-class="linkelist.value === slotname ? 'enter_translatex' : ''"
-      :leave-to-class="linkelist.next.next.value === slotname ? 'leave_translatex' : ''"
+      :leave-to-class="
+        linkelist.next.next.value === slotname ? 'leave_translatex' : ''
+      "
       leave-active-class="leave_enter_active"
       enter-active-class="leave_enter_active"
       enter-to-class="enter_to"
@@ -65,6 +67,8 @@ const props = defineProps({
     type: Number,
     required: true,
   },
+  calss: String,
+  style: Object,
 });
 
 let pre = 0;

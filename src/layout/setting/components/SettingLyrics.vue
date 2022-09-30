@@ -1,14 +1,16 @@
 <template>
-  <div class="py-4 text-sm">信息</div>
   <div>
-    <div class="font-bolb py-4 flex items-center">
-      <span class="text-xs" style="color: #73767a"> 类型: </span>
+    <div class="py-4 text-sm">信息</div>
+    <div>
+      <div class="font-bolb py-4 flex items-center">
+        <span class="text-xs" style="color: #73767a"> 类型: </span>
+      </div>
+      <Radio
+        :radio-options="lyricsType.player"
+        :uncheck="true"
+        v-model:model-radio="lyricsType.type"
+      />
     </div>
-    <Radio
-      :radio-options="lyricsType.player"
-      :uncheck="true"
-      v-model:model-radio="lyricsType.type"
-    />
   </div>
 </template>
 <script setup lang="ts">

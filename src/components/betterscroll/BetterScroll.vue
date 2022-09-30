@@ -83,11 +83,13 @@ export default defineComponent({
     const viewport = shallowRef(null);
     const container = shallowRef(null);
     let thenStatus = ref<"pending" | "fulfilled">("pending");
-    const src = "https://cdnjs.cloudflare.com/ajax/libs/better-scroll/2.4.2/better-scroll.esm.js";
+    const src =
+      "https://cdnjs.cloudflare.com/ajax/libs/better-scroll/2.4.2/better-scroll.esm.js";
 
     let mountRefreshFn: (bs) => void = null;
 
-    const BSRefresh = () => (BS ? BS.refresh() : (mountRefreshFn = (bs) => bs.refresh()));
+    const BSRefresh = () =>
+      BS ? BS.refresh() : (mountRefreshFn = (bs) => bs.refresh());
 
     function disable() {
       BS.disable();
@@ -205,12 +207,17 @@ export default defineComponent({
         function correction(y1: number) {
           const maxH = Math.max(...allTotalHeightLists);
           const totalScrollHeight = maxH;
-          const viewportHeightAddTotalScrollHeight = maxH + viewportHeight.value;
+          const viewportHeightAddTotalScrollHeight =
+            maxH + viewportHeight.value;
 
           //补上差值的y值高度
           const y2 =
-            Number((1 - viewportHeightAddTotalScrollHeight / totalScrollHeight).toFixed(4)) *
-            Math.abs(y1);
+            Number(
+              (
+                1 -
+                viewportHeightAddTotalScrollHeight / totalScrollHeight
+              ).toFixed(4)
+            ) * Math.abs(y1);
 
           capHeight.value = capHeight.value - prevhch + Math.abs(y2);
 
@@ -279,7 +286,10 @@ export default defineComponent({
     //计算滑动总高度
     function capTotalHeight() {
       const lists = viewport.value.children[0].children as HTMLElement[];
-      capHeight.value = Math.max(bottomPos(lists[lists.length - 1]), capHeight.value);
+      capHeight.value = Math.max(
+        bottomPos(lists[lists.length - 1]),
+        capHeight.value
+      );
     }
 
     async function pullingUpHandler() {
@@ -312,7 +322,9 @@ export default defineComponent({
 
     function watchRenderBottomLoading() {
       const mount = afterDiv(viewport.value.children[0]);
-      watch(isPullUpLoad, (newavalue) => render(bottomLoading_H({ isPullUpLoad }), mount));
+      watch(isPullUpLoad, (newavalue) =>
+        render(bottomLoading_H({ isPullUpLoad }), mount)
+      );
     }
 
     function templateHVnode(slotss) {
@@ -340,7 +352,10 @@ export default defineComponent({
         await nextTick();
         capTotalHeight();
       } else {
-        console.error("无法获取viewport视口，无法实例化BScroll。viewport：", viewport.value);
+        console.error(
+          "无法获取viewport视口，无法实例化BScroll。viewport：",
+          viewport.value
+        );
       }
     }
 
@@ -348,9 +363,12 @@ export default defineComponent({
 
     //修改滑动高度
     const scrollCapHeight = () => {
-      const diffh = diffCapHeight(Math.abs(capHeight.value - viewportHeight.value));
+      const diffh = diffCapHeight(
+        Math.abs(capHeight.value - viewportHeight.value)
+      );
       const totalh =
-        Math.abs(capHeight.value - viewportHeight.value * diffh) + (100 + Math.ceil(diffh) * 10);
+        Math.abs(capHeight.value - viewportHeight.value * diffh) +
+        (100 + Math.ceil(diffh) * 10);
 
       return totalh;
     };
@@ -379,7 +397,9 @@ export default defineComponent({
 
         if (el) {
           viewportHeight.value =
-            clientHeight > 0 ? clientHeight : document.documentElement.clientHeight;
+            clientHeight > 0
+              ? clientHeight
+              : document.documentElement.clientHeight;
         }
       });
 
@@ -399,6 +419,7 @@ export default defineComponent({
       scrollHeightRefresh() {
         BSRefresh();
       },
+      rootContainer: container,
     });
 
     return {

@@ -51,12 +51,14 @@
                 size="20"
                 icon="iconarrow-right-copy"
                 class="px-2"
+                :color="nextRouteStack.size <= 1 && '#F2F3F5'"
               ></font-icon>
               <font-icon
                 @click="pageRouterGo('next')"
                 size="20"
                 icon="iconmore"
                 class="p-2"
+                :color="prevRouteStack.size > 0 && '#F2F3F5'"
               ></font-icon>
             </el-header>
             <el-main
@@ -114,13 +116,15 @@ import { useRoute, useRouter } from "vue-router";
 import { reactive, ref } from "vue";
 import { useStore } from "vuex";
 
-import { useWatchHost } from "../../utils/useWatchHost";
+import { useWatchHost, useWatchRoutePath } from "../../utils/useWatchHost";
 
 import { ElContainer, ElMain, ElHeader, ElSkeleton } from "element-plus";
 import WebsiteInitLoading from "./components/WebsiteInitLoading.vue";
 import FontIcon from "../fonticon/FontIcon.vue";
 
 import type { Container, META } from "../../routes/type/type";
+
+type keyroutestack<T extends string = "prev" | "next"> = `${T}RouteStack`;
 
 const router = useRouter();
 const store = useStore();
@@ -140,15 +144,54 @@ const settConInfo = reactive<{
     width: null,
   },
 });
-let routePointIndex = null;
+
+const prevRouteStack = new Set();
+const nextRouteStack = new Set();
+
+useWatchRoutePath(async (route) => {
+  nextRouteStack.add(route.path);
+
+  const sl = [...prevRouteStack];
+  prevRouteStack.delete(sl[sl.length - 1]);
+});
 
 function pageRouterGo(behavior: "prev" | "next") {
-  const routes = router.getRoutes();
-
-  // console.log(routes);
+  if (nextRouteStack.size >= 1 && behavior === "prev") {
+    const sl = [...nextRouteStack];
+    nextRouteStack.delete(sl[sl.length - 1]);
+    prevRouteStack.add(sl[sl.length - 1]);
+  }
 
   router.go(behavior == "next" ? 1 : -1);
 }
+
+function storeRouteStack(
+  behavior: "get",
+  key: keyroutestack,
+  data?: string[]
+): string[];
+function storeRouteStack(
+  behavior: "set",
+  key: keyroutestack,
+  data: string[]
+): string[];
+function storeRouteStack(
+  behavior: "set" | "get",
+  key: keyroutestack,
+  data: string[]
+): string[] {
+  const m = `${behavior}Item`;
+  const d = sessionStorage[m](key, data && data.join(",")) as string;
+
+  return d ? d.split(",") : [];
+}
+
+storeRouteStack("get", "nextRouteStack").forEach((sv) =>
+  nextRouteStack.add(sv)
+);
+storeRouteStack("get", "prevRouteStack").forEach((sv) =>
+  prevRouteStack.add(sv)
+);
 
 const isLoginComp = useWatchHost();
 
@@ -162,7 +205,16 @@ router.beforeEach((to) => {
   } else {
     isDefault.value = false;
   }
+
+  prevRouteStack.add(to.path);
 });
+
+window.onbeforeunload = function () {
+  //@ts-ignore
+  storeRouteStack("set", "nextRouteStack", [...nextRouteStack]);
+  //@ts-ignore
+  storeRouteStack("set", "prevRouteStack", [...prevRouteStack]);
+};
 
 router.beforeResolve((to) => {
   if (!isDefault.value) {
