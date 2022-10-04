@@ -1,9 +1,30 @@
-import { h } from "vue";
+import { h, ref } from "vue";
 
 import loading from "../../../components/svgloading/SvgLoading.vue";
 import { ElRow, ElCol } from "element-plus";
 
-export const setting = ["账号", "常规", "播放", "信息", "歌词"];
+let tid = 1;
+
+class settingNode {
+  tid: number;
+  tag: string;
+  targetTop: number;
+  node: HTMLElement;
+  constructor(tag: string) {
+    this.tid = tid++;
+    this.tag = tag;
+    this.targetTop = 0;
+    this.node = null;
+  }
+}
+
+export const setting: settingNode[] = [
+  new settingNode("账号"),
+  new settingNode("常规"),
+  new settingNode("播放"),
+  new settingNode("信息"),
+  new settingNode("歌词"),
+];
 
 export function loadIcon() {
   return h(loading, {

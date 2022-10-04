@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div tag="conventional">
     <div class="py-4 text-sm">常规</div>
     <div class="flex items-center">
       <span class="text-xs">字体选择：</span>

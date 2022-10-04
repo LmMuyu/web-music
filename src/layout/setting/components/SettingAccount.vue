@@ -7,7 +7,7 @@
       round
       size="small"
       ref="accout"
-      class=""
+      tag="accout"
       >立即登录</el-button
     >
     <div v-else>

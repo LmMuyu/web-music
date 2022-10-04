@@ -13,7 +13,9 @@
 <script setup lang="tsx">
 import { PropType } from "vue";
 import { useStore } from "vuex";
+
 import SongItem from "../../../components/detailsongs/DetailSong.vue";
+
 import { musicDetail } from "../../../utils/musicDetail";
 
 const props = defineProps({

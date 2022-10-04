@@ -31,7 +31,10 @@ const routePath = useWatchRoutePath();
 
 watchEffect(() => {
   if (routePath.value.query.id) {
-    store.commit("playlist/thisPlaylistPageSetSongId", routePath.value.query.id);
+    store.commit(
+      "playlist/thisPlaylistPageSetSongId",
+      routePath.value.query.id
+    );
   }
 });
 watchEffect(() => {

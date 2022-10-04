@@ -3,7 +3,9 @@
     <div class="drop_filter"></div>
     <el-header class="flex justify-center items-center header z-10">
       <div v-if="ifhidden" class="flex flex-col justify-center items-center">
-        <span class="text-xl py-2 cursor-pointer z-10" style="color: black">{{ musicName }}</span>
+        <span class="text-xl py-2 cursor-pointer z-10" style="color: black">{{
+          musicName
+        }}</span>
         <div class="flex items-center justify-center">
           <span v-html="singerName" class="text-sm z-10"></span>
           <span> - </span>
@@ -16,7 +18,9 @@
         enterActiveClass="musicname_center_active"
       >
         <div v-if="!ifhidden">
-          <span style="color: #303133" class="text-sm z-10">{{ musicName }}</span>
+          <span style="color: #303133" class="text-sm z-10">{{
+            musicName
+          }}</span>
         </div>
       </transition>
     </el-header>
@@ -58,7 +62,14 @@
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
 import { onMounted, watch } from "vue";
-import { computed, nextTick, onUnmounted, ref, watchEffect, shallowRef } from "@vue/runtime-core";
+import {
+  computed,
+  nextTick,
+  onUnmounted,
+  ref,
+  watchEffect,
+  shallowRef,
+} from "@vue/runtime-core";
 
 import { lyricNodeRect, clientHeight, distance } from "../hooks/data";
 import { createAsComponent } from "../../../utils/createAsComponent";
@@ -166,7 +177,10 @@ function watchCommentsTree(commentnode: HTMLElement) {
   observerlists.push(mutation);
 }
 
-function containerMainToScroll(toscroll: boolean | string, commentNode: HTMLElement) {
+function containerMainToScroll(
+  toscroll: boolean | string,
+  commentNode: HTMLElement
+) {
   if (toscroll === true || toscroll === "true") {
     const toTopPos = commentNode.scrollTop;
 
@@ -187,7 +201,10 @@ const transformStyle = computed(() => {
 });
 
 function scrollBorderCheck(distancevalue: number) {
-  if (distancevalue > (lyricNodeRect.scrollHeight - lyricNodeRect.offsetHeight) / 2) {
+  if (
+    distancevalue >
+    (lyricNodeRect.scrollHeight - lyricNodeRect.offsetHeight) / 2
+  ) {
     banscroll.value = true;
   } else {
     banscroll.value = false;
@@ -223,7 +240,11 @@ onMounted(async () => {
       mutation.disconnect();
     }
 
-    mutation.observe(lyricNode.value, { attributes: true, childList: true, subtree: true });
+    mutation.observe(lyricNode.value, {
+      attributes: true,
+      childList: true,
+      subtree: true,
+    });
   });
 
   await nextTick();

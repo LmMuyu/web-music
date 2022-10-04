@@ -1,23 +1,44 @@
 <template>
-  <el-container :style="{ backgroundColor: recursion ? '#f5f6fa' : '#fff' }"
-    :class="recursion && 'px-6 pt-4 w-full h-full'">
+  <el-container
+    :style="{ backgroundColor: recursion ? '#f5f6fa' : '#fff' }"
+    :class="recursion && 'px-6 pt-4 w-full h-full'"
+  >
     <el-header>
-      <MainContentHeader :type="eventType" :userinfo="dynamic.dynamicuser" :timestr="dynamic.timestr" />
+      <MainContentHeader
+        :type="eventType"
+        :userinfo="dynamic.dynamicuser"
+        :timestr="dynamic.timestr"
+      />
     </el-header>
-    <el-main class="py-6" style="padding-top: 0; padding-bottom: 0" v-if="hiddenMain">
-      <span style="color:#303133" class="cursor-text text-sm">
+    <el-main
+      class="py-6"
+      style="padding-top: 0; padding-bottom: 0"
+      v-if="hiddenMain"
+    >
+      <span style="color: #303133" class="cursor-text text-sm">
         {{ dynamic.eventcontent.content.msg }}
       </span>
-      <main-song v-if="mainContentData.song" :song-data="mainContentData.song" />
+      <main-song
+        v-if="mainContentData.song"
+        :song-data="mainContentData.song"
+      />
       <main-content-image-list :subinfo="dynamic" />
-      <main-website v-if="mainContentData.resource" :resource="mainContentData.resource"></main-website>
+      <main-website
+        v-if="mainContentData.resource"
+        :resource="mainContentData.resource"
+      ></main-website>
     </el-main>
     <el-main v-if="mainContentData.event && !hiddenMain">
       <slot name="recursion" :defualt="mainContentData.event"></slot>
     </el-main>
     <ElFooter height="40px">
-      <MainContentFooter :info="footerInfo" :latestLikedUsers="dynamic.otherinfo.latestLikedUsers ?? []" @linke="linke"
-        @comment="ctxEmit('clickComment', dynamic)" @forward="forward" />
+      <MainContentFooter
+        :info="footerInfo"
+        :latestLikedUsers="dynamic.otherinfo.latestLikedUsers ?? []"
+        @linke="linke"
+        @comment="ctxEmit('clickComment', dynamic)"
+        @forward="forward"
+      />
     </ElFooter>
   </el-container>
 </template>
@@ -54,9 +75,6 @@ const props = defineProps({
     default: false,
   },
 });
-
-
-
 
 const footerInfo = unref(computed_footerInfo)(props);
 const eventType = ref(Number(props.dynamic.type));
@@ -95,7 +113,7 @@ function withoutNull() {
   return hiddenMain;
 }
 
-function forward() { }
+function forward() {}
 
 // function previewComp(preindex: number) {
 //   const pics = props.dynamic.imagelists;
@@ -136,7 +154,7 @@ const runDataKeyFn: Record<string, (...arg) => void> = {
 };
 
 function jsonTransform() {
-  const parseTojson = props.dynamic.eventcontent.content
+  const parseTojson = props.dynamic.eventcontent.content;
   // console.log(parseTojson);
 
   Object.keys(mainContentData).forEach((mainkey) => {
@@ -164,7 +182,8 @@ function sliceTextStr(msg: string, start: number, end: number) {
       msg = msg.replace(
         `#${sliceLink}#`,
         `
-        <router-link  class="bottom_line" style="color: rgb(116, 185, 255);" to="/topic?tid=${map.get(sliceLink).id
+        <router-link  class="bottom_line" style="color: rgb(116, 185, 255);" to="/topic?tid=${
+          map.get(sliceLink).id
         }&topictitle=${sliceLink}">#${sliceLink}#</router-link>
       `
       );
@@ -203,7 +222,10 @@ function activityInfos() {
     return console.warn("props.event：Null");
   }
 
-  const bottomActivityInfos = props.dynamic.bottomActivityInfos as Record<string, any>[];
+  const bottomActivityInfos = props.dynamic.bottomActivityInfos as Record<
+    string,
+    any
+  >[];
   const typeMethods = {
     1: "One",
     2: "Two",
@@ -234,7 +256,9 @@ function activityInfos() {
     const methodName = typeMethods[activeInfo.type];
 
     if (activeInfo.target && methodName) {
-      const query = activeityInfoMethods[`type${methodName}`](activeInfo?.target ?? "");
+      const query = activeityInfoMethods[`type${methodName}`](
+        activeInfo?.target ?? ""
+      );
       setActiveInfos(activeInfo, query, activeInfo.id);
     } else {
       console.warn(activeInfo.target + "===" + methodName);
@@ -245,7 +269,10 @@ function activityInfos() {
 function setActiveInfos(activeInfo: any, query: string, id: number) {
   activityInfoMap.value.has(activeInfo.type)
     ? activityInfoMap.value.get(activeInfo.type)
-    : activityInfoMap.value.set(activeInfo.type, new Map([[activeInfo.name, { query, id }]]));
+    : activityInfoMap.value.set(
+        activeInfo.type,
+        new Map([[activeInfo.name, { query, id }]])
+      );
 
   const rootkeyMap = activityInfoMap.value.get(activeInfo.type);
   activitySetLists.add(rootkeyMap);
@@ -259,9 +286,6 @@ function setActiveInfos(activeInfo: any, query: string, id: number) {
     return true;
   }
 }
-
-
 </script>
 
-<style scoped lang="scss">
-</style>
+<style scoped lang="scss"></style>

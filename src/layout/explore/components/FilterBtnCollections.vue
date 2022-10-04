@@ -4,6 +4,7 @@
       <filterBtnItem
         v-for="(tag, index) in beforeCatlist"
         :tag="tag.name"
+        :defaulttag="defaulttag"
         :key="index"
       ></filterBtnItem>
     </div>
@@ -16,18 +17,22 @@
         @close="removeSelectTag(selectTag.id)"
         >{{ selectTag.name }}
       </ElTag>
-      <ElButton type="danger" size="small" v-if="ifSelectList" @click="closeAll">清空</ElButton>
+      <ElButton type="danger" size="small" v-if="ifSelectList" @click="closeAll"
+        >清空</ElButton
+      >
     </div>
     <transition name="fade" mode="out-in">
       <div v-if="showAllBtnItem">
         <el-container v-for="(efories, index) in categories" :key="index">
-          <el-aside width="100px" class="flex justify-center items-center">{{ efories }}</el-aside>
+          <el-aside width="100px" class="flex justify-center items-center">{{
+            efories
+          }}</el-aside>
           <el-main>
             <div class="flex flex-wrap">
               <filterBtnItem
-                v-for="(tag, index) in playlistTags(index)"
+                v-for="(tag, tindex) in playlistTags(index)"
                 :is-in-all-main="true"
-                :key="index"
+                :key="tindex"
                 :tag="tag.name"
                 :default-active="tag.defaultactive ?? false"
               >
@@ -45,18 +50,29 @@ import { ref, unref, defineComponent, Ref, computed } from "vue";
 import { getPlaylistCatlist, highqualityTags } from "../../../api/explore";
 import { useRefNegate } from "../../../utils/useRefNegate";
 
-import { ElCheckTag, ElAside, ElContainer, ElMain, ElTag, ElButton } from "element-plus";
+import {
+  ElCheckTag,
+  ElAside,
+  ElContainer,
+  ElMain,
+  ElTag,
+  ElButton,
+} from "element-plus";
+import { useRoute, useRouter } from "vue-router";
 
 const ctxEmit = defineEmits(["withTagData"]);
+const route = useRoute();
 
 let tagId = 0;
 const catlist = [];
 const categories = ref([]);
+const router = useRouter();
 const beforeCatlist = ref([]);
 const slectAllSection = ref([]);
 const showAllBtnItem = ref(false);
 const recordSelectClick = ref(false);
 const activeBtnRefList: Ref<boolean>[] = [];
+const defaulttag = (route.query.tag || "全部") as string;
 
 getPlaylistCatlist().then((catvalue) => {
   categories.value = Object.values(catvalue.data.categories);
@@ -64,33 +80,36 @@ getPlaylistCatlist().then((catvalue) => {
 });
 
 highqualityTags().then((highquality) => {
-  beforeCatlist.value.push({ name: "全部" }, ...highquality.data.tags.slice(0, 15), {
-    name: "· · ·",
-  });
+  beforeCatlist.value.push(
+    { name: "全部" },
+    ...highquality.data.tags.slice(0, 15),
+    {
+      name: "· · ·",
+    }
+  );
 });
 
 const filterBtnItem = defineComponent({
   props: {
     defaultActive: Boolean,
     tag: String,
+    defaulttag: String,
     isInAllMain: {
       type: Boolean,
       default: false,
     },
   },
   setup(props) {
-    const initRef = () => (props.tag === "全部" ? true : false || props.defaultActive);
+    const initRef = () =>
+      props.tag === props.defaulttag ? true : false || props.defaultActive;
     const { countRef: selectBtnValue } = useRefNegate(initRef());
     activeBtnRefList.push(selectBtnValue);
 
-    //默认触发一次请求
-    // if (selectBtnValue.value) {
-    //   ctxEmit("withTagData", props.tag);
-    // }
-
     function addSlectAllSection(tag: string, btnref: Ref<boolean>) {
       const [first, last] = retListFirstLast();
-      const isin = slectAllSection.value.some((taginfo) => taginfo.name === tag);
+      const isin = slectAllSection.value.some(
+        (taginfo) => taginfo.name === tag
+      );
 
       if (tag !== "" && tag !== first.name && tag !== last.name && !isin) {
         slectAllSection.value.push({ id: ++tagId, name: tag, btnref });
@@ -100,7 +119,16 @@ const filterBtnItem = defineComponent({
     function activeBtn() {
       ctxEmit("withTagData", props.tag);
 
-      if (props.tag === beforeCatlist.value[beforeCatlist.value.length - 1].name) {
+      router.replace({
+        path: "/explore",
+        query: {
+          tag: props.tag,
+        },
+      });
+
+      if (
+        props.tag === beforeCatlist.value[beforeCatlist.value.length - 1].name
+      ) {
         showAllBtnItem.value = !showAllBtnItem.value;
         const len = activeBtnRefList.length;
         activeBtnRefList.splice(17, len);

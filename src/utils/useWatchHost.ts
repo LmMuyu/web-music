@@ -2,27 +2,32 @@ import { ref, watchEffect, Ref } from "vue";
 import { useRoute } from "vue-router";
 import router from "../routes";
 import type { RouteLocationNormalizedLoaded } from "vue-router";
+import { MyReturnType } from "../type";
 
-export function useWatchRoutePath(
-  callbck?: (route: RouteLocationNormalizedLoaded) => void
+function useWatchRoutePath(): Ref<RouteLocationNormalizedLoaded>;
+function useWatchRoutePath(
+  callback?: (route: RouteLocationNormalizedLoaded) => void
+): MyReturnType<typeof watchEffect>;
+function useWatchRoutePath(
+  callback?: (route: RouteLocationNormalizedLoaded) => void
 ) {
   const RLNL = ref<Partial<RouteLocationNormalizedLoaded>>({});
   let route = useRoute();
   route = route ?? router.currentRoute.value;
   let prepath = "/";
 
-  watchEffect(() => {
+  const stop = watchEffect(() => {
     if (prepath !== route.path) {
       prepath = route.path;
       RLNL.value = route;
-      callbck?.(route);
+      callback?.(route);
     }
   });
 
-  return RLNL;
+  return callback ? stop : RLNL;
 }
 
-export function useWatchHost() {
+function useWatchHost() {
   const excludes = ["/login", "/playlist", "/user", "/video"];
 
   const route = useRoute();
@@ -40,3 +45,5 @@ export function useWatchHost() {
 
   return isshow;
 }
+
+export { useWatchHost, useWatchRoutePath };

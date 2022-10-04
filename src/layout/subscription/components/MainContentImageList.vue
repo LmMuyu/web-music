@@ -1,8 +1,16 @@
 <template>
   <div :style="absoluteBox">
     <div :style="gridstyle" :class="{ 'mt-6': isMarginTop }" class="h-full">
-      <ElImage v-for="(file, index) in dynamics.picList" :preview-src-list="dynamics.picList" :initial-index="index"
-        :key="index" :src="file + `?parma=${dynamics.w}y${dynamics.h}`">
+      <ElImage
+        v-for="(file, index) in dynamics.picList"
+        :preview-src-list="dynamics.previmages"
+        :initial-index="index"
+        :key="index"
+        :src="file + `?parma=${dynamics.w}y${dynamics.h}`"
+        loading="lazy"
+        :lazy="true"
+        :preview-teleported="true"
+      >
       </ElImage>
     </div>
   </div>
@@ -54,7 +62,8 @@ const absoluteBox = computed(() => {
   let imgCount = picList.value.length;
   let wgapCount = imgCount > 3 ? 2 : imgCount - 1;
   const boxwidth = dynamics.w.value * (wgapCount + 1) + gap * wgapCount;
-  const boxHeight = dynamics.h.value * row.value + gap * (row.value >= 1 ? row.value - 1 : 0);
+  const boxHeight =
+    dynamics.h.value * row.value + gap * (row.value >= 1 ? row.value - 1 : 0);
 
   style.height = Math.abs(boxHeight) + "px";
   style.width = Math.abs(boxwidth) + "px";
@@ -62,5 +71,4 @@ const absoluteBox = computed(() => {
   return style;
 });
 </script>
-<style scoped lang="scss">
-</style>
+<style scoped lang="scss"></style>

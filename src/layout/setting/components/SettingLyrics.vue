@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="py-4 text-sm">信息</div>
+    <div class="py-4 text-sm">歌词</div>
     <div>
       <div class="font-bolb py-4 flex items-center">
         <span class="text-xs" style="color: #73767a"> 类型: </span>

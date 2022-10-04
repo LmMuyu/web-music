@@ -4,14 +4,22 @@
       <span class="px-2">
         {{ String(index + 1).padStart(2, "0") }}
       </span>
-      <router-link :to="{ path: '/playlist', query: { id: track.id } }" class="block px-4">
+      <router-link
+        :to="{ path: '/playlist', query: { id: track.id } }"
+        class="block px-4"
+      >
         <ElImage
           shape="square"
           :src="track.picUrl + '?param=32y32'"
           class="w-8 h-8 rounded-md"
+          :lazy="true"
+          loading="lazy"
         />
       </router-link>
-      <router-link :to="{ path: '/playlist', query: { id: track.id } }" class="block px-2">
+      <router-link
+        :to="{ path: '/playlist', query: { id: track.id } }"
+        class="block px-2"
+      >
         {{ track.name }}
       </router-link>
     </ElCol>
@@ -19,7 +27,10 @@
       <span class="text-sm" v-html="track.nickName"></span>
     </el-col>
     <ElCol :span="6" class="flex items-center justify-center text-sm">
-      <router-link :to="{ path: '/playlist', query: { id: track.id } }" class="block w-full">
+      <router-link
+        :to="{ path: '/playlist', query: { id: track.id } }"
+        class="block w-full"
+      >
         {{ track.name }}
       </router-link>
     </ElCol>

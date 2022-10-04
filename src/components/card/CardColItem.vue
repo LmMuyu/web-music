@@ -1,21 +1,23 @@
 <template>
-  <section class="flex flex-col w-full h-full relative">
-    <div
-      class="text-center relative clearfix"
-      :style="{
-        width: playitem?.xsize ?? 150,
-        height: playitem?.ysize ?? 100,
-      }"
-    >
-      <img
+  <el-card
+    shadow="hover"
+    :body-style="{ padding: '0px' }"
+    class="flex flex-col w-full h-full relative"
+  >
+    <div class="text-center relative clearfix">
+      <ElImage
+        class="p-1 w-full"
         :src="imgsrc(playitem.coverImgUrl || playitem.al.picUrl)"
-        class="p-1"
-        style="object-fit: fill; width: 100%"
+        fit="fill"
+        :lazy="true"
+        loading="lazy"
       />
       <div
         style="z-index: 99"
         class="w-full h-full flex justify-center items-center overflow-hidden"
-        :class="isPlayIcon && 'play_icon'"
+        :class="isShowPlayIcon && 'play_icon'"
+        @mouseenter="isShowPlayIcon = true"
+        @mouseleave="isShowPlayIcon = false"
       >
         <router-link
           :to="{
@@ -25,7 +27,7 @@
           class="absolute top-0 bottom-0 left-0 right-0 w-full h-full"
           :itemid="playitem.id"
         ></router-link>
-        <i v-if="isPlayIcon" class="iconfont iconbofang2"></i>
+        <i v-if="isShowPlayIcon" class="iconfont iconbofang2"></i>
       </div>
     </div>
     <div class="px-1 h-auto hover_opacity">
@@ -58,10 +60,12 @@
         </p>
       </span>
     </div>
-  </section>
+  </el-card>
 </template>
 <script setup lang="ts">
 import { fromPlayCount } from "../../utils/fromPlayCount";
+import { ElImage, ElCard } from "element-plus";
+import { ref } from "vue";
 
 const props = defineProps({
   playitem: {
@@ -77,6 +81,8 @@ const props = defineProps({
     default: "/playlist",
   },
 });
+
+const isShowPlayIcon = ref(props.isPlayIcon);
 
 function imgsrc(url: string) {
   const xsize = props.playitem?.xsize ?? 150;

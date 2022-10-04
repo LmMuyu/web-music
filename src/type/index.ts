@@ -16,3 +16,8 @@ export interface dayAttribute {
 }
 
 export type globalRefType<T> = Ref<T[]> | T[] | T;
+export type MyReturnType<T extends (...arg: any) => any> = T extends (
+  ...arg
+) => infer R
+  ? R
+  : T;

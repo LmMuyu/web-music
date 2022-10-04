@@ -56,7 +56,11 @@
           :scopedData="comment"
         ></CommentItem>
       </div>
-      <div v-else style="height: 55vh" class="w-full flex justify-center items-center">
+      <div
+        v-else
+        style="height: 55vh"
+        class="w-full flex justify-center items-center"
+      >
         <Loading></Loading>
       </div>
     </el-dialog>
@@ -91,7 +95,8 @@ let dialognode = null;
 const router = useRouter();
 const { countRef, negate } = useRefNegate(false);
 const { countRef: loading, negate: loadingNegate } = useRefNegate(false);
-const { countRef: dialogTableVisible, negate: visibleNegate } = useRefNegate(false);
+const { countRef: dialogTableVisible, negate: visibleNegate } =
+  useRefNegate(false);
 
 //@ts-ignore
 const dynamics = ref<DynamicEvent[]>([]);
@@ -127,7 +132,9 @@ async function friend(requestTime: number = -1) {
   try {
     const res = await getSubScriptDynamic(requestTime);
     lasttime = res.data.lasttime;
-    dynamics.value.push(...res.data.event.map((dynamic) => new DynamicEvent(dynamic)));
+    dynamics.value.push(
+      ...res.data.event.map((dynamic) => new DynamicEvent(dynamic))
+    );
     return true;
   } catch (err) {
     //导航到404页面

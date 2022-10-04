@@ -19,6 +19,7 @@
 </template>
 <script setup lang="ts">
 import { ref } from "vue";
+import { useRoute } from "vue-router";
 
 import { topPlaylist } from "../../api/explore";
 import { debounce } from "../../utils/debounce";
@@ -29,11 +30,14 @@ import FilterCatData from "./components/FilterCatData.vue";
 import SvgLoading from "../../components/svgloading/SvgLoading.vue";
 import BetterScroll from "../../components/betterscroll/BetterScroll.vue";
 
-const catPlaylists = ref([]);
+const route = useRoute();
 
+const catPlaylists = ref([]);
 const lru = new LRU();
 let isfetch = false;
 const loadDataing = ref(true);
+const tag = route.query.tag;
+const findtag = tag ? (tag as string) : "全部";
 
 function pullUpLoad() {
   console.log(55);
@@ -77,7 +81,7 @@ function getWithTagData(tag: string) {
   _topPlaylist(tag);
 }
 
-getWithTagData("全部");
+getWithTagData(findtag);
 </script>
 <style scoped lang="scss">
 .container_height {

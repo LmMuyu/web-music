@@ -6,12 +6,12 @@
   >
     <div v-for="(playitem, index) in playlist" :key="index" :class="class">
       <play-col-item
-        :is-play-icon="playitem?.isPlayIcon ?? true"
+        :is-play-icon="playitem?.isPlayIcon ?? false"
         :playitem="transformPlayitem(playitem)"
         v-if="!topath && slotDefault"
       />
       <play-col-item
-        :is-play-icon="playitem?.isPlayIcon ?? true"
+        :is-play-icon="playitem?.isPlayIcon ?? false"
         :playitem="transformPlayitem(playitem)"
         :to="topath"
         v-else-if="slotDefault && topath"

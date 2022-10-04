@@ -5,18 +5,7 @@
         <div v-if="isDefault" class="w-full">
           <el-container v-if="isLoginComp" class="h-full">
             <el-header height="60" class="bg-white mx-5 flex items-center py-2">
-              <font-icon
-                @click="pageRouterGo('prev')"
-                size="20"
-                icon="iconarrow-right-copy"
-                class="px-2"
-              ></font-icon>
-              <font-icon
-                @click="pageRouterGo('next')"
-                size="20"
-                icon="iconmore"
-                class="p-2"
-              ></font-icon>
+              <GroupFontIcon />
             </el-header>
             <el-main
               style="z-index: 1; padding-top: 0px; padding-bottom: 0px"
@@ -46,20 +35,7 @@
             class="relative"
           >
             <el-header height="60" class="bg-white mx-5 flex items-center py-2">
-              <font-icon
-                @click="pageRouterGo('prev')"
-                size="20"
-                icon="iconarrow-right-copy"
-                class="px-2"
-                :color="nextRouteStack.size <= 1 && '#F2F3F5'"
-              ></font-icon>
-              <font-icon
-                @click="pageRouterGo('next')"
-                size="20"
-                icon="iconmore"
-                class="p-2"
-                :color="prevRouteStack.size > 0 && '#F2F3F5'"
-              ></font-icon>
+              <GroupFontIcon />
             </el-header>
             <el-main
               v-if="shieldContainer(settConInfo.left?.center)"
@@ -78,18 +54,7 @@
             :style="{ width: settConInfo.right.width }"
           >
             <el-header height="60" class="bg-white mx-5 flex items-center">
-              <font-icon
-                @click="pageRouterGo('prev')"
-                size="20"
-                icon="iconarrow-right-copy"
-                class="py-2"
-              ></font-icon>
-              <font-icon
-                @click="pageRouterGo('next')"
-                size="26"
-                icon="iconmore"
-                class="p-2"
-              ></font-icon>
+              <GroupFontIcon />
             </el-header>
             <el-main
               v-if="shieldContainer(settConInfo.right?.center)"
@@ -112,15 +77,15 @@
 </template>
 <script setup lang="ts">
 import { computed } from "@vue/runtime-core";
-import { useRoute, useRouter } from "vue-router";
+import { useRouter } from "vue-router";
 import { reactive, ref } from "vue";
 import { useStore } from "vuex";
 
-import { useWatchHost, useWatchRoutePath } from "../../utils/useWatchHost";
+import { useWatchHost } from "../../utils/useWatchHost";
 
 import { ElContainer, ElMain, ElHeader, ElSkeleton } from "element-plus";
 import WebsiteInitLoading from "./components/WebsiteInitLoading.vue";
-import FontIcon from "../fonticon/FontIcon.vue";
+import GroupFontIcon from "./components/GroupFontIcon.vue";
 
 import type { Container, META } from "../../routes/type/type";
 
@@ -145,26 +110,6 @@ const settConInfo = reactive<{
   },
 });
 
-const prevRouteStack = new Set();
-const nextRouteStack = new Set();
-
-useWatchRoutePath(async (route) => {
-  nextRouteStack.add(route.path);
-
-  const sl = [...prevRouteStack];
-  prevRouteStack.delete(sl[sl.length - 1]);
-});
-
-function pageRouterGo(behavior: "prev" | "next") {
-  if (nextRouteStack.size >= 1 && behavior === "prev") {
-    const sl = [...nextRouteStack];
-    nextRouteStack.delete(sl[sl.length - 1]);
-    prevRouteStack.add(sl[sl.length - 1]);
-  }
-
-  router.go(behavior == "next" ? 1 : -1);
-}
-
 function storeRouteStack(
   behavior: "get",
   key: keyroutestack,
@@ -186,13 +131,6 @@ function storeRouteStack(
   return d ? d.split(",") : [];
 }
 
-storeRouteStack("get", "nextRouteStack").forEach((sv) =>
-  nextRouteStack.add(sv)
-);
-storeRouteStack("get", "prevRouteStack").forEach((sv) =>
-  prevRouteStack.add(sv)
-);
-
 const isLoginComp = useWatchHost();
 
 router.beforeEach((to) => {
@@ -205,8 +143,6 @@ router.beforeEach((to) => {
   } else {
     isDefault.value = false;
   }
-
-  prevRouteStack.add(to.path);
 });
 
 window.onbeforeunload = function () {
@@ -215,6 +151,16 @@ window.onbeforeunload = function () {
   //@ts-ignore
   storeRouteStack("set", "prevRouteStack", [...prevRouteStack]);
 };
+
+const shieldContainer = computed(() => {
+  return function (state: boolean) {
+    return state + "" === "false" ? state : true;
+  };
+});
+
+const hidden = computed(store.getters["getMainHidden"]);
+
+const containerHeight = computed(() => window.innerHeight + "px");
 
 router.beforeResolve((to) => {
   if (!isDefault.value) {
@@ -234,16 +180,6 @@ router.beforeResolve((to) => {
     });
   }
 });
-
-const shieldContainer = computed(() => {
-  return function (state: boolean) {
-    return state + "" === "false" ? state : true;
-  };
-});
-
-const hidden = computed(store.getters["getMainHidden"]);
-
-const containerHeight = computed(() => window.innerHeight + "px");
 
 router.beforeResolve((to) => {
   if (!iniRouterResolve) {

@@ -15,6 +15,7 @@
           size="small"
           v-for="(tagname, index) in playlist.tags"
           :key="index"
+          @click="toRouterPath(tagname)"
           >{{ tagname }}</el-tag
         >
       </div>
@@ -24,7 +25,11 @@
             class="flex items-center"
             :to="{
               path: '/user/home',
-              query: { uid: playlist.creator?.userId || '', isself: false, issinger: false },
+              query: {
+                uid: playlist.creator?.userId || '',
+                isself: false,
+                issinger: false,
+              },
             }"
           >
             <el-avatar
@@ -45,13 +50,19 @@
             </span>
           </router-link>
         </div>
-        <span class="text-xs" style="color: #b1b3b8">最后更新时间为{{ playlist.updateTime }} </span>
+        <span class="text-xs" style="color: #b1b3b8"
+          >最后更新时间为{{ playlist.updateTime }}
+        </span>
       </div>
       <div v-if="playlist.titile">
         <span class="boxtext text-left text-sm" v-html="playlist.titile"></span>
       </div>
       <div class="flex items-center">
-        <el-button size="small" type="primary" @click="ctxEmit('playerAll')" :plain="true"
+        <el-button
+          size="small"
+          type="primary"
+          @click="ctxEmit('playerAll')"
+          :plain="true"
           >播放全部</el-button
         >
 
@@ -61,7 +72,11 @@
           class="flex justify-center items-center"
           :plain="true"
         >
-          <font-icon icon="iconxihuan"> </font-icon>
+          <font-icon
+            :color="playlist.subscribed && '#409EFF'"
+            icon="iconxihuan"
+          >
+          </font-icon>
           <span class="px-1"> 收藏 </span>
         </el-button>
       </div>
@@ -69,10 +84,21 @@
   </el-row>
 </template>
 <script setup lang="ts">
-import { ElImage, ElRow, ElCol, ElButton, ElTag, ElMessage, ElAvatar } from "element-plus";
+import {
+  ElImage,
+  ElRow,
+  ElCol,
+  ElButton,
+  ElTag,
+  ElMessage,
+  ElAvatar,
+} from "element-plus";
 import { computed } from "vue";
+import { useRouter } from "vue-router";
 import { useStore } from "vuex";
+import { subscribe } from "../../../api/songdetail";
 import FontIcon from "../../../components/fonticon/FontIcon.vue";
+import { promptbox } from "../../../components/promptBox";
 
 const ctxEmit = defineEmits(["playerAll"]);
 
@@ -88,11 +114,38 @@ const props = defineProps({
 });
 
 const store = useStore();
-function shouChuang() {
+const router = useRouter();
+
+async function shouChuang() {
   if (store && store.getters["login/getIslogin"]) {
+    const t = props.playlist.subscribed ? 2 : 1;
+    try {
+      const ss = await subscribe(props.playlist.id, t);
+      console.log(ss);
+
+      if (ss && ss.status === 200) {
+        console.log(ss.data);
+        promptbox({ title: "收藏成功" });
+      } else if (ss.status === 403) {
+        promptbox({ title: "没有权限收藏" });
+      } else {
+        promptbox({ title: "收藏失败" });
+      }
+    } catch (error) {
+      console.log(error);
+    }
   } else {
     return ElMessage.error("请先登录！");
   }
+}
+
+function toRouterPath(tagname: string) {
+  router.push({
+    path: "/explore",
+    query: {
+      tag: tagname,
+    },
+  });
 }
 
 const userData = computed<any>(store.getters["login/getUserData"]);

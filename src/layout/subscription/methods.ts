@@ -37,7 +37,10 @@ const footerInfo = (props: any) => {
         emit_name: "comment",
       },
       count:
-        props?.event?.shareCount || props?.shareCount || props?.dynamic?.otherinfo?.shareCount || 0, //转发
+        props?.event?.shareCount ||
+        props?.shareCount ||
+        props?.dynamic?.otherinfo?.shareCount ||
+        0, //转发
     },
   ];
 
@@ -82,7 +85,10 @@ export const comment_footerInfo = computed(() => {
   };
 });
 
-export function linkeEvent(linkedCounts: Ref<number>, isLatestLinke: Ref<boolean>) {
+export function linkeEvent(
+  linkedCounts: Ref<number>,
+  isLatestLinke: Ref<boolean>
+) {
   return function (res: any) {
     const islinke = JSON.parse(res.config.data)["t"];
 
@@ -131,7 +137,9 @@ class PicLists {
 
     this.picList.push(
       ...fileList.map(
-        (pic) => pic.pcRectangleUrl + `?param=${Math.floor(w.value)}y${Math.floor(h.value)}`
+        (pic) =>
+          pic.pcRectangleUrl +
+          `?param=${Math.floor(w.value)}y${Math.floor(h.value)}`
       )
     );
   }
@@ -146,9 +154,11 @@ class PicLists {
 }
 
 export class Dynamic extends PicLists {
-  images: string[];
+  previmages: string[];
   constructor(subinfo: DynamicEvent) {
     super(subinfo.imagelists);
+
+    this.previmages = subinfo.imagelists.map((img) => img.pcRectangleUrl);
   }
 }
 

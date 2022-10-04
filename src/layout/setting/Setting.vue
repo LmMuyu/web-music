@@ -2,10 +2,14 @@
   <el-container class="bg-white h-full">
     <el-header height="100px">
       <div class="font-bold text-lg py-4">设置</div>
-      <setting-header />
+      <setting-header @cursetting="settingtag" />
     </el-header>
     <el-main style="overflow: hidden">
-      <better-scroll ref="betterscrollref" :open-h-render="false">
+      <better-scroll
+        :scroll-to-el="tonode"
+        ref="betterscrollref"
+        :open-h-render="false"
+      >
         <SettingAccount ref="accout" />
         <SettingConventional />
         <SettingPlayer />
@@ -23,14 +27,7 @@
   </el-container>
 </template>
 <script setup lang="ts">
-import {
-  ref,
-  watchEffect,
-  onActivated,
-  onDeactivated,
-  onMounted,
-  onUnmounted,
-} from "vue";
+import { ref, watchEffect, onActivated, onDeactivated, onMounted } from "vue";
 
 import { useWatchRoutePath } from "../../utils/useWatchHost";
 
@@ -42,10 +39,11 @@ import SettingAccount from "./components/SettingAccount.vue";
 import SettingLyrics from "./components/SettingLyrics.vue";
 import SettingConventional from "./components/SettingConventional.vue";
 import BetterScroll from "../../components/betterscroll/BetterScroll.vue";
+import { setting } from "./hooks";
 
 const routerViewClass = ref(false);
 const betterscrollref = ref<any>(null);
-const mutationStops: IntersectionObserver[] = [];
+const tonode = ref(null);
 
 class container {
   val: any;
@@ -60,6 +58,11 @@ class container {
   static of(val: any) {
     return new container(val);
   }
+}
+
+function settingtag(node: HTMLElement) {
+  tonode.value = node;
+  console.log(node);
 }
 
 const nodeRefList = container.of([]);
@@ -99,26 +102,19 @@ onDeactivated(() => {
 });
 
 onMounted(() => {
-  mutationStops.concat(
-    Array.from(
-      (betterscrollref.value.rootContainer as HTMLElement).children
-    ).map((node) => {
-      const mutation = new IntersectionObserver(
-        (mutation) => {
-          console.log(mutation);
-        },
-        {
-          root: document.documentElement,
-        }
-      );
-      mutation.observe(node);
-      return mutation;
-    })
-  );
-});
+  Array.from((betterscrollref.value.rootContainer as HTMLElement).children).map(
+    (node, index) => {
+      const { top } = node.getBoundingClientRect();
 
-onUnmounted(() => {
-  mutationStops.forEach((mutation) => mutation.disconnect());
+      const i = index + 1;
+      const target = setting.find((s) => s.tid === i);
+
+      if (target) {
+        target.targetTop = top;
+        target.node = node as HTMLElement;
+      }
+    }
+  );
 });
 </script>
 <style scoped lang="scss"></style>

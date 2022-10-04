@@ -1,9 +1,15 @@
 <template>
-  <el-container style="height:100vh" class="relative w-full  overflow-y-scroll bg-white song_container">
+  <el-container
+    style="height: 100vh"
+    class="relative w-full overflow-y-scroll bg-white song_container"
+  >
     <el-main class="absolute left-0 top-0 right-0">
       <SongBasicDetail @playerAll="playerAll" :playlist="playlistDetail" />
       <SongCollection :playlist-tracks="detailLists" />
-      <div v-if="loadGengdDuo && loadBtn" class="w-full pb-8 flex justify-center">
+      <div
+        v-if="loadGengdDuo && loadBtn"
+        class="w-full pb-8 flex justify-center"
+      >
         <el-button class="flex items-center justify-center" @click="loadSong">
           <span v-if="loadmore">加载更多</span>
           <Loading v-else />
@@ -51,7 +57,7 @@ const songTrasf = (detaillist) => {
       resultDetail.style.value = `
         color:#303133;
       ` as string;
-      
+
       return resultDetail;
     })
   );

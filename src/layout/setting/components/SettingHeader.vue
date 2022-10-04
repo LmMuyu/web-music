@@ -1,13 +1,17 @@
 <template>
   <el-row class="w-1/3" align="middle">
     <el-col
-      :class="defaultSett === sett ? 'text-lg font-bold' : 'text-sm cursor-pointer'"
-      :span="colSpan(setting)"
-      @click="defaultSett = sett"
+      @click="clickSettingTag(sett)"
+      :class="
+        defaultSett === sett.tag
+          ? 'text-lg font-bold'
+          : 'text-sm cursor-pointer'
+      "
+      :span="colSpan(settingTags)"
       v-for="(sett, index) in setting"
       :key="index"
     >
-      {{ sett }}
+      {{ sett.tag }}
     </el-col>
   </el-row>
 </template>
@@ -18,7 +22,10 @@ import { setting } from "../hooks";
 
 import { ElRow, ElCol } from "element-plus";
 
-const defaultSett = ref(setting[0]);
+const ctxEmit = defineEmits(["cursetting"]);
+
+const defaultSett = ref(setting[0].tag);
+const settingTags = setting.map((v) => v.tag);
 
 function colSpan(setting: string[]) {
   const len = setting.length;
@@ -32,6 +39,11 @@ function colSpan(setting: string[]) {
       return i - 1;
     }
   }
+}
+
+function clickSettingTag(settingTag: typeof setting[0]) {
+  defaultSett.value = settingTag.tag;
+  ctxEmit("cursetting", settingTag.node);
 }
 </script>
 <style scoped lang="scss"></style>
