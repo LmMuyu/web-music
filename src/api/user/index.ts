@@ -25,7 +25,10 @@ export function getBindingInfo(uid: string) {
 }
 
 export async function allSettldRequest(uid: string) {
-  const allres = await Promise.allSettled([getBindingInfo(uid), getUserDetail(uid)]);
+  const allres = await Promise.allSettled([
+    getBindingInfo(uid),
+    getUserDetail(uid),
+  ]);
 
   console.log(allres);
 }
@@ -105,7 +108,11 @@ export function artistdetail(id: number) {
   });
 }
 
-export function singerAlbum(id: number, limit: number = 20, offset: number = 1) {
+export function singerAlbum(
+  id: number,
+  limit: number = 20,
+  offset: number = 1
+) {
   return request({
     url: "/artist/album",
     params: {
@@ -158,5 +165,13 @@ export function timelineVideoAll(offset: number = 0) {
     params: {
       offset,
     },
+  });
+}
+
+export function newPlaylist(data: any) {
+  return request({
+    method: "post",
+    url: "/playlist/create",
+    data,
   });
 }

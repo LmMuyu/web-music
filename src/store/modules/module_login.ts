@@ -83,7 +83,6 @@ class login {
       },
 
       setUserInfo(state: STATETYPE, data: [Object, loginType]) {
-
         state.userdata = {
           data: data[0],
           type: data[1],
@@ -142,14 +141,19 @@ class login {
 
       async setFollows(state) {
         //@ts-ignore
-        const userInfoOruserId = state.state.userdata?.data || state.state.userId;
+        const userInfoOruserId =
+          state.state.userdata?.data || state.state.userId;
+        console.log(userInfoOruserId);
+
         const userFollows = await follows(
           typeof userInfoOruserId === "number"
             ? userInfoOruserId
             : Number((userInfoOruserId as any).userID),
           1
         );
-        const followLists = userFollows.data.follow.map((followuser) => new follow(followuser));
+        const followLists = userFollows.data.follow.map(
+          (followuser) => new follow(followuser)
+        );
         state.commit("setFollowsLists", followLists);
       },
 

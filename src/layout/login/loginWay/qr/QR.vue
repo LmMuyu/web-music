@@ -11,7 +11,9 @@
     </div>
     <div v-else class="flex flex-col items-center justify-center">
       <img class="w-11 h-11" src="../../../../assets/svg/sourcess.svg" />
-      <span class="text-xs py-4" style="color: #303133">扫码成功，等待授权</span>
+      <span class="text-xs py-4" style="color: #303133"
+        >扫码成功，等待授权</span
+      >
     </div>
   </div>
 </template>
@@ -21,10 +23,15 @@ import { useLocalStorage } from "@vueuse/core";
 import { useRouter } from "vue-router";
 
 import { setCookie } from "../../../../utils/request/response/result";
-import { getQrKey, checkStatus, getQrCreate } from "../../../../api/login/qrCodeLogin";
+import {
+  getQrKey,
+  checkStatus,
+  getQrCreate,
+} from "../../../../api/login/qrCodeLogin";
 
 import { ElImage, ElButton } from "element-plus";
 import { login } from "../../../../api/app/login";
+import { loginBCBus } from "../../useBroadcastChannel";
 
 const router = useRouter();
 const qrbase64img = ref("");
@@ -73,7 +80,14 @@ function check(code: number, data: any) {
     useLocalStorage("cookie", data.cookie);
     login()
       .then((res) => {
-        console.log(res);
+        loginBCBus(
+          res.data.data.profile,
+          {
+            gopage: false,
+            sourcess: function () {},
+          },
+          true
+        );
         Promise.resolve().then(() => router.replace("/index"));
       })
       .catch((err) => console.error(err));

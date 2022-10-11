@@ -19,9 +19,18 @@ import { loginStateus } from "./api/app/login";
 import { META } from "./routes/type/type";
 import { watchUserData } from "./layout/main/hooks/methods";
 
-const Audio = defineAsyncComponent(() => import("./components/player/Audio.vue"));
+const Audio = defineAsyncComponent(
+  () => import("./components/player/Audio.vue")
+);
 
-type linkType = "info" | "primary" | "success" | "warning" | "danger" | "default" | undefined;
+type linkType =
+  | "info"
+  | "primary"
+  | "success"
+  | "warning"
+  | "danger"
+  | "default"
+  | undefined;
 
 const store = useStore();
 const router = useRouter();
@@ -35,7 +44,7 @@ function showContainerMainHidden(meta: META) {
 //全局路由限制
 router.beforeEach(async (to, from, next) => {
   const pathList = ["/message", "/subscription"];
-  const islogin = await loginStateus();
+  const { res: islogin } = await loginStateus();
   const meta = to.meta;
 
   showContainerMainHidden(meta);
@@ -73,7 +82,8 @@ router.beforeEach(async (to, from, next) => {
   }
 
   //@ts-ignore
-  const pres = typeof mparams === "undefined" ? true : everykey(rparams, mparams);
+  const pres =
+    typeof mparams === "undefined" ? true : everykey(rparams, mparams);
   //@ts-ignore
   const qres = typeof mquery === "undefined" ? true : everykey(rquery, mquery);
 
@@ -87,7 +97,11 @@ router.beforeEach(async (to, from, next) => {
 store.dispatch("countriesCode");
 provide("circleRef", circleRef);
 
-window.addEventListener("mousedown", (e) => store.commit("emitMitt", ["*", e]), false);
+window.addEventListener(
+  "mousedown",
+  (e) => store.commit("emitMitt", ["*", e]),
+  false
+);
 
 store.commit("login/setWatchFn", watchUserData.storeWatchFn);
 </script>

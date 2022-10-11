@@ -12,6 +12,7 @@ export function getVideoGroup(id: number, offset: number = 0) {
     params: {
       id,
       offset,
+      timestamp: Date.now(),
     },
   });
 }

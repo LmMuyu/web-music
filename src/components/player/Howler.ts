@@ -262,7 +262,7 @@ const Howl = async (options: HOWLOPTIONS, ctx: compinstance) => {
   function setIntervalGetSeek() {
     timeseek = setInterval(() => {
       const time = how.time_seek();
-      console.log(time);
+      // console.log(time);
 
       if (time === undefined) {
         console.log("歌曲播放时间undefined");

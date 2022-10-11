@@ -11,7 +11,7 @@ export async function loginStateus() {
   return await login();
 }
 
-export  async function login() {
+export async function login() {
   try {
     const httpRes = await request({
       method: "post",
@@ -28,10 +28,13 @@ export  async function login() {
         store.dispatch("login/account");
       }
     });
-    const res = data.data.code === 200 && data.data.account !== null && data.data.profile !== null;
+    const res =
+      data.data.code === 200 &&
+      data.data.account !== null &&
+      data.data.profile !== null;
     islogin === null && (islogin = res);
 
-    return res;
+    return { res, data };
   } catch (error) {
     console.log(error);
   }

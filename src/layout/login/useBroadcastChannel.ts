@@ -11,7 +11,10 @@ type ExtractPickForValue<T, K extends keyof T> = T[K];
 
 export type USERINFO = USERDATA;
 
-export type PromiseExtractPickValue = ExtractPickForValue<BroadcastChannel, "postMessage">;
+export type PromiseExtractPickValue = ExtractPickForValue<
+  BroadcastChannel,
+  "postMessage"
+>;
 
 export interface DispatchBcRet {
   postMessage: PromiseExtractPickValue;
@@ -40,7 +43,9 @@ export function mainBCBus(): Promise<USERDATA> {
       BC.postMessage("close_curr_page");
       BC.close();
       BC = null;
-      nextTick(() => openNotification("欢迎回来" + userInfo.nickname, null, "success"));
+      nextTick(() =>
+        openNotification("欢迎回来" + userInfo.nickname, null, "success")
+      );
       resolve(userInfo);
     };
 
@@ -51,13 +56,19 @@ export function mainBCBus(): Promise<USERDATA> {
 }
 
 //登录后跨页面通信
-export function loginBCBus(userdata: any, gobeforepage: GoBeforePage): Promise<boolean> {
+export function loginBCBus(
+  userdata: any,
+  gobeforepage: GoBeforePage,
+  qr?: boolean
+): Promise<boolean> {
   return new Promise((resolve, reject) => {
     let BC = new BroadcastChannel("login");
 
+    console.log(userdata);
+
     BC.onmessage = function (ev) {
       const msg = ev.data;
-      if (msg == "close_curr_page") {
+      if (msg == "close_curr_page" && !qr) {
         if (gobeforepage.gopage) {
           gobeforepage.sourcess();
         } else {
@@ -93,12 +104,16 @@ function setLocalStorage(tokenobj: Record<string, any>) {
   }
 }
 
-function transformToken(tokenobj: Record<string, any>): ACCESS_OR_REFRESH_TOKEN {
+function transformToken(
+  tokenobj: Record<string, any>
+): ACCESS_OR_REFRESH_TOKEN | {} {
+  if (!tokenobj.bindings) return {};
   const binding_token = JSON.parse(tokenobj.bindings[1].tokenJsonStr);
-  console.log(tokenobj);
-  console.log(binding_token);
 
-  return Object.keys(binding_token).reduce((pre, next) => (pre[next] = binding_token[next]), {});
+  return Object.keys(binding_token).reduce(
+    (pre, next) => (pre[next] = binding_token[next]),
+    {}
+  );
 }
 
 export function transformUserData(userdata: any) {

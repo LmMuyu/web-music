@@ -31,7 +31,9 @@
               :style="currenSelectIndex === index ? currentBackColor : ''"
             >
               <span
-                :style="currenSelectIndex === index ? textCssText : currentTextCssText"
+                :style="
+                  currenSelectIndex === index ? textCssText : currentTextCssText
+                "
                 class="w-full text-center"
                 style="line-height: 16px; vertical-align: middle"
                 >{{ selecttag }}</span
@@ -41,11 +43,25 @@
         </el-row>
       </el-col>
       <el-col :span="3">
-        <div v-if="!issinger" class="w-4/5 h-full cursor-pointer" @click="ctxEmit('newSong')">
+        <div
+          v-if="!issinger"
+          class="w-4/5 h-full cursor-pointer"
+          @click="ctxEmit('newSong')"
+        >
           <div class="flex items-center h-full w-full px-2 hover_backcolor">
-            <div v-if="!isSelectCloud" class="flex items-center justify-center">
+            <div
+              @click="createPlaylist"
+              v-if="!isSelectCloud"
+              class="flex items-center justify-center"
+            >
               <font-icon icon="iconjia"></font-icon>
-              <span class="text-sm" style="color: #606266; font-weight: bold">新建歌单</span>
+              <span class="text-sm" style="color: #606266; font-weight: bold"
+                >新建歌单</span
+              >
+              <CreatePlaylistVue
+                @dialogVisible="showdialog = false"
+                :showdialog="showdialog"
+              />
             </div>
             <div v-else class="flex">
               <font-icon icon="iconshangchuanyunduan"></font-icon>
@@ -69,6 +85,7 @@ import { musicUploadToCloudDisk } from "../../hooks";
 
 import { ElSelect, ElOption, ElOptionGroup, ElRow, ElCol } from "element-plus";
 import FontIcon from "../../../../components/fonticon/FontIcon.vue";
+import CreatePlaylistVue from "./CreatePlaylist.vue";
 
 const ctxEmit = defineEmits(["songs", "selectTag", "newSong"]);
 
@@ -90,9 +107,10 @@ const currentBackColor = `
   background-color: #f6f6f6
   `;
 
+const tagDynamicSpan = ref<Map<string, number>>(hashTagSpan());
 const currenSelectIndex = ref<null | number>(null);
 const isSelectCloud = ref(false);
-const tagDynamicSpan = ref<Map<string, number>>(hashTagSpan());
+const showdialog = ref(false);
 
 const select = reactive({
   select: "全部歌单",
@@ -185,6 +203,10 @@ function hashTagSpan() {
   });
 
   return spanMap;
+}
+
+function createPlaylist() {
+  showdialog.value = true;
 }
 
 onMounted(() => {

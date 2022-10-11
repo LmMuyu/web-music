@@ -1,5 +1,5 @@
 <template>
-  <div class="relative w-56">
+  <div :class="class" class="relative w-56">
     <div
       class="relative h-28"
       @mouseenter="showplayindex = index"
@@ -8,9 +8,15 @@
       <ElImage
         :src="
           videoinfo.coverUrl +
-          `?param=${videoinfo.x && videoinfo.y ? videoinfo.x + 'y' + videoinfo.y : '224y112'}`
+          `?param=${
+            videoinfo.x && videoinfo.y
+              ? videoinfo.x + 'y' + videoinfo.y
+              : '224y112'
+          }`
         "
         class="rounded-md"
+        :lazy="true"
+        loading="lazy"
       >
       </ElImage>
       <router-link
@@ -22,7 +28,9 @@
       </router-link>
       <div class="flex items-center absolute right-0 top-0">
         <FontIcon size="14" color="#fff" icon="iconbofang1" />
-        <span class="px-1 text-white text-xs p-2">{{ fromPlayCount(videoinfo.playTime) }}</span>
+        <span class="px-1 text-white text-xs p-2">{{
+          fromPlayCount(videoinfo.playTime)
+        }}</span>
       </div>
       <div class="absolute right-0 bottom-0 text-white text-xs p-2">
         {{ filterDate(videoinfo.durationms) }}
@@ -53,7 +61,9 @@
           class="text_hover"
           v-for="(creator, index) in videoinfo.creator"
         >
-          {{ creator.userName + (index !== videoinfo.creator.length - 1 && "/") }}
+          {{
+            creator.userName + (index !== videoinfo.creator.length - 1 && "/")
+          }}
         </router-link>
       </div>
     </div>
@@ -78,6 +88,7 @@ const props = defineProps({
     required: true,
   },
   titleclass: String,
+  class: String,
 });
 
 const showplayindex = ref(null);

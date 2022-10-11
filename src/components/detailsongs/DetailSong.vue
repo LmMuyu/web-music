@@ -40,7 +40,9 @@
     <ElCol :span="2" class="flex items-center justify-center">
       <font-icon
         @click="playmusic(track.id)"
-        :icon="songid === track.id ? 'iconpause' : 'iconbofang1'"
+        size="20"
+        color="#303133"
+        :icon="songid === track.id ? 'iconzantingtingzhi' : 'iconbofang3'"
       ></font-icon>
     </ElCol>
   </ElRow>

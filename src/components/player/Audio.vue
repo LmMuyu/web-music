@@ -8,7 +8,9 @@
       ref="audioSlider"
     >
       <el-row class="flex content-center h-full w-full">
-        <el-col :span="4" class="flex"><AudioSongInfoShow :musicinfo="musicinfo" /></el-col>
+        <el-col :span="4" class="flex"
+          ><AudioSongInfoShow :musicinfo="musicinfo"
+        /></el-col>
         <el-col :span="4" class="flex items-center justify-center">
           <AudioAndVideoControls
             :status="isplay"
@@ -19,7 +21,11 @@
           ></AudioAndVideoControls>
         </el-col>
         <el-col :span="12" class="flex self-center h-full">
-          <PlayMusicTime :starttime="audioPlayTime" :maxtime="maxTime" class="w-full">
+          <PlayMusicTime
+            :starttime="audioPlayTime"
+            :maxtime="maxTime"
+            class="w-full"
+          >
             <AudioSlider
               :starttime="audioPlayTime"
               :mintime="0"
@@ -33,7 +39,12 @@
             <volume-icon @click="openVolume" :volume="volume"></volume-icon>
             <teleport to="#volume">
               <div :style="sliderPos" class="w-9 h-full absolute z-10">
-                <el-slider height="100px" vertical v-model="volume" ref="volumecontrol">
+                <el-slider
+                  height="100px"
+                  vertical
+                  v-model="volume"
+                  ref="volumecontrol"
+                >
                 </el-slider>
               </div>
             </teleport>
@@ -43,7 +54,11 @@
           </div>
           <div class="px-4">
             <router-link
-              :to="{ name: 'Playlist', params: { toscroll: true }, query: { id: playMid } }"
+              :to="{
+                name: 'Playlist',
+                params: { toscroll: true },
+                query: { id: playMid },
+              }"
             >
               <font-icon icon="iconpinglun_huabanfuben" size="24"> </font-icon>
             </router-link>
@@ -210,7 +225,9 @@ function lastPlayRecord() {
     if (islogin?.value && Object.keys(storeUserData.value).length > 0) {
       if (storeUserData.value?.data) {
         const lastRecord = await userRecord(storeUserData.value.data.id, "0");
-        const lastRecordLists = lastRecord.data.allData.map((v) => new musicDetail(v.song));
+        const lastRecordLists = lastRecord.data.allData.map(
+          (v) => new musicDetail(v.song)
+        );
         store.commit("playlist/musiclists", lastRecordLists);
       }
     }
@@ -242,7 +259,9 @@ store.commit("playlist/setPlayerFn", async (mid: number) => {
       setImmdPlayLists(musicSongInfo);
     }
 
-    Promise.resolve().then(() => store.commit("playlist/setSongInfo", musicSongInfo));
+    Promise.resolve().then(() =>
+      store.commit("playlist/setSongInfo", musicSongInfo)
+    );
 
     //用来修改每一次听的歌曲时长
     musicinfo.value = musicSongInfo;

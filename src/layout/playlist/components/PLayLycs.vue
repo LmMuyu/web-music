@@ -44,8 +44,8 @@
               scrollnode="true"
               :lycs-key="musicItem.indexId"
               @click="
-                scrollToTop(allTimeToSec(musicItem.originTime), 'click').then(() =>
-                  ctxEmit('lycTime', musicItem.originTime)
+                scrollToTop(allTimeToSec(musicItem.originTime), 'click').then(
+                  () => ctxEmit('lycTime', musicItem.originTime)
                 )
               "
             >
@@ -176,7 +176,8 @@ function lyctime([lycindex, lyctime]: [number, number]) {
 
 function scrollToTop(time: number, event: "click" | "play" = "play") {
   const tranYIndex =
-    binarySearch(lycPosMsTime, Math.floor(time * 1000)) - (event === "play" ? 1 : 0);
+    binarySearch(lycPosMsTime, Math.floor(time * 1000)) -
+    (event === "play" ? 1 : 0);
   tranYIndex && nodeRectPosY(lycRenderList, tranYIndex);
 
   return Promise.resolve();

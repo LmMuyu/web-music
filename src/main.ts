@@ -8,6 +8,8 @@ import lazy from "./directives/lazy-loading";
 import AsyncSuspense from "./components/suspense/AsyncSuspense.vue";
 import "virtual:svg-icons-register";
 import { appendBodyCdnJs } from "./production";
+import "vue-virtual-scroller/dist/vue-virtual-scroller.css";
+import VirtualScroller from "vue-virtual-scroller";
 
 import "element-plus/theme-chalk/el-icon.css";
 import "vue3-text-editor/css/index.css";
@@ -20,7 +22,9 @@ app.directive("lazy", lazy("./assets/图片加载中.png"));
 
 app.config.globalProperties.store = store;
 app.config.globalProperties.mittBus = mitt();
+console.log(VirtualScroller);
 
+app.use(VirtualScroller);
 app.use(router);
 app.use(store);
 app.mount("#app");

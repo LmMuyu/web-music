@@ -38,6 +38,9 @@ let isfetch = false;
 const loadDataing = ref(true);
 const tag = route.query.tag;
 const findtag = tag ? (tag as string) : "全部";
+const items = ref([]);
+const recycle = ref(null);
+const loading = ref(false);
 
 function pullUpLoad() {
   console.log(55);

@@ -1,6 +1,7 @@
 import mitt, { Emitter } from "mitt";
 import { GetterTree, MutationTree, StoreOptions } from "vuex";
 import { MatchItem } from "../../layout/playlist/type";
+import { getStore } from "../../utils/getStore";
 import { isType } from "../../utils/methods";
 import type { musicDetail } from "../../utils/musicDetail";
 
@@ -48,13 +49,18 @@ export default class Playlist implements StoreOptions<store> {
 
       setSongId(state, id) {
         state.songId = id;
+
+        const store = getStore();
+        store.commit("playlist/runPlayerFn", id);
       },
 
       musiclists(state, lists: musicDetail[]) {
         // console.log(lists);
         if (Array.isArray(lists)) {
           const lids = state.playlists.map((v) => v.id);
-          const filterAfterData = lists.filter((m) => lids.indexOf(m.id) === -1);
+          const filterAfterData = lists.filter(
+            (m) => lids.indexOf(m.id) === -1
+          );
 
           state.playlists.push(...filterAfterData);
         }
